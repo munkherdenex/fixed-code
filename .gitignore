@@ -1,24 +1,24 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Junk and IDE stuff
+*.bak
+*.iml
+*.orig
+*.rej
+*.swp
+*~
+.DS_Store
+.idea
+.vim/.netrwhist
+yarn-error.log
+.eslintcache
+
+# Files in here are copied by the build
+public/themes
 
 node_modules
-dist
-dist-ssr
-*.local
+.next
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Default `next export` output directory
+out
+
+# TypeScript cache
+tsconfig.tsbuildinfo
