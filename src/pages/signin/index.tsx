@@ -1,13 +1,13 @@
 import { FunctionComponent } from "react";
 import Head from "next/head";
 import Wrapper from "../../components/starter/wrapper";
-import SignupForm from "../../components/signup_form";
 import { EuiSpacer, EuiTitle, useEuiTheme } from "@elastic/eui";
-import { signupStyles } from "../../styles/signup.styles";
+import { signinStyles } from "../../styles/signin.styles";
+import SigninForm from "../../components/signin_form";
 
 const Index: FunctionComponent = () => {
   const { euiTheme } = useEuiTheme();
-  const styles = signupStyles(euiTheme);
+  const styles = signinStyles(euiTheme);
 
   return (
     <>
@@ -18,10 +18,10 @@ const Index: FunctionComponent = () => {
         <div css={styles.container}>
           <EuiSpacer size="xl" />
           <EuiTitle>
-            <h1>Sign Up</h1>
+            <h1>Sign in</h1>
           </EuiTitle>
           <EuiSpacer size="m" />
-          <SignupForm />
+          <SigninForm />
         </div>
       </Wrapper>
     </>

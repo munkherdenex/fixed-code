@@ -20,7 +20,7 @@ const Header = () => {
               <a css={styles.logo}>
                 <Image width={24} height={24} src={Logo} alt="" loader={imageLoader} />
                 <EuiTitle size="xxs" css={styles.title}>
-                  <span>Next.js EUI Starter</span>
+                  <span>Data UI</span>
                 </EuiTitle>
               </a>
             </Link>,
@@ -29,9 +29,15 @@ const Header = () => {
         },
         {
           items: [
+            <Link key="signin" href="/signin" passHref>
+              <EuiButton style={{ minWidth: 80, margin: 10 }} color="success" size="s">
+                Sign In
+              </EuiButton>
+            </Link>,
+
             <Link key="signup" href="/signup" passHref>
               <EuiButton style={{ minWidth: 80 }} size="s">
-                Signup
+                Sign Up
               </EuiButton>
             </Link>,
             <ThemeSwitcher key="theme-switcher" />,
