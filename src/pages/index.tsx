@@ -1,10 +1,10 @@
-import { FunctionComponent } from 'react';
-import Head from 'next/head';
-import { EuiSpacer } from '@elastic/eui';
-import HomeHero from '../components/starter/home_hero';
-import Wrapper from '../components/starter/wrapper';
-import HomeTemplates from '../components/starter/home_templates';
-import HomeWhy from '../components/starter/home_why';
+import { FunctionComponent } from "react";
+import Head from "next/head";
+import { EuiSpacer } from "@elastic/eui";
+import HomeHero from "../components/starter/home_hero";
+import Wrapper from "../components/starter/wrapper";
+import HomeTemplates from "../components/starter/home_templates";
+import HomeWhy from "../components/starter/home_why";
 
 const Index: FunctionComponent = () => {
   return (

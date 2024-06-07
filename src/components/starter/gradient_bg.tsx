@@ -1,13 +1,13 @@
-import { FunctionComponent } from 'react';
-import { useEuiTheme, transparentize } from '@elastic/eui';
-import { useTheme } from '../theme';
-import { gradientBgStyles } from './gradient_bg.styles';
+import { FunctionComponent } from "react";
+import { useEuiTheme, transparentize } from "@elastic/eui";
+import { useTheme } from "../theme";
+import { gradientBgStyles } from "./gradient_bg.styles";
 
 const GradientBg: FunctionComponent = ({ children }) => {
   const { euiTheme } = useEuiTheme();
   const { colorMode } = useTheme();
 
-  const alpha = colorMode === 'dark' ? 0.03 : 0.05;
+  const alpha = colorMode === "dark" ? 0.03 : 0.05;
 
   const backgroundColors = {
     topLeft: transparentize(euiTheme.colors.success, alpha),
