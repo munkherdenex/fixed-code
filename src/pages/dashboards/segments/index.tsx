@@ -1,0 +1,41 @@
+import { FunctionComponent } from "react";
+import Head from "next/head";
+import { EuiButton, useEuiTheme } from "@elastic/eui";
+import DashboardLayout from "../../../layouts/dashboard";
+import { dashboardsStyles } from "../../../styles/dashboards.styles";
+
+const Dashboard: FunctionComponent = () => {
+  const { euiTheme } = useEuiTheme();
+  const styles = dashboardsStyles(euiTheme);
+
+  return (
+    <>
+      <Head>
+        <title>Home</title>
+      </Head>
+      <DashboardLayout
+        pageHeader={{
+          pageTitle: "Segments",
+          iconType: "dashboardApp",
+          description: "Create and manage segments.",
+          rightSideItems: [
+            <EuiButton
+              color="primary"
+              fill
+              onClick={() => {
+                console.log("Create segment clicked!");
+              }}
+              key="create-segment"
+            >
+              Create segment
+            </EuiButton>,
+          ],
+        }}
+      >
+        <div css={styles.container}>content</div>
+      </DashboardLayout>
+    </>
+  );
+};
+
+export default Dashboard;

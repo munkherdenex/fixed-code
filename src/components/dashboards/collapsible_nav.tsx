@@ -1,25 +1,23 @@
-import { Fragment, useState } from "react";
-import {
-  EuiCollapsibleNav,
-  EuiCollapsibleNavGroup,
-  EuiHeaderSectionItemButton,
-  EuiHeaderLogo,
-  EuiHeader,
-  EuiIcon,
-  EuiPinnableListGroup,
-  EuiPinnableListGroupItemProps,
-  EuiFlexItem,
-  EuiHorizontalRule,
-  EuiListGroup,
-  useGeneratedHtmlId,
-  EuiAvatar,
-  EuiThemeProvider,
-} from "@elastic/eui";
-
 import find from "lodash/find";
 import findIndex from "lodash/findIndex";
 import { css } from "@emotion/react";
-import ThemeSwitcher from "../components/chrome/theme_switcher";
+import { useState } from "react";
+import {
+  EuiCollapsibleNav,
+  EuiCollapsibleNavGroup,
+  EuiFlexItem,
+  EuiHeaderSectionItemButton,
+  EuiHorizontalRule,
+  EuiIcon,
+  EuiListGroup,
+  EuiPinnableListGroup,
+  EuiPinnableListGroupItemProps,
+  EuiSelect,
+  EuiThemeProvider,
+  useEuiTheme,
+  useGeneratedHtmlId,
+} from "@elastic/eui";
+import { collapsibleNavStyles } from "./collapsible_nav.styles";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -34,25 +32,37 @@ const TopLinks: EuiPinnableListGroupItemProps[] = [
   },
 ];
 
+const SegmentsLinks: EuiPinnableListGroupItemProps[] = [
+  { label: "Dashboards", href: `${pathPrefix}/dashboards/segments` },
+];
+
 const KibanaLinks: EuiPinnableListGroupItemProps[] = [
   { label: "Discover", href: `${pathPrefix}/kibana/discover` },
   { label: "Dashboard", href: `${pathPrefix}/kibana/dashboards` },
   { label: "Maps", href: `${pathPrefix}/kibana/maps` },
 ];
 
-const CollapsibleNav = () => {
-  const [navIsOpen, setNavIsOpen] = useState(false);
+const options = [
+  { value: "Team 1", text: "Team 1" },
+  { value: "Team 2", text: "Team 2" },
+  { value: "Teams 3", text: "Team 3" },
+];
 
-  const breadcrumbs = [
-    {
-      text: "Home",
-    },
-  ];
+const CollapsibleNav = () => {
+  const { euiTheme } = useEuiTheme();
+  const styles = collapsibleNavStyles(euiTheme);
+
+  const [navIsOpen, setNavIsOpen] = useState(false);
+  const [value, setValue] = useState();
 
   /**
    * Accordion toggling
    */
-  const [openGroups, setOpenGroups] = useState(["Kibana"]);
+  const [openGroups, setOpenGroups] = useState(["Segments"]);
+
+  const onChange = (e) => {
+    setValue(e.target.value);
+  };
 
   // Save which groups are open and which are not with state and local store
   const toggleAccordion = (isOpen: boolean, title?: string) => {
@@ -120,7 +130,7 @@ const CollapsibleNav = () => {
 
   const collapsibleNavId = useGeneratedHtmlId({ prefix: "collapsibleNav" });
 
-  const collapsibleNav = (
+  return (
     <EuiCollapsibleNav
       ownFocus={false}
       css={css`
@@ -160,6 +170,16 @@ const CollapsibleNav = () => {
           </EuiThemeProvider>
         </EuiCollapsibleNavGroup>
       </EuiFlexItem>
+      <EuiFlexItem grow={false} style={{ flexShrink: 0, padding: 8 }}>
+        <EuiSelect
+          id={useGeneratedHtmlId()}
+          options={options}
+          value={value}
+          onChange={(e) => onChange(e)}
+          aria-label="Teams"
+          css={styles.teamSelect}
+        />
+      </EuiFlexItem>
       {/* Shaded pinned section always with a home item */}
       <EuiFlexItem grow={false}>
         <EuiCollapsibleNavGroup background="light">
@@ -176,8 +196,38 @@ const CollapsibleNav = () => {
         </EuiCollapsibleNavGroup>
       </EuiFlexItem>
       <EuiHorizontalRule margin="none" />
+      <EuiFlexItem grow={false}>
+        <EuiCollapsibleNavGroup
+          title={
+            <a
+              className="eui-textInheritColor"
+              href="#/navigation/collapsible-nav"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Segments
+            </a>
+          }
+          buttonElement="div"
+          iconType="logoCloud"
+          isCollapsible={true}
+          initialIsOpen={openGroups.includes("Segments")}
+          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Kibana")}
+        >
+          <EuiPinnableListGroup
+            aria-label="Segments" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
+            listItems={alterLinksWithCurrentState(SegmentsLinks)}
+            pinTitle={addLinkNameToPinTitle}
+            onPinClick={addPin}
+            maxWidth="none"
+            color="subdued"
+            gutterSize="none"
+            size="s"
+          />
+        </EuiCollapsibleNavGroup>
+      </EuiFlexItem>
       {/* Menu items */}
-      <EuiFlexItem className="eui-yScroll">
+      <EuiHorizontalRule margin="none" />
+      <EuiFlexItem grow={false}>
         <EuiCollapsibleNavGroup
           title={
             <a
@@ -207,55 +257,6 @@ const CollapsibleNav = () => {
         </EuiCollapsibleNavGroup>
       </EuiFlexItem>
     </EuiCollapsibleNav>
-  );
-
-  const leftSectionItems = [collapsibleNav];
-
-  return (
-    <>
-      <EuiHeader
-        theme="dark"
-        position="fixed"
-        sections={[
-          {
-            items: [
-              <EuiHeaderLogo key="elastic-logo" iconType="logoElastic" href={`${pathPrefix}/kibana`}>
-                Elastic
-              </EuiHeaderLogo>,
-            ],
-            borders: "none",
-          },
-          {
-            items: [
-              <ThemeSwitcher key={useGeneratedHtmlId()} />,
-              <EuiHeaderSectionItemButton key={useGeneratedHtmlId()} aria-label="Account menu">
-                <EuiAvatar name="John Username" size="s" />
-              </EuiHeaderSectionItemButton>,
-            ],
-            borders: "none",
-          },
-        ]}
-      />
-
-      <EuiHeader
-        position="fixed"
-        sections={[
-          {
-            items: leftSectionItems,
-            borders: "right",
-          },
-          {
-            items: [
-              <EuiHeaderSectionItemButton key={useGeneratedHtmlId()} aria-label="Account menu">
-                <EuiAvatar type="space" name="Default Space" size="s" />
-              </EuiHeaderSectionItemButton>,
-            ],
-            breadcrumbs: breadcrumbs,
-            borders: "right",
-          },
-        ]}
-      />
-    </>
   );
 };
 
