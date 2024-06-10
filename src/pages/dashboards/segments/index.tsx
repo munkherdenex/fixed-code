@@ -4,6 +4,8 @@ import { EuiButton, useEuiTheme } from "@elastic/eui";
 import DashboardLayout from "../../../layouts/dashboard";
 import { dashboardsStyles } from "../../../styles/dashboards.styles";
 
+const pathPrefix = process.env.PATH_PREFIX;
+
 const Dashboard: FunctionComponent = () => {
   const { euiTheme } = useEuiTheme();
   const styles = dashboardsStyles(euiTheme);
@@ -19,14 +21,7 @@ const Dashboard: FunctionComponent = () => {
           iconType: "dashboardApp",
           description: "Create and manage segments.",
           rightSideItems: [
-            <EuiButton
-              color="primary"
-              fill
-              onClick={() => {
-                console.log("Create segment clicked!");
-              }}
-              key="create-segment"
-            >
+            <EuiButton color="primary" href={`${pathPrefix}/dashboards/segments/create`} fill key="create-segment">
               Create segment
             </EuiButton>,
           ],

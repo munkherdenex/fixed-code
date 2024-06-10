@@ -14,6 +14,8 @@ import {
 import DashboardLayout from "../../layouts/dashboard";
 import { dashboardsStyles } from "../../styles/dashboards.styles";
 
+const pathPrefix = process.env.PATH_PREFIX;
+
 const Dashboard: FunctionComponent = () => {
   const { euiTheme } = useEuiTheme();
   const styles = dashboardsStyles(euiTheme);
@@ -32,7 +34,7 @@ const Dashboard: FunctionComponent = () => {
               description="Example of a short card description."
               footer={
                 <div>
-                  <EuiButton href="/dashboards/segments" aria-label="Go to segments">
+                  <EuiButton href={`${pathPrefix}/dashboards/segments`} aria-label="Go to segments">
                     Go for it
                   </EuiButton>
                   <EuiSpacer size="xs" />
