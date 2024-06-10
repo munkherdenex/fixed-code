@@ -4,7 +4,7 @@ import GradientBg from "./gradient_bg";
 import { useEuiTheme } from "@elastic/eui";
 import { wrapperStyles } from "./wrapper.styles";
 
-const Wrapper: FunctionComponent = ({ children }) => {
+const Wrapper = ({ children }) => {
   const { euiTheme } = useEuiTheme();
   const styles = wrapperStyles(euiTheme);
 

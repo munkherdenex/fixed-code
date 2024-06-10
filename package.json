@@ -35,6 +35,8 @@
     "@elastic/eui": "^68.0.0",
     "@emotion/cache": "^11.10.3",
     "@emotion/react": "^11.10.4",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "core-js": "^3.25.1",
     "react-querybuilder": "^7.4.3",
     "regenerator-runtime": "^0.13.9"
