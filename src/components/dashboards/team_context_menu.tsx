@@ -3,6 +3,11 @@ import {
   EuiContextMenu,
   EuiFormRow,
   EuiIcon,
+  EuiModal,
+  EuiModalBody,
+  EuiModalFooter,
+  EuiModalHeader,
+  EuiModalHeaderTitle,
   EuiPopover,
   EuiSpacer,
   EuiSwitch,
@@ -10,12 +15,19 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { useState } from "react";
+import SettingsMenu from "./settings_menu";
 import { teamContextMenuStyles } from "./team_context_menu.styles";
 
 const TeamContextMenu = () => {
   const { euiTheme } = useEuiTheme();
   const styles = teamContextMenuStyles(euiTheme);
   const [isPopoverOpen, setPopover] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const closeModal = () => setIsModalVisible(false);
+  const showModal = () => setIsModalVisible(true);
+
+  const modalTitleId = useGeneratedHtmlId();
 
   const embeddedCodeSwitchId__1 = useGeneratedHtmlId({
     prefix: "embeddedCodeSwitch",
@@ -43,9 +55,9 @@ const TeamContextMenu = () => {
       title: "This is a context menu",
       items: [
         {
-          name: "Handle an onClick",
-          icon: "search",
-          onClick: closePopover,
+          name: "Open settings",
+          icon: "gear",
+          onClick: showModal,
         },
         {
           name: "Go to a link",
@@ -147,17 +159,35 @@ const TeamContextMenu = () => {
   );
 
   return (
-    <EuiPopover
-      id={contextMenuPopoverId}
-      button={button}
-      isOpen={isPopoverOpen}
-      closePopover={closePopover}
-      panelPaddingSize="none"
-      anchorPosition="downLeft"
-      display="block"
-    >
-      <EuiContextMenu initialPanelId={0} panels={panels} />
-    </EuiPopover>
+    <>
+      {isModalVisible && (
+        <EuiModal aria-labelledby={modalTitleId} onClose={closeModal}>
+          <EuiModalHeader>
+            <EuiModalHeaderTitle id={modalTitleId}>Settings menu</EuiModalHeaderTitle>
+          </EuiModalHeader>
+          <EuiModalBody>
+            <SettingsMenu />
+          </EuiModalBody>
+          <EuiModalFooter>
+            <EuiButton onClick={closeModal} fill>
+              Close
+            </EuiButton>
+          </EuiModalFooter>
+        </EuiModal>
+      )}
+      <EuiPopover
+        id={contextMenuPopoverId}
+        button={button}
+        isOpen={isPopoverOpen}
+        closePopover={closePopover}
+        panelPaddingSize="none"
+        anchorPosition="downLeft"
+        display="block"
+        zIndex={6000}
+      >
+        <EuiContextMenu initialPanelId={0} panels={panels} />
+      </EuiPopover>
+    </>
   );
 };
 

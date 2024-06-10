@@ -3,7 +3,7 @@ import { useEuiTheme, transparentize } from "@elastic/eui";
 import { useTheme } from "../theme";
 import { gradientBgStyles } from "./gradient_bg.styles";
 
-const GradientBg: FunctionComponent = ({ children }) => {
+const GradientBg = ({ children }: { children?: React.ReactNode }) => {
   const { euiTheme } = useEuiTheme();
   const { colorMode } = useTheme();
 
