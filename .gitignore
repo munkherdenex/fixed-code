@@ -11,6 +11,10 @@
 yarn-error.log
 .eslintcache
 
+# VSCode
+.vscode/
+.vscode/settings.json
+
 # Files in here are copied by the build
 public/themes
 *.min.css
