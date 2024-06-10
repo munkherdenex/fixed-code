@@ -12,12 +12,11 @@ import {
   EuiListGroup,
   EuiPinnableListGroup,
   EuiPinnableListGroupItemProps,
-  EuiSelect,
   EuiThemeProvider,
-  useEuiTheme,
   useGeneratedHtmlId,
 } from "@elastic/eui";
-import { collapsibleNavStyles } from "./collapsible_nav.styles";
+
+import TeamContextMenu from "./team_context_menu";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -42,27 +41,20 @@ const KibanaLinks: EuiPinnableListGroupItemProps[] = [
   { label: "Maps", href: `${pathPrefix}/kibana/maps` },
 ];
 
-const options = [
-  { value: "Team 1", text: "Team 1" },
-  { value: "Team 2", text: "Team 2" },
-  { value: "Teams 3", text: "Team 3" },
-];
-
 const CollapsibleNav = () => {
-  const { euiTheme } = useEuiTheme();
-  const styles = collapsibleNavStyles(euiTheme);
-
   const [navIsOpen, setNavIsOpen] = useState(false);
-  const [value, setValue] = useState();
 
   /**
    * Accordion toggling
    */
-  const [openGroups, setOpenGroups] = useState(["Segments"]);
-
-  const onChange = (e) => {
-    setValue(e.target.value);
-  };
+  const [openGroups, setOpenGroups] = useState<string[]>(() => {
+    try {
+      const storedOpenGroups = localStorage.getItem("openNavGroups");
+      return storedOpenGroups ? JSON.parse(storedOpenGroups) : [];
+    } catch (e) {
+      return [];
+    }
+  });
 
   // Save which groups are open and which are not with state and local store
   const toggleAccordion = (isOpen: boolean, title?: string) => {
@@ -84,7 +76,14 @@ const CollapsibleNav = () => {
   /**
    * Pinning
    */
-  const [pinnedItems, setPinnedItems] = useState<EuiPinnableListGroupItemProps[]>([]);
+  const [pinnedItems, setPinnedItems] = useState<EuiPinnableListGroupItemProps[]>(() => {
+    try {
+      const pinnedItems = localStorage.getItem("pinnedItems");
+      return pinnedItems ? JSON.parse(pinnedItems) : [];
+    } catch (e) {
+      return [];
+    }
+  });
 
   const addPin = (item: EuiPinnableListGroupItemProps) => {
     if (!item || find(pinnedItems, { label: item.label })) {
@@ -171,14 +170,7 @@ const CollapsibleNav = () => {
         </EuiCollapsibleNavGroup>
       </EuiFlexItem>
       <EuiFlexItem grow={false} style={{ flexShrink: 0, padding: 8 }}>
-        <EuiSelect
-          id={useGeneratedHtmlId()}
-          options={options}
-          value={value}
-          onChange={(e) => onChange(e)}
-          aria-label="Teams"
-          css={styles.teamSelect}
-        />
+        <TeamContextMenu />
       </EuiFlexItem>
       {/* Shaded pinned section always with a home item */}
       <EuiFlexItem grow={false}>
@@ -199,11 +191,7 @@ const CollapsibleNav = () => {
       <EuiFlexItem grow={false}>
         <EuiCollapsibleNavGroup
           title={
-            <a
-              className="eui-textInheritColor"
-              href="#/navigation/collapsible-nav"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
               Segments
             </a>
           }
@@ -211,7 +199,7 @@ const CollapsibleNav = () => {
           iconType="logoCloud"
           isCollapsible={true}
           initialIsOpen={openGroups.includes("Segments")}
-          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Kibana")}
+          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Segments")}
         >
           <EuiPinnableListGroup
             aria-label="Segments" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
@@ -230,13 +218,9 @@ const CollapsibleNav = () => {
       <EuiFlexItem grow={false}>
         <EuiCollapsibleNavGroup
           title={
-            <a
-              className="eui-textInheritColor"
-              href="#/navigation/collapsible-nav"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <span className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
               Analytics
-            </a>
+            </span>
           }
           buttonElement="div"
           iconType="logoKibana"
