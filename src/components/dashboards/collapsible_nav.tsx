@@ -16,8 +16,6 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 
-import TeamContextMenu from "./team_context_menu";
-
 const pathPrefix = process.env.PATH_PREFIX;
 
 const TopLinks: EuiPinnableListGroupItemProps[] = [
@@ -26,19 +24,29 @@ const TopLinks: EuiPinnableListGroupItemProps[] = [
     iconType: "home",
     isActive: true,
     "aria-current": true,
-    href: `${pathPrefix}/kibana`,
+    href: `${pathPrefix}/dashboards`,
     pinnable: false,
   },
 ];
 
+const CustomersLinks: EuiPinnableListGroupItemProps[] = [
+  { label: "Dashboards", href: `${pathPrefix}/dashboards/customers`, pinnable: false },
+];
+
 const SegmentsLinks: EuiPinnableListGroupItemProps[] = [
-  { label: "Dashboards", href: `${pathPrefix}/dashboards/segments` },
+  { label: "Dashboards", href: `${pathPrefix}/dashboards/segments`, pinnable: false },
 ];
 
 const KibanaLinks: EuiPinnableListGroupItemProps[] = [
-  { label: "Discover", href: `${pathPrefix}/kibana/discover` },
-  { label: "Dashboard", href: `${pathPrefix}/kibana/dashboards` },
-  { label: "Maps", href: `${pathPrefix}/kibana/maps` },
+  { label: "Discover", href: `${pathPrefix}/kibana/discover`, pinnable: false },
+  { label: "Dashboard", href: `${pathPrefix}/kibana/dashboards`, pinnable: false },
+  { label: "Maps", href: `${pathPrefix}/kibana/maps`, pinnable: false },
+];
+
+const ManagementLinks: EuiPinnableListGroupItemProps[] = [
+  { label: "Team members", href: `${pathPrefix}/dashboards/management`, pinnable: false },
+  { label: "API keys", href: `${pathPrefix}/dashboards/management/api-keys`, pinnable: false },
+  { label: "Settings", href: `${pathPrefix}/dashboards/management/settings`, pinnable: false },
 ];
 
 const CollapsibleNav = () => {
@@ -133,8 +141,8 @@ const CollapsibleNav = () => {
     <EuiCollapsibleNav
       ownFocus={false}
       css={css`
-        margin-top: 96px; // two top navs
-        min-height: calc(100vh - 96px);
+        margin-top: 48px; // two top navs
+        min-height: calc(100vh - 48px);
         display: flex;
       `}
       id={collapsibleNavId}
@@ -157,7 +165,7 @@ const CollapsibleNav = () => {
               size="s"
               listItems={[
                 {
-                  label: "Manage deployment",
+                  label: "Manage data",
                   href: "#",
                   iconType: "logoCloud",
                   iconProps: {
@@ -168,9 +176,6 @@ const CollapsibleNav = () => {
             />
           </EuiThemeProvider>
         </EuiCollapsibleNavGroup>
-      </EuiFlexItem>
-      <EuiFlexItem grow={false} style={{ flexShrink: 0, padding: 8 }}>
-        <TeamContextMenu />
       </EuiFlexItem>
       {/* Shaded pinned section always with a home item */}
       <EuiFlexItem grow={false}>
@@ -192,11 +197,37 @@ const CollapsibleNav = () => {
         <EuiCollapsibleNavGroup
           title={
             <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
+              Customers
+            </a>
+          }
+          buttonElement="div"
+          iconType="usersRolesApp"
+          isCollapsible={true}
+          initialIsOpen={openGroups.includes("Customers")}
+          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Customers")}
+        >
+          <EuiPinnableListGroup
+            aria-label="customers" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
+            listItems={alterLinksWithCurrentState(CustomersLinks)}
+            pinTitle={addLinkNameToPinTitle}
+            onPinClick={addPin}
+            maxWidth="none"
+            color="subdued"
+            gutterSize="none"
+            size="s"
+          />
+        </EuiCollapsibleNavGroup>
+      </EuiFlexItem>
+      <EuiHorizontalRule margin="none" />
+      <EuiFlexItem grow={false}>
+        <EuiCollapsibleNavGroup
+          title={
+            <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
               Segments
             </a>
           }
           buttonElement="div"
-          iconType="logoCloud"
+          iconType="notebookApp"
           isCollapsible={true}
           initialIsOpen={openGroups.includes("Segments")}
           onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Segments")}
@@ -223,7 +254,7 @@ const CollapsibleNav = () => {
             </span>
           }
           buttonElement="div"
-          iconType="logoKibana"
+          iconType="casesApp"
           isCollapsible={true}
           initialIsOpen={openGroups.includes("Kibana")}
           onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Kibana")}
@@ -231,6 +262,32 @@ const CollapsibleNav = () => {
           <EuiPinnableListGroup
             aria-label="Kibana" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
             listItems={alterLinksWithCurrentState(KibanaLinks)}
+            pinTitle={addLinkNameToPinTitle}
+            onPinClick={addPin}
+            maxWidth="none"
+            color="subdued"
+            gutterSize="none"
+            size="s"
+          />
+        </EuiCollapsibleNavGroup>
+      </EuiFlexItem>
+      <EuiHorizontalRule margin="none" />
+      <EuiFlexItem grow={false}>
+        <EuiCollapsibleNavGroup
+          title={
+            <span className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
+              Management
+            </span>
+          }
+          buttonElement="div"
+          iconType="managementApp"
+          isCollapsible={true}
+          initialIsOpen={openGroups.includes("management")}
+          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "management")}
+        >
+          <EuiPinnableListGroup
+            aria-label="management" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
+            listItems={alterLinksWithCurrentState(ManagementLinks)}
             pinTitle={addLinkNameToPinTitle}
             onPinClick={addPin}
             maxWidth="none"

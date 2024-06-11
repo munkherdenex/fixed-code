@@ -13,7 +13,7 @@ const Dashboard: FunctionComponent = () => {
   return (
     <>
       <Head>
-        <title>Home</title>
+        <title>Create segments</title>
       </Head>
       <DashboardLayout
         pageHeader={{

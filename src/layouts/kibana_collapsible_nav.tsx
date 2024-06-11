@@ -125,7 +125,7 @@ const CollapsibleNav = () => {
       ownFocus={false}
       css={css`
         margin-top: 96px; // two top navs
-        min-height: calc(100vh - 96px);
+        min-height: calc(100vh - 6px);
         display: flex;
       `}
       id={collapsibleNavId}
