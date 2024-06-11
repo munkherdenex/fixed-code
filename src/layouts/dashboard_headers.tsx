@@ -11,13 +11,18 @@ import {
   EuiFlexGroup,
   EuiPopover,
   EuiLink,
+  EuiButton,
+  EuiButtonEmpty,
 } from "@elastic/eui";
 import ThemeSwitcher from "../components/chrome/theme_switcher";
 import CollapsibleNav from "../components/dashboards/collapsible_nav";
+import { dashboardHeadersStyles } from "./dashboard_headers.style";
+import { useRouter } from "next/router";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const HeaderUserMenu = () => {
+  const router = useRouter();
   const headerUserPopoverId = useGeneratedHtmlId({
     prefix: "headerUserPopover",
   });
@@ -67,10 +72,16 @@ const HeaderUserMenu = () => {
               <EuiFlexItem>
                 <EuiFlexGroup justifyContent="spaceBetween">
                   <EuiFlexItem grow={false}>
-                    <EuiLink>Edit profile</EuiLink>
+                    <EuiLink href={`${pathPrefix}/dashboards/management/settings`}>Edit profile</EuiLink>
                   </EuiFlexItem>
                   <EuiFlexItem grow={false}>
-                    <EuiLink>Log out</EuiLink>
+                    <EuiLink
+                      onClick={() => {
+                        router.push(`${pathPrefix}/`);
+                      }}
+                    >
+                      Log out
+                    </EuiLink>
                   </EuiFlexItem>
                 </EuiFlexGroup>
               </EuiFlexItem>
@@ -82,19 +93,32 @@ const HeaderUserMenu = () => {
   );
 };
 
-const DashboardHeaders = () => {
-  const breadcrumbs = [
-    {
-      text: "Home",
-    },
-  ];
+const TeamSwitcher = () => {
+  const styles = dashboardHeadersStyles();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
+  const onButtonClick = () => setIsPopoverOpen((isPopoverOpen) => !isPopoverOpen);
+  const closePopover = () => setIsPopoverOpen(false);
+
+  const button = (
+    <EuiButtonEmpty size="s" color="text" iconType="arrowDown" iconSide="right" css={styles} onClick={onButtonClick}>
+      Team 1
+    </EuiButtonEmpty>
+  );
+
+  return (
+    <EuiPopover button={button} isOpen={isPopoverOpen} closePopover={closePopover} anchorPosition="downRight">
+      hello
+    </EuiPopover>
+  );
+};
+
+const DashboardHeaders = () => {
   const leftSectionItems = [<CollapsibleNav key={useGeneratedHtmlId()} />];
 
   return (
     <>
       <EuiHeader
-        theme="dark"
         position="fixed"
         sections={[
           {
@@ -102,31 +126,17 @@ const DashboardHeaders = () => {
               <EuiHeaderLogo key="elastic-logo" iconType="logoElastic" href={`${pathPrefix}/dashboards`}>
                 Data dashboard
               </EuiHeaderLogo>,
+              leftSectionItems,
             ],
             borders: "none",
-          },
-          {
-            items: [<ThemeSwitcher key={useGeneratedHtmlId()} />, <HeaderUserMenu key={useGeneratedHtmlId()} />],
-            borders: "none",
-          },
-        ]}
-      />
-
-      <EuiHeader
-        position="fixed"
-        sections={[
-          {
-            items: leftSectionItems,
-            borders: "right",
           },
           {
             items: [
-              <EuiHeaderSectionItemButton key={useGeneratedHtmlId()} aria-label="Account menu">
-                <EuiAvatar type="space" name="Default Space" size="s" />
-              </EuiHeaderSectionItemButton>,
+              <TeamSwitcher key={useGeneratedHtmlId()} />,
+              <ThemeSwitcher key={useGeneratedHtmlId()} />,
+              <HeaderUserMenu key={useGeneratedHtmlId()} />,
             ],
-            breadcrumbs: breadcrumbs,
-            borders: "right",
+            borders: "none",
           },
         ]}
       />
