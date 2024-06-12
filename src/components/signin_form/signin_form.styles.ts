@@ -29,4 +29,14 @@ export const signinFormStyles = (euiTheme) => ({
       align-self: center;
     }
   `,
+  toast_msg: css`
+    position: absolute;
+    bottom: 20px;
+    right: 15px;
+
+    @media (max-width: ${euiTheme.breakpoint.m}px) {
+      right: 2px; !important
+      left: 2px;
+    }
+  `,
 });
