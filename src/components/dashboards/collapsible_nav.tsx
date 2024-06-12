@@ -5,29 +5,15 @@ import {
   EuiHeaderSectionItemButton,
   EuiHorizontalRule,
   EuiIcon,
-  EuiListGroup,
   EuiPinnableListGroup,
   EuiPinnableListGroupItemProps,
-  EuiThemeProvider,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { css } from "@emotion/react";
 import find from "lodash/find";
-import findIndex from "lodash/findIndex";
 import { useState } from "react";
 
 const pathPrefix = process.env.PATH_PREFIX;
-
-const TopLinks: EuiPinnableListGroupItemProps[] = [
-  {
-    label: "Home",
-    iconType: "home",
-    isActive: true,
-    "aria-current": true,
-    href: `${pathPrefix}/dashboards`,
-    pinnable: false,
-  },
-];
 
 const SendsLinks: EuiPinnableListGroupItemProps[] = [
   { label: "Dashboards", href: `${pathPrefix}/dashboards/sends`, pinnable: false },
@@ -105,17 +91,6 @@ const CollapsibleNav = () => {
     localStorage.setItem("pinnedItems", JSON.stringify(newPinnedItems));
   };
 
-  const removePin = (item: EuiPinnableListGroupItemProps) => {
-    const pinIndex = findIndex(pinnedItems, { label: item.label });
-    if (pinIndex > -1) {
-      item.pinned = false;
-      const newPinnedItems = pinnedItems;
-      newPinnedItems.splice(pinIndex, 1);
-      setPinnedItems([...newPinnedItems]);
-      localStorage.setItem("pinnedItems", JSON.stringify(newPinnedItems));
-    }
-  };
-
   function alterLinksWithCurrentState(
     links: EuiPinnableListGroupItemProps[],
     showPinned = false
@@ -157,44 +132,7 @@ const CollapsibleNav = () => {
       }
       onClose={() => setNavIsOpen(false)}
     >
-      {/* Dark deployments section */}
-      <EuiFlexItem grow={false} style={{ flexShrink: 0 }}>
-        <EuiCollapsibleNavGroup isCollapsible={false} background="dark">
-          <EuiThemeProvider colorMode="dark">
-            <EuiListGroup
-              maxWidth="none"
-              gutterSize="none"
-              size="s"
-              listItems={[
-                {
-                  label: "Manage data",
-                  href: "#",
-                  iconType: "logoCloud",
-                  iconProps: {
-                    color: "ghost",
-                  },
-                },
-              ]}
-            />
-          </EuiThemeProvider>
-        </EuiCollapsibleNavGroup>
-      </EuiFlexItem>
       {/* Shaded pinned section always with a home item */}
-      <EuiFlexItem grow={false}>
-        <EuiCollapsibleNavGroup background="light">
-          <EuiPinnableListGroup
-            aria-label="Pinned links" // A11y : Since this group doesn't have a visible `title` it should be provided an accessible description
-            listItems={alterLinksWithCurrentState(TopLinks).concat(alterLinksWithCurrentState(pinnedItems, true))}
-            unpinTitle={addLinkNameToUnpinTitle}
-            onPinClick={removePin}
-            maxWidth="none"
-            color="text"
-            gutterSize="none"
-            size="s"
-          />
-        </EuiCollapsibleNavGroup>
-      </EuiFlexItem>
-      <EuiHorizontalRule margin="none" />
       <EuiFlexItem grow={false}>
         <EuiCollapsibleNavGroup
           title={
