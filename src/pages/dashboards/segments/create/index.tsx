@@ -2,6 +2,7 @@ import Head from "next/head";
 import { FunctionComponent, useState } from "react";
 import DashboardLayout from "../../../../layouts/dashboard";
 import {
+  EuiBreadcrumbs,
   EuiButton,
   EuiButtonEmpty,
   EuiCard,
@@ -22,6 +23,8 @@ import {
 import Static from "../../../../components/segments/static";
 import Dynamic from "../../../../components/segments/dynamic";
 import Manual from "../../../../components/segments/manual";
+
+const pathPrefix = process.env.PATH_PREFIX;
 
 const Dashboard: FunctionComponent = () => {
   const [_, setFirstFormData] = useState(null);
@@ -61,6 +64,24 @@ const Dashboard: FunctionComponent = () => {
           pageTitle: "Create segment",
           iconType: "dashboardApp",
         }}
+        breadCrumb={
+          <EuiBreadcrumbs
+            breadcrumbs={[
+              {
+                text: "Dashboards",
+                href: `${pathPrefix}/dashboards`,
+              },
+              {
+                text: "Segments",
+                href: `${pathPrefix}/dashboards/segments`,
+              },
+              {
+                text: "Create segment",
+              },
+            ]}
+            truncate={false}
+          />
+        }
       >
         <>
           <EuiPanel>

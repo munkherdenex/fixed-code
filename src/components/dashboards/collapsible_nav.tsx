@@ -1,7 +1,3 @@
-import find from "lodash/find";
-import findIndex from "lodash/findIndex";
-import { css } from "@emotion/react";
-import { useState } from "react";
 import {
   EuiCollapsibleNav,
   EuiCollapsibleNavGroup,
@@ -15,6 +11,10 @@ import {
   EuiThemeProvider,
   useGeneratedHtmlId,
 } from "@elastic/eui";
+import { css } from "@emotion/react";
+import find from "lodash/find";
+import findIndex from "lodash/findIndex";
+import { useState } from "react";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -27,6 +27,10 @@ const TopLinks: EuiPinnableListGroupItemProps[] = [
     href: `${pathPrefix}/dashboards`,
     pinnable: false,
   },
+];
+
+const SendsLinks: EuiPinnableListGroupItemProps[] = [
+  { label: "Dashboards", href: `${pathPrefix}/dashboards/sends`, pinnable: false },
 ];
 
 const CustomersLinks: EuiPinnableListGroupItemProps[] = [
@@ -44,9 +48,7 @@ const KibanaLinks: EuiPinnableListGroupItemProps[] = [
 ];
 
 const ManagementLinks: EuiPinnableListGroupItemProps[] = [
-  { label: "Team members", href: `${pathPrefix}/dashboards/management`, pinnable: false },
-  { label: "API keys", href: `${pathPrefix}/dashboards/management/api-keys`, pinnable: false },
-  { label: "Settings", href: `${pathPrefix}/dashboards/management/settings`, pinnable: false },
+  { label: "Settings", href: `${pathPrefix}/dashboards/management`, pinnable: false },
 ];
 
 const CollapsibleNav = () => {
@@ -197,6 +199,32 @@ const CollapsibleNav = () => {
         <EuiCollapsibleNavGroup
           title={
             <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
+              Sends
+            </a>
+          }
+          buttonElement="div"
+          iconType="spacesApp"
+          isCollapsible={true}
+          initialIsOpen={openGroups.includes("Sends")}
+          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Sends")}
+        >
+          <EuiPinnableListGroup
+            aria-label="Sends" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
+            listItems={alterLinksWithCurrentState(SendsLinks)}
+            pinTitle={addLinkNameToPinTitle}
+            onPinClick={addPin}
+            maxWidth="none"
+            color="subdued"
+            gutterSize="none"
+            size="s"
+          />
+        </EuiCollapsibleNavGroup>
+      </EuiFlexItem>
+      <EuiHorizontalRule margin="none" />
+      <EuiFlexItem grow={false}>
+        <EuiCollapsibleNavGroup
+          title={
+            <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
               Customers
             </a>
           }
@@ -254,7 +282,7 @@ const CollapsibleNav = () => {
             </span>
           }
           buttonElement="div"
-          iconType="casesApp"
+          iconType="visualizeApp"
           isCollapsible={true}
           initialIsOpen={openGroups.includes("Kibana")}
           onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Kibana")}
