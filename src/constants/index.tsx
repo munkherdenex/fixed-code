@@ -1,0 +1,1 @@
+export const BASE_URL = `${global?.window && window?.env?.BACKEND_URL || ""}`

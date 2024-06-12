@@ -1,3 +1,4 @@
+import "../custom_typings/index.d.ts"
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import { FunctionComponent } from "react";
@@ -9,6 +10,15 @@ import Chrome from "../components/chrome";
 import { Theme } from "../components/theme";
 import { globalStyes } from "../styles/global.styles";
 import "react-querybuilder/dist/query-builder.css";
+import Script from 'next/script';
+
+declare global {
+  interface Window {
+    env: {
+      BACKEND_URL: string
+    }
+  }
+}
 
 /**
  * Next.js uses the App component to initialize pages. You can override it
@@ -23,6 +33,7 @@ const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => (
       {/* You can override this in other pages - see index.tsx for an example */}
       <title>DATA</title>
     </Head>
+    <Script strategy="beforeInteractive" src='/config/env.js'></Script>
     <Global styles={globalStyes} />
     <Theme>
       <Chrome>
