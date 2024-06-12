@@ -1,10 +1,15 @@
-import { EuiButton } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiButton } from "@elastic/eui";
 import Head from "next/head";
+import { useState } from "react";
+import CreateCustomerComponent from "../../../components/customers/create_customer";
+import CustomersTable from "../../../components/customers/table";
 import DashboardLayout from "../../../layouts/dashboard";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersDashboard = () => {
+  const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
+
   return (
     <>
       <Head>
@@ -13,16 +18,33 @@ const CustomersDashboard = () => {
       <DashboardLayout
         pageHeader={{
           pageTitle: "Customers",
-          iconType: "dashboardApp",
-          description: "Create and manage customers.",
+          iconType: "usersRolesApp",
           rightSideItems: [
-            <EuiButton color="primary" href={`${pathPrefix}/dashboards/customer/create`} fill key="create-customer">
+            <EuiButton color="primary" onClick={() => setIsFlyoutVisible(true)} fill key="create-customer">
               Create customer
             </EuiButton>,
           ],
         }}
+        breadCrumb={
+          <EuiBreadcrumbs
+            breadcrumbs={[
+              {
+                text: "Dashboards",
+                href: `${pathPrefix}/dashboards`,
+              },
+              {
+                text: "Customers",
+              },
+            ]}
+            truncate={false}
+            aria-label="Customer info breadCrumb"
+          />
+        }
       >
-        <div>content</div>
+        <div>
+          <CustomersTable />
+          {isFlyoutVisible && <CreateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
+        </div>
       </DashboardLayout>
     </>
   );
