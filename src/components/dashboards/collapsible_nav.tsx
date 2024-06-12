@@ -93,7 +93,7 @@ const CollapsibleNav = () => {
 
   function alterLinksWithCurrentState(
     links: EuiPinnableListGroupItemProps[],
-    showPinned = false
+    showPinned = false,
   ): EuiPinnableListGroupItemProps[] {
     return links.map((link) => {
       const { pinned, ...rest } = link;

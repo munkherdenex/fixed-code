@@ -32,10 +32,20 @@ const SignupForm: FunctionComponent = () => {
               <EuiFieldText name="user_name" placeholder="User name" aria-label="user name" />
             </EuiFormRow>
             <EuiFormRow label="Password">
-              <EuiFieldPassword name="password" type={dual ? 'dual' : undefined} placeholder="Password" aria-label="password" />
+              <EuiFieldPassword
+                name="password"
+                type={dual ? "dual" : undefined}
+                placeholder="Password"
+                aria-label="password"
+              />
             </EuiFormRow>
             <EuiFormRow label="Repeat password">
-              <EuiFieldPassword name="password2" type={dual2 ? 'dual' : undefined} placeholder="Repeat password" aria-label="repeat password" />
+              <EuiFieldPassword
+                name="password2"
+                type={dual2 ? "dual" : undefined}
+                placeholder="Repeat password"
+                aria-label="repeat password"
+              />
             </EuiFormRow>
             <EuiButton type="submit" fill>
               Register

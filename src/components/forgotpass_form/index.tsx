@@ -1,13 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import {
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiForm,
-  EuiFormRow,
-  EuiFieldText,
-  EuiButton,
-  EuiPanel,
-} from "@elastic/eui";
+import { EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiFieldText, EuiButton, EuiPanel } from "@elastic/eui";
 import { useEuiTheme } from "@elastic/eui";
 import { forgotFormStyles } from "./forgotpass_form.styles";
 
@@ -18,7 +10,6 @@ interface forgotPropsType {
 function ForgotPasswordForm({ changeStep }: forgotPropsType) {
   const { euiTheme } = useEuiTheme();
   const styles = forgotFormStyles(euiTheme);
-
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

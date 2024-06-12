@@ -1,6 +1,6 @@
-import React, { ReactElement } from 'react';
-import Document, { Head, Html, Main, NextScript } from 'next/document';
-import { defaultTheme, Theme, themeConfig } from '../lib/theme';
+import React, { ReactElement } from "react";
+import Document, { Head, Html, Main, NextScript } from "next/document";
+import { defaultTheme, Theme, themeConfig } from "../lib/theme";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -10,7 +10,7 @@ function themeLink(theme: Theme): ReactElement {
   if (theme.id !== defaultTheme) {
     disabledProps = {
       disabled: true,
-      'aria-disabled': true,
+      "aria-disabled": true,
     };
   }
 
@@ -40,7 +40,7 @@ function themeLink(theme: Theme): ReactElement {
  */
 export default class MyDocument extends Document {
   render(): ReactElement {
-    const isLocalDev = process.env.NODE_ENV === 'development';
+    const isLocalDev = process.env.NODE_ENV === "development";
 
     const favicon16Prod = `${pathPrefix}/images/favicon/prod/favicon-16x16.png`;
     const favicon32Prod = `${pathPrefix}/images/favicon/prod/favicon-32x32.png`;
@@ -65,35 +65,17 @@ export default class MyDocument extends Document {
             property="og:image"
             content="https://repository-images.githubusercontent.com/233832487/cddf0ff5-a35f-4380-8912-1c9f365366a8"
           />
-          <meta
-            property="og:url"
-            content="https://elastic.github.io/next-eui-starter/"
-          />
+          <meta property="og:url" content="https://elastic.github.io/next-eui-starter/" />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="eui-styles" />
 
-          {themeConfig.availableThemes.map(each => themeLink(each))}
+          {themeConfig.availableThemes.map((each) => themeLink(each))}
 
           <meta name="eui-styles-utility" />
 
-          <link
-            rel="icon"
-            type="image/png"
-            href={isLocalDev ? favicon16Dev : favicon16Prod}
-            sizes="16x16"
-          />
-          <link
-            rel="icon"
-            type="image/png"
-            href={isLocalDev ? favicon32Dev : favicon32Prod}
-            sizes="32x32"
-          />
-          <link
-            rel="icon"
-            type="image/png"
-            href={isLocalDev ? favicon96Dev : favicon96Prod}
-            sizes="96x96"
-          />
+          <link rel="icon" type="image/png" href={isLocalDev ? favicon16Dev : favicon16Prod} sizes="16x16" />
+          <link rel="icon" type="image/png" href={isLocalDev ? favicon32Dev : favicon32Prod} sizes="32x32" />
+          <link rel="icon" type="image/png" href={isLocalDev ? favicon96Dev : favicon96Prod} sizes="96x96" />
         </Head>
         <body className="guideBody">
           <Main />

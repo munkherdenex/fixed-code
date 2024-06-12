@@ -1,4 +1,4 @@
-import { css, keyframes } from '@emotion/react';
+import { css, keyframes } from "@emotion/react";
 
 const rotate = keyframes`
    0% {
@@ -9,7 +9,7 @@ const rotate = keyframes`
    }
  `;
 
-export const themeSwitcherStyles = euiTheme => ({
+export const themeSwitcherStyles = (euiTheme) => ({
   animation: css`
     animation: ${rotate} 0.5s ease;
     transition: all ${euiTheme.animation.extraSlow} ${euiTheme.animation.bounce};

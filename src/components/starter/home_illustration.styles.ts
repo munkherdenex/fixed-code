@@ -1,6 +1,6 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 
-export const homeIllustration = euiTheme => ({
+export const homeIllustration = (euiTheme) => ({
   homeIllustration: css`
     position: relative;
     display: flex;
@@ -22,7 +22,7 @@ export const homeIllustration = euiTheme => ({
       height: auto;
 
       &:before {
-        content: '';
+        content: "";
         display: block;
         position: absolute;
         left: 0;

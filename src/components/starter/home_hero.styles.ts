@@ -1,6 +1,6 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 
-export const homeHeroStyles = euiTheme => ({
+export const homeHeroStyles = (euiTheme) => ({
   container: css`
     padding-bottom: ${euiTheme.size.base};
 

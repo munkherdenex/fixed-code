@@ -1,6 +1,6 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 
-export const headerStyles = euiTheme => ({
+export const headerStyles = (euiTheme) => ({
   logo: css`
     display: inline-flex;
     flex-wrap: wrap;
