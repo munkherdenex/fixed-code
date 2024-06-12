@@ -1,6 +1,6 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 
-export const docPanelStyles = euiTheme => ({
+export const docPanelStyles = (euiTheme) => ({
   panel: css`
     position: relative;
     min-height: 280px;

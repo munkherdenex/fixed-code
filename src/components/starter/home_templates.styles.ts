@@ -1,6 +1,6 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 
-export const homeTemplates = euiTheme => ({
+export const homeTemplates = (euiTheme) => ({
   circle1: css`
     display: flex;
     position: absolute;

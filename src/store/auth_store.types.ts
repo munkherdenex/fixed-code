@@ -1,18 +1,17 @@
-export interface profile_type {
-    last_name: string;
-    first_name: string;
-    birth_day: Date;
-    phone: number;
-    state: string;
-    username: string;
-    csrf_token: string | null;
+export interface User {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  registration_date: string;
+  role: string;
+  status: string;
 }
 
-export interface initial_Auth_Type {
-    user: profile_type | null;
-    login: (formData: any) => void;
-    error: any;
-    loading: boolean;
-    logout: () => void;
-    removeTokenData: () => void;
+export interface Initial_Auth_Type {
+  user: User | null;
+  setUser?: React.Dispatch<React.SetStateAction<User | null>>;
+  getToken: () => string | null;
+  setToken: (token: string) => void;
+  removeToken: () => void;
 }

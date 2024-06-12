@@ -1,4 +1,4 @@
-import "../custom_typings/index.d.ts"
+import "../custom_typings/index.d.ts";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import { FunctionComponent } from "react";
@@ -10,13 +10,14 @@ import Chrome from "../components/chrome";
 import { Theme } from "../components/theme";
 import { globalStyes } from "../styles/global.styles";
 import "react-querybuilder/dist/query-builder.css";
-import Script from 'next/script';
+import Script from "next/script";
+import { AuthProvider } from "../store/auth_store";
 
 declare global {
   interface Window {
     env: {
-      BACKEND_URL: string
-    }
+      BACKEND_URL: string;
+    };
   }
 }
 
@@ -33,12 +34,14 @@ const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => (
       {/* You can override this in other pages - see index.tsx for an example */}
       <title>DATA</title>
     </Head>
-    <Script strategy="beforeInteractive" src='/config/env.js'></Script>
+    <Script strategy="beforeInteractive" src="/config/env.js"></Script>
     <Global styles={globalStyes} />
     <Theme>
       <Chrome>
         <EuiErrorBoundary>
-          <Component {...pageProps} />
+          <AuthProvider>
+            <Component {...pageProps} />
+          </AuthProvider>
         </EuiErrorBoundary>
       </Chrome>
     </Theme>
