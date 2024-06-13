@@ -11,43 +11,140 @@ import {
 } from "@elastic/eui";
 import { useEuiTheme } from "@elastic/eui";
 import { signupFormStyles } from "./signup_form.styles";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
+import useSignUp from "../../hooks/useSignUp";
+import { Controller, useForm } from "react-hook-form";
+
+const schema = yup
+  .object({
+    fname: yup.string().required("please enter your firstname"),
+    lname: yup.string().required("please enter your lastname"),
+    email: yup.string().email().required("please enter your email address"),
+    password: yup.string().min(8)
+      .matches(/[0-9]/, 'Password requires a number')
+      .matches(/[a-z]/, 'Password requires a lowercase letter')
+      .matches(/[A-Z]/, 'Password requires an uppercase letter')
+      .matches(/[^\w]/, 'Password requires a symbol').required("please enter your password"),
+  })
+  .required();
 
 const SignupForm: FunctionComponent = () => {
   const { euiTheme } = useEuiTheme();
   const styles = signupFormStyles(euiTheme);
-  const [dual] = useState(true);
-  const [dual2] = useState(true);
+  const { trigger, isMutating } = useSignUp<any>();
+  const router = useRouter();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("Form submitted!");
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await trigger(data);
+      if (response.ok) {
+        alert('Successfully register : ' + response.ok);
+        router.push("/signin");
+      } else {
+        alert(response?.status);
+      }
+    } catch (e) {
+      alert(e);
+    }
   };
 
   return (
     <EuiFlexGroup gutterSize="xl" css={styles.container}>
       <EuiFlexItem>
         <EuiPanel>
-          <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit}>
-            <EuiFormRow label="Username">
-              <EuiFieldText name="user_name" placeholder="User name" aria-label="user name" />
+          <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit(onSubmit)}>
+            <EuiFormRow
+              label="First name"
+              isInvalid={!!errors.fname?.message}
+              error={[errors.fname?.message]}
+            >
+              <Controller
+                control={control}
+                name="fname"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <EuiFieldText
+                    onChange={onChange}
+                    value={value}
+                    onBlur={onBlur}
+                    isInvalid={!!errors.fname?.message}
+                    placeholder="First name"
+                    aria-label="first name"
+                  />
+                )}
+              />
             </EuiFormRow>
-            <EuiFormRow label="Password">
-              <EuiFieldPassword
+            <EuiFormRow
+              label="Last name"
+              isInvalid={!!errors.lname?.message}
+              error={[errors.lname?.message]}
+            >
+              <Controller
+                control={control}
+                name="lname"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <EuiFieldText
+                    onChange={onChange}
+                    value={value}
+                    onBlur={onBlur}
+                    isInvalid={!!errors.lname?.message}
+                    placeholder="Last name"
+                    aria-label="last name"
+                  />
+                )}
+              />
+            </EuiFormRow>
+            <EuiFormRow
+              label="Email"
+              isInvalid={!!errors.email?.message}
+              error={[errors.email?.message]}
+            >
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <EuiFieldText
+                    onChange={onChange}
+                    value={value}
+                    onBlur={onBlur}
+                    isInvalid={!!errors.email?.message}
+                    placeholder="Email"
+                    aria-label="email"
+                  />
+                )}
+              />
+            </EuiFormRow>
+            <EuiFormRow
+              label="Password"
+              isInvalid={!!errors.password?.message}
+              error={[errors.password?.message]}
+            >
+              <Controller
+                control={control}
                 name="password"
-                type={dual ? "dual" : undefined}
-                placeholder="Password"
-                aria-label="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <EuiFieldPassword
+                    onChange={onChange}
+                    value={value}
+                    onBlur={onBlur}
+                    isInvalid={!!errors.password?.message}
+                    type="dual"
+                    placeholder="Password"
+                    aria-label="password"
+                  />
+                )}
               />
             </EuiFormRow>
-            <EuiFormRow label="Repeat password">
-              <EuiFieldPassword
-                name="password2"
-                type={dual2 ? "dual" : undefined}
-                placeholder="Repeat password"
-                aria-label="repeat password"
-              />
-            </EuiFormRow>
-            <EuiButton type="submit" fill>
+            <EuiButton type="submit" isLoading={isMutating} fill>
               Register
             </EuiButton>
           </EuiForm>
