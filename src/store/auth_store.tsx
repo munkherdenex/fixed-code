@@ -1,5 +1,7 @@
 import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 import { createContext, useState } from "react";
+import { mutate } from "swr";
 import { Initial_Auth_Type, User } from "./auth_store.types";
 
 const initial_Auth_State: Initial_Auth_Type = {
@@ -23,6 +25,7 @@ const initial_Auth_State: Initial_Auth_Type = {
 export const authContext = createContext(initial_Auth_State);
 
 export const AuthProvider = ({ children }) => {
+  const router = useRouter();
   const [user, setUser] = useState<User>();
 
   const getToken = () => {
@@ -42,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     Cookies.set("token", token);
   };
 
-  const removeUserTokenData = () => {
+  const removeUserTokenData = async () => {
     setUser({
       id: "",
       email: "",
@@ -53,6 +56,8 @@ export const AuthProvider = ({ children }) => {
       role: "",
     });
     Cookies.remove("token");
+    await mutate(() => true, undefined, { revalidate: false });
+    router.replace("/");
   };
 
   return (
