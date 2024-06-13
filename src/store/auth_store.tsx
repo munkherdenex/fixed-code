@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
     });
     Cookies.remove("token");
     await mutate(() => true, undefined, { revalidate: false });
-    router.replace("/");
+    router.replace("/signin");
   };
 
   return (
