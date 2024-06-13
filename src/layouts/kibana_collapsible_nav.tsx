@@ -132,7 +132,10 @@ const CollapsibleNav = () => {
       aria-label="Main navigation"
       isOpen={navIsOpen}
       button={
-        <EuiHeaderSectionItemButton aria-label="Toggle main navigation" onClick={() => setNavIsOpen(!navIsOpen)}>
+        <EuiHeaderSectionItemButton
+          aria-label="Toggle main navigation"
+          onClick={() => setNavIsOpen(!navIsOpen)}
+        >
           <EuiIcon type={"menu"} size="m" aria-hidden="true" />
         </EuiHeaderSectionItemButton>
       }
@@ -165,7 +168,9 @@ const CollapsibleNav = () => {
         <EuiCollapsibleNavGroup background="light">
           <EuiPinnableListGroup
             aria-label="Pinned links" // A11y : Since this group doesn't have a visible `title` it should be provided an accessible description
-            listItems={alterLinksWithCurrentState(TopLinks).concat(alterLinksWithCurrentState(pinnedItems, true))}
+            listItems={alterLinksWithCurrentState(TopLinks).concat(
+              alterLinksWithCurrentState(pinnedItems, true),
+            )}
             unpinTitle={addLinkNameToUnpinTitle}
             onPinClick={removePin}
             maxWidth="none"
@@ -219,7 +224,11 @@ const CollapsibleNav = () => {
         sections={[
           {
             items: [
-              <EuiHeaderLogo key="elastic-logo" iconType="logoElastic" href={`${pathPrefix}/kibana`}>
+              <EuiHeaderLogo
+                key="elastic-logo"
+                iconType="logoElastic"
+                href={`${pathPrefix}/kibana`}
+              >
                 Elastic
               </EuiHeaderLogo>,
             ],

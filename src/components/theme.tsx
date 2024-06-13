@@ -22,7 +22,11 @@ export const Theme = ({ children }: { children: React.ReactNode }) => {
   // enable the correct theme when colorMode changes
   useEffect(() => enableTheme(colorMode), [colorMode]);
 
-  return <GlobalProvider.Provider value={{ colorMode, setColorMode }}>{children}</GlobalProvider.Provider>;
+  return (
+    <GlobalProvider.Provider value={{ colorMode, setColorMode }}>
+      {children}
+    </GlobalProvider.Provider>
+  );
 };
 
 export const useTheme = () => {

@@ -55,7 +55,12 @@ const MembersComponent = () => {
       {members.map((member) => (
         <>
           <EuiSpacer size="xs" />
-          <EuiFlexGroup key={member.id} gutterSize="s" alignItems="center" justifyContent="spaceBetween">
+          <EuiFlexGroup
+            key={member.id}
+            gutterSize="s"
+            alignItems="center"
+            justifyContent="spaceBetween"
+          >
             <EuiFlexItem grow={false}>
               <EuiAvatar size="m" name={member.name} />
             </EuiFlexItem>

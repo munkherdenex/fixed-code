@@ -126,7 +126,10 @@ const CollapsibleNav = () => {
       aria-label="Main navigation"
       isOpen={navIsOpen}
       button={
-        <EuiHeaderSectionItemButton aria-label="Toggle main navigation" onClick={() => setNavIsOpen(!navIsOpen)}>
+        <EuiHeaderSectionItemButton
+          aria-label="Toggle main navigation"
+          onClick={() => setNavIsOpen(!navIsOpen)}
+        >
           <EuiIcon type={"menu"} size="m" aria-hidden="true" />
         </EuiHeaderSectionItemButton>
       }

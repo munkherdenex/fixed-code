@@ -20,7 +20,12 @@ const CustomersDashboard = () => {
           pageTitle: "Customers",
           iconType: "usersRolesApp",
           rightSideItems: [
-            <EuiButton color="primary" onClick={() => setIsFlyoutVisible(true)} fill key="create-customer">
+            <EuiButton
+              color="primary"
+              onClick={() => setIsFlyoutVisible(true)}
+              fill
+              key="create-customer"
+            >
               Create customer
             </EuiButton>,
           ],

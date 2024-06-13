@@ -21,15 +21,22 @@ const Chrome = ({ children }: { children?: React.ReactNode }) => {
    */
   const defaultCache = createCache({
     key: "eui",
-    container: typeof document !== "undefined" ? document.querySelector('meta[name="eui-styles"]') : null,
+    container:
+      typeof document !== "undefined" ? document.querySelector('meta[name="eui-styles"]') : null,
   });
   const utilityCache = createCache({
     key: "util",
-    container: typeof document !== "undefined" ? document.querySelector('meta[name="eui-styles-utility"]') : null,
+    container:
+      typeof document !== "undefined"
+        ? document.querySelector('meta[name="eui-styles-utility"]')
+        : null,
   });
 
   return (
-    <EuiProvider colorMode={colorMode as EuiThemeColorMode} cache={{ default: defaultCache, utility: utilityCache }}>
+    <EuiProvider
+      colorMode={colorMode as EuiThemeColorMode}
+      cache={{ default: defaultCache, utility: utilityCache }}
+    >
       {children}
     </EuiProvider>
   );

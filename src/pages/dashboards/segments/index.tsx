@@ -20,7 +20,12 @@ const Dashboard: FunctionComponent = () => {
           pageTitle: "Segments",
           iconType: "dashboardApp",
           rightSideItems: [
-            <EuiButton color="primary" href={`${pathPrefix}/dashboards/segments/create`} fill key="create-segment">
+            <EuiButton
+              color="primary"
+              href={`${pathPrefix}/dashboards/segments/create`}
+              fill
+              key="create-segment"
+            >
               Create segment
             </EuiButton>,
           ],

@@ -38,7 +38,10 @@ const Dashboard: FunctionComponent = () => {
               description="Example of a longer card description. See how the footers stay lined up."
               footer={
                 <div>
-                  <EuiButton href={`${pathPrefix}/dashboards/customers`} aria-label="Go to Dashboards">
+                  <EuiButton
+                    href={`${pathPrefix}/dashboards/customers`}
+                    aria-label="Go to Dashboards"
+                  >
                     Go for it
                   </EuiButton>
                 </div>
@@ -52,7 +55,10 @@ const Dashboard: FunctionComponent = () => {
               description="Example of a short card description."
               footer={
                 <div>
-                  <EuiButton href={`${pathPrefix}/dashboards/segments`} aria-label="Go to Save Objects">
+                  <EuiButton
+                    href={`${pathPrefix}/dashboards/segments`}
+                    aria-label="Go to Save Objects"
+                  >
                     Go for it
                   </EuiButton>
                 </div>
@@ -66,7 +72,10 @@ const Dashboard: FunctionComponent = () => {
               description="Example of a short card description."
               footer={
                 <div>
-                  <EuiButton href={`${pathPrefix}/dashboards/analytics`} aria-label="Go to Save Objects">
+                  <EuiButton
+                    href={`${pathPrefix}/dashboards/analytics`}
+                    aria-label="Go to Save Objects"
+                  >
                     Go for it
                   </EuiButton>
                 </div>
@@ -80,7 +89,10 @@ const Dashboard: FunctionComponent = () => {
               description="Example of a short card description."
               footer={
                 <div>
-                  <EuiButton href={`${pathPrefix}/dashboards/management`} aria-label="Go to Save Objects">
+                  <EuiButton
+                    href={`${pathPrefix}/dashboards/management`}
+                    aria-label="Go to Save Objects"
+                  >
                     Go for it
                   </EuiButton>
                 </div>

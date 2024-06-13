@@ -16,7 +16,12 @@ const SendsDashboard = () => {
           pageTitle: "Sends",
           iconType: "spacesApp",
           rightSideItems: [
-            <EuiButton color="primary" href={`${pathPrefix}/dashboards/sends/create`} fill key="create-sends">
+            <EuiButton
+              color="primary"
+              href={`${pathPrefix}/dashboards/sends/create`}
+              fill
+              key="create-sends"
+            >
               Create sends
             </EuiButton>,
           ],

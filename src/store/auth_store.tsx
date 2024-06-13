@@ -16,6 +16,8 @@ const initial_Auth_State: Initial_Auth_Type = {
   getToken: () => "",
   setToken: () => {},
   removeToken: () => {},
+  setUserTokenData: () => {},
+  removeUserTokenData: () => {},
 };
 
 export const authContext = createContext(initial_Auth_State);
@@ -35,7 +37,37 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove("token");
   };
 
+  const setUserTokenData = (data: User, token: string) => {
+    setUser(data);
+    Cookies.set("token", token);
+  };
+
+  const removeUserTokenData = () => {
+    setUser({
+      id: "",
+      email: "",
+      registration_date: "",
+      status: "",
+      last_name: "",
+      first_name: "",
+      role: "",
+    });
+    Cookies.remove("token");
+  };
+
   return (
-    <authContext.Provider value={{ user, setUser, getToken, setToken, removeToken }}>{children}</authContext.Provider>
+    <authContext.Provider
+      value={{
+        user,
+        setUser,
+        getToken,
+        setToken,
+        removeToken,
+        setUserTokenData,
+        removeUserTokenData,
+      }}
+    >
+      {children}
+    </authContext.Provider>
   );
 };

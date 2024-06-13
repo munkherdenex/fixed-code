@@ -8,8 +8,8 @@ const steps = [
       <>
         <EuiText>
           <p>
-            This starter expects to use <Link href="https://yarnpkg.com/">yarn</Link> to manage dependencies, so go
-            install it.
+            This starter expects to use <Link href="https://yarnpkg.com/">yarn</Link> to manage
+            dependencies, so go install it.
           </p>
         </EuiText>
         <EuiSpacer />
@@ -55,13 +55,15 @@ yarn dev`}
           Your site is now running at <EuiCode>http://localhost:3000</EuiCode>.
         </p>
         <p>
-          Open the <EuiCode>my-eui-starter</EuiCode> directory in your code editor of choice and edit{" "}
-          <EuiCode>src/pages/index.tsx</EuiCode>. Save your changes and the browser will update in real time!
+          Open the <EuiCode>my-eui-starter</EuiCode> directory in your code editor of choice and
+          edit <EuiCode>src/pages/index.tsx</EuiCode>. Save your changes and the browser will update
+          in real time!
         </p>
         <p>
-          You can also start by using one of available templates: <strong>kibana</strong> or <strong>docs</strong>. For
-          that just edit <EuiCode>src/pages/kibana/index.tsx</EuiCode> or <EuiCode>src/pages/docs/index.tsx</EuiCode>.
-          These pages are going run in <EuiCode>http://localhost:3000/kibana</EuiCode> or{" "}
+          You can also start by using one of available templates: <strong>kibana</strong> or{" "}
+          <strong>docs</strong>. For that just edit <EuiCode>src/pages/kibana/index.tsx</EuiCode> or{" "}
+          <EuiCode>src/pages/docs/index.tsx</EuiCode>. These pages are going run in{" "}
+          <EuiCode>http://localhost:3000/kibana</EuiCode> or{" "}
           <EuiCode>http://localhost:3000/docs</EuiCode> respectively.
         </p>
       </EuiText>

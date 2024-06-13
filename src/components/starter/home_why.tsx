@@ -1,5 +1,14 @@
 import { FunctionComponent } from "react";
-import { EuiSpacer, EuiText, EuiTitle, EuiFlexGroup, EuiFlexItem, EuiCard, EuiIcon, EuiLink } from "@elastic/eui";
+import {
+  EuiSpacer,
+  EuiText,
+  EuiTitle,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiCard,
+  EuiIcon,
+  EuiLink,
+} from "@elastic/eui";
 
 const HomeWhy: FunctionComponent = () => {
   return (
@@ -12,16 +21,16 @@ const HomeWhy: FunctionComponent = () => {
 
       <EuiText grow={false}>
         <p>
-          Sometimes you just need to prototype new functionality or test a new feature. This starter gives you an easy
-          way to start experimenting with EUI.
+          Sometimes you just need to prototype new functionality or test a new feature. This starter
+          gives you an easy way to start experimenting with EUI.
         </p>
         <p>
           We always recommend using{" "}
           <EuiLink href="https://codesandbox.io/" target="_blank">
             CodeSandbox
           </EuiLink>{" "}
-          for testing small patterns or functionalities. But when it comes to more complex patterns, this starter can
-          definitely help you out.
+          for testing small patterns or functionalities. But when it comes to more complex patterns,
+          this starter can definitely help you out.
         </p>
       </EuiText>
 

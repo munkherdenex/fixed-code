@@ -1,4 +1,9 @@
-import { EuiBasicTable, EuiBasicTableColumn, EuiTableFieldDataColumnType, formatDate } from "@elastic/eui";
+import {
+  EuiBasicTable,
+  EuiBasicTableColumn,
+  EuiTableFieldDataColumnType,
+  formatDate,
+} from "@elastic/eui";
 import { useRouter } from "next/router";
 
 type User = {

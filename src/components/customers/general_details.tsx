@@ -1,4 +1,10 @@
-import { EuiAccordion, EuiFlexGroup, EuiFlexItem, EuiPanel, useGeneratedHtmlId } from "@elastic/eui";
+import {
+  EuiAccordion,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiPanel,
+  useGeneratedHtmlId,
+} from "@elastic/eui";
 
 const GeneralDetails = () => {
   const rightArrowAccordionId = useGeneratedHtmlId({
@@ -18,7 +24,11 @@ const GeneralDetails = () => {
             <p>informations</p>
           </EuiFlexItem>
           <EuiFlexItem>
-            <EuiAccordion id={rightArrowAccordionId} arrowDisplay="left" buttonContent="Custom Fields">
+            <EuiAccordion
+              id={rightArrowAccordionId}
+              arrowDisplay="left"
+              buttonContent="Custom Fields"
+            >
               <EuiPanel color="subdued">
                 Any content inside of <strong>EuiAccordion</strong> will appear here.
               </EuiPanel>

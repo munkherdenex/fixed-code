@@ -23,8 +23,16 @@ const DashboardLayout = ({
     <div css={styles.mainWrapper}>
       <DashboardHeaders />
       <div css={styles.contentWrapper}>
-        <EuiPageTemplate style={{ paddingBlockStart: 48 }} restrictWidth panelled={false} bottomBorder={true} {...rest}>
-          {sidebar && <EuiPageTemplate.Sidebar sticky={sidebarSticky}>{sidebar}</EuiPageTemplate.Sidebar>}
+        <EuiPageTemplate
+          style={{ paddingBlockStart: 48 }}
+          restrictWidth
+          panelled={false}
+          bottomBorder={true}
+          {...rest}
+        >
+          {sidebar && (
+            <EuiPageTemplate.Sidebar sticky={sidebarSticky}>{sidebar}</EuiPageTemplate.Sidebar>
+          )}
           {pageHeader && <EuiPageTemplate.Header {...pageHeader} />}
           {breadCrumb && (
             <EuiPageTemplate.Section grow={false}>
