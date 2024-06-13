@@ -14,7 +14,8 @@ const SWRConfigLayout = ({ children }) => {
         revalidateOnReconnect: false,
         onError: (error) => {
           if (error?.status === 401 && router.pathname.includes("/dashboard")) {
-            removeUserTokenData();
+            //TODO: profile endpoint garsan uyed comment out hiine
+            // removeUserTokenData();
           }
         },
       }}
