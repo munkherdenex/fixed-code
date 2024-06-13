@@ -1,50 +1,50 @@
-import { FunctionComponent, useState } from "react";
 import {
+  EuiButton,
+  EuiFieldPassword,
+  EuiFieldText,
   EuiFlexGroup,
   EuiFlexItem,
   EuiForm,
   EuiFormRow,
-  EuiFieldText,
-  EuiButton,
   EuiPanel,
-  EuiFieldPassword,
+  useEuiTheme,
 } from "@elastic/eui";
-import { useEuiTheme } from "@elastic/eui";
-import { signinFormStyles } from "./signin_form.styles";
-import useLogin from "../../hooks/useLogin";
-import { Controller, useForm } from "react-hook-form";
-import { useRouter } from "next/router";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
+import { FunctionComponent } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
+import useLogin from "../../hooks/useLogin";
+import { signinFormStyles } from "./signin_form.styles";
 
 const schema = yup
   .object({
     email: yup.string().email().required("please enter your email address"),
-    password: yup.string().min(8).required("please enter your password"),
+    password: yup.string().min(6).required("please enter your password"),
   })
   .required();
 
+type FormData = yup.InferType<typeof schema>;
+
 const SigninForm: FunctionComponent = () => {
+  const router = useRouter();
   const { euiTheme } = useEuiTheme();
   const styles = signinFormStyles(euiTheme);
-  const [dual] = useState(true);
-  const { trigger, error } = useLogin<any>();
-  const router = useRouter();
+  const { trigger, isMutating } = useLogin<FormData>();
 
   const {
     handleSubmit,
-    register,
     control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FormData) => {
     try {
       const response = await trigger(data);
       if (response.ok) {
-        router.push("/reset_password");
+        router.push("/dashboards");
       } else {
         alert(response?.status);
       }
@@ -92,14 +92,16 @@ const SigninForm: FunctionComponent = () => {
                     value={value}
                     onBlur={onBlur}
                     isInvalid={!!errors.password?.message}
-                    type={dual ? "dual" : undefined}
+                    type={"dual"}
                     placeholder="Password"
                     aria-label="password"
                   />
                 )}
               />
             </EuiFormRow>
-            <EuiButton type="submit">Sign in</EuiButton>
+            <EuiButton isLoading={isMutating} type="submit">
+              Sign in
+            </EuiButton>
           </EuiForm>
         </EuiPanel>
       </EuiFlexItem>

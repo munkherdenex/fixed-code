@@ -12,6 +12,7 @@ import { globalStyes } from "../styles/global.styles";
 import "react-querybuilder/dist/query-builder.css";
 import Script from "next/script";
 import { AuthProvider } from "../store/auth_store";
+import GlobalToastList from "../components/toast";
 
 declare global {
   interface Window {
@@ -41,6 +42,7 @@ const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => (
         <EuiErrorBoundary>
           <AuthProvider>
             <Component {...pageProps} />
+            <GlobalToastList />
           </AuthProvider>
         </EuiErrorBoundary>
       </Chrome>

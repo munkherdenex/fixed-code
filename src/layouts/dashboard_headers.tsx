@@ -11,7 +11,6 @@ import {
   EuiFlexGroup,
   EuiPopover,
   EuiLink,
-  EuiButton,
   EuiButtonEmpty,
 } from "@elastic/eui";
 import ThemeSwitcher from "../components/chrome/theme_switcher";
