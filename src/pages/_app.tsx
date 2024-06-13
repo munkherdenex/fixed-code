@@ -13,12 +13,16 @@ import "react-querybuilder/dist/query-builder.css";
 import Script from "next/script";
 import { AuthProvider } from "../store/auth_store";
 import GlobalToastList from "../components/toast";
+import SWRConfigLayout from "../layouts/swr_config";
 
 declare global {
   interface Window {
     env: {
       BACKEND_URL: string;
     };
+  }
+  interface Error {
+    status?: number;
   }
 }
 
@@ -41,7 +45,9 @@ const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => (
       <Chrome>
         <EuiErrorBoundary>
           <AuthProvider>
-            <Component {...pageProps} />
+            <SWRConfigLayout>
+              <Component {...pageProps} />
+            </SWRConfigLayout>
             <GlobalToastList />
           </AuthProvider>
         </EuiErrorBoundary>
