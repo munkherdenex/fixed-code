@@ -1,5 +1,7 @@
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
+import { useEffect } from "react";
+import { addToast } from "../components/toast";
 
 export default function useLogin<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
@@ -7,12 +9,24 @@ export default function useLogin<Type>() {
     async (path, { arg }: { arg: Type }) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "POST",
-        headers: new Headers({ "content-type": "application/json" }),
+        headers: { "content-type": "application/json" },
         body: JSON.stringify(arg),
+        credentials: "include",
       });
       return res;
     },
   );
+
+  useEffect(() => {
+    if (error) {
+      addToast({
+        id: "login-error",
+        color: "danger",
+        title: "An error occurred",
+        text: error?.message,
+      });
+    }
+  }, [error]);
 
   return {
     data: data,
