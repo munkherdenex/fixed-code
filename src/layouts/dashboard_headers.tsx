@@ -72,7 +72,9 @@ const HeaderUserMenu = () => {
               <EuiFlexItem>
                 <EuiFlexGroup justifyContent="spaceBetween">
                   <EuiFlexItem grow={false}>
-                    <EuiLink href={`${pathPrefix}/dashboards/management/settings`}>Edit profile</EuiLink>
+                    <EuiLink href={`${pathPrefix}/dashboards/management/settings`}>
+                      Edit profile
+                    </EuiLink>
                   </EuiFlexItem>
                   <EuiFlexItem grow={false}>
                     <EuiLink
@@ -101,13 +103,25 @@ const TeamSwitcher = () => {
   const closePopover = () => setIsPopoverOpen(false);
 
   const button = (
-    <EuiButtonEmpty size="s" color="text" iconType="arrowDown" iconSide="right" css={styles} onClick={onButtonClick}>
+    <EuiButtonEmpty
+      size="s"
+      color="text"
+      iconType="arrowDown"
+      iconSide="right"
+      css={styles}
+      onClick={onButtonClick}
+    >
       Team 1
     </EuiButtonEmpty>
   );
 
   return (
-    <EuiPopover button={button} isOpen={isPopoverOpen} closePopover={closePopover} anchorPosition="downRight">
+    <EuiPopover
+      button={button}
+      isOpen={isPopoverOpen}
+      closePopover={closePopover}
+      anchorPosition="downRight"
+    >
       hello
     </EuiPopover>
   );
@@ -123,7 +137,11 @@ const DashboardHeaders = () => {
         sections={[
           {
             items: [
-              <EuiHeaderLogo key="elastic-logo" iconType="logoElastic" href={`${pathPrefix}/dashboards`}>
+              <EuiHeaderLogo
+                key="elastic-logo"
+                iconType="logoElastic"
+                href={`${pathPrefix}/dashboards`}
+              >
                 Data dashboard
               </EuiHeaderLogo>,
               leftSectionItems,

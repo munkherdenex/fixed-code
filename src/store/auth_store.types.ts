@@ -14,4 +14,6 @@ export interface Initial_Auth_Type {
   getToken: () => string | null;
   setToken: (token: string) => void;
   removeToken: () => void;
+  setUserTokenData: (user: User, token: string) => void;
+  removeUserTokenData: () => void;
 }

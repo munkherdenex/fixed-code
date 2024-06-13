@@ -70,7 +70,11 @@ const Overview = () => {
 
   const renderTabs = () => {
     return tabs.map((tab, index) => (
-      <EuiTab key={index} onClick={() => onSelectedTabChanged(tab.id)} isSelected={tab.id === selectedTabId}>
+      <EuiTab
+        key={index}
+        onClick={() => onSelectedTabChanged(tab.id)}
+        isSelected={tab.id === selectedTabId}
+      >
         {tab.name}
       </EuiTab>
     ));

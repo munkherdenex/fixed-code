@@ -60,8 +60,8 @@ const HomeTemplates: FunctionComponent = () => {
               <EuiSpacer size="s" />
               <EuiText grow={false}>
                 <p>
-                  This template comes with a collapsible navbar and two stacked headers just like Kibana is today. On
-                  the top header, you can toggle the dark and light theme.
+                  This template comes with a collapsible navbar and two stacked headers just like
+                  Kibana is today. On the top header, you can toggle the dark and light theme.
                 </p>
 
                 <Link href="/kibana" passHref>
@@ -83,8 +83,8 @@ const HomeTemplates: FunctionComponent = () => {
               <EuiSpacer size="s" />
               <EuiText grow={false}>
                 <p>
-                  This template comes with a side nav and one header where you can toggle the dark and light theme. It
-                  has a similar layout as the EUI docs site or Elastic docs.
+                  This template comes with a side nav and one header where you can toggle the dark
+                  and light theme. It has a similar layout as the EUI docs site or Elastic docs.
                 </p>
 
                 <Link href="/docs" passHref>

@@ -33,8 +33,8 @@ const HomeHero: FunctionComponent = () => {
             <EuiLink href="https://emotion.sh/docs/introduction" target="_blank">
               Emotion
             </EuiLink>{" "}
-            to help you make prototypes. You just need to know a few basic Next.js concepts and how to use EUI and
-            you&apos;re ready to ship it!
+            to help you make prototypes. You just need to know a few basic Next.js concepts and how
+            to use EUI and you&apos;re ready to ship it!
           </p>
 
           <Link href="/getting-started" passHref>

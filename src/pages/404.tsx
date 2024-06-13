@@ -8,7 +8,9 @@ const NotFoundPage: FunctionComponent = () => {
 
   const isDarkTheme = colorMode === "dark";
 
-  const illustration = isDarkTheme ? "/images/404_rainy_cloud_dark.png" : "/images/404_rainy_cloud_light.png";
+  const illustration = isDarkTheme
+    ? "/images/404_rainy_cloud_dark.png"
+    : "/images/404_rainy_cloud_light.png";
 
   const router = useRouter();
 
@@ -28,8 +30,8 @@ const NotFoundPage: FunctionComponent = () => {
           ]}
           body={
             <p>
-              Sorry, we can&apos;t find the page you&apos;re looking for. It might have been removed or renamed, or
-              maybe it never existed.
+              Sorry, we can&apos;t find the page you&apos;re looking for. It might have been removed
+              or renamed, or maybe it never existed.
             </p>
           }
           icon={<EuiImage alt="" size="fullWidth" src={illustration} />}

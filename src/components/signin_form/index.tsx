@@ -58,7 +58,11 @@ const SigninForm: FunctionComponent = () => {
       <EuiFlexItem>
         <EuiPanel>
           <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit(onSubmit)}>
-            <EuiFormRow label="Email" isInvalid={!!errors.email?.message} error={[errors.email?.message]}>
+            <EuiFormRow
+              label="Email"
+              isInvalid={!!errors.email?.message}
+              error={[errors.email?.message]}
+            >
               <Controller
                 control={control}
                 name="email"
@@ -74,7 +78,11 @@ const SigninForm: FunctionComponent = () => {
                 )}
               />
             </EuiFormRow>
-            <EuiFormRow label="Password" isInvalid={!!errors.password?.message} error={[errors.password?.message]}>
+            <EuiFormRow
+              label="Password"
+              isInvalid={!!errors.password?.message}
+              error={[errors.password?.message]}
+            >
               <Controller
                 control={control}
                 name="password"
