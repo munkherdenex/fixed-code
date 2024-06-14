@@ -14,6 +14,7 @@ import Script from "next/script";
 import { AuthProvider } from "../store/auth_store";
 import GlobalToastList from "../components/toast";
 import SWRConfigLayout from "../layouts/swr_config";
+import { TeamsProvider } from "../store/teams_store";
 
 declare global {
   interface Window {
@@ -44,12 +45,14 @@ const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => (
     <Theme>
       <Chrome>
         <EuiErrorBoundary>
-          <AuthProvider>
-            <SWRConfigLayout>
-              <Component {...pageProps} />
-            </SWRConfigLayout>
-            <GlobalToastList />
-          </AuthProvider>
+          <SWRConfigLayout>
+            <AuthProvider>
+              <TeamsProvider>
+                <Component {...pageProps} />
+                <GlobalToastList />
+              </TeamsProvider>
+            </AuthProvider>
+          </SWRConfigLayout>
         </EuiErrorBoundary>
       </Chrome>
     </Theme>

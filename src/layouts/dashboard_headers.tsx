@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   EuiHeaderSectionItemButton,
   EuiHeaderLogo,
@@ -12,11 +12,13 @@ import {
   EuiPopover,
   EuiLink,
   EuiButtonEmpty,
+  EuiButton,
 } from "@elastic/eui";
 import ThemeSwitcher from "../components/chrome/theme_switcher";
 import CollapsibleNav from "../components/dashboards/collapsible_nav";
 import { dashboardHeadersStyles } from "./dashboard_headers.style";
 import { useRouter } from "next/router";
+import { teamsContext } from "../store/teams_store";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -96,6 +98,7 @@ const HeaderUserMenu = () => {
 
 const TeamSwitcher = () => {
   const styles = dashboardHeadersStyles();
+  const { teams, currentTeam, changeCurrentTeam } = useContext(teamsContext);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const onButtonClick = () => setIsPopoverOpen((isPopoverOpen) => !isPopoverOpen);
@@ -110,9 +113,26 @@ const TeamSwitcher = () => {
       css={styles}
       onClick={onButtonClick}
     >
-      Team 1
+      {currentTeam?.name || "Select team"}
     </EuiButtonEmpty>
   );
+
+  const renderTeams = () => {
+    return teams?.map((team) => {
+      return (
+        <EuiFlexItem key={team.id}>
+          <EuiButton
+            size="s"
+            color={currentTeam?.id === team?.id ? "primary" : "text"}
+            key={team.id}
+            onClick={() => changeCurrentTeam(team.id)}
+          >
+            {team.name}
+          </EuiButton>
+        </EuiFlexItem>
+      );
+    });
+  };
 
   return (
     <EuiPopover
@@ -120,8 +140,16 @@ const TeamSwitcher = () => {
       isOpen={isPopoverOpen}
       closePopover={closePopover}
       anchorPosition="downRight"
+      panelPaddingSize="s"
     >
-      hello
+      <EuiFlexGroup direction="column" gutterSize="s">
+        {renderTeams()}
+        <EuiFlexItem>
+          <EuiButton fill size="s" href="/dashboards/team/create">
+            Create a new team
+          </EuiButton>
+        </EuiFlexItem>
+      </EuiFlexGroup>
     </EuiPopover>
   );
 };
