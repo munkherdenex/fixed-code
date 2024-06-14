@@ -17,13 +17,14 @@ import {
 import ThemeSwitcher from "../components/chrome/theme_switcher";
 import CollapsibleNav from "../components/dashboards/collapsible_nav";
 import { dashboardHeadersStyles } from "./dashboard_headers.style";
-import { useRouter } from "next/router";
 import { teamsContext } from "../store/teams_store";
+import { authContext } from "../store/auth_store";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const HeaderUserMenu = () => {
-  const router = useRouter();
+  const { removeUserTokenData } = useContext(authContext);
+  const { clearCurrentTeam } = useContext(teamsContext);
   const headerUserPopoverId = useGeneratedHtmlId({
     prefix: "headerUserPopover",
   });
@@ -80,7 +81,8 @@ const HeaderUserMenu = () => {
                   <EuiFlexItem grow={false}>
                     <EuiLink
                       onClick={() => {
-                        router.push(`${pathPrefix}/`);
+                        removeUserTokenData();
+                        clearCurrentTeam();
                       }}
                     >
                       Log out

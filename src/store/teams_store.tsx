@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { createContext, useCallback, useEffect, useState } from "react";
+import { set } from "react-hook-form";
 import useTeams from "../hooks/useTeams";
 import { Initial_Teams_Type, Teams } from "./teams_store.types";
 
@@ -8,6 +9,7 @@ const initial_teams_state: Initial_Teams_Type = {
   currentTeam: null,
   setCurrentTeam: () => {},
   changeCurrentTeam: () => {},
+  clearCurrentTeam: () => {},
 };
 
 export const teamsContext = createContext(initial_teams_state);
@@ -30,7 +32,15 @@ export const TeamsProvider = ({ children }) => {
     [teams],
   );
 
+  const clearCurrentTeam = () => {
+    setCurrentTeam(null);
+    localStorage.removeItem("currentTeamId");
+  };
+
   useEffect(() => {
+    if (teams?.length === 0 || !teams) {
+      setCurrentTeam(null);
+    }
     if (teams?.length === 0 && !teamsIsLoading && !teamsError) {
       router.replace("/dashboards/team/create");
       return;
@@ -53,6 +63,7 @@ export const TeamsProvider = ({ children }) => {
         currentTeam,
         setCurrentTeam,
         changeCurrentTeam,
+        clearCurrentTeam,
       }}
     >
       {children}

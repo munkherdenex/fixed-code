@@ -22,4 +22,5 @@ export interface Initial_Teams_Type {
   currentTeam: Teams | null;
   setCurrentTeam: React.Dispatch<React.SetStateAction<Teams | null>>;
   changeCurrentTeam: (teamId: number) => void;
+  clearCurrentTeam: () => void;
 }

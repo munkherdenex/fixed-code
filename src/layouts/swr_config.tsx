@@ -1,21 +1,25 @@
+import Cookies from "js-cookie";
 import { useRouter } from "next/router";
-import { useContext } from "react";
-import { SWRConfig } from "swr";
-import { authContext } from "../store/auth_store";
+import { mutate, SWRConfig } from "swr";
+import useLogout from "../hooks/useLogout";
 
 const SWRConfigLayout = ({ children }) => {
   const router = useRouter();
-  const { removeUserTokenData } = useContext(authContext);
+  const { trigger } = useLogout();
 
   return (
     <SWRConfig
       value={{
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
-        onError: (error) => {
-          if (error?.status === 401 && router.pathname.includes("/dashboard")) {
-            //TODO: profile endpoint garsan uyed comment out hiine
-            // removeUserTokenData();
+        onError: async (error) => {
+          if (error?.status === 401 && router.pathname.includes("dashboard")) {
+            await trigger();
+            await mutate(() => true, undefined, { revalidate: false });
+            Cookies.remove("_customer_data_session", { path: "/" });
+            localStorage.removeItem("currentTeamId");
+            localStorage.removeItem("currentTeamId");
+            router.replace("/signin");
           }
         },
       }}
