@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
+import { addToast } from "../components/toast";
 
 export default function useSignUp<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
@@ -13,6 +15,17 @@ export default function useSignUp<Type>() {
       return res;
     },
   );
+
+  useEffect(() => {
+    if (error) {
+      addToast({
+        id: "signUp-error",
+        color: "danger",
+        title: "An error occurred",
+        text: error?.message,
+      });
+    }
+  }, [error]);
 
   return {
     data: data,

@@ -16,6 +16,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import useSignUp from "../../hooks/useSignUp";
 import { Controller, useForm } from "react-hook-form";
+import { addToast } from "../toast";
 
 const schema = yup
   .object({
@@ -29,11 +30,12 @@ const schema = yup
       .matches(/[^\w]/, 'Password requires a symbol').required("please enter your password"),
   })
   .required();
+type FormData = yup.InferType<typeof schema>;
 
 const SignupForm: FunctionComponent = () => {
   const { euiTheme } = useEuiTheme();
   const styles = signupFormStyles(euiTheme);
-  const { trigger, isMutating } = useSignUp<any>();
+  const { trigger, isMutating } = useSignUp<FormData>();
   const router = useRouter();
 
   const {
@@ -48,13 +50,16 @@ const SignupForm: FunctionComponent = () => {
     try {
       const response = await trigger(data);
       if (response.ok) {
-        alert('Successfully register : ' + response.ok);
+        addToast({
+          id: "signUp-success",
+          color: "success",
+          title: "Success",
+          text: 'Successfully register',
+        });
         router.push("/signin");
-      } else {
-        alert(response?.status);
       }
     } catch (e) {
-      alert(e);
+      console.log(e);
     }
   };
 
