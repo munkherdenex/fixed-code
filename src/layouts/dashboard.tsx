@@ -35,9 +35,10 @@ const DashboardLayout = ({
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error...</div>;
-  }
+  //TODO: "Change the error message to the actual error message from the API response."
+  // if (error) {
+  //   return <div>Error...</div>;
+  // }
 
   return (
     <div css={styles.mainWrapper}>
