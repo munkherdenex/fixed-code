@@ -9,7 +9,8 @@ import {
   EuiSpacer,
   EuiText,
 } from "@elastic/eui";
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useState } from "react";
+import { teamsContext } from "../../store/teams_store";
 
 const MembersPopover = ({ member }) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -18,8 +19,8 @@ const MembersPopover = ({ member }) => {
 
   return (
     <EuiPopover
-      id={member.id.toString()}
-      key={member.id}
+      id={member?.id?.toString()}
+      key={member?.id}
       panelPaddingSize="s"
       button={
         <EuiButton size="s" onClick={onButtonClick}>
@@ -37,49 +38,39 @@ const MembersPopover = ({ member }) => {
 };
 
 const MembersComponent = () => {
-  const members = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@gmail.com",
-    },
-    {
-      id: 2,
-      name: "John Doe",
-      email: "john@gmail.com",
-    },
-  ];
+  const { currentTeam } = useContext(teamsContext);
 
   return (
     <>
-      {members.map((member) => (
-        <>
-          <EuiSpacer size="xs" />
-          <EuiFlexGroup
-            key={member.id}
-            gutterSize="s"
-            alignItems="center"
-            justifyContent="spaceBetween"
-          >
-            <EuiFlexItem grow={false}>
-              <EuiAvatar size="m" name={member.name} />
-            </EuiFlexItem>
-            <EuiFlexItem>
-              <EuiFlexGroup direction="column" gutterSize="none">
-                <EuiFlexItem grow={false}>
-                  <EuiText size="xs">{member.name}</EuiText>
-                </EuiFlexItem>
-                <EuiFlexItem grow={false}>
-                  <EuiText size="xs">{member.email}</EuiText>
-                </EuiFlexItem>
-              </EuiFlexGroup>
-            </EuiFlexItem>
-            <EuiFlexItem grow={false}>
-              <MembersPopover member={member} />
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </>
-      ))}
+      {currentTeam?.members &&
+        currentTeam?.members.map((member) => (
+          <>
+            <EuiSpacer size="xs" />
+            <EuiFlexGroup
+              key={member.user_id}
+              gutterSize="s"
+              alignItems="center"
+              justifyContent="spaceBetween"
+            >
+              <EuiFlexItem grow={false}>
+                <EuiAvatar size="m" name={member.role} />
+              </EuiFlexItem>
+              <EuiFlexItem>
+                <EuiFlexGroup direction="column" gutterSize="none">
+                  <EuiFlexItem grow={false}>
+                    <EuiText size="xs">{member.user_id}</EuiText>
+                  </EuiFlexItem>
+                  <EuiFlexItem grow={false}>
+                    <EuiText size="xs">{member.user_id}</EuiText>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <MembersPopover member={member} />
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </>
+        ))}
     </>
   );
 };

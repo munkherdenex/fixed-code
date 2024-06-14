@@ -10,10 +10,8 @@ export interface User {
 
 export interface Initial_Auth_Type {
   user: User | null;
-  setUser?: React.Dispatch<React.SetStateAction<User | null>>;
   getToken: () => string | null;
   setToken: (token: string) => void;
   removeToken: () => void;
-  setUserTokenData: (user: User, token: string) => void;
   removeUserTokenData: () => void;
 }
