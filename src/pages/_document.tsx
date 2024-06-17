@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import Document, { Head, Html, Main, NextScript } from "next/document";
 import { defaultTheme, Theme, themeConfig } from "../lib/theme";
 
@@ -73,9 +73,24 @@ export default class MyDocument extends Document {
 
           <meta name="eui-styles-utility" />
 
-          <link rel="icon" type="image/png" href={isLocalDev ? favicon16Dev : favicon16Prod} sizes="16x16" />
-          <link rel="icon" type="image/png" href={isLocalDev ? favicon32Dev : favicon32Prod} sizes="32x32" />
-          <link rel="icon" type="image/png" href={isLocalDev ? favicon96Dev : favicon96Prod} sizes="96x96" />
+          <link
+            rel="icon"
+            type="image/png"
+            href={isLocalDev ? favicon16Dev : favicon16Prod}
+            sizes="16x16"
+          />
+          <link
+            rel="icon"
+            type="image/png"
+            href={isLocalDev ? favicon32Dev : favicon32Prod}
+            sizes="32x32"
+          />
+          <link
+            rel="icon"
+            type="image/png"
+            href={isLocalDev ? favicon96Dev : favicon96Prod}
+            sizes="96x96"
+          />
         </Head>
         <body className="guideBody">
           <Main />
