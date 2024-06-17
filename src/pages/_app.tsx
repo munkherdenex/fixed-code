@@ -24,6 +24,7 @@ declare global {
   }
   interface Error {
     status?: number;
+    error_message?: any;
   }
 }
 

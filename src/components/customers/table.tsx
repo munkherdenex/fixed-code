@@ -5,87 +5,62 @@ import {
   formatDate,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-
-type User = {
-  id: string;
-  email: string;
-  phone: string;
-  created_at: Date;
-  latitute: number;
-  longitute: number;
-  last_ip: string;
-};
-
-const users: User[] = [];
-
-for (let i = 0; i < 10; i++) {
-  users.push({
-    id: `${i}`,
-    email: `${i}@gmail.com`,
-    phone: "a",
-    created_at: new Date(),
-    last_ip: "192.168.10.1",
-    latitute: 0,
-    longitute: 0,
-  });
-}
+import useGetCustomers from "../../hooks/useGetCustomers";
+import { CustomersType } from "../../constants/customer.types";
+import moment from "moment";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersTable = () => {
   const router = useRouter();
-  const columns: Array<EuiBasicTableColumn<User>> = [
+  const { data } = useGetCustomers();
+
+  const columns: Array<EuiBasicTableColumn<CustomersType>> = [
     {
       field: "id",
       name: "ID",
-      "data-test-subj": "idCell",
       mobileOptions: {
-        render: (user: User) => <>{user.id}</>,
+        render: (customer: CustomersType) => <>{customer.id}</>,
         enlarge: true,
       },
     },
     {
       field: "email",
-      name: "Email",
-      "data-test-subj": "emailCell",
+      name: "Email address",
       mobileOptions: {
-        render: (user: User) => <>{user.email}</>,
+        render: (customer: CustomersType) => <>{customer.email}</>,
         enlarge: true,
       },
     },
     {
       field: "phone",
-      name: "Phone",
-      "data-test-subj": "phoneCell",
+      name: "Phone number",
       mobileOptions: {
-        render: (user: User) => <>{user.phone}</>,
+        render: (customer: CustomersType) => <>{customer.phone}</>,
         enlarge: true,
       },
     },
     {
-      field: "last_ip",
-      name: "Last ip",
-      "data-test-subj": "lastIpCell",
+      field: "created_by",
+      name: "Created by",
       mobileOptions: {
-        render: (user: User) => <>{user.last_ip}</>,
+        render: (customer: CustomersType) => <>{customer.created_by}</>,
         enlarge: true,
       },
     },
     {
       field: "created_at",
       name: "Created at",
-      "data-test-subj": "createdAtCell",
       mobileOptions: {
-        render: (user: User) => formatDate(user.created_at, "createdAt"),
+        render: (customer: CustomersType) => formatDate(moment(customer.created_at).format('YYYY-MM-DD'), "createdAt"),
         enlarge: true,
       },
     },
   ];
 
-  const getRowProps = (user: User) => {
-    const { id } = user;
+  const getRowProps = (customer: CustomersType) => {
+    const { id } = customer;
     return {
-      "data-test-subj": `row-${id}`,
       className: "customRowClass",
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/customers/info/${id}`);
@@ -93,13 +68,9 @@ const CustomersTable = () => {
     };
   };
 
-  const getCellProps = (user: User, column: EuiTableFieldDataColumnType<User>) => {
-    const { id } = user;
-    const { field } = column;
-
+  const getCellProps = (customer: CustomersType, column: EuiTableFieldDataColumnType<CustomersType>) => {
     return {
       className: "customCellClass",
-      "data-test-subj": `cell-${id}-${String(field)}`,
       textOnly: true,
     };
   };
@@ -107,7 +78,7 @@ const CustomersTable = () => {
   return (
     <EuiBasicTable
       tableCaption="Demo of EuiBasicTable"
-      items={users}
+      items={data}
       rowHeader="firstName"
       columns={columns}
       rowProps={getRowProps}

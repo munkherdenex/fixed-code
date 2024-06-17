@@ -1,42 +1,45 @@
 import {
-  EuiAccordion,
+  EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
   EuiPanel,
-  useGeneratedHtmlId,
+  EuiSpacer,
 } from "@elastic/eui";
+import useGetCustomers from "../../hooks/useGetCustomers";
+import { useRouter } from "next/router";
+import moment from "moment";
 
 const GeneralDetails = () => {
-  const rightArrowAccordionId = useGeneratedHtmlId({
-    prefix: "rightArrowAccordion",
-  });
+  const router = useRouter();
+  const { detailData } = useGetCustomers(router.query.id);
 
   return (
     <div>
       <EuiPanel>
         <EuiFlexGroup direction="column">
           <EuiFlexItem>
-            <EuiPanel paddingSize="s" color="subdued">
-              General details
+            <EuiPanel paddingSize="s" color="transparent">
+              <strong>Customer details</strong>
             </EuiPanel>
           </EuiFlexItem>
           <EuiFlexItem>
-            <p>informations</p>
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiAccordion
-              id={rightArrowAccordionId}
-              arrowDisplay="left"
-              buttonContent="Custom Fields"
-            >
-              <EuiPanel color="subdued">
-                Any content inside of <strong>EuiAccordion</strong> will appear here.
-              </EuiPanel>
-            </EuiAccordion>
+            <EuiFlexGrid columns={2}>
+              <EuiFlexItem >Email address :</EuiFlexItem>
+              <EuiFlexItem>
+                {String(detailData?.email)}
+              </EuiFlexItem>
+              <EuiFlexItem>Phone number :</EuiFlexItem>
+              <EuiFlexItem>{String(detailData?.phone)}</EuiFlexItem>
+              <EuiFlexItem>Created date :</EuiFlexItem>
+              <EuiFlexItem>{moment(detailData?.created_at).format('YYYY-MM-DD')}</EuiFlexItem>
+              <EuiFlexItem >Updated date :</EuiFlexItem>
+              <EuiFlexItem> {moment(detailData?.updated_at).format('YYYY-MM-DD')}</EuiFlexItem>
+            </EuiFlexGrid>
+            <EuiSpacer size="xl" />
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiPanel>
-    </div>
+    </div >
   );
 };
 
