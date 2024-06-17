@@ -2,8 +2,8 @@ import { useState } from "react";
 import { EuiGlobalToastList } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 
-let addToastHandler;
-let removeAllToastsHandler;
+let addToastHandler: (color: string, title: string, text: string) => void;
+let removeAllToastsHandler: () => void;
 let toastId = 0;
 
 export function addToast({ color, title, text }: Toast) {
@@ -26,7 +26,7 @@ const GlobalToastList = () => {
     );
   };
 
-  const removeToast = (removedToast) => {
+  const removeToast = (removedToast: Toast) => {
     setToasts((toasts) => toasts.filter((toast) => toast.id !== removedToast.id));
   };
 
