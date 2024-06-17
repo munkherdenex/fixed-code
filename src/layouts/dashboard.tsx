@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { ReactElement, useContext } from "react";
 import { SWRConfig } from "swr";
 import useProfile from "../hooks/useProfile";
+import useTeams from "../hooks/useTeams";
 import { authContext } from "../store/auth_store";
 import { teamsContext } from "../store/teams_store";
 import { dashboardsLayoutStyles } from "./dashboard.styles";
@@ -26,13 +27,14 @@ const DashboardLayout = ({
   const styles = dashboardsLayoutStyles();
   const { removeUserTokenData } = useContext(authContext);
   const { clearCurrentTeam } = useContext(teamsContext);
-  const { isLoading, error } = useProfile();
+  const { isLoading: profileIsLoading, error: profileError } = useProfile();
+  const { isLoading: teamsIsLoading, error: teamsError } = useTeams();
 
-  if (isLoading) {
+  if (profileIsLoading || teamsIsLoading) {
     return <div>...loading</div>;
   }
 
-  if (error) {
+  if (profileError || teamsError) {
     return <div>...error</div>;
   }
 

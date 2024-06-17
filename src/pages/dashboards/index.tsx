@@ -24,7 +24,7 @@ const Dashboard: FunctionComponent = () => {
               description="Example of a short card description."
               footer={
                 <div>
-                  <EuiButton href={`${pathPrefix}/dashboards/segments`} aria-label="Go to segments">
+                  <EuiButton href={`${pathPrefix}/dashboards/sends`} aria-label="Go to segments">
                     Go for it
                   </EuiButton>
                 </div>
