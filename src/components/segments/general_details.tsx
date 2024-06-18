@@ -5,10 +5,14 @@ import useGetSegments, { Segment } from "../../hooks/useGetSegments";
 
 const GeneralDetails = () => {
   const router = useRouter();
-  const { data } = useGetSegments<Segment>(router.query.id);
+  const { data, isLoading } = useGetSegments<Segment>(router.query.id);
 
-  if (data === undefined) {
-    return null;
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!data) {
+    return <div>No data</div>;
   }
 
   return (
