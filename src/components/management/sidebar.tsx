@@ -1,9 +1,11 @@
 import { EuiSideNav, htmlIdGenerator } from "@elastic/eui";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const Sidebar = ({ active }: { active: string }) => {
+  const router = useRouter();
   const [isSideNavOpenOnMobile, setisSideNavOpenOnMobile] = useState(false);
 
   const toggleOpenOnMobile = () => {
@@ -18,20 +20,26 @@ const Sidebar = ({ active }: { active: string }) => {
         {
           name: "Team members",
           id: htmlIdGenerator("Team members")(),
-          href: `${pathPrefix}/dashboards/management`,
           isSelected: active === "teamMembers",
+          onClick: () => {
+            router.push(`${pathPrefix}/dashboards/management`);
+          },
         },
         {
           name: "API keys",
           id: htmlIdGenerator("api-keys")(),
-          href: `${pathPrefix}/dashboards/management/api-keys`,
           isSelected: active === "api-keys",
+          onClick: () => {
+            router.push(`${pathPrefix}/dashboards/management/api-keys`);
+          },
         },
         {
           name: "Settings",
           id: htmlIdGenerator("Settings")(),
-          href: `${pathPrefix}/dashboards/management/settings`,
           isSelected: active === "settings",
+          onClick: () => {
+            router.push(`${pathPrefix}/dashboards/management/settings`);
+          },
         },
       ],
     },

@@ -11,33 +11,60 @@ import {
 } from "@elastic/eui";
 import { css } from "@emotion/react";
 import find from "lodash/find";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
-const SendsLinks: EuiPinnableListGroupItemProps[] = [
-  { label: "Dashboards", href: `${pathPrefix}/dashboards/sends`, pinnable: false },
-];
-
-const CustomersLinks: EuiPinnableListGroupItemProps[] = [
-  { label: "Dashboards", href: `${pathPrefix}/dashboards/customers`, pinnable: false },
-];
-
-const SegmentsLinks: EuiPinnableListGroupItemProps[] = [
-  { label: "Dashboards", href: `${pathPrefix}/dashboards/segments`, pinnable: false },
-];
-
-const KibanaLinks: EuiPinnableListGroupItemProps[] = [
-  { label: "Discover", href: `${pathPrefix}/kibana/discover`, pinnable: false },
-  { label: "Dashboard", href: `${pathPrefix}/kibana/dashboards`, pinnable: false },
-  { label: "Maps", href: `${pathPrefix}/kibana/maps`, pinnable: false },
-];
-
-const ManagementLinks: EuiPinnableListGroupItemProps[] = [
-  { label: "Settings", href: `${pathPrefix}/dashboards/management`, pinnable: false },
-];
-
 const CollapsibleNav = () => {
+  const router = useRouter();
+
+  const SendsLinks: EuiPinnableListGroupItemProps[] = [
+    {
+      label: "Dashboards",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/sends`);
+      },
+      pinnable: false,
+    },
+  ];
+
+  const CustomersLinks: EuiPinnableListGroupItemProps[] = [
+    {
+      label: "Dashboards",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/customers`);
+      },
+      pinnable: false,
+    },
+  ];
+
+  const SegmentsLinks: EuiPinnableListGroupItemProps[] = [
+    {
+      label: "Dashboards",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/segments`);
+      },
+      pinnable: false,
+    },
+  ];
+
+  const KibanaLinks: EuiPinnableListGroupItemProps[] = [
+    { label: "Discover", href: `${pathPrefix}/kibana/discover`, pinnable: false },
+    { label: "Dashboard", href: `${pathPrefix}/kibana/dashboards`, pinnable: false },
+    { label: "Maps", href: `${pathPrefix}/kibana/maps`, pinnable: false },
+  ];
+
+  const ManagementLinks: EuiPinnableListGroupItemProps[] = [
+    {
+      label: "Settings",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/management`);
+      },
+      pinnable: false,
+    },
+  ];
+
   const [navIsOpen, setNavIsOpen] = useState(false);
 
   /**

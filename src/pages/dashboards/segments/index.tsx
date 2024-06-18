@@ -1,6 +1,16 @@
-import { FunctionComponent } from "react";
+import {
+  EuiBasicTable,
+  EuiBasicTableColumn,
+  EuiBreadcrumbs,
+  EuiButton,
+  EuiTableFieldDataColumnType,
+  useEuiTheme,
+} from "@elastic/eui";
+import moment from "moment";
 import Head from "next/head";
-import { EuiBreadcrumbs, EuiButton, useEuiTheme } from "@elastic/eui";
+import { useRouter } from "next/router";
+import { FunctionComponent } from "react";
+import useSegmentsList, { Segment } from "../../../hooks/useSegmentsList";
 import DashboardLayout from "../../../layouts/dashboard";
 import { dashboardsStyles } from "../../../styles/dashboards.styles";
 
@@ -8,7 +18,82 @@ const pathPrefix = process.env.PATH_PREFIX;
 
 const Dashboard: FunctionComponent = () => {
   const { euiTheme } = useEuiTheme();
+  const router = useRouter();
   const styles = dashboardsStyles(euiTheme);
+  const { data, isLoading } = useSegmentsList();
+  const columns: Array<EuiBasicTableColumn<Segment>> = [
+    {
+      field: "id",
+      name: "ID",
+      "data-test-subj": "idCell",
+      mobileOptions: {
+        render: (segment: Segment) => <>{segment.id}</>,
+        enlarge: true,
+      },
+    },
+    {
+      field: "name",
+      name: "Name",
+      "data-test-subj": "nameCell",
+      mobileOptions: {
+        render: (segment: Segment) => <>{segment.name}</>,
+        enlarge: true,
+      },
+    },
+    {
+      field: "description",
+      name: "Description",
+      "data-test-subj": "descriptionCell",
+      mobileOptions: {
+        render: (segment: Segment) => <>{segment.description}</>,
+        enlarge: true,
+      },
+    },
+    {
+      field: "type",
+      name: "Type",
+      "data-test-subj": "typeCell",
+      mobileOptions: {
+        render: (segment: Segment) => <>{segment.type}</>,
+        enlarge: true,
+      },
+    },
+    {
+      field: "created_at",
+      name: "Created at",
+      "data-test-subj": "createdAtCell",
+      mobileOptions: {
+        render: (segment: Segment) => moment(segment.updated_at).format("YYYY-MM-DD HH:mm:ss"),
+        enlarge: true,
+      },
+    },
+  ];
+
+  const getRowProps = (segment: Segment) => {
+    const { id } = segment;
+    return {
+      "data-test-subj": `row-${id}`,
+      className: "customRowClass",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/segments/info/${id}`);
+      },
+    };
+  };
+
+  const getCellProps = (segment: Segment, column: EuiTableFieldDataColumnType<Segment>) => {
+    const { id } = segment;
+    const { field } = column;
+
+    return {
+      className: "customCellClass",
+      "data-test-subj": `cell-${id}-${String(field)}`,
+      textOnly: true,
+    };
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -22,7 +107,7 @@ const Dashboard: FunctionComponent = () => {
           rightSideItems: [
             <EuiButton
               color="primary"
-              href={`${pathPrefix}/dashboards/segments/create`}
+              onClick={() => router.push(`${pathPrefix}/dashboards/segments/create`)}
               fill
               key="create-segment"
             >
@@ -35,7 +120,7 @@ const Dashboard: FunctionComponent = () => {
             breadcrumbs={[
               {
                 text: "Dashboards",
-                href: `${pathPrefix}/dashboards`,
+                onClick: () => router.push(`${pathPrefix}/dashboards`),
               },
               {
                 text: "Segments",
@@ -45,7 +130,16 @@ const Dashboard: FunctionComponent = () => {
           />
         }
       >
-        <div css={styles.container}>content</div>
+        <div css={styles.container}>
+          <EuiBasicTable
+            tableCaption="Demo of EuiBasicTable"
+            items={data || []}
+            rowHeader="firstName"
+            columns={columns}
+            rowProps={getRowProps}
+            cellProps={getCellProps}
+          />
+        </div>
       </DashboardLayout>
     </>
   );
