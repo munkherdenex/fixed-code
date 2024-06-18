@@ -12,12 +12,13 @@ import {
   EuiFieldNumber,
   EuiButton,
 } from "@elastic/eui";
-import { SetStateAction } from "react";
+import { SetStateAction, useContext } from "react";
 import useCreateCustomer from "../../hooks/useCreateCustomer";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { addToast } from "../toast";
+import { teamsContext } from "../../store/teams_store";
 
 const schema = yup
   .object({
@@ -36,6 +37,7 @@ const CreateCustomerComponent = ({
 }: {
   setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
+  const { currentTeam } = useContext(teamsContext);
   const flyoutHeadingId = useGeneratedHtmlId();
   const { trigger } = useCreateCustomer<FormData>();
 
@@ -45,6 +47,9 @@ const CreateCustomerComponent = ({
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      team_id: currentTeam?.id.toString() || "",
+    },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -56,7 +61,7 @@ const CreateCustomerComponent = ({
           id: "customer-success",
           color: "success",
           title: "Success",
-          text: 'Successfully register',
+          text: "Successfully register",
         });
       }
     } catch (e) {
@@ -72,12 +77,9 @@ const CreateCustomerComponent = ({
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
-        <EuiForm
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFlexGroup direction="column">
-            <EuiFlexItem >
+            <EuiFlexItem>
               <EuiFormRow
                 label="Email address"
                 isInvalid={!!errors.email?.message}
@@ -98,8 +100,8 @@ const CreateCustomerComponent = ({
                   )}
                 />
               </EuiFormRow>
-            </EuiFlexItem >
-            <EuiFlexItem >
+            </EuiFlexItem>
+            <EuiFlexItem>
               <EuiFormRow
                 label="Phone number"
                 isInvalid={!!errors.phone?.message}
@@ -120,8 +122,8 @@ const CreateCustomerComponent = ({
                   )}
                 />
               </EuiFormRow>
-            </EuiFlexItem >
-            <EuiFlexItem >
+            </EuiFlexItem>
+            <EuiFlexItem>
               <EuiFormRow
                 label="Registration id"
                 isInvalid={!!errors.email?.message}
@@ -142,10 +144,9 @@ const CreateCustomerComponent = ({
                   )}
                 />
               </EuiFormRow>
-            </EuiFlexItem >
+            </EuiFlexItem>
 
-
-            <EuiFlexItem >
+            <EuiFlexItem>
               <EuiFormRow
                 label="Source"
                 isInvalid={!!errors.email?.message}
@@ -166,10 +167,9 @@ const CreateCustomerComponent = ({
                   )}
                 />
               </EuiFormRow>
-            </EuiFlexItem >
+            </EuiFlexItem>
 
-
-            <EuiFlexItem >
+            <EuiFlexItem>
               <EuiFormRow
                 label="team_id"
                 isInvalid={!!errors.email?.message}
@@ -186,11 +186,12 @@ const CreateCustomerComponent = ({
                       isInvalid={!!errors.email?.message}
                       placeholder="team_id"
                       aria-label="team_id"
+                      readOnly
                     />
                   )}
                 />
               </EuiFormRow>
-            </EuiFlexItem >
+            </EuiFlexItem>
             <EuiFlexItem grow={false}>
               <EuiFormRow hasEmptyLabelSpace>
                 <EuiButton type="submit">Create customer</EuiButton>
