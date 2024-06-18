@@ -7,10 +7,8 @@ import {
   useGeneratedHtmlId,
   EuiAvatar,
   EuiText,
-  EuiSpacer,
   EuiFlexGroup,
   EuiPopover,
-  EuiLink,
   EuiButtonEmpty,
   EuiButton,
 } from "@elastic/eui";
@@ -25,7 +23,8 @@ const pathPrefix = process.env.PATH_PREFIX;
 
 const HeaderUserMenu = () => {
   const router = useRouter();
-  const { removeUserTokenData } = useContext(authContext);
+  const styles = dashboardHeadersStyles();
+  const { removeUserTokenData, user } = useContext(authContext);
   const { clearCurrentTeam } = useContext(teamsContext);
   const headerUserPopoverId = useGeneratedHtmlId({
     prefix: "headerUserPopover",
@@ -68,31 +67,26 @@ const HeaderUserMenu = () => {
             <EuiAvatar name="John Username" size="xl" />
           </EuiFlexItem>
           <EuiFlexItem>
-            <EuiText>
-              <p>John Username</p>
+            <EuiText css={styles.title}>
+              <p>{user.email ? user.email : `${user.first_name} ${user.last_name}`}</p>
             </EuiText>
-            <EuiSpacer size="m" />
             <EuiFlexGroup>
-              <EuiFlexItem>
-                <EuiFlexGroup justifyContent="spaceBetween">
-                  <EuiFlexItem grow={false}>
-                    <EuiButtonEmpty
-                      onClick={() => router.push(`${pathPrefix}/dashboards/management/settings`)}
-                    >
-                      Edit profile
-                    </EuiButtonEmpty>
-                  </EuiFlexItem>
-                  <EuiFlexItem grow={false}>
-                    <EuiLink
-                      onClick={() => {
-                        removeUserTokenData();
-                        clearCurrentTeam();
-                      }}
-                    >
-                      Log out
-                    </EuiLink>
-                  </EuiFlexItem>
-                </EuiFlexGroup>
+              <EuiFlexItem grow={false}>
+                <EuiButtonEmpty
+                  onClick={() => router.push(`${pathPrefix}/dashboards/management/settings`)}
+                >
+                  Edit profile
+                </EuiButtonEmpty>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiButtonEmpty
+                  onClick={() => {
+                    removeUserTokenData();
+                    clearCurrentTeam();
+                  }}
+                >
+                  Log out
+                </EuiButtonEmpty>
               </EuiFlexItem>
             </EuiFlexGroup>
           </EuiFlexItem>
