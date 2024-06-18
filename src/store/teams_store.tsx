@@ -74,6 +74,7 @@ export const TeamsProvider = ({ children }) => {
   useEffect(() => {
     //TODO: buh fetch huselt dahin duudagdana currentTeam uurchlugduh uyed
     mutate("/api/v1/dj/segments/");
+    mutate("/api/v1/dj/customers/");
   }, [currentTeam]);
 
   return (
