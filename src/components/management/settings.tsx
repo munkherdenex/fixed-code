@@ -63,7 +63,10 @@ const Settings = () => {
   };
 
   return (
-    <EuiFlexGroup gutterSize="xl" css={styles.container} direction="column">
+    <EuiFlexGroup css={styles.container} direction="column">
+      <EuiFlexItem>
+        <EuiSwitch label="Edit profile" checked={isEditProfile} onChange={(e) => onChange(e)} />
+      </EuiFlexItem>
       <EuiFlexItem>
         <EuiPanel>
           <EuiFlexGroup>
@@ -121,13 +124,6 @@ const Settings = () => {
                   </EuiButton>
                 )}
               </EuiForm>
-            </EuiFlexItem>
-            <EuiFlexItem>
-              <EuiSwitch
-                label="Edit profile"
-                checked={isEditProfile}
-                onChange={(e) => onChange(e)}
-              />
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiPanel>
