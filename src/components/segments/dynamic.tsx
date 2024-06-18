@@ -1,6 +1,12 @@
 import { QueryBuilder } from "react-querybuilder";
 
-const Dynamic = () => {
+const Dynamic = ({
+  createSegment,
+  isCreateSegmentMutating,
+}: {
+  createSegment: (data: any) => void;
+  isCreateSegmentMutating: boolean;
+}) => {
   return (
     <>
       <div>Dynamic</div>

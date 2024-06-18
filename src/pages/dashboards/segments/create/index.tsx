@@ -1,10 +1,6 @@
-import Head from "next/head";
-import { FunctionComponent, useState } from "react";
-import DashboardLayout from "../../../../layouts/dashboard";
 import {
   EuiBreadcrumbs,
   EuiButton,
-  EuiButtonEmpty,
   EuiCard,
   EuiFieldText,
   EuiFlexGroup,
@@ -20,16 +16,41 @@ import {
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
-import Static from "../../../../components/segments/static";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { FunctionComponent, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
 import Dynamic from "../../../../components/segments/dynamic";
 import Manual from "../../../../components/segments/manual";
+import Static from "../../../../components/segments/static";
+import useCreateSegment from "../../../../hooks/useCreateSegment";
+import DashboardLayout from "../../../../layouts/dashboard";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
+const schema = yup.object({
+  name: yup.string().required("please enter your name"),
+  description: yup.string(),
+});
+
+type FormData = yup.InferType<typeof schema>;
+
 const Dashboard: FunctionComponent = () => {
-  const [_, setFirstFormData] = useState(null);
+  const router = useRouter();
+  const { trigger, isMutating: isCreateSegmentMutating } = useCreateSegment();
+  const [firstFormData, setFirstFormData] = useState<FormData | null>(null);
   const [selectedCard, setCard] = useState(1);
   const [openFlyout, setOpenFlyout] = useState(false);
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   const flyoutTitleId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
@@ -39,19 +60,26 @@ const Dashboard: FunctionComponent = () => {
     setCard(number);
   };
 
-  const detailsClicked = (e: { stopPropagation: () => void }) => {
-    e.stopPropagation();
+  const addSubscriber = (data: FormData) => {
+    setFirstFormData(data);
+    setOpenFlyout(true);
   };
 
-  const addSubscriber = (e) => {
-    e.preventDefault();
+  const createSegment = async (data) => {
+    try {
+      const response = await trigger({
+        name: firstFormData.name,
+        description: firstFormData.description,
+        type: selectedCard === 1 ? "static" : selectedCard === 2 ? "dynamic" : "manual",
+        team_id: data.team_id,
+      });
 
-    setFirstFormData({
-      title: e.target.title.value,
-      description: e.target.description.value,
-    });
-
-    setOpenFlyout(true);
+      if (response) {
+        router.push("/dashboards/segments");
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -69,11 +97,11 @@ const Dashboard: FunctionComponent = () => {
             breadcrumbs={[
               {
                 text: "Dashboards",
-                href: `${pathPrefix}/dashboards`,
+                onClick: () => router.push(`${pathPrefix}/dashboards`),
               },
               {
                 text: "Segments",
-                href: `${pathPrefix}/dashboards/segments`,
+                onClick: () => router.push(`${pathPrefix}/dashboards/segments`),
               },
               {
                 text: "Create segment",
@@ -85,18 +113,44 @@ const Dashboard: FunctionComponent = () => {
       >
         <>
           <EuiPanel>
-            <EuiForm component="form" onSubmit={addSubscriber}>
+            <EuiForm component="form" onSubmit={handleSubmit(addSubscriber)}>
               <EuiFlexGroup direction="column">
                 <EuiFlexItem>
-                  <EuiFormRow label="Title">
-                    <EuiFieldText name="title" placeholder="title" fullWidth required />
+                  <EuiFormRow
+                    label="Title"
+                    isInvalid={!!errors.name?.message}
+                    error={[errors.name?.message]}
+                  >
+                    <Controller
+                      control={control}
+                      name="name"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <EuiFieldText
+                          onChange={onChange}
+                          value={value}
+                          onBlur={onBlur}
+                          placeholder="title"
+                          fullWidth
+                          required
+                          isInvalid={!!errors.name?.message}
+                        />
+                      )}
+                    />
                   </EuiFormRow>
                   <EuiFormRow label="Description">
-                    <EuiTextArea
-                      placeholder="Placeholder text"
+                    <Controller
+                      control={control}
                       name="description"
-                      aria-label="Use aria labels when no actual label is in use"
-                      required
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <EuiTextArea
+                          onChange={onChange}
+                          value={value}
+                          onBlur={onBlur}
+                          placeholder="Placeholder text"
+                          name="description"
+                          aria-label="Use aria labels when no actual label is in use"
+                        />
+                      )}
                     />
                   </EuiFormRow>
                 </EuiFlexItem>
@@ -107,16 +161,6 @@ const Dashboard: FunctionComponent = () => {
                         icon={<EuiIcon size="xxl" type="logoSketch" />}
                         title="Static"
                         description="Example of a short card description."
-                        footer={
-                          <EuiButtonEmpty
-                            iconType="iInCircle"
-                            size="xs"
-                            onClick={detailsClicked}
-                            aria-label="See more details about Sketch"
-                          >
-                            More details
-                          </EuiButtonEmpty>
-                        }
                         selectable={{
                           onClick: () => cardClicked(1),
                           isSelected: selectedCard === 1,
@@ -128,16 +172,6 @@ const Dashboard: FunctionComponent = () => {
                         icon={<EuiIcon size="xxl" type="logoGCP" />}
                         title="Dynamic"
                         description="Example of a longer card description. See how the footers stay lined up."
-                        footer={
-                          <EuiButtonEmpty
-                            iconType="iInCircle"
-                            size="xs"
-                            onClick={detailsClicked}
-                            aria-label="See more details about Google"
-                          >
-                            More details
-                          </EuiButtonEmpty>
-                        }
                         selectable={{
                           onClick: () => cardClicked(2),
                           isSelected: selectedCard === 2,
@@ -149,16 +183,6 @@ const Dashboard: FunctionComponent = () => {
                         icon={<EuiIcon size="xxl" type="logoAerospike" />}
                         title="Manual"
                         description="Example of a short card description."
-                        footer={
-                          <EuiButtonEmpty
-                            iconType="iInCircle"
-                            size="xs"
-                            onClick={detailsClicked}
-                            aria-label="See more details about Not Adobe"
-                          >
-                            More details
-                          </EuiButtonEmpty>
-                        }
                         selectable={{
                           onClick: () => cardClicked(3),
                           isSelected: selectedCard === 3,
@@ -168,7 +192,7 @@ const Dashboard: FunctionComponent = () => {
                   </EuiFlexGroup>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiButton type="submit">Add subscriber</EuiButton>
+                  <EuiButton type="submit">Add segment</EuiButton>
                 </EuiFlexItem>
               </EuiFlexGroup>
             </EuiForm>
@@ -178,25 +202,29 @@ const Dashboard: FunctionComponent = () => {
               <EuiFlyoutHeader hasBorder aria-labelledby={flyoutTitleId}>
                 <EuiTitle>
                   <h2 id={flyoutTitleId}>
-                    {selectedCard === 1
-                      ? "Static"
-                      : selectedCard === 2
-                      ? "Dynamic"
-                      : selectedCard === 3
-                      ? "Manual"
-                      : ""}
+                    {selectedCard === 1 && "Static"} {selectedCard === 2 && "Dynamic"}{" "}
+                    {selectedCard === 3 && "Manual"}
                   </h2>
                 </EuiTitle>
               </EuiFlyoutHeader>
               <EuiFlyoutBody>
-                {selectedCard === 1 ? (
-                  <Static />
-                ) : selectedCard === 2 ? (
-                  <Dynamic />
-                ) : selectedCard === 3 ? (
-                  <Manual />
-                ) : (
-                  <></>
+                {selectedCard === 1 && (
+                  <Static
+                    createSegment={createSegment}
+                    isCreateSegmentMutating={isCreateSegmentMutating}
+                  />
+                )}
+                {selectedCard === 2 && (
+                  <Dynamic
+                    createSegment={createSegment}
+                    isCreateSegmentMutating={isCreateSegmentMutating}
+                  />
+                )}
+                {selectedCard === 3 && (
+                  <Manual
+                    createSegment={createSegment}
+                    isCreateSegmentMutating={isCreateSegmentMutating}
+                  />
                 )}
               </EuiFlyoutBody>
             </EuiFlyout>

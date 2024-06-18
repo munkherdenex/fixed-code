@@ -1,5 +1,6 @@
 import { EuiBreadcrumbs, EuiButton } from "@elastic/eui";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import CreateCustomerComponent from "../../../components/customers/create_customer";
 import CustomersTable from "../../../components/customers/table";
@@ -8,6 +9,7 @@ import DashboardLayout from "../../../layouts/dashboard";
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersDashboard = () => {
+  const router = useRouter();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
   return (
@@ -35,7 +37,7 @@ const CustomersDashboard = () => {
             breadcrumbs={[
               {
                 text: "Dashboards",
-                href: `${pathPrefix}/dashboards`,
+                onClick: () => router.push(`${pathPrefix}/dashboards`),
               },
               {
                 text: "Customers",

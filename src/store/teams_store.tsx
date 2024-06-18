@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { createContext, useCallback, useEffect, useState } from "react";
-import { set } from "react-hook-form";
+import { mutate } from "swr";
+import useChangeTeam from "../hooks/useChangeTeam";
 import useTeams from "../hooks/useTeams";
 import { Initial_Teams_Type, Teams } from "./teams_store.types";
 
@@ -16,20 +17,28 @@ export const teamsContext = createContext(initial_teams_state);
 
 export const TeamsProvider = ({ children }) => {
   const router = useRouter();
+  const { trigger } = useChangeTeam();
   const { data: teams, isLoading: teamsIsLoading, error: teamsError } = useTeams();
+  const [teamsData, setTeamsData] = useState<Teams[] | null>(null);
   const [currentTeam, setCurrentTeam] = useState<Teams | null>(null);
 
   const changeCurrentTeam = useCallback(
-    (teamId: number) => {
-      const team = teams.find((team) => team.id === teamId);
+    async (teamId: number) => {
+      const team = teamsData.find((team) => team.id === teamId);
       if (team) {
         localStorage.setItem("currentTeamId", teamId.toString());
-        setCurrentTeam(team);
+        try {
+          await trigger({ team_id: teamId });
+          console.log("wait team");
+          setCurrentTeam(team);
+        } catch {
+          alert("error");
+        }
       } else {
-        setCurrentTeam(teams[0]);
+        setCurrentTeam(teamsData[0]);
       }
     },
-    [teams],
+    [teamsData, trigger],
   );
 
   const clearCurrentTeam = () => {
@@ -38,23 +47,34 @@ export const TeamsProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (teams?.length === 0 || !teams) {
+    if (teams) {
+      setTeamsData(teams);
+    }
+  }, [teams]);
+
+  useEffect(() => {
+    if (teamsData?.length === 0 || !teamsData) {
       setCurrentTeam(null);
     }
-    if (teams?.length === 0 && !teamsIsLoading && !teamsError) {
+    if (teamsData?.length === 0 && !teamsIsLoading && !teamsError) {
       router.replace("/dashboards/team/create");
       return;
     }
-    if (teams && !currentTeam) {
+    if (teamsData && !currentTeam) {
       const currentTeamId = localStorage.getItem("currentTeamId");
       if (currentTeamId && isNaN(+currentTeamId) === false) {
-        const team = teams.find((team) => team.id === +currentTeamId);
+        const team = teamsData.find((team) => team.id === +currentTeamId);
         changeCurrentTeam(team?.id);
       } else {
-        changeCurrentTeam(teams[0].id);
+        changeCurrentTeam(teamsData[0].id);
       }
     }
-  }, [teams, router, teamsIsLoading, teamsError, currentTeam, changeCurrentTeam]);
+  }, [teamsData, router, teamsIsLoading, teamsError, currentTeam, changeCurrentTeam]);
+
+  useEffect(() => {
+    //TODO: buh fetch huselt dahin duudagdana currentTeam uurchlugduh uyed
+    mutate("/api/v1/dj/segments/");
+  }, [currentTeam]);
 
   return (
     <teamsContext.Provider

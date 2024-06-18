@@ -1,9 +1,9 @@
-import useSWR from "swr";
-import { BASE_URL } from "../constants";
+import useSWRImmutable from "swr/immutable";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
+import { BASE_URL } from "../constants";
 import { Teams } from "../store/teams_store.types";
-import { useRouter } from "next/router";
 
 export default function useTeams(): {
   data: Teams[];
@@ -11,7 +11,7 @@ export default function useTeams(): {
   isLoading: boolean;
 } {
   const router = useRouter();
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading } = useSWRImmutable(
     router.pathname.includes("dashboard") ? `/api/v1/teams` : null,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {

@@ -1,11 +1,13 @@
 import { EuiBreadcrumbs, EuiButton } from "@elastic/eui";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import SendsTable from "../../../components/sends/table";
 import DashboardLayout from "../../../layouts/dashboard";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const SendsDashboard = () => {
+  const router = useRouter();
   return (
     <>
       <Head>
@@ -18,7 +20,7 @@ const SendsDashboard = () => {
           rightSideItems: [
             <EuiButton
               color="primary"
-              href={`${pathPrefix}/dashboards/sends/create`}
+              onClick={() => router.push(`${pathPrefix}/dashboards/sends/create`)}
               fill
               key="create-sends"
             >
@@ -31,7 +33,7 @@ const SendsDashboard = () => {
             breadcrumbs={[
               {
                 text: "Dashboards",
-                href: `${pathPrefix}/dashboards`,
+                onClick: () => router.push(`${pathPrefix}/dashboards`),
               },
               {
                 text: "Sends",

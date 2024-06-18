@@ -19,10 +19,12 @@ import CollapsibleNav from "../components/dashboards/collapsible_nav";
 import { dashboardHeadersStyles } from "./dashboard_headers.style";
 import { teamsContext } from "../store/teams_store";
 import { authContext } from "../store/auth_store";
+import { useRouter } from "next/router";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const HeaderUserMenu = () => {
+  const router = useRouter();
   const { removeUserTokenData } = useContext(authContext);
   const { clearCurrentTeam } = useContext(teamsContext);
   const headerUserPopoverId = useGeneratedHtmlId({
@@ -74,9 +76,11 @@ const HeaderUserMenu = () => {
               <EuiFlexItem>
                 <EuiFlexGroup justifyContent="spaceBetween">
                   <EuiFlexItem grow={false}>
-                    <EuiLink href={`${pathPrefix}/dashboards/management/settings`}>
+                    <EuiButtonEmpty
+                      onClick={() => router.push(`${pathPrefix}/dashboards/management/settings`)}
+                    >
                       Edit profile
-                    </EuiLink>
+                    </EuiButtonEmpty>
                   </EuiFlexItem>
                   <EuiFlexItem grow={false}>
                     <EuiLink
@@ -99,6 +103,7 @@ const HeaderUserMenu = () => {
 };
 
 const TeamSwitcher = () => {
+  const router = useRouter();
   const styles = dashboardHeadersStyles();
   const { teams, currentTeam, changeCurrentTeam } = useContext(teamsContext);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -147,7 +152,7 @@ const TeamSwitcher = () => {
       <EuiFlexGroup direction="column" gutterSize="s">
         {renderTeams()}
         <EuiFlexItem>
-          <EuiButton fill size="s" href="/dashboards/team/create">
+          <EuiButton fill size="s" onClick={() => router.push("/dashboards/team/create")}>
             Create a new team
           </EuiButton>
         </EuiFlexItem>
@@ -157,6 +162,7 @@ const TeamSwitcher = () => {
 };
 
 const DashboardHeaders = () => {
+  const router = useRouter();
   const leftSectionItems = [<CollapsibleNav key={useGeneratedHtmlId()} />];
 
   return (
@@ -169,7 +175,8 @@ const DashboardHeaders = () => {
               <EuiHeaderLogo
                 key="elastic-logo"
                 iconType="logoElastic"
-                href={`${pathPrefix}/dashboards`}
+                style={{ cursor: "pointer" }}
+                onClick={() => router.push(`${pathPrefix}/dashboards`)}
               >
                 Data dashboard
               </EuiHeaderLogo>,

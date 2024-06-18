@@ -1,17 +1,23 @@
-import useSWRImmutable from "swr/immutable";
 import { BASE_URL } from "../constants";
+import useSWRMutation from "swr/mutation";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
-import { useRouter } from "next/router";
 
-export default function useProfile() {
-  const router = useRouter();
-  const { data, error, isLoading } = useSWRImmutable(
-    router.pathname.includes("dashboard") ? `/api/v1/profile` : null,
-    async (path) => {
+export interface FormData {
+  name: string;
+  description: string;
+  type: "manual" | "dynamic" | "static";
+  team_id: string;
+}
+
+export default function useCreateSegment() {
+  const { data, error, isMutating, trigger } = useSWRMutation(
+    `/api/v1/dj/segments/`,
+    async (path, { arg }: { arg: FormData }) => {
       const res = await fetch(`${BASE_URL}${path}`, {
-        method: "GET",
+        method: "POST",
         headers: { "content-type": "application/json" },
+        body: JSON.stringify(arg),
         credentials: "include",
       });
 
@@ -25,14 +31,14 @@ export default function useProfile() {
         throw error;
       }
 
-      return res.json();
+      return res;
     },
   );
 
   useEffect(() => {
     if (error) {
       addToast({
-        id: "profile-error",
+        id: "create-segment-error",
         color: "danger",
         title: "An error occurred",
         text: error?.message,
@@ -41,8 +47,9 @@ export default function useProfile() {
   }, [error]);
 
   return {
-    data,
+    data: data,
     error,
-    isLoading,
+    isMutating,
+    trigger,
   };
 }

@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
-import { createContext } from "react";
+import { createContext, useEffect, useState } from "react";
 import { mutate } from "swr";
 import useLogout from "../hooks/useLogout";
 import useProfile from "../hooks/useProfile";
@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   const router = useRouter();
   const { trigger } = useLogout();
   const { data: user } = useProfile();
+  const [userData, setUserData] = useState();
 
   const getToken = () => {
     return Cookies.get("token");
@@ -52,10 +53,16 @@ export const AuthProvider = ({ children }) => {
     router.replace("/signin");
   };
 
+  useEffect(() => {
+    if (user) {
+      setUserData(user);
+    }
+  }, [user]);
+
   return (
     <authContext.Provider
       value={{
-        user,
+        user: userData,
         getToken,
         setToken,
         removeToken,

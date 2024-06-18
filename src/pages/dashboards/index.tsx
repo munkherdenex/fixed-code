@@ -3,10 +3,12 @@ import Head from "next/head";
 import { EuiButton, EuiCard, EuiFlexGrid, EuiFlexItem, EuiIcon, useEuiTheme } from "@elastic/eui";
 import DashboardLayout from "../../layouts/dashboard";
 import { dashboardsStyles } from "../../styles/dashboards.styles";
+import { useRouter } from "next/router";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const Dashboard: FunctionComponent = () => {
+  const router = useRouter();
   const { euiTheme } = useEuiTheme();
   const styles = dashboardsStyles(euiTheme);
 
@@ -24,7 +26,10 @@ const Dashboard: FunctionComponent = () => {
               description="Example of a short card description."
               footer={
                 <div>
-                  <EuiButton href={`${pathPrefix}/dashboards/sends`} aria-label="Go to segments">
+                  <EuiButton
+                    onClick={() => router.push(`${pathPrefix}/dashboards/sends`)}
+                    aria-label="Go to segments"
+                  >
                     Go for it
                   </EuiButton>
                 </div>
@@ -39,7 +44,7 @@ const Dashboard: FunctionComponent = () => {
               footer={
                 <div>
                   <EuiButton
-                    href={`${pathPrefix}/dashboards/customers`}
+                    onClick={() => router.push(`${pathPrefix}/dashboards/customers`)}
                     aria-label="Go to Dashboards"
                   >
                     Go for it
@@ -56,7 +61,7 @@ const Dashboard: FunctionComponent = () => {
               footer={
                 <div>
                   <EuiButton
-                    href={`${pathPrefix}/dashboards/segments`}
+                    onClick={() => router.push(`${pathPrefix}/dashboards/segments`)}
                     aria-label="Go to Save Objects"
                   >
                     Go for it
@@ -73,7 +78,7 @@ const Dashboard: FunctionComponent = () => {
               footer={
                 <div>
                   <EuiButton
-                    href={`${pathPrefix}/dashboards/analytics`}
+                    onClick={() => router.push(`${pathPrefix}/dashboards/analytics`)}
                     aria-label="Go to Save Objects"
                   >
                     Go for it
@@ -90,7 +95,7 @@ const Dashboard: FunctionComponent = () => {
               footer={
                 <div>
                   <EuiButton
-                    href={`${pathPrefix}/dashboards/management`}
+                    onClick={() => router.push(`${pathPrefix}/dashboards/management`)}
                     aria-label="Go to Save Objects"
                   >
                     Go for it
