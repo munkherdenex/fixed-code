@@ -167,32 +167,6 @@ const CollapsibleNav = () => {
         <EuiCollapsibleNavGroup
           title={
             <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
-              Sends
-            </a>
-          }
-          buttonElement="div"
-          iconType="spacesApp"
-          isCollapsible={true}
-          initialIsOpen={openGroups.includes("Sends")}
-          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Sends")}
-        >
-          <EuiPinnableListGroup
-            aria-label="Sends" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
-            listItems={alterLinksWithCurrentState(SendsLinks)}
-            pinTitle={addLinkNameToPinTitle}
-            onPinClick={addPin}
-            maxWidth="none"
-            color="subdued"
-            gutterSize="none"
-            size="s"
-          />
-        </EuiCollapsibleNavGroup>
-      </EuiFlexItem>
-      <EuiHorizontalRule margin="none" />
-      <EuiFlexItem grow={false}>
-        <EuiCollapsibleNavGroup
-          title={
-            <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
               Customers
             </a>
           }
@@ -240,7 +214,32 @@ const CollapsibleNav = () => {
           />
         </EuiCollapsibleNavGroup>
       </EuiFlexItem>
-      {/* Menu items */}
+      <EuiHorizontalRule margin="none" />
+      <EuiFlexItem grow={false}>
+        <EuiCollapsibleNavGroup
+          title={
+            <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
+              Sends
+            </a>
+          }
+          buttonElement="div"
+          iconType="spacesApp"
+          isCollapsible={true}
+          initialIsOpen={openGroups.includes("Sends")}
+          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Sends")}
+        >
+          <EuiPinnableListGroup
+            aria-label="Sends" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
+            listItems={alterLinksWithCurrentState(SendsLinks)}
+            pinTitle={addLinkNameToPinTitle}
+            onPinClick={addPin}
+            maxWidth="none"
+            color="subdued"
+            gutterSize="none"
+            size="s"
+          />
+        </EuiCollapsibleNavGroup>
+      </EuiFlexItem>
       <EuiHorizontalRule margin="none" />
       <EuiFlexItem grow={false}>
         <EuiCollapsibleNavGroup
