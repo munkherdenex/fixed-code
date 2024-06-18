@@ -32,6 +32,8 @@ const HeaderUserMenu = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
+  const name = user?.fname && user?.lname ? `${user?.fname} ${user?.lname}` : user?.email || "";
+
   const onMenuButtonClick = () => {
     setIsOpen(!isOpen);
   };
@@ -48,10 +50,7 @@ const HeaderUserMenu = () => {
       aria-label="Account menu"
       onClick={onMenuButtonClick}
     >
-      <EuiAvatar
-        name={user?.email ? user?.email : `${user?.first_name} ${user?.last_name}`}
-        size="s"
-      />
+      <EuiAvatar name={name} size="s" />
     </EuiHeaderSectionItemButton>
   );
 
@@ -67,14 +66,11 @@ const HeaderUserMenu = () => {
       <div style={{ width: 300 }}>
         <EuiFlexGroup gutterSize="m" responsive={false}>
           <EuiFlexItem grow={false}>
-            <EuiAvatar
-              name={user?.email ? user?.email : `${user?.first_name} ${user?.last_name}`}
-              size="xl"
-            />
+            <EuiAvatar name={name} size="xl" />
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiText css={styles.title}>
-              <p>{user?.email ? user?.email : `${user?.first_name} ${user?.last_name}`}</p>
+              <p>{name}</p>
             </EuiText>
             <EuiFlexGroup>
               <EuiFlexItem grow={false}>
