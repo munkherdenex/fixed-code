@@ -1,8 +1,12 @@
 import { EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSpacer } from "@elastic/eui";
 import moment from "moment";
-import { Segment } from "../../hooks/useGetSegments";
+import { useRouter } from "next/router";
+import useGetSegments, { Segment } from "../../hooks/useGetSegments";
 
-const GeneralDetails = ({ data }: { data: Segment | undefined }) => {
+const GeneralDetails = () => {
+  const router = useRouter();
+  const { data } = useGetSegments<Segment>(router.query.id);
+
   if (data === undefined) {
     return null;
   }
