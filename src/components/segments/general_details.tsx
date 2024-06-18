@@ -1,4 +1,4 @@
-import { EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSpacer } from "@elastic/eui";
+import { EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
 import useGetSegments, { Segment } from "../../hooks/useGetSegments";
