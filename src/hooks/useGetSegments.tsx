@@ -16,15 +16,16 @@ export interface Segment {
   updated_by: number | null;
 }
 
-export default function useSegmentsList(): {
-  data: Segment[];
+export default function useGetSegments<Type>(id?: string | string[] | undefined): {
+  data: Type;
   error: any;
   isLoading: boolean;
 } {
   const router = useRouter();
+  const path = id ? `/api/v1/dj/segments/${id}/` : `/api/v1/dj/segments/`;
   const { data, error, isLoading } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    router.pathname.includes("dashboard") ? `/api/v1/dj/segments/` : null,
+    router.pathname.includes("dashboard") ? path : null,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

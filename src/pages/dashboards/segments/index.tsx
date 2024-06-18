@@ -10,7 +10,7 @@ import moment from "moment";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
-import useSegmentsList, { Segment } from "../../../hooks/useSegmentsList";
+import useGetSegments, { Segment } from "../../../hooks/useGetSegments";
 import DashboardLayout from "../../../layouts/dashboard";
 import { dashboardsStyles } from "../../../styles/dashboards.styles";
 
@@ -20,7 +20,7 @@ const Dashboard: FunctionComponent = () => {
   const { euiTheme } = useEuiTheme();
   const router = useRouter();
   const styles = dashboardsStyles(euiTheme);
-  const { data, isLoading } = useSegmentsList();
+  const { data, isLoading } = useGetSegments<Segment[]>();
   const columns: Array<EuiBasicTableColumn<Segment>> = [
     {
       field: "id",

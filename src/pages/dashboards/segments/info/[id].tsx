@@ -1,10 +1,14 @@
-import { EuiBreadcrumbs } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import GeneralDetails from "../../../../components/segments/general_details";
+import useGetSegments, { Segment } from "../../../../hooks/useGetSegments";
 import DashboardLayout from "../../../../layouts/dashboard";
 
 const Info = () => {
   const router = useRouter();
+  const { data } = useGetSegments<Segment>(router.query.id);
+
   return (
     <>
       <Head>
@@ -36,7 +40,14 @@ const Info = () => {
         }
       >
         <>
-          <div>a</div>
+          <EuiFlexGroup>
+            <EuiFlexItem>
+              <GeneralDetails data={data} />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiPanel>Overview</EuiPanel>
+            </EuiFlexItem>
+          </EuiFlexGroup>
         </>
       </DashboardLayout>
     </>
