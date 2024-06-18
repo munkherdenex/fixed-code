@@ -68,7 +68,7 @@ const HeaderUserMenu = () => {
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiText css={styles.title}>
-              <p>{user.email ? user.email : `${user.first_name} ${user.last_name}`}</p>
+              <p>{user?.email ? user?.email : `${user?.first_name} ${user?.last_name}`}</p>
             </EuiText>
             <EuiFlexGroup>
               <EuiFlexItem grow={false}>
