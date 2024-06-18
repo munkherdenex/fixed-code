@@ -43,6 +43,7 @@ export const TeamsProvider = ({ children }) => {
 
   const clearCurrentTeam = () => {
     setCurrentTeam(null);
+    setTeamsData(null);
     localStorage.removeItem("currentTeamId");
   };
 
