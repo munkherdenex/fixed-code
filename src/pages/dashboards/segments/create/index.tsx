@@ -66,11 +66,12 @@ const Dashboard: FunctionComponent = () => {
   };
 
   const createSegment = async (data) => {
+    const type = selectedCard === 1 ? "static" : selectedCard === 2 ? "dynamic" : "manual";
     try {
       const response = await trigger({
         name: firstFormData.name,
         description: firstFormData.description,
-        type: selectedCard === 1 ? "static" : selectedCard === 2 ? "dynamic" : "manual",
+        type: type,
         team_id: data.team_id,
       });
 
