@@ -1,4 +1,11 @@
-import { EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
+import {
+  EuiBadge,
+  EuiFlexGrid,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiHorizontalRule,
+  EuiPanel,
+} from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
 import useGetSegments, { Segment } from "../../hooks/useGetSegments";
@@ -28,10 +35,20 @@ const GeneralDetails = () => {
             <EuiFlexGrid columns={2}>
               <EuiFlexItem>Name:</EuiFlexItem>
               <EuiFlexItem>{data?.name}</EuiFlexItem>
+              <EuiHorizontalRule margin="none" />
               <EuiFlexItem>description:</EuiFlexItem>
               <EuiFlexItem>{data?.description}</EuiFlexItem>
+              <EuiHorizontalRule margin="none" />
+              <EuiFlexItem>Type:</EuiFlexItem>
+              <EuiFlexItem>
+                <div>
+                  <EuiBadge>{data?.type}</EuiBadge>
+                </div>
+              </EuiFlexItem>
+              <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>
+              <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Updated date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>
             </EuiFlexGrid>
