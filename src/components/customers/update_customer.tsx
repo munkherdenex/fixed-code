@@ -128,7 +128,7 @@ const UpdateCustomerComponent = ({
             </EuiFlexItem>
             <EuiFlexItem>
               <EuiFormRow
-                label="Rid"
+                label="Reference ID"
                 isInvalid={!!errors.email?.message}
                 error={[errors.email?.message]}
               >
@@ -141,7 +141,7 @@ const UpdateCustomerComponent = ({
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!errors.email?.message}
-                      placeholder="Rid"
+                      placeholder="Reference ID"
                       aria-label="rid"
                     />
                   )}
