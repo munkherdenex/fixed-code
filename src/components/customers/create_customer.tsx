@@ -18,15 +18,12 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { addToast } from "../toast";
-import { teamsContext } from "../../store/teams_store";
 
 const schema = yup
   .object({
     email: yup.string().email().required("please enter your email address"),
     phone: yup.number().min(6).required("please enter your phone"),
     rid: yup.string().required("please enter your registration"),
-    team_id: yup.string().required("please enter your team"),
-    source: yup.string().required("please enter the source"),
   })
   .required();
 
@@ -37,19 +34,14 @@ const CreateCustomerComponent = ({
 }: {
   setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
-  const { currentTeam } = useContext(teamsContext);
   const flyoutHeadingId = useGeneratedHtmlId();
   const { trigger } = useCreateCustomer<FormData>();
-
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: {
-      team_id: currentTeam?.id.toString() || "",
-    },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -125,7 +117,7 @@ const CreateCustomerComponent = ({
             </EuiFlexItem>
             <EuiFlexItem>
               <EuiFormRow
-                label="Registration id"
+                label="Reference ID"
                 isInvalid={!!errors.email?.message}
                 error={[errors.email?.message]}
               >
@@ -138,55 +130,8 @@ const CreateCustomerComponent = ({
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!errors.email?.message}
-                      placeholder="Registration id"
+                      placeholder="Reference ID"
                       aria-label="rid"
-                    />
-                  )}
-                />
-              </EuiFormRow>
-            </EuiFlexItem>
-
-            <EuiFlexItem>
-              <EuiFormRow
-                label="Source"
-                isInvalid={!!errors.email?.message}
-                error={[errors.email?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="source"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiFieldText
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.email?.message}
-                      placeholder="Source"
-                      aria-label="source"
-                    />
-                  )}
-                />
-              </EuiFormRow>
-            </EuiFlexItem>
-
-            <EuiFlexItem>
-              <EuiFormRow
-                label="team_id"
-                isInvalid={!!errors.email?.message}
-                error={[errors.email?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="team_id"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiFieldText
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.email?.message}
-                      placeholder="team_id"
-                      aria-label="team_id"
-                      readOnly
                     />
                   )}
                 />

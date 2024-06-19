@@ -6,6 +6,7 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
+  EuiHorizontalRule,
   EuiPanel,
 } from "@elastic/eui";
 import useGetCustomers from "../../hooks/useGetCustomers";
@@ -64,12 +65,18 @@ const GeneralDetails = () => {
             <EuiFlexItem>
               {detailData?.email}
             </EuiFlexItem>
+            <EuiHorizontalRule margin="none" />
             <EuiFlexItem>Phone number :</EuiFlexItem>
             <EuiFlexItem>{detailData?.phone}</EuiFlexItem>
+            <EuiHorizontalRule margin="none" />
             <EuiFlexItem>Created date :</EuiFlexItem>
             <EuiFlexItem>{moment(detailData?.created_at).format('YYYY-MM-DD LT')}</EuiFlexItem>
+            <EuiHorizontalRule margin="none" />
             <EuiFlexItem >Updated date :</EuiFlexItem>
             <EuiFlexItem> {moment(detailData?.updated_at).format('YYYY-MM-DD LT')}</EuiFlexItem>
+            <EuiHorizontalRule margin="none" />
+            <EuiFlexItem >Reference ID :</EuiFlexItem>
+            <EuiFlexItem> {detailData?.rid}</EuiFlexItem>
           </EuiFlexGrid>
         </EuiFlexItem>
       </EuiFlexGroup>
