@@ -21,7 +21,21 @@ const CollapsibleNav = () => {
 
   const SendsLinks: EuiPinnableListGroupItemProps[] = [
     {
-      label: "Dashboards",
+      label: "Notifications",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/sends`);
+      },
+      pinnable: false,
+    },
+    {
+      label: "Channels",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/sends`);
+      },
+      pinnable: false,
+    },
+    {
+      label: "Analytics",
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/sends`);
       },
@@ -31,24 +45,21 @@ const CollapsibleNav = () => {
 
   const CustomersLinks: EuiPinnableListGroupItemProps[] = [
     {
-      label: "Dashboards",
+      label: "Audience base",
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/customers`);
       },
       pinnable: false,
     },
     {
-      label: "Custom fields",
+      label: "Custom attributes",
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/custom_fields`);
       },
       pinnable: false,
     },
-  ];
-
-  const SegmentsLinks: EuiPinnableListGroupItemProps[] = [
     {
-      label: "Dashboards",
+      label: "Segments",
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/segments`);
       },
@@ -56,17 +67,32 @@ const CollapsibleNav = () => {
     },
   ];
 
-  const KibanaLinks: EuiPinnableListGroupItemProps[] = [
-    { label: "Discover", href: `${pathPrefix}/kibana/discover`, pinnable: false },
-    { label: "Dashboard", href: `${pathPrefix}/kibana/dashboards`, pinnable: false },
-    { label: "Maps", href: `${pathPrefix}/kibana/maps`, pinnable: false },
-  ];
-
   const ManagementLinks: EuiPinnableListGroupItemProps[] = [
     {
-      label: "Settings",
+      label: "Profile",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/management/profile`);
+      },
+      pinnable: false,
+    },
+    {
+      label: "Security",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/management/security`);
+      },
+      pinnable: false,
+    },
+    {
+      label: "Team",
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/management`);
+      },
+      pinnable: false,
+    },
+    {
+      label: "API keys",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/management/api-keys`);
       },
       pinnable: false,
     },
@@ -174,7 +200,7 @@ const CollapsibleNav = () => {
         <EuiCollapsibleNavGroup
           title={
             <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
-              Customers
+              Audience & Segment
             </a>
           }
           buttonElement="div"
@@ -200,33 +226,7 @@ const CollapsibleNav = () => {
         <EuiCollapsibleNavGroup
           title={
             <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
-              Segments
-            </a>
-          }
-          buttonElement="div"
-          iconType="notebookApp"
-          isCollapsible={true}
-          initialIsOpen={openGroups.includes("Segments")}
-          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Segments")}
-        >
-          <EuiPinnableListGroup
-            aria-label="Segments" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
-            listItems={alterLinksWithCurrentState(SegmentsLinks)}
-            pinTitle={addLinkNameToPinTitle}
-            onPinClick={addPin}
-            maxWidth="none"
-            color="subdued"
-            gutterSize="none"
-            size="s"
-          />
-        </EuiCollapsibleNavGroup>
-      </EuiFlexItem>
-      <EuiHorizontalRule margin="none" />
-      <EuiFlexItem grow={false}>
-        <EuiCollapsibleNavGroup
-          title={
-            <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
-              Sends
+              Notifications
             </a>
           }
           buttonElement="div"
@@ -252,33 +252,7 @@ const CollapsibleNav = () => {
         <EuiCollapsibleNavGroup
           title={
             <span className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
-              Analytics
-            </span>
-          }
-          buttonElement="div"
-          iconType="visualizeApp"
-          isCollapsible={true}
-          initialIsOpen={openGroups.includes("Kibana")}
-          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Kibana")}
-        >
-          <EuiPinnableListGroup
-            aria-label="Kibana" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
-            listItems={alterLinksWithCurrentState(KibanaLinks)}
-            pinTitle={addLinkNameToPinTitle}
-            onPinClick={addPin}
-            maxWidth="none"
-            color="subdued"
-            gutterSize="none"
-            size="s"
-          />
-        </EuiCollapsibleNavGroup>
-      </EuiFlexItem>
-      <EuiHorizontalRule margin="none" />
-      <EuiFlexItem grow={false}>
-        <EuiCollapsibleNavGroup
-          title={
-            <span className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
-              Management
+              Settings
             </span>
           }
           buttonElement="div"

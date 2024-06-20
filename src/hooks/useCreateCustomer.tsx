@@ -3,6 +3,13 @@ import useSWRMutation from "swr/mutation";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
 
+export interface Customer {
+  email: string;
+  phone: number;
+  rid: string;
+  customer_data: { name: string; value: string }[];
+}
+
 export default function useCreateCustomer<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
     `/api/v1/dj/customers/`,
@@ -29,12 +36,12 @@ export default function useCreateCustomer<Type>() {
 
   useEffect(() => {
     if (error) {
-      console.log(error.error_message)
+      console.log(error.error_message);
       addToast({
         id: "create_customer-error",
         color: "danger",
-        title: String(Object.keys(error?.error_message)) || "An error occurred",
-        text: String(Object.values(error?.error_message)) || error,
+        title: "An error occurred",
+        text: error?.message,
       });
     }
   }, [error]);

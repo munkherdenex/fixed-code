@@ -18,6 +18,22 @@ const Sidebar = ({ active }: { active: string }) => {
       id: htmlIdGenerator("Management")(),
       items: [
         {
+          name: "Profile",
+          id: htmlIdGenerator("Profile")(),
+          isSelected: active === "settings",
+          onClick: () => {
+            router.push(`${pathPrefix}/dashboards/management/profile`);
+          },
+        },
+        {
+          name: "Security",
+          id: htmlIdGenerator("Security")(),
+          isSelected: active === "security",
+          onClick: () => {
+            router.push(`${pathPrefix}/dashboards/management/security`);
+          },
+        },
+        {
           name: "Team members",
           id: htmlIdGenerator("Team members")(),
           isSelected: active === "teamMembers",
@@ -33,14 +49,7 @@ const Sidebar = ({ active }: { active: string }) => {
             router.push(`${pathPrefix}/dashboards/management/api-keys`);
           },
         },
-        {
-          name: "Settings",
-          id: htmlIdGenerator("Settings")(),
-          isSelected: active === "settings",
-          onClick: () => {
-            router.push(`${pathPrefix}/dashboards/management/settings`);
-          },
-        },
+        ,
       ],
     },
   ];
