@@ -1,25 +1,20 @@
-import {
-  EuiBasicTableColumn,
-  EuiTableFieldDataColumnType,
-  EuiBasicTable,
-  formatDate,
-} from "@elastic/eui";
+import { EuiBasicTableColumn, EuiTableFieldDataColumnType, EuiBasicTable } from "@elastic/eui";
 import moment from "moment";
 import router from "next/router";
-import useGetSegments, { Segment } from "../../hooks/useGetSegments";
+import useGetFields, { Fields } from "../../hooks/useGetFields";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
-const SegmentsTable = () => {
-  const { data, isLoading } = useGetSegments<Segment[]>();
+const FieldsTable = () => {
+  const { data, isLoading } = useGetFields<Fields[]>();
 
-  const columns: Array<EuiBasicTableColumn<Segment>> = [
+  const columns: Array<EuiBasicTableColumn<Fields>> = [
     {
       field: "id",
       name: "ID",
       "data-test-subj": "idCell",
       mobileOptions: {
-        render: (segment: Segment) => <>{segment.id}</>,
+        render: (fields: Fields) => <>{fields.id}</>,
         enlarge: true,
       },
     },
@@ -28,25 +23,26 @@ const SegmentsTable = () => {
       name: "Name",
       "data-test-subj": "nameCell",
       mobileOptions: {
-        render: (segment: Segment) => <>{segment.name}</>,
+        render: (fields: Fields) => <>{fields.name}</>,
         enlarge: true,
       },
     },
     {
-      field: "description",
-      name: "Description",
-      "data-test-subj": "descriptionCell",
+      field: "attribute_name",
+      name: "Attribute",
+      "data-test-subj": "attributeCell",
       mobileOptions: {
-        render: (segment: Segment) => <>{segment.description}</>,
+        render: (fields: Fields) => <>{fields.attribute_name}</>,
         enlarge: true,
       },
     },
     {
-      field: "type",
-      name: "Type",
+      field: "data_type",
+      name: "Data type",
       "data-test-subj": "typeCell",
+      render: (data: string) => <>{data}</>,
       mobileOptions: {
-        render: (segment: Segment) => <>{segment.type}</>,
+        render: (fields: Fields) => <>{fields.data_type}</>,
         enlarge: true,
       },
     },
@@ -54,27 +50,27 @@ const SegmentsTable = () => {
       field: "created_at",
       name: "Created at",
       "data-test-subj": "createdAtCell",
-      render: (segment: Segment) => moment(segment.created_at).format("YYYY-MM-DD HH:mm:ss"),
+      render: (fields: Fields) => moment(fields.created_at).format("YYYY-MM-DD HH:mm:ss"),
       mobileOptions: {
-        render: (segment: Segment) => moment(segment.created_at).format("YYYY-MM-DD HH:mm:ss"),
+        render: (fields: Fields) => moment(fields.created_at).format("YYYY-MM-DD HH:mm:ss"),
         enlarge: true,
       },
     },
   ];
 
-  const getRowProps = (segment: Segment) => {
-    const { id } = segment;
+  const getRowProps = (fields: Fields) => {
+    const { id } = fields;
     return {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/segments/info/${id}`);
+        router.push(`${pathPrefix}/dashboards/custom_fields/info/${id}`);
       },
     };
   };
 
-  const getCellProps = (segment: Segment, column: EuiTableFieldDataColumnType<Segment>) => {
-    const { id } = segment;
+  const getCellProps = (fields: Fields, column: EuiTableFieldDataColumnType<Fields>) => {
+    const { id } = fields;
     const { field } = column;
 
     return {
@@ -100,4 +96,4 @@ const SegmentsTable = () => {
   );
 };
 
-export default SegmentsTable;
+export default FieldsTable;

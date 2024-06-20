@@ -37,6 +37,13 @@ const CollapsibleNav = () => {
       },
       pinnable: false,
     },
+    {
+      label: "Custom fields",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/custom_fields`);
+      },
+      pinnable: false,
+    },
   ];
 
   const SegmentsLinks: EuiPinnableListGroupItemProps[] = [
