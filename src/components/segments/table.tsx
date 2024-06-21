@@ -54,9 +54,7 @@ const SegmentsTable = () => {
       field: "created_at",
       name: "Created at",
       "data-test-subj": "createdAtCell",
-      render: (segment: Segment) => moment(segment.created_at).format("YYYY-MM-DD HH:mm:ss"),
       mobileOptions: {
-        render: (segment: Segment) => moment(segment.created_at).format("YYYY-MM-DD HH:mm:ss"),
         enlarge: true,
       },
     },

@@ -52,7 +52,6 @@ const CustomersTable = () => {
       field: "created_at",
       name: "Created at",
       mobileOptions: {
-        render: (customer: CustomersType) => formatDate(moment(customer.created_at).format('YYYY-MM-DD'), "createdAt"),
         enlarge: true,
       },
     },
@@ -68,7 +67,10 @@ const CustomersTable = () => {
     };
   };
 
-  const getCellProps = (customer: CustomersType, column: EuiTableFieldDataColumnType<CustomersType>) => {
+  const getCellProps = (
+    customer: CustomersType,
+    column: EuiTableFieldDataColumnType<CustomersType>,
+  ) => {
     return {
       className: "customCellClass",
       textOnly: true,

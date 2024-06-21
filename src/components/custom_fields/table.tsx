@@ -1,4 +1,9 @@
-import { EuiBasicTableColumn, EuiTableFieldDataColumnType, EuiBasicTable } from "@elastic/eui";
+import {
+  EuiBasicTableColumn,
+  EuiTableFieldDataColumnType,
+  EuiBasicTable,
+  formatDate,
+} from "@elastic/eui";
 import moment from "moment";
 import router from "next/router";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
@@ -50,9 +55,7 @@ const FieldsTable = () => {
       field: "created_at",
       name: "Created at",
       "data-test-subj": "createdAtCell",
-      render: (fields: Fields) => moment(fields.created_at).format("YYYY-MM-DD HH:mm:ss"),
       mobileOptions: {
-        render: (fields: Fields) => moment(fields.created_at).format("YYYY-MM-DD HH:mm:ss"),
         enlarge: true,
       },
     },
