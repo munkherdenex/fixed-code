@@ -5,14 +5,17 @@ import {
   EuiTitle,
   EuiFlyoutBody,
   EuiForm,
-  EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
   EuiFieldText,
   EuiFieldNumber,
   EuiButton,
+  EuiDatePicker,
+  EuiFlexGrid,
+  EuiSwitch,
+  EuiSpacer,
 } from "@elastic/eui";
-import { SetStateAction, useContext } from "react";
+import { SetStateAction, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -20,12 +23,22 @@ import { addToast } from "../toast";
 import useUpdateCustomer from "../../hooks/useUpdateCustomer";
 import useGetCustomers from "../../hooks/useGetCustomers";
 import { useRouter } from "next/router";
+import { Moment } from "moment";
+import useGetFields, { Fields } from "../../hooks/useGetFields";
+import moment from "moment";
+import { mutate } from "swr";
 
 const schema = yup
   .object({
     email: yup.string().email().required("please enter your email address"),
     phone: yup.number().min(6).required("please enter your phone"),
     rid: yup.string().required("please enter your registration"),
+    customer_data: yup.array(
+      yup.object({
+        name: yup.string().required("please enter your name"),
+        value: yup.mixed().required("please enter your value"),
+      }),
+    ),
   })
   .required();
 
@@ -38,27 +51,71 @@ const UpdateCustomerComponent = ({
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
   const router = useRouter();
-  const { trigger } = useUpdateCustomer<FormData>(router.query.id);
-  const { detailData } = useGetCustomers(router.query.id);
+  const { trigger, isMutating } = useUpdateCustomer(router.query.id);
+  const { detailData, isLoading: getCustomersIsLoading } = useGetCustomers(router.query.id);
+  const { data, isLoading: getFieldsIsLoading } = useGetFields<Fields[]>();
+
+  const preparedData = data
+    ?.map((field) => {
+      const customerData = detailData?.customer_data;
+      if (!customerData) return null;
+
+      const value = customerData[field.attribute_name];
+      if (value === undefined) return null;
+
+      let formattedValue;
+
+      switch (field.data_type) {
+        case "datetime":
+        case "date":
+          formattedValue = moment(value);
+          break;
+        case "bool":
+          formattedValue = !!value;
+          break;
+        case "int":
+          formattedValue = +value;
+          break;
+        default:
+          formattedValue = value;
+      }
+
+      return {
+        name: field.attribute_name,
+        value: formattedValue,
+      };
+    })
+    .filter((item) => item !== null);
 
   const {
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      email: detailData?.email || '',
-      phone: Number(detailData?.phone) || 0,
-      rid: detailData.rid || '',
+      email: detailData?.email || "",
+      phone: +detailData?.phone || 0,
+      rid: detailData?.rid || "",
+      customer_data: preparedData,
     },
   });
 
+  useEffect(() => {
+    setValue("customer_data", preparedData);
+  }, [preparedData, setValue]);
+
   const onSubmit = async (data: FormData) => {
     try {
-      console.log(data);
-      const response = await trigger(data);
+      const preparedData = {
+        ...data,
+        customer_data: data.customer_data.reduce((a, v) => ({ ...a, [v.name]: v.value }), {}),
+      };
+
+      const response = await trigger(preparedData);
       if (response) {
+        mutate(`/api/v1/dj/customers/${router.query.id}/?extended=true`);
         setIsFlyoutVisible(false);
         addToast({
           id: "customer-success",
@@ -72,6 +129,8 @@ const UpdateCustomerComponent = ({
     }
   };
 
+  if (getCustomersIsLoading || getFieldsIsLoading) return <div>Loading...</div>;
+
   return (
     <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
@@ -81,80 +140,187 @@ const UpdateCustomerComponent = ({
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-          <EuiFlexGroup direction="column">
-            <EuiFlexItem>
-              <EuiFormRow
-                label="Email address"
-                isInvalid={!!errors.email?.message}
-                error={[errors.email?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="email"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiFieldText
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.email?.message}
-                      placeholder="Email address"
-                      aria-label="email"
-                    />
-                  )}
+          <EuiFormRow
+            label="Email address"
+            isInvalid={!!errors.email?.message}
+            error={[errors.email?.message]}
+          >
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <EuiFieldText
+                  onChange={onChange}
+                  value={value}
+                  onBlur={onBlur}
+                  isInvalid={!!errors.email?.message}
+                  placeholder="Email address"
+                  aria-label="email"
                 />
-              </EuiFormRow>
-            </EuiFlexItem>
-            <EuiFlexItem>
-              <EuiFormRow
-                label="Phone number"
-                isInvalid={!!errors.phone?.message}
-                error={[errors.phone?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="phone"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiFieldNumber
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.phone?.message}
-                      placeholder="Phone number"
-                      aria-label="phone"
-                    />
-                  )}
+              )}
+            />
+          </EuiFormRow>
+          <EuiFormRow
+            label="Phone number"
+            isInvalid={!!errors.phone?.message}
+            error={[errors.phone?.message]}
+          >
+            <Controller
+              control={control}
+              name="phone"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <EuiFieldNumber
+                  onChange={onChange}
+                  value={value}
+                  onBlur={onBlur}
+                  isInvalid={!!errors.phone?.message}
+                  placeholder="Phone number"
+                  aria-label="phone"
                 />
-              </EuiFormRow>
-            </EuiFlexItem>
-            <EuiFlexItem>
-              <EuiFormRow
-                label="Reference ID"
-                isInvalid={!!errors.email?.message}
-                error={[errors.email?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="rid"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiFieldText
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.email?.message}
-                      placeholder="Reference ID"
-                      aria-label="rid"
-                    />
-                  )}
+              )}
+            />
+          </EuiFormRow>
+          <EuiFormRow
+            label="Reference ID"
+            isInvalid={!!errors.email?.message}
+            error={[errors.email?.message]}
+          >
+            <Controller
+              control={control}
+              name="rid"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <EuiFieldText
+                  onChange={onChange}
+                  value={value}
+                  onBlur={onBlur}
+                  isInvalid={!!errors.email?.message}
+                  placeholder="Reference ID"
+                  aria-label="rid"
                 />
-              </EuiFormRow>
-            </EuiFlexItem>
-
-            <EuiFlexItem grow={false}>
-              <EuiFormRow hasEmptyLabelSpace>
-                <EuiButton type="submit">Update customer</EuiButton>
-              </EuiFormRow>
-            </EuiFlexItem>
-          </EuiFlexGroup>
+              )}
+            />
+          </EuiFormRow>
+          <EuiSpacer />
+          {data?.map((field, index) => (
+            <EuiFlexGrid key={field.id} columns={2}>
+              <EuiFlexItem>
+                <EuiFormRow label={`${field.attribute_name} (${field.data_type})`}>
+                  <Controller
+                    control={control}
+                    name={`customer_data.${index}.name`}
+                    defaultValue={field.attribute_name}
+                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                      <EuiFieldText
+                        onChange={onChange}
+                        value={value}
+                        onBlur={onBlur}
+                        isInvalid={!!error?.message}
+                        placeholder="Name"
+                        aria-label="name"
+                        readOnly
+                      />
+                    )}
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+              <EuiFlexItem>
+                {field.data_type === "str" && (
+                  <EuiFormRow label="Data">
+                    <Controller
+                      control={control}
+                      name={`customer_data.${index}.value`}
+                      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                        <EuiFieldText
+                          onChange={onChange}
+                          value={value as string}
+                          onBlur={onBlur}
+                          isInvalid={!!error?.message}
+                          placeholder="Data"
+                          aria-label="email"
+                        />
+                      )}
+                    />
+                  </EuiFormRow>
+                )}
+                {field.data_type === "int" && (
+                  <EuiFormRow label="Data">
+                    <Controller
+                      control={control}
+                      name={`customer_data.${index}.value`}
+                      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                        <EuiFieldNumber
+                          onChange={onChange}
+                          value={value as number}
+                          onBlur={onBlur}
+                          isInvalid={!!error?.message}
+                          placeholder="Data"
+                          aria-label="email"
+                        />
+                      )}
+                    />
+                  </EuiFormRow>
+                )}
+                {field.data_type === "datetime" && (
+                  <EuiFormRow label="Data">
+                    <Controller
+                      control={control}
+                      name={`customer_data.${index}.value`}
+                      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                        <EuiDatePicker
+                          showTimeSelect
+                          selected={value as Moment}
+                          onChange={onChange}
+                          onBlur={onBlur}
+                          isInvalid={!!error?.message}
+                          placeholder={field.data_type}
+                          aria-label="email"
+                        />
+                      )}
+                    />
+                  </EuiFormRow>
+                )}
+                {field.data_type === "bool" && (
+                  <EuiFormRow label="Data">
+                    <Controller
+                      control={control}
+                      name={`customer_data.${index}.value`}
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <EuiSwitch
+                          label="Data"
+                          checked={value as boolean}
+                          onBlur={onBlur}
+                          onChange={(e) => onChange(e.target.checked)}
+                        />
+                      )}
+                    />
+                  </EuiFormRow>
+                )}
+                {field.data_type === "date" && (
+                  <EuiFormRow label="Data">
+                    <Controller
+                      control={control}
+                      name={`customer_data.${index}.value`}
+                      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                        <EuiDatePicker
+                          selected={value as Moment}
+                          onChange={onChange}
+                          onBlur={onBlur}
+                          isInvalid={!!error?.message}
+                          placeholder={field.data_type}
+                          aria-label="email"
+                        />
+                      )}
+                    />
+                  </EuiFormRow>
+                )}
+              </EuiFlexItem>
+            </EuiFlexGrid>
+          ))}
+          <EuiFormRow hasEmptyLabelSpace>
+            <EuiButton isLoading={isMutating} type="submit">
+              Update customer
+            </EuiButton>
+          </EuiFormRow>
         </EuiForm>
       </EuiFlyoutBody>
     </EuiFlyout>

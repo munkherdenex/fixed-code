@@ -1,11 +1,8 @@
 import {
   EuiButtonIcon,
-  EuiConfirmModal,
-  EuiFieldText,
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFormRow,
   EuiHorizontalRule,
   EuiPanel,
 } from "@elastic/eui";
@@ -14,18 +11,22 @@ import { useRouter } from "next/router";
 import moment from "moment";
 import { useState } from "react";
 import UpdateCustomerComponent from "./update_customer";
-import { addToast } from "../toast";
-import useDeleteCustomer from "../../hooks/useDeleteCustomer";
-
-const pathPrefix = process.env.PATH_PREFIX;
+import DeleteCustomerModal from "./delete_customer_modal";
 
 const GeneralDetails = () => {
   const router = useRouter();
-  const { detailData } = useGetCustomers(router.query.id);
+  const { detailData, isLoading } = useGetCustomers(router.query.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
-  const { customerDeleteTrigger } = useDeleteCustomer(router.query.id);
-  const [deleteMessage, setDeleteMessage] = useState('');
+
+  const customerData = detailData?.customer_data
+    ? Object.entries(detailData.customer_data).map(([key, value]) => ({
+        name: key,
+        value,
+      }))
+    : [];
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <EuiPanel>
@@ -33,9 +34,11 @@ const GeneralDetails = () => {
         <EuiFlexItem>
           <EuiPanel paddingSize="s" color="subdued">
             <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
-              <EuiFlexItem grow={false}><strong>Customer details</strong></EuiFlexItem>
-              <EuiFlexItem grow={false} >
-                <EuiFlexGrid columns={2} >
+              <EuiFlexItem grow={false}>
+                <strong>Customer details</strong>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiFlexGrid gutterSize="s" columns={2}>
                   <EuiFlexItem grow={false}>
                     <EuiButtonIcon
                       display="base"
@@ -61,62 +64,31 @@ const GeneralDetails = () => {
         </EuiFlexItem>
         <EuiFlexItem>
           <EuiFlexGrid columns={2}>
-            <EuiFlexItem >Email address :</EuiFlexItem>
-            <EuiFlexItem>
-              {detailData?.email}
-            </EuiFlexItem>
+            <EuiFlexItem>Email address :</EuiFlexItem>
+            <EuiFlexItem>{detailData?.email}</EuiFlexItem>
             <EuiHorizontalRule margin="none" />
             <EuiFlexItem>Phone number :</EuiFlexItem>
             <EuiFlexItem>{detailData?.phone}</EuiFlexItem>
             <EuiHorizontalRule margin="none" />
-            <EuiFlexItem>Created date :</EuiFlexItem>
-            <EuiFlexItem>{moment(detailData?.created_at).format('YYYY-MM-DD LT')}</EuiFlexItem>
-            <EuiHorizontalRule margin="none" />
-            <EuiFlexItem >Updated date :</EuiFlexItem>
-            <EuiFlexItem> {moment(detailData?.updated_at).format('YYYY-MM-DD LT')}</EuiFlexItem>
-            <EuiHorizontalRule margin="none" />
-            <EuiFlexItem >Reference ID :</EuiFlexItem>
+            <EuiFlexItem>Reference ID :</EuiFlexItem>
             <EuiFlexItem> {detailData?.rid}</EuiFlexItem>
+            <EuiHorizontalRule margin="none" />
+            <EuiFlexItem>Created date :</EuiFlexItem>
+            <EuiFlexItem>{moment(detailData?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
+            <EuiHorizontalRule margin="none" />
+            <EuiFlexItem>Updated date :</EuiFlexItem>
+            <EuiFlexItem> {moment(detailData?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
+            {customerData?.map((data) => (
+              <>
+                <EuiHorizontalRule margin="none" />
+                <EuiFlexItem>{data.name} :</EuiFlexItem>
+                <EuiFlexItem>{data.value}</EuiFlexItem>
+              </>
+            ))}
           </EuiFlexGrid>
         </EuiFlexItem>
       </EuiFlexGroup>
-
-      {isModalVisible && (
-        <EuiConfirmModal
-          title="Warning"
-          onCancel={() => setIsModalVisible(false)}
-          confirmButtonDisabled={deleteMessage.toLowerCase() !== 'delete'}
-          onConfirm={async () => {
-            try {
-              const response = await customerDeleteTrigger();
-              if (response.ok) {
-                router.push(`${pathPrefix}/dashboards/customers`);
-                addToast({
-                  id: "customer-deleted",
-                  color: "success",
-                  title: "Success",
-                  text: "Successfully deleted",
-                });
-              }
-            } catch (error) {
-              console.error('ERROR:: ', error);
-            }
-          }}
-          confirmButtonText="Delete"
-          cancelButtonText="Cancel"
-          buttonColor="danger"
-        >
-          <EuiFormRow label="Type the word 'delete' to confirm">
-            <EuiFieldText
-              name="delete"
-              value={deleteMessage}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setDeleteMessage(e.target.value);
-              }}
-            />
-          </EuiFormRow>
-        </EuiConfirmModal>
-      )}
+      {isModalVisible && <DeleteCustomerModal setIsModalVisible={setIsModalVisible} />}
       {isFlyoutVisible && <UpdateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
     </EuiPanel>
   );
