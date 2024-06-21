@@ -30,7 +30,7 @@ const CollapsibleNav = () => {
     {
       label: "Channels",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/sends`);
+        router.push(`${pathPrefix}/dashboards/channels`);
       },
       pinnable: false,
     },
