@@ -22,7 +22,7 @@ const Dashboard: FunctionComponent = () => {
           <EuiFlexItem>
             <EuiCard
               icon={<EuiIcon size="xxl" type="usersRolesApp" />}
-              title="Customers"
+              title="Audience & Segment"
               description="Example of a longer card description. See how the footers stay lined up."
               footer={
                 <div>
@@ -39,12 +39,12 @@ const Dashboard: FunctionComponent = () => {
           <EuiFlexItem>
             <EuiCard
               icon={<EuiIcon size="xxl" type="notebookApp" />}
-              title="Segments"
+              title="Notifications"
               description="Example of a short card description."
               footer={
                 <div>
                   <EuiButton
-                    onClick={() => router.push(`${pathPrefix}/dashboards/segments`)}
+                    onClick={() => router.push(`${pathPrefix}/dashboards/sends`)}
                     aria-label="Go to Save Objects"
                   >
                     Go for it
@@ -56,47 +56,13 @@ const Dashboard: FunctionComponent = () => {
           <EuiFlexItem>
             <EuiCard
               icon={<EuiIcon size="xxl" type="spacesApp" />}
-              title="Sends"
+              title="Settings"
               description="Example of a short card description."
               footer={
                 <div>
                   <EuiButton
-                    onClick={() => router.push(`${pathPrefix}/dashboards/sends`)}
+                    onClick={() => router.push(`${pathPrefix}/dashboards/management/profile`)}
                     aria-label="Go to segments"
-                  >
-                    Go for it
-                  </EuiButton>
-                </div>
-              }
-            />
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiCard
-              icon={<EuiIcon size="xxl" type="visualizeApp" />}
-              title="Analytics"
-              description="Example of a short card description."
-              footer={
-                <div>
-                  <EuiButton
-                    onClick={() => router.push(`${pathPrefix}/dashboards/analytics`)}
-                    aria-label="Go to Save Objects"
-                  >
-                    Go for it
-                  </EuiButton>
-                </div>
-              }
-            />
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiCard
-              icon={<EuiIcon size="xxl" type="managementApp" />}
-              title="Management"
-              description="Example of a short card description."
-              footer={
-                <div>
-                  <EuiButton
-                    onClick={() => router.push(`${pathPrefix}/dashboards/management`)}
-                    aria-label="Go to Save Objects"
                   >
                     Go for it
                   </EuiButton>
