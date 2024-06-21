@@ -32,7 +32,7 @@ const GeneralDetails = () => {
       <EuiFlexGroup direction="column">
         <EuiFlexItem>
           <EuiPanel paddingSize="s" color="subdued">
-            <EuiFlexGroup justifyContent="spaceAround">
+            <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
               <EuiFlexItem grow={false}><strong>Customer details</strong></EuiFlexItem>
               <EuiFlexItem grow={false} >
                 <EuiFlexGrid columns={2} >

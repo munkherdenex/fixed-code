@@ -52,6 +52,7 @@ const CustomersTable = () => {
       field: "created_at",
       name: "Created at",
       mobileOptions: {
+        render: (customer: CustomersType) => moment(customer.created_at).format('YYYY-MM-DD hh:mm:ss'),
         enlarge: true,
       },
     },

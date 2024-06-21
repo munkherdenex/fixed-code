@@ -1,9 +1,13 @@
 export interface Member {
-  user_id: number;
-  team_id: number;
-  role: string;
-  status: string;
-  joined_at: string;
+  user: {
+    email: string
+    fname: string,
+    lname: string,
+    registered_date: Date | null
+  },
+  role: string,
+  status: string,
+  joined_date: null | Date
 }
 
 export interface Teams {
