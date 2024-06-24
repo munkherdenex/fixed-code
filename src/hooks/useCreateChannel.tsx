@@ -3,19 +3,10 @@ import useSWRMutation from "swr/mutation";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
 
-export interface Channel {
-  data: any;
-  name: string;
-  channel_type: string;
-  team_id: string;
-  created_by: number;
-  updated_by: number;
-}
-
-export default function useCreateChannel() {
+export default function useCreateChannel<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
     `/api/v1/dj/channels/`,
-    async (path, { arg }: { arg: Channel }) => {
+    async (path, { arg }: { arg: Type }) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
