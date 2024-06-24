@@ -1,19 +1,23 @@
-import { EuiBasicTableColumn, EuiTableFieldDataColumnType, EuiBasicTable } from "@elastic/eui";
+import {
+  EuiBasicTableColumn,
+  EuiTableFieldDataColumnType,
+  EuiBasicTable,
+  EuiCodeBlock,
+} from "@elastic/eui";
 import router from "next/router";
-import useGetSegments, { Segment } from "../../hooks/useGetSegments";
+import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
-const SegmentsTable = () => {
-  const { data, isLoading } = useGetSegments<Segment[]>();
+const ChannelsTable = () => {
+  const { data, isLoading } = useGetChannels<Channels[]>();
 
-  const columns: Array<EuiBasicTableColumn<Segment>> = [
+  const columns: Array<EuiBasicTableColumn<Channels>> = [
     {
       field: "id",
       name: "ID",
       "data-test-subj": "idCell",
       mobileOptions: {
-        render: (segment: Segment) => <>{segment.id}</>,
         enlarge: true,
       },
     },
@@ -22,25 +26,14 @@ const SegmentsTable = () => {
       name: "Name",
       "data-test-subj": "nameCell",
       mobileOptions: {
-        render: (segment: Segment) => <>{segment.name}</>,
         enlarge: true,
       },
     },
     {
-      field: "description",
-      name: "Description",
+      field: "channel_type",
+      name: "Channel type",
       "data-test-subj": "descriptionCell",
       mobileOptions: {
-        render: (segment: Segment) => <>{segment.description}</>,
-        enlarge: true,
-      },
-    },
-    {
-      field: "type",
-      name: "Type",
-      "data-test-subj": "typeCell",
-      mobileOptions: {
-        render: (segment: Segment) => <>{segment.type}</>,
         enlarge: true,
       },
     },
@@ -54,19 +47,19 @@ const SegmentsTable = () => {
     },
   ];
 
-  const getRowProps = (segment: Segment) => {
-    const { id } = segment;
+  const getRowProps = (channel: Channels) => {
+    const { id } = channel;
     return {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/segments/info/${id}`);
+        router.push(`${pathPrefix}/dashboards/channels/info/${id}`);
       },
     };
   };
 
-  const getCellProps = (segment: Segment, column: EuiTableFieldDataColumnType<Segment>) => {
-    const { id } = segment;
+  const getCellProps = (channel: Channels, column: EuiTableFieldDataColumnType<Channels>) => {
+    const { id } = channel;
     const { field } = column;
 
     return {
@@ -92,4 +85,4 @@ const SegmentsTable = () => {
   );
 };
 
-export default SegmentsTable;
+export default ChannelsTable;
