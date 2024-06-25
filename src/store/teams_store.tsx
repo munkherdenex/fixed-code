@@ -29,7 +29,6 @@ export const TeamsProvider = ({ children }) => {
         localStorage.setItem("currentTeamId", teamId.toString());
         try {
           await trigger({ team_id: teamId });
-          console.log("wait team");
           setCurrentTeam(team);
         } catch {
           alert("error");
