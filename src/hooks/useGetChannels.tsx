@@ -3,6 +3,7 @@ import { BASE_URL } from "../constants";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
 import { useRouter } from "next/router";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export interface Channels {
   id: number;
@@ -33,17 +34,7 @@ export default function useGetChannels<Type>(id?: string | string[] | undefined)
         credentials: "include",
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-
-        const error = new Error(data?.error);
-
-        error.status = res.status;
-
-        throw error;
-      }
-
-      return res.json();
+      return handleResponseNotOk(res);
     },
   );
 
