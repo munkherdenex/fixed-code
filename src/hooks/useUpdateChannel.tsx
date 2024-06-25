@@ -3,9 +3,9 @@ import useSWRMutation from "swr/mutation";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
 
-export default function useUpdateField<Type>(id: string | string[] | undefined) {
+export default function useUpdateChannel<Type>(id: string | string[] | undefined) {
   const { data, error, isMutating, trigger } = useSWRMutation(
-    `/api/v1/dj/fields/${id}/`,
+    `/api/v1/dj/channels/${id}/`,
     async (path, { arg }: { arg: Type }) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "PUT",
@@ -27,7 +27,7 @@ export default function useUpdateField<Type>(id: string | string[] | undefined) 
   useEffect(() => {
     if (error) {
       addToast({
-        id: "create-fields-error",
+        id: "create-channel-error",
         color: "danger",
         title: "An error occurred",
         text: error?.message,

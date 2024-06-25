@@ -11,6 +11,7 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
 import { SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { mutate } from "swr";
@@ -43,7 +44,8 @@ const UpdateFieldFlyout = ({
   setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
   data: Fields;
 }) => {
-  const { trigger, isMutating } = useUpdateField<FormData>();
+  const router = useRouter();
+  const { trigger, isMutating } = useUpdateField<FormData>(router.query.id);
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
   });
