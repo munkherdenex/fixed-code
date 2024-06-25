@@ -30,22 +30,22 @@ const TeamMembersComponent = () => {
     handleSubmit,
     control,
     formState: { errors },
-    reset
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
   const { currentTeam } = useContext(teamsContext);
-  const { trigger } = useInviteMember(currentTeam?.id);
+  const { trigger, isMutating } = useInviteMember(currentTeam?.id);
   const { mutate, team_members } = useGetCurrentTeamMembers();
   const { data: user } = useProfile();
-  const isAdmin = team_members?.members?.filter((member) => {
-    return member?.user?.email === user.email
-  })?.[0]?.role === "admin" || false;
+  const isAdmin =
+    team_members?.members?.filter((member) => {
+      return member?.user?.email === user.email;
+    })?.[0]?.role === "admin" || false;
 
   const onSubmit = async (data: FormData) => {
     try {
       const response = await trigger(data);
-      console.log(response);
       if (response.ok) {
         addToast({
           id: "invite-member",
@@ -54,7 +54,7 @@ const TeamMembersComponent = () => {
           text: "Successfully invited",
         });
         reset({
-          user_email: ""
+          user_email: "",
         });
         if (currentTeam?.id) {
           mutate(`/api/v1/teams/${currentTeam?.id}/?members=true`);
@@ -68,42 +68,46 @@ const TeamMembersComponent = () => {
   return (
     <Fragment>
       <EuiFlexGroup direction="column">
-        {
-          isAdmin && (
-            <EuiFlexItem grow={false}>
-              <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-                <EuiFlexGroup direction="column">
-                  <EuiFlexItem>
-                    <EuiFormRow
-                      isInvalid={!!errors.user_email?.message}
-                      error={[errors.user_email?.message]}
-                    >
-                      <Controller
-                        control={control}
-                        name="user_email"
-                        render={({ field: { onChange, onBlur, value } }) => (
-                          <EuiFormControlLayout append={<EuiButton type="submit" fill>Invite</EuiButton>}>
-                            <EuiFieldText
-                              name="user_email"
-                              onChange={onChange}
-                              value={value}
-                              onBlur={onBlur}
-                              isInvalid={!!errors.user_email?.message}
-                              placeholder="Email address"
-                              aria-label="user_email"
-                              type="text"
-                              controlOnly
-                            />
-                          </EuiFormControlLayout>
-                        )}
-                      />
-                    </EuiFormRow>
-                  </EuiFlexItem>
-                </EuiFlexGroup>
-              </EuiForm>
-            </EuiFlexItem>
-          )
-        }
+        {isAdmin && (
+          <EuiFlexItem grow={false}>
+            <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+              <EuiFlexGroup direction="column">
+                <EuiFlexItem>
+                  <EuiFormRow
+                    isInvalid={!!errors.user_email?.message}
+                    error={[errors.user_email?.message]}
+                  >
+                    <Controller
+                      control={control}
+                      name="user_email"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <EuiFormControlLayout
+                          append={
+                            <EuiButton type="submit" fill isLoading={isMutating}>
+                              Invite
+                            </EuiButton>
+                          }
+                        >
+                          <EuiFieldText
+                            name="user_email"
+                            onChange={onChange}
+                            value={value}
+                            onBlur={onBlur}
+                            isInvalid={!!errors.user_email?.message}
+                            placeholder="Email address"
+                            aria-label="user_email"
+                            type="text"
+                            controlOnly
+                          />
+                        </EuiFormControlLayout>
+                      )}
+                    />
+                  </EuiFormRow>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiForm>
+          </EuiFlexItem>
+        )}
         <EuiFlexItem grow={false}>
           <MembersComponent />
         </EuiFlexItem>
