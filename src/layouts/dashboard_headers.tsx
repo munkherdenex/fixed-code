@@ -75,7 +75,7 @@ const HeaderUserMenu = () => {
             <EuiFlexGroup>
               <EuiFlexItem grow={false}>
                 <EuiButtonEmpty
-                  onClick={() => router.push(`${pathPrefix}/dashboards/management/settings`)}
+                  onClick={() => router.push(`${pathPrefix}/dashboards/management/profile`)}
                 >
                   Edit profile
                 </EuiButtonEmpty>
