@@ -3,23 +3,21 @@ import useSWRMutation from "swr/mutation";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
 
-export default function useUpdateField<Type>(id: string | string[] | undefined) {
+export default function useDeleteChannel(id?: string | string[] | undefined) {
   const { data, error, isMutating, trigger } = useSWRMutation(
-    `/api/v1/dj/fields/${id}/`,
-    async (path, { arg }: { arg: Type }) => {
+    `/api/v1/dj/channels/${id}/`,
+    async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(arg),
+        method: "DELETE",
         credentials: "include",
+        headers: {
+          "content-type": "application/json",
+        },
       });
-
       if (!res.ok) {
         error.status = res.status;
-
         throw error;
       }
-
       return res;
     },
   );
@@ -27,10 +25,10 @@ export default function useUpdateField<Type>(id: string | string[] | undefined) 
   useEffect(() => {
     if (error) {
       addToast({
-        id: "create-fields-error",
+        id: "delete_fields-error",
         color: "danger",
         title: "An error occurred",
-        text: error?.message,
+        text: error,
       });
     }
   }, [error]);

@@ -15,11 +15,14 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect } from "react";
+import { jsonrepair } from "jsonrepair";
+import { useRouter } from "next/router";
+import { SetStateAction, useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { mutate } from "swr";
 import * as yup from "yup";
-import useCreateChannel from "../../hooks/useCreateChannel";
+import { Channels } from "../../hooks/useGetChannels";
+import useUpdateChannel from "../../hooks/useUpdateChannel";
 
 const schema = yup
   .object({
@@ -79,11 +82,26 @@ const dataTypeOptions = [
   { value: "api", text: "Api" },
 ];
 
-const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
+const EditChannelFlyot = ({
+  setIsFlyoutVisible,
+  data,
+}: {
+  setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
+  data: Channels;
+}) => {
+  const parsedData = JSON.parse(jsonrepair(data?.data));
+  const preparedHeaders = parsedData.headers
+    ? Object.entries(parsedData.headers).map(([key, value]: [string, any]) => ({
+        key,
+        value,
+      }))
+    : [];
+
+  const router = useRouter();
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
   });
-  const { trigger } = useCreateChannel();
+  const { trigger } = useUpdateChannel(router.query.id);
 
   const {
     handleSubmit,
@@ -94,7 +112,13 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      channel_type: dataTypeOptions[4].value,
+      channel_type: data?.channel_type,
+      name: data?.name,
+      data: {
+        url: parsedData?.url || "",
+        headers: preparedHeaders || [],
+        rate_limit: parsedData?.rate_limit || 0,
+      },
     },
   });
 
@@ -118,7 +142,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
       });
       if (response.ok) {
         mutate(`/api/v1/dj/channels/`);
-        closeFlyout();
+        setIsFlyoutVisible(false);
       }
     } catch (error) {
       console.error(error);
@@ -131,7 +155,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   }, [watch("channel_type")]);
 
   return (
-    <EuiFlyout onClose={closeFlyout}>
+    <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
           <h2>Create channel</h2>
@@ -287,7 +311,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
           <EuiFormRow>
             <EuiFlexGroup gutterSize="s">
               <EuiFlexItem grow={false}>
-                <EuiButton type="submit">Create custom fields</EuiButton>
+                <EuiButton type="submit">Update channel</EuiButton>
               </EuiFlexItem>
               {watch("channel_type") === "api" && (
                 <EuiFlexItem grow={false}>
@@ -312,4 +336,4 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   );
 };
 
-export default CreateChannelFlyout;
+export default EditChannelFlyot;

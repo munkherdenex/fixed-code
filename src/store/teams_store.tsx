@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { createContext, useCallback, useEffect, useState } from "react";
-import { mutate } from "swr";
+import swr, { mutate } from "swr";
 import useChangeTeam from "../hooks/useChangeTeam";
 import useTeams from "../hooks/useTeams";
 import { Initial_Teams_Type, Teams } from "./teams_store.types";
@@ -73,8 +73,13 @@ export const TeamsProvider = ({ children }) => {
   }, [teamsData, router, teamsIsLoading, teamsError, currentTeam, changeCurrentTeam]);
 
   useEffect(() => {
-    //TODO: buh fetch huselt dahin duudagdana currentTeam uurchlugduh uyed
-    mutate("/api/v1/dj/segments/");
+    //INFO: currentTeam uurchlugduh uyed buh fetch huselt dahin duudagdana
+    mutate(
+      (key) => true, // which cache keys are updated
+      undefined, // update cache data to `undefined`
+      { revalidate: true }, // do not revalidate
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTeam]);
 
   return (

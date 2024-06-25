@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 
 export interface Channels {
   id: number;
-  data: Object;
+  data: string;
   created_at: string;
   updated_at: string;
   name: string;
