@@ -21,11 +21,14 @@ import { teamsContext } from "../../store/teams_store";
 const schema = yup
   .object({
     current_password: yup.string().required("please enter old password"),
-    new_password: yup.string().min(8)
-      .matches(/[0-9]/, 'Password requires a number')
-      .matches(/[a-z]/, 'Password requires a lowercase letter')
-      .matches(/[A-Z]/, 'Password requires an uppercase letter')
-      .matches(/[^\w]/, 'Password requires a symbol').required("please enter your password"),
+    new_password: yup
+      .string()
+      .min(8)
+      .matches(/[0-9]/, "Password requires a number")
+      .matches(/[a-z]/, "Password requires a lowercase letter")
+      .matches(/[A-Z]/, "Password requires an uppercase letter")
+      .matches(/[^\w]/, "Password requires a symbol")
+      .required("please enter your password"),
     new_password_repeat: yup.string().required("please enter old password"),
   })
   .required();
@@ -44,7 +47,7 @@ const SecurityComponent = () => {
     control,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
   });
 
   const onSubmit = async (data: FormData) => {
@@ -134,7 +137,7 @@ const SecurityComponent = () => {
               />
             </EuiFormRow>
             <EuiButton isLoading={isMutating} type="submit" fill>
-              Changed
+              Change password
             </EuiButton>
           </EuiForm>
         </EuiPanel>
