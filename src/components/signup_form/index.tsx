@@ -23,11 +23,14 @@ const schema = yup
     fname: yup.string().required("please enter your firstname"),
     lname: yup.string().required("please enter your lastname"),
     email: yup.string().email().required("please enter your email address"),
-    password: yup.string().min(8)
-      .matches(/[0-9]/, 'Password requires a number')
-      .matches(/[a-z]/, 'Password requires a lowercase letter')
-      .matches(/[A-Z]/, 'Password requires an uppercase letter')
-      .matches(/[^\w]/, 'Password requires a symbol').required("please enter your password"),
+    password: yup
+      .string()
+      .min(8)
+      .matches(/[0-9]/, "Password requires a number")
+      .matches(/[a-z]/, "Password requires a lowercase letter")
+      .matches(/[A-Z]/, "Password requires an uppercase letter")
+      .matches(/[^\w]/, "Password requires a symbol")
+      .required("please enter your password"),
   })
   .required();
 type FormData = yup.InferType<typeof schema>;
@@ -49,12 +52,12 @@ const SignupForm: FunctionComponent = () => {
   const onSubmit = async (data) => {
     try {
       const response = await trigger(data);
-      if (response.ok) {
+      if (response) {
         addToast({
           id: "signUp-success",
           color: "success",
           title: "Success",
-          text: 'Successfully register',
+          text: "Successfully register",
         });
         router.push("/signin");
       }
