@@ -72,9 +72,14 @@ export const TeamsProvider = ({ children }) => {
   }, [teamsData, router, teamsIsLoading, teamsError, currentTeam, changeCurrentTeam]);
 
   useEffect(() => {
-    //INFO: currentTeam uurchlugduh uyed buh fetch huselt dahin duudagdana
+    //INFO: currentTeam uurchlugduh uyed teams profile-aas busdiig n dahij shinechlene
     mutate(
-      (key) => true, // which cache keys are updated
+      (key) => {
+        if (key === "/api/v1/teams" || key === "/api/v1/profile") {
+          return false;
+        }
+        return true;
+      }, // which cache keys are updated
       undefined, // update cache data to `undefined`
       { revalidate: true }, // do not revalidate
     );
