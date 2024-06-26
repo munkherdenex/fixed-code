@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
 import { addToast } from "../components/toast";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useSignUp<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
@@ -12,7 +13,8 @@ export default function useSignUp<Type>() {
         headers: new Headers({ "content-type": "application/json" }),
         body: JSON.stringify(arg),
       });
-      return res;
+
+      return handleResponseNotOk(res);
     },
   );
 

@@ -3,6 +3,7 @@ import { BASE_URL } from "../constants";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
 import { useRouter } from "next/router";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useProfile() {
   const router = useRouter();
@@ -15,17 +16,7 @@ export default function useProfile() {
         credentials: "include",
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-
-        const error = new Error(data?.error);
-
-        error.status = res.status;
-
-        throw error;
-      }
-
-      return res.json();
+      return handleResponseNotOk(res);
     },
   );
 

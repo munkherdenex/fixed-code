@@ -2,6 +2,7 @@ import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useDeleteCustomer<Type>(id?: string | string[] | undefined) {
   const { data, error, isMutating, trigger } = useSWRMutation(
@@ -14,13 +15,8 @@ export default function useDeleteCustomer<Type>(id?: string | string[] | undefin
           "content-type": "application/json",
         },
       });
-      if (!res.ok) {
-        const data = await res.json();
-        const error = new Error(data?.error);
-        error.status = res.status;
-        throw error;
-      }
-      return res;
+
+      return handleResponseNotOk(res);
     },
   );
 

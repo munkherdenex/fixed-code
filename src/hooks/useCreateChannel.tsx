@@ -2,6 +2,7 @@ import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useCreateChannel<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
@@ -14,17 +15,7 @@ export default function useCreateChannel<Type>() {
         credentials: "include",
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-
-        const error = new Error(data?.error);
-
-        error.status = res.status;
-
-        throw error;
-      }
-
-      return res;
+      return handleResponseNotOk(res);
     },
   );
 

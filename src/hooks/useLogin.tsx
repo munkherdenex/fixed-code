@@ -2,6 +2,7 @@ import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useLogin<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
@@ -13,7 +14,8 @@ export default function useLogin<Type>() {
         body: JSON.stringify(arg),
         credentials: "include",
       });
-      return res;
+
+      return handleResponseNotOk(res);
     },
   );
 

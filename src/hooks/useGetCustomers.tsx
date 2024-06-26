@@ -3,6 +3,7 @@ import { BASE_URL } from "../constants";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
 import { CustomersType } from "../constants/customer.types";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useGetCustomers(id?: string | string[] | undefined) {
   const url = id ? `/api/v1/dj/customers/${id}/?extended=true` : "/api/v1/dj/customers/";
@@ -12,13 +13,8 @@ export default function useGetCustomers(id?: string | string[] | undefined) {
       headers: { "content-type": "application/json" },
       credentials: "include",
     });
-    if (!res.ok) {
-      const data = await res.json();
-      const error = new Error(data?.error);
-      error.status = res.status;
-      throw error;
-    }
-    return res.json();
+
+    return handleResponseNotOk(res);
   });
 
   useEffect(() => {

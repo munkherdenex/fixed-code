@@ -2,6 +2,7 @@ import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
 import { useEffect } from "react";
 import { addToast } from "../components/toast";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useCreateField<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
@@ -14,13 +15,7 @@ export default function useCreateField<Type>() {
         credentials: "include",
       });
 
-      if (!res.ok) {
-        error.status = res.status;
-
-        throw error;
-      }
-
-      return res;
+      return handleResponseNotOk(res);
     },
   );
 

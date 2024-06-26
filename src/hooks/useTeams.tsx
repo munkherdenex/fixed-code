@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { addToast } from "../components/toast";
 import { BASE_URL } from "../constants";
 import { Teams } from "../store/teams_store.types";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useTeams(): {
   data: Teams[];
@@ -20,17 +21,7 @@ export default function useTeams(): {
         credentials: "include",
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-
-        const error = new Error(data?.error);
-
-        error.status = res.status;
-
-        throw error;
-      }
-
-      return res.json();
+      return handleResponseNotOk(res);
     },
   );
 

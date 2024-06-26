@@ -1,5 +1,6 @@
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useLogout<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
@@ -11,7 +12,8 @@ export default function useLogout<Type>() {
         body: JSON.stringify(arg),
         credentials: "include",
       });
-      return res;
+
+      return handleResponseNotOk(res);
     },
   );
 
