@@ -43,13 +43,11 @@ const SigninForm: FunctionComponent = () => {
   const onSubmit = async (data: FormData) => {
     try {
       const response = await trigger(data);
-      if (response.ok) {
+      if (response) {
         router.push("/dashboards");
-      } else {
-        alert(response?.status);
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
