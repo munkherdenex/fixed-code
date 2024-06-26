@@ -1,4 +1,4 @@
-export async function handleResponseNotOk(res: Response) {
+export async function handleResponseNotOk(res) {
   if (!res.ok) {
     const data = await res.json();
 
@@ -25,5 +25,5 @@ export async function handleResponseNotOk(res: Response) {
     throw error;
   }
 
-  return res.json();
+  return res;
 }
