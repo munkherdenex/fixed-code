@@ -72,7 +72,7 @@ const Dashboard: FunctionComponent = () => {
         name: firstFormData.name,
         description: firstFormData.description,
         type: type,
-        team_id: data.team_id,
+        ...data,
       });
 
       if (response) {

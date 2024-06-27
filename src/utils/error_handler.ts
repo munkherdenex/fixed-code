@@ -1,32 +1,38 @@
+import { addToast } from "../components/toast";
+
 export async function handleResponseNotOk(res: Response) {
   if (!res.ok) {
-    const data = await res.json();
-
+    let data: any;
     const error = new Error();
 
-    if (Array.isArray(data?.kind)) {
-      error.message = data?.kind[0];
-    }
+    try {
+      data = await res.json();
 
-    if (data.error) {
-      error.message = data.error;
-    }
-
-    if (data.message) {
-      error.message = data.message;
-    }
-
-    if (data.errors) {
-      error.message = data.errors;
-    }
-
-    if (data.detail) {
-      error.message = data.detail;
-    }
+      if (Array.isArray(data?.kind)) {
+        error.message = data?.kind[0];
+      }
+      if (data.error) {
+        error.message = data.error;
+      }
+      if (data.message) {
+        error.message = data.message;
+      }
+      if (data.errors) {
+        error.message = data.errors;
+      }
+      if (data.detail) {
+        error.message = data.detail;
+      }
+    } catch (error) {}
 
     error.status = res.status;
 
-    throw error;
+    addToast({
+      id: "fields-list-error",
+      color: "danger",
+      title: `${error.status} An error occurred`,
+      text: error?.message,
+    });
   }
 
   return res.json();
