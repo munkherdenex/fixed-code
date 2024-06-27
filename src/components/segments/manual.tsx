@@ -1,16 +1,17 @@
 import {
-  EuiTab,
+  EuiButton,
+  EuiFilePicker,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiTabs,
   EuiForm,
   EuiFormRow,
-  EuiFilePicker,
-  EuiButton,
+  EuiSelect,
+  EuiTab,
+  EuiTabs,
   EuiTextArea,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Fragment, useState, useMemo } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import * as yup from "yup";
 
@@ -84,6 +85,11 @@ const tabs = [
   },
 ];
 
+const dataTypeOptions = [
+  { value: "email", text: "Email" },
+  { value: "phone", text: "Phone" },
+];
+
 const schema = yup.object({
   file: yup
     .mixed<FileList>() // Pass in the type of `fileUpload`
@@ -96,7 +102,11 @@ const schema = yup.object({
         Array.from(files).every((file) => file.size <= 20_00_000),
     ),
   text: yup.string(),
+  text_type: yup.string().oneOf(["email", "phone"]).notRequired(),
+  input_type: yup.string().oneOf(["file", "text"]),
 });
+
+type FormData = yup.InferType<typeof schema>;
 
 const Manual = ({
   createSegment,
@@ -110,6 +120,8 @@ const Manual = ({
     control,
     setError,
     clearErrors,
+    setValue,
+    resetField,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -118,11 +130,15 @@ const Manual = ({
   const [selectedTabId, setSelectedTabId] = useState("file");
 
   const selectedTabContent = useMemo(() => {
+    setValue("input_type", selectedTabId);
     return tabs.find((obj) => obj.id === selectedTabId)?.content;
-  }, [selectedTabId]);
+  }, [selectedTabId, setValue]);
 
   const onSelectedTabChanged = (id: string) => {
     clearErrors();
+    resetField("file");
+    resetField("text");
+    resetField("text_type");
     setSelectedTabId(id);
   };
 
@@ -138,7 +154,7 @@ const Manual = ({
     ));
   };
 
-  const testHandle = (data) => {
+  const testHandle = (data: FormData) => {
     if (!data.file && selectedTabId === "file") {
       return setError("file", {
         type: "manual",
@@ -153,15 +169,24 @@ const Manual = ({
       });
     }
 
-    if (data.file && selectedTabId === "file") {
-      return createSegment({
-        file: data.file,
+    if (!data.text_type && selectedTabId === "text") {
+      return setError("text_type", {
+        type: "manual",
+        message: "Please choose type",
       });
     }
 
-    if (data.text && selectedTabId === "text") {
+    if (selectedTabId === "file") {
+      return createSegment({
+        file: data.file,
+        ...data,
+      });
+    }
+
+    if (selectedTabId === "text") {
       return createSegment({
         text: data.text,
+        ...data,
       });
     }
   };
@@ -180,6 +205,29 @@ const Manual = ({
             >
               {selectedTabContent(control)}
             </EuiFormRow>
+            {selectedTabId === "text" && (
+              <EuiFormRow
+                label="Text type"
+                isInvalid={!!errors.text_type?.message}
+                error={[errors.text_type?.message]}
+              >
+                <Controller
+                  control={control}
+                  name="text_type"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <EuiSelect
+                      onChange={onChange}
+                      value={value}
+                      options={dataTypeOptions}
+                      onBlur={onBlur}
+                      isInvalid={!!errors.text_type?.message}
+                      aria-label="channel type"
+                      hasNoInitialSelection
+                    />
+                  )}
+                />
+              </EuiFormRow>
+            )}
             <EuiButton type="submit" isLoading={isCreateSegmentMutating}>
               Create
             </EuiButton>

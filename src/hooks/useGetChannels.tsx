@@ -1,7 +1,5 @@
 import useSWR from "swr";
 import { BASE_URL } from "../constants";
-import { useEffect } from "react";
-import { addToast } from "../components/toast";
 import { useRouter } from "next/router";
 import { handleResponseNotOk } from "../utils/error_handler";
 
@@ -37,17 +35,6 @@ export default function useGetChannels<Type>(id?: string | string[] | undefined)
       return handleResponseNotOk(res);
     },
   );
-
-  useEffect(() => {
-    if (error) {
-      addToast({
-        id: "channels-list-error",
-        color: "danger",
-        title: "An error occurred",
-        text: error?.message,
-      });
-    }
-  }, [error]);
 
   return {
     data,

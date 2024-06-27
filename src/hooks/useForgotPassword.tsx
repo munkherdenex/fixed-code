@@ -1,7 +1,5 @@
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
-import { useEffect } from "react";
-import { addToast } from "../components/toast";
 import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useForgotPassword<Type>() {
@@ -14,21 +12,10 @@ export default function useForgotPassword<Type>() {
         body: JSON.stringify(arg),
         credentials: "include",
       });
-      
+
       return handleResponseNotOk(res);
     },
   );
-
-  useEffect(() => {
-    if (error) {
-      addToast({
-        id: "forgot-password-error",
-        color: "danger",
-        title: "An error occurred",
-        text: error?.message,
-      });
-    }
-  }, [error]);
 
   return {
     data: data,

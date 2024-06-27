@@ -1,7 +1,5 @@
 import useSWRImmutable from "swr/immutable";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { addToast } from "../components/toast";
 import { BASE_URL } from "../constants";
 import { Teams } from "../store/teams_store.types";
 import { handleResponseNotOk } from "../utils/error_handler";
@@ -24,17 +22,6 @@ export default function useTeams(): {
       return handleResponseNotOk(res);
     },
   );
-
-  useEffect(() => {
-    if (error) {
-      addToast({
-        id: "teams-error",
-        color: "danger",
-        title: "An error occurred",
-        text: error?.message,
-      });
-    }
-  }, [error]);
 
   return {
     data,

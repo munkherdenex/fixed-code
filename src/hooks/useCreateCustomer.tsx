@@ -1,7 +1,5 @@
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
-import { useEffect } from "react";
-import { addToast } from "../components/toast";
 import { handleResponseNotOk } from "../utils/error_handler";
 
 export interface Customer {
@@ -27,18 +25,6 @@ export default function useCreateCustomer<Type>() {
       return handleResponseNotOk(res);
     },
   );
-
-  useEffect(() => {
-    if (error) {
-      console.log(error.error_message);
-      addToast({
-        id: "create_customer-error",
-        color: "danger",
-        title: "An error occurred",
-        text: error?.message,
-      });
-    }
-  }, [error]);
 
   return {
     data: data,

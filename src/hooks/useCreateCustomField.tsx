@@ -1,6 +1,4 @@
-import { useEffect } from "react";
 import useSWRMutation from "swr/mutation";
-import { addToast } from "../components/toast";
 import { BASE_URL } from "../constants";
 import { handleResponseNotOk } from "../utils/error_handler";
 
@@ -18,17 +16,6 @@ export default function useCreateField<Type>() {
       return handleResponseNotOk(res);
     },
   );
-
-  useEffect(() => {
-    if (error) {
-      addToast({
-        id: "create-fields-error",
-        color: "danger",
-        title: "An error occurred",
-        text: error?.message,
-      });
-    }
-  }, [error]);
 
   return {
     data: data,

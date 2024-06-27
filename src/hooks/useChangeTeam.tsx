@@ -1,7 +1,5 @@
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
-import { useEffect } from "react";
-import { addToast } from "../components/toast";
 import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useChangeTeam<Type>() {
@@ -18,17 +16,6 @@ export default function useChangeTeam<Type>() {
       return handleResponseNotOk(res);
     },
   );
-
-  useEffect(() => {
-    if (error) {
-      addToast({
-        id: "change-team-error",
-        color: "danger",
-        title: "An error occurred",
-        text: error?.message,
-      });
-    }
-  }, [error]);
 
   return {
     data: data,

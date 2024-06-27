@@ -1,7 +1,6 @@
 import useSWR from "swr";
 import { BASE_URL } from "../constants";
-import { useContext, useEffect } from "react";
-import { addToast } from "../components/toast";
+import { useContext } from "react";
 import { teamsContext } from "../store/teams_store";
 import { handleResponseNotOk } from "../utils/error_handler";
 
@@ -18,17 +17,6 @@ export default function useGetCurrentTeamMembers() {
 
     return handleResponseNotOk(res);
   });
-
-  useEffect(() => {
-    if (error) {
-      addToast({
-        id: "team-members-error",
-        color: "danger",
-        title: "An error occurred",
-        text: error?.message,
-      });
-    }
-  }, [error]);
 
   return {
     data: data || [],
