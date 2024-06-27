@@ -46,7 +46,7 @@ const TeamMembersComponent = () => {
   const onSubmit = async (data: FormData) => {
     try {
       const response = await trigger(data);
-      if (response.ok) {
+      if (response) {
         addToast({
           id: "invite-member",
           color: "success",

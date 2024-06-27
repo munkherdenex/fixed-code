@@ -53,7 +53,7 @@ const SecurityComponent = () => {
   const onSubmit = async (data: FormData) => {
     try {
       const response = await trigger(data);
-      if (response.ok) {
+      if (response) {
         addToast({
           id: "change-password",
           color: "success",

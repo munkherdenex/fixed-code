@@ -52,7 +52,7 @@ const Settings = () => {
   const onSubmit = async (data: FormData) => {
     try {
       const response = await trigger(data);
-      if (response.ok) {
+      if (response) {
         setIsEditProfile(false);
       } else {
         alert(response?.status);
