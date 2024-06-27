@@ -6,7 +6,10 @@ import {
   EuiFlexItem,
   EuiForm,
   EuiFormRow,
+  EuiLink,
   EuiPanel,
+  EuiSpacer,
+  EuiText,
   useEuiTheme,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -99,13 +102,25 @@ const SigninForm: FunctionComponent = () => {
                 )}
               />
             </EuiFormRow>
-            <EuiButton isLoading={isMutating} type="submit">
-              Sign in
-            </EuiButton>
+            <EuiSpacer size="m" />
+            <EuiFlexGroup justifyContent="spaceBetween">
+              <EuiFlexItem >
+                <div>
+                  <EuiButton isLoading={isMutating} type="submit">
+                    Sign in
+                  </EuiButton>
+                </div>
+              </EuiFlexItem>
+              <EuiFlexItem>
+                <EuiText textAlign="right" size="relative" grow={false}>
+                  <EuiLink href={'/forgot_password'}>Forgot password?</EuiLink>
+                </EuiText>
+              </EuiFlexItem>
+            </EuiFlexGroup>
           </EuiForm>
         </EuiPanel>
       </EuiFlexItem>
-    </EuiFlexGroup>
+    </EuiFlexGroup >
   );
 };
 
