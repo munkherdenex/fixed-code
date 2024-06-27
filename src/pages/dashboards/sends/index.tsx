@@ -1,6 +1,8 @@
 import { EuiBreadcrumbs, EuiButton } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import CreateTemplateFlyot from "../../../components/sends/create_template_flyot";
 import SendsTable from "../../../components/sends/table";
 import DashboardLayout from "../../../layouts/dashboard";
 
@@ -8,6 +10,12 @@ const pathPrefix = process.env.PATH_PREFIX;
 
 const SendsDashboard = () => {
   const router = useRouter();
+  const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
+
+  const closeFlyout = () => {
+    setIsFlyoutVisible(false);
+  };
+
   return (
     <>
       <Head>
@@ -20,7 +28,7 @@ const SendsDashboard = () => {
           rightSideItems: [
             <EuiButton
               color="primary"
-              onClick={() => router.push(`${pathPrefix}/dashboards/sends/create`)}
+              onClick={() => setIsFlyoutVisible(true)}
               fill
               key="create-sends"
             >
@@ -45,6 +53,7 @@ const SendsDashboard = () => {
       >
         <div>
           <SendsTable />
+          {isFlyoutVisible && <CreateTemplateFlyot closeFlyout={closeFlyout} />}
         </div>
       </DashboardLayout>
     </>

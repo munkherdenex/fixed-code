@@ -1,115 +1,55 @@
-import {
-  EuiBasicTable,
-  EuiBasicTableColumn,
-  EuiHealth,
-  EuiLink,
-  EuiTableFieldDataColumnType,
-  formatDate,
-} from "@elastic/eui";
-
-type User = {
-  id: string;
-  firstName: string | null | undefined;
-  lastName: string;
-  github: string;
-  dateOfBirth: Date;
-  online: boolean;
-  location: {
-    city: string;
-    country: string;
-  };
-};
-
-const users: User[] = [];
-
-for (let i = 0; i < 10; i++) {
-  users.push({
-    id: `${i}`,
-    firstName: "a",
-    lastName: "a",
-    github: "a",
-    dateOfBirth: new Date(),
-    online: true,
-    location: {
-      city: "a",
-      country: "a",
-    },
-  });
-}
+import { EuiBasicTable, EuiBasicTableColumn, EuiTableFieldDataColumnType } from "@elastic/eui";
+import { useRouter } from "next/router";
+import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 
 const SendsTable = () => {
-  const columns: Array<EuiBasicTableColumn<User>> = [
+  const router = useRouter();
+  const { data } = useGetTemplates<Template[]>();
+  const columns: Array<EuiBasicTableColumn<Template>> = [
     {
-      field: "firstName",
-      name: "First Name",
-      "data-test-subj": "firstNameCell",
-      mobileOptions: {
-        render: (user: User) => (
-          <>
-            {user.firstName} {user.lastName}
-          </>
-        ),
-        header: false,
-        truncateText: false,
-        enlarge: true,
-        width: "100%",
-      },
+      field: "id",
+      name: "ID",
+      "data-test-subj": "idCell",
     },
     {
-      field: "lastName",
-      name: "Last Name",
+      field: "title",
+      name: "Title",
+      "data-test-subj": "titleCell",
+    },
+    {
+      field: "kind",
+      name: "Kind",
+      "data-test-subj": "kindCell",
+    },
+    {
+      field: "body",
+      name: "Body",
+      "data-test-subj": "bodyCell",
       truncateText: true,
-      mobileOptions: {
-        show: false,
-      },
     },
     {
-      field: "github",
-      name: "Github",
-      render: (username: User["github"]) => (
-        <EuiLink href="#" target="_blank">
-          {username}
-        </EuiLink>
-      ),
+      field: "created_at",
+      name: "Created at",
+      "data-test-subj": "createdAtCell",
     },
     {
-      field: "dateOfBirth",
-      name: "Date of Birth",
-      dataType: "date",
-      render: (dateOfBirth: User["dateOfBirth"]) => formatDate(dateOfBirth, "dobLong"),
-    },
-    {
-      field: "location",
-      name: "Location",
-      truncateText: true,
-      textOnly: true,
-      render: (location: User["location"]) => {
-        return `${location.city}, ${location.country}`;
-      },
-    },
-    {
-      field: "online",
-      name: "Online",
-      dataType: "boolean",
-      render: (online: User["online"]) => {
-        const color = online ? "success" : "danger";
-        const label = online ? "Online" : "Offline";
-        return <EuiHealth color={color}>{label}</EuiHealth>;
-      },
+      field: "created_by",
+      name: "Created by",
+      "data-test-subj": "createdByCell",
     },
   ];
 
-  const getRowProps = (user: User) => {
-    const { id } = user;
+  const getRowProps = (template: Template) => {
+    const { id } = template;
     return {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
-      onClick: () => {},
+      onClick: () => router.push(`/dashboards/sends/info/${id}`),
     };
   };
 
-  const getCellProps = (user: User, column: EuiTableFieldDataColumnType<User>) => {
-    const { id } = user;
+  const getCellProps = (template: Template, column: EuiTableFieldDataColumnType<Template>) => {
+    const { id } = template;
     const { field } = column;
 
     return {
@@ -118,10 +58,11 @@ const SendsTable = () => {
       textOnly: true,
     };
   };
+
   return (
     <EuiBasicTable
       tableCaption="Demo of EuiBasicTable"
-      items={users}
+      items={data || []}
       rowHeader="firstName"
       columns={columns}
       rowProps={getRowProps}
