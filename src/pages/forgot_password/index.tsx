@@ -2,7 +2,7 @@ import Head from "next/head";
 import Wrapper from "../../components/starter/wrapper";
 import { EuiSpacer, EuiTitle, useEuiTheme } from "@elastic/eui";
 import { resetStyles } from "../../styles/reset.styles";
-import ResetPasswordForm from "../../components/resetpass_form";
+import ForgotPasswordForm from "../../components/forgotpass_form";
 
 const ResetPassword = () => {
   const { euiTheme } = useEuiTheme();
@@ -20,7 +20,7 @@ const ResetPassword = () => {
             <h1>Reset password</h1>
           </EuiTitle>
           <EuiSpacer size="m" />
-          <ResetPasswordForm />
+          <ForgotPasswordForm />
         </div>
       </Wrapper>
     </>
@@ -28,19 +28,3 @@ const ResetPassword = () => {
 };
 
 export default ResetPassword;
-
-export async function getServerSideProps(context) {
-  const query = context.query;
-  if (query?.p3 && query?.p4) {
-    return {
-      props: {},
-    }
-  }
-  return {
-    redirect: {
-      permanent: false,
-      destination: '/signin',
-    },
-    props: {},
-  };
-}
