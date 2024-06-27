@@ -4,6 +4,10 @@ export async function handleResponseNotOk(res: Response) {
 
     const error = new Error();
 
+    if (Array.isArray(data?.kind)) {
+      error.message = data?.kind[0];
+    }
+
     if (data.error) {
       error.message = data.error;
     }

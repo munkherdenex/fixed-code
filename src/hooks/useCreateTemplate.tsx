@@ -1,12 +1,12 @@
-import { useEffect } from "react";
-import useSWRMutation from "swr/mutation";
-import { addToast } from "../components/toast";
 import { BASE_URL } from "../constants";
+import useSWRMutation from "swr/mutation";
+import { useEffect } from "react";
+import { addToast } from "../components/toast";
 import { handleResponseNotOk } from "../utils/error_handler";
 
-export default function useCreateField<Type>() {
+export default function useCreateTemplate<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
-    `/api/v1/dj/fields/`,
+    `/api/v1/dj/templates/`,
     async (path, { arg }: { arg: Type }) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "POST",
@@ -22,7 +22,7 @@ export default function useCreateField<Type>() {
   useEffect(() => {
     if (error) {
       addToast({
-        id: "create-fields-error",
+        id: "create-templates-error",
         color: "danger",
         title: "An error occurred",
         text: error?.message,
