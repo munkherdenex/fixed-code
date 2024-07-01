@@ -37,7 +37,7 @@ const TeamCreate = () => {
   const onSubmit = async (data: FormData) => {
     try {
       const response = await trigger(data);
-      if (response.ok) {
+      if (response) {
         await mutate("/api/v1/teams");
         router.push("/dashboards/");
       }
