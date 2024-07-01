@@ -69,12 +69,14 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
     },
   });
 
-  const channelDataOptions = channelsData
-    .filter((channel) => channel.channel_type === watch("kind"))
-    ?.map((channel) => ({
-      value: channel.id,
-      text: channel.name,
-    }));
+  const channelDataOptions = Array.isArray(channelsData)
+    ? channelsData
+        .filter((channel) => channel.channel_type === watch("kind"))
+        .map((channel) => ({
+          value: channel.id,
+          text: channel.name,
+        }))
+    : [];
 
   const setAceEditorValue = (value: string) => {
     setValue("body", value);
