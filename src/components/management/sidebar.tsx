@@ -34,8 +34,8 @@ const Sidebar = ({ active }: { active: string }) => {
           },
         },
         {
-          name: "Team members",
-          id: htmlIdGenerator("Team members")(),
+          name: "Team",
+          id: htmlIdGenerator("Team")(),
           isSelected: active === "teamMembers",
           onClick: () => {
             router.push(`${pathPrefix}/dashboards/management`);
