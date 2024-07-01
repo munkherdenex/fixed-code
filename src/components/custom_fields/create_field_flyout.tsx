@@ -54,7 +54,7 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const onSubmit = async (data: FormData) => {
     try {
       const response = await trigger(data);
-      if (response.ok) {
+      if (response) {
         mutate(`/api/v1/dj/fields/`);
         closeFlyout();
       }

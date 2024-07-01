@@ -140,7 +140,7 @@ const EditChannelFlyot = ({
           headers: prepared_headers,
         },
       });
-      if (response.ok) {
+      if (response) {
         mutate(`/api/v1/dj/channels/`);
         setIsFlyoutVisible(false);
       }

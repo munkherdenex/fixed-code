@@ -116,7 +116,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
           headers: prepared_headers,
         },
       });
-      if (response.ok) {
+      if (response) {
         mutate(`/api/v1/dj/channels/`);
         closeFlyout();
       }
