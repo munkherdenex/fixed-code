@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { createContext, useCallback, useEffect, useState } from "react";
-import swr, { mutate } from "swr";
+import { mutate } from "swr";
 import useChangeTeam from "../hooks/useChangeTeam";
 import useTeams from "../hooks/useTeams";
 import { Initial_Teams_Type, Teams } from "./teams_store.types";
