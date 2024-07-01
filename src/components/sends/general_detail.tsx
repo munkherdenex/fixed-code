@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
+import EditTemplateFlyout from "./edit_template_flyout";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -46,7 +47,7 @@ const DeleteConfirmModal = ({
   return (
     <EuiConfirmModal
       aria-labelledby={modalTitleId}
-      title="Delete channel?"
+      title="Delete send?"
       onCancel={closeModal}
       onConfirm={() => {
         confirmModal();
@@ -75,6 +76,10 @@ const GeneralDetails = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
 
+  const closeFlyout = () => {
+    setIsEditFlyoutVisible(false);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -91,7 +96,7 @@ const GeneralDetails = () => {
             <EuiPanel paddingSize="s" color="subdued">
               <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
                 <EuiFlexItem grow={false}>
-                  <strong>Channel details</strong>
+                  <strong>Send info details</strong>
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiFlexGroup gutterSize="s">
@@ -139,6 +144,7 @@ const GeneralDetails = () => {
         </EuiFlexGroup>
       </EuiPanel>
       {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
+      {isEditFlyoutVisible && <EditTemplateFlyout closeFlyout={closeFlyout} data={data} />}
     </div>
   );
 };

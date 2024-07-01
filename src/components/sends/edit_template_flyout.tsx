@@ -14,11 +14,13 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import { mutate } from "swr";
 import * as yup from "yup";
-import useCreateTemplate from "../../hooks/useCreateTemplate";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
+import { Template } from "../../hooks/useGetTemplates";
+import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
@@ -42,8 +44,9 @@ const dataTypeOptions = [
 
 type FormData = yup.InferType<typeof schema>;
 
-const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
-  const { isMutating, trigger } = useCreateTemplate();
+const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; data: Template }) => {
+  const router = useRouter();
+  const { isMutating, trigger } = useUpdateTemplate(router.query.id);
   const { data: channelsData } = useGetChannels<Channels[]>();
 
   const flyoutHeadingId = useGeneratedHtmlId({
@@ -59,7 +62,10 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      kind: "api",
+      kind: data.kind,
+      body: data.body,
+      title: data.title,
+      ch_id: data.ch_id,
     },
   });
 
@@ -212,4 +218,4 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
   );
 };
 
-export default CreateTemplateFlyot;
+export default EditTemplateFlyout;
