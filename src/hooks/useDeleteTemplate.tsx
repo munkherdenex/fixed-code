@@ -1,15 +1,12 @@
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
-import { useContext } from "react";
 import { handleResponseNotOk } from "../utils/error_handler";
-import { teamsContext } from "../store/teams_store";
 
-export default function useDeleteMember<Type>(id?: string | string[] | undefined) {
-  const { currentTeam } = useContext(teamsContext);
-  const url = currentTeam?.id ? `/api/v1/teams/${currentTeam?.id}/members/${id}` : null;
+export default function useDeleteTemplate<Type>(id?: string | string[] | undefined) {
+  const path = id ? `/api/v1/dj/templates/${id}/` : `/api/v1/dj/templates/`;
 
   const { data, error, isMutating, trigger } = useSWRMutation(
-    url,
+    path,
     async (path, { arg }: { arg: Type }) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "DELETE",
