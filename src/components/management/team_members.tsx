@@ -16,7 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import useProfile from "../../hooks/useProfile";
-import MembersComponent from "./members";
+import MembersTable from "./members";
 
 const schema = yup
   .object({
@@ -109,7 +109,7 @@ const TeamMembersComponent = () => {
           </EuiFlexItem>
         )}
         <EuiFlexItem grow={false}>
-          <MembersComponent />
+          <MembersTable />
         </EuiFlexItem>
       </EuiFlexGroup>
     </Fragment>

@@ -7,7 +7,7 @@ const UpdateMemberModal = ({
   selectMemberId,
   changed_role,
 }: {
-  selectMemberId: string;
+  selectMemberId: string | any;
   changed_role: string;
 }) => {
   const { mutate } = useGetCurrentTeamMembers();
