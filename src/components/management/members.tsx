@@ -22,13 +22,16 @@ import UpdateMemberModal from "./update_member_modal";
 const MembersTable = () => {
   const { team_members } = useGetCurrentTeamMembers();
   const { data: user } = useProfile();
+
   const isAdmin =
-    team_members?.members?.filter((member) => {
-      return member?.user?.email === user.email;
-    })?.[0]?.role === "admin" || false;
+    team_members?.members?.some(
+      (member) => member?.user?.email === user.email && member?.role === "admin",
+    ) || false;
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectMemberId, setSelectedMemberId] = useState<any>();
   const [teamRole, setTeamRole] = useState(team_members?.members);
+
   const roleTypes = [
     { value: "admin", text: "Admin" },
     { value: "member", text: "Member" },
