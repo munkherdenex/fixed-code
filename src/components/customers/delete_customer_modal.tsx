@@ -22,7 +22,7 @@ const DeleteCustomerModal = ({
       onConfirm={async () => {
         try {
           const response = await customerDeleteTrigger();
-          if (response.ok) {
+          if (response) {
             router.push(`${pathPrefix}/dashboards/customers`);
             addToast({
               id: "customer-deleted",
