@@ -33,7 +33,7 @@ function ForgotPasswordForm() {
   const onSubmit = async (data: FormData) => {
     try {
       const response = await trigger(data);
-      if (response.ok) {
+      if (response) {
         addToast({
           id: "forgot-password-res",
           color: "success",

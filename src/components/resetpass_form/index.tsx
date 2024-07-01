@@ -54,7 +54,7 @@ const ResetPassword = () => {
           email: email,
         }
         const response = await trigger(request_data);
-        if (response.ok) {
+        if (response) {
           addToast({
             id: "reset-password",
             color: "success",
