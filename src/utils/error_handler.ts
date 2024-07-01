@@ -33,7 +33,13 @@ export async function handleResponseNotOk(res: Response) {
       title: `${error.status} An error occurred`,
       text: error?.message,
     });
+
+    throw error;
   }
 
-  return res.json();
+  try {
+    return await res.json();
+  } catch {
+    return true;
+  }
 }
