@@ -150,21 +150,19 @@ const MembersTable = () => {
     {
       name: "Action",
       field: "",
-      render: (id: MembersType["id"]) =>
-        isAdmin ? (
-          <EuiButtonIcon
-            display="base"
-            iconType="trash"
-            aria-label="Delete"
-            color="danger"
-            onClick={() => {
-              setSelectedMemberId(id);
-              setIsModalVisible(true);
-            }}
-          />
-        ) : (
-          <div></div>
-        ),
+      hidden: !isAdmin,
+      render: (id: MembersType["id"]) => (
+        <EuiButtonIcon
+          display="base"
+          iconType="trash"
+          aria-label="Delete"
+          color="danger"
+          onClick={() => {
+            setSelectedMemberId(id);
+            setIsModalVisible(true);
+          }}
+        />
+      ),
     },
   ];
 
