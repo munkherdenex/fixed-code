@@ -5,6 +5,7 @@ import {
   EuiFlexItem,
   EuiForm,
   EuiFormRow,
+  EuiSelect,
   EuiText,
 } from "@elastic/eui";
 import { Controller, useForm } from "react-hook-form";
@@ -13,9 +14,12 @@ import * as yup from "yup";
 import useCreateTeam from "../../../../hooks/useCreateTeam";
 import { useRouter } from "next/router";
 import { mutate } from "swr";
+import { useContext } from "react";
+import { teamsContext } from "../../../../store/teams_store";
 
 const schema = yup
   .object({
+    parent_id: yup.string().notRequired(),
     name: yup.string().min(5).required(),
     description: yup.string().required(),
   })
@@ -32,7 +36,20 @@ const TeamCreate = () => {
     resolver: yupResolver(schema),
   });
   const router = useRouter();
+  const { teams } = useContext(teamsContext);
   const { isMutating, trigger } = useCreateTeam<FormData>();
+
+  const teamOptions = Array.isArray(teams)
+    ? [
+        { value: "", text: "" },
+        ...teams
+          .filter((team) => !team.parent_id)
+          .map((team) => ({
+            value: team.id,
+            text: team.name,
+          })),
+      ]
+    : [{ value: "", text: "" }];
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -60,6 +77,29 @@ const TeamCreate = () => {
       </EuiFlexItem>
       <EuiFlexItem grow={false}>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+          <EuiFormRow
+            label="Parent team*"
+            helpText="If you want to create a sub team, select the parent team"
+            isInvalid={!!errors.parent_id?.message}
+            error={[errors.parent_id?.message]}
+          >
+            <Controller
+              name="parent_id"
+              control={control}
+              defaultValue=""
+              render={({ field: { onChange, onBlur, value } }) => (
+                <EuiSelect
+                  onChange={onChange}
+                  value={value}
+                  options={teamOptions}
+                  onBlur={onBlur}
+                  isInvalid={!!errors.parent_id?.message}
+                  aria-label="channel type"
+                  hasNoInitialSelection
+                />
+              )}
+            />
+          </EuiFormRow>
           <EuiFormRow
             label="Team name"
             isInvalid={!!errors.name?.message}
@@ -101,6 +141,18 @@ const TeamCreate = () => {
           <EuiFormRow>
             <EuiButton isLoading={isMutating} type="submit" fullWidth fill>
               Create Team
+            </EuiButton>
+          </EuiFormRow>
+          <EuiFormRow>
+            <EuiButton
+              color="danger"
+              onClick={() => router.push("/dashboards")}
+              type="button"
+              size="s"
+              fullWidth
+              fill
+            >
+              Cancel
             </EuiButton>
           </EuiFormRow>
         </EuiForm>

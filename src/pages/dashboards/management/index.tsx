@@ -1,5 +1,7 @@
+import { EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
 import Head from "next/head";
 import Sidebar from "../../../components/management/sidebar";
+import TeamsTreeView from "../../../components/management/teams_tree_view";
 import TeamMembersComponent from "../../../components/management/team_members";
 import DashboardLayout from "../../../layouts/dashboard";
 
@@ -16,7 +18,16 @@ const Management = () => {
         }}
         sidebar={<Sidebar active="teamMembers" />}
       >
-        <TeamMembersComponent />
+        <EuiFlexGroup direction="column">
+          <EuiFlexItem>
+            <EuiPanel>
+              <TeamsTreeView />
+            </EuiPanel>
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <TeamMembersComponent />
+          </EuiFlexItem>
+        </EuiFlexGroup>
       </DashboardLayout>
     </>
   );
