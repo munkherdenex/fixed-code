@@ -32,7 +32,7 @@ const GeneralDetails = () => {
             </EuiPanel>
           </EuiFlexItem>
           <EuiFlexItem>
-            <EuiFlexGrid columns={2}>
+            <EuiFlexGrid columns={2} responsive={false}>
               <EuiFlexItem>Name:</EuiFlexItem>
               <EuiFlexItem>{data?.name}</EuiFlexItem>
               <EuiHorizontalRule margin="none" />

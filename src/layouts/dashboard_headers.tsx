@@ -1,23 +1,24 @@
-import { useContext, useState } from "react";
 import {
-  EuiHeaderSectionItemButton,
-  EuiHeaderLogo,
-  EuiHeader,
-  EuiFlexItem,
-  useGeneratedHtmlId,
   EuiAvatar,
-  EuiText,
-  EuiFlexGroup,
-  EuiPopover,
-  EuiButtonEmpty,
   EuiButton,
+  EuiButtonEmpty,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiHeader,
+  EuiHeaderLogo,
+  EuiHeaderSectionItemButton,
+  EuiPopover,
+  EuiText,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
+import { useRouter } from "next/router";
+import { useContext, useState } from "react";
 import ThemeSwitcher from "../components/chrome/theme_switcher";
 import CollapsibleNav from "../components/dashboards/collapsible_nav";
-import { dashboardHeadersStyles } from "./dashboard_headers.style";
-import { teamsContext } from "../store/teams_store";
+import TeamsTreeView from "../components/management/teams_tree_view";
 import { authContext } from "../store/auth_store";
-import { useRouter } from "next/router";
+import { teamsContext } from "../store/teams_store";
+import { dashboardHeadersStyles } from "./dashboard_headers.style";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -101,7 +102,7 @@ const HeaderUserMenu = () => {
 const TeamSwitcher = () => {
   const router = useRouter();
   const styles = dashboardHeadersStyles();
-  const { teams, currentTeam, changeCurrentTeam } = useContext(teamsContext);
+  const { currentTeam } = useContext(teamsContext);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const onButtonClick = () => setIsPopoverOpen((isPopoverOpen) => !isPopoverOpen);
@@ -120,23 +121,6 @@ const TeamSwitcher = () => {
     </EuiButtonEmpty>
   );
 
-  const renderTeams = () => {
-    return teams?.map((team) => {
-      return (
-        <EuiFlexItem key={team.id}>
-          <EuiButton
-            size="s"
-            color={currentTeam?.id === team?.id ? "primary" : "text"}
-            key={team.id}
-            onClick={() => changeCurrentTeam(team.id)}
-          >
-            {team.name}
-          </EuiButton>
-        </EuiFlexItem>
-      );
-    });
-  };
-
   return (
     <EuiPopover
       button={button}
@@ -146,7 +130,7 @@ const TeamSwitcher = () => {
       panelPaddingSize="s"
     >
       <EuiFlexGroup direction="column" gutterSize="s">
-        {renderTeams()}
+        <TeamsTreeView />
         <EuiFlexItem>
           <EuiButton fill size="s" onClick={() => router.push("/dashboards/team/create")}>
             Create a new team
