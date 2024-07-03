@@ -13,24 +13,24 @@ import {
 } from "@elastic/eui";
 import moment from "moment";
 import { useState } from "react";
-import { MembersType } from "../../constants/members.types";
+import { MembersType, TeamMembersType } from "../../constants/members.types";
 import useGetCurrentTeamMembers from "../../hooks/useCurrentTeamMembers";
 import useProfile from "../../hooks/useProfile";
 import DeleteMemberModal from "./delete_member_modal";
 import UpdateMemberModal from "./update_member_modal";
 
 const MembersTable = () => {
-    const { team_members } = useGetCurrentTeamMembers();
+    const { data: teamMembers } = useGetCurrentTeamMembers<TeamMembersType>();
     const { data: user } = useProfile();
 
     const isAdmin =
-        team_members?.members?.some(
+        teamMembers?.members?.some(
             (member) => member?.user?.email === user.email && member?.role === "admin",
         ) || false;
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectMemberId, setSelectedMemberId] = useState<any>();
-    const [teamRole, setTeamRole] = useState(team_members?.members);
+    const [teamRole, setTeamRole] = useState(teamMembers?.members);
 
     const roleTypes = [
         { value: "admin", text: "Admin" },
@@ -39,7 +39,7 @@ const MembersTable = () => {
 
     const onChange = (e, id) => {
         setTeamRole(
-            team_members?.members?.map((value) => {
+            teamMembers?.members?.map((value) => {
                 if (value.id === id) {
                     return {
                         ...value,
@@ -105,17 +105,17 @@ const MembersTable = () => {
                                             return mem.role;
                                         }
                                         return roleTypes.filter((option) => option.value === role)[0].value
-                                    })
+                                    })[0]
                                     : roleTypes.filter((option) => option.value === role)[0].value}
                                 append={
                                     <EuiToolTip content="Are you sure you want to change?">
                                         <>
                                             {teamRole !== undefined && teamRole.filter(value => {
                                                 return value?.id === member.id
-                                            }).map(mem => {
+                                            }).map((mem, idx) => {
                                                 if (mem.role !== member.role) {
                                                     return (
-                                                        <UpdateMemberModal selectMemberId={member?.id} changed_role={mem.role} />
+                                                        <UpdateMemberModal key={idx} selectMemberId={member?.id} changed_role={mem.role} />
                                                     )
                                                 }
                                             })}
@@ -186,10 +186,8 @@ const MembersTable = () => {
             )}
             <EuiPanel>
                 <EuiBasicTable
-                    tableCaption="Demo of EuiBasicTable"
                     itemId="id"
-                    items={team_members?.members || []}
-                    rowHeader="firstName"
+                    items={teamMembers?.members || []}
                     columns={columns}
                 />
             </EuiPanel>
