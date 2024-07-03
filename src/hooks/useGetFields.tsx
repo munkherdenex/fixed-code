@@ -15,6 +15,13 @@ export interface Fields {
   updated_by: number | null;
 }
 
+export interface FieldsResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Fields[];
+}
+
 export default function useGetFields<Type>(id?: string | string[] | undefined): {
   data: Type;
   error: any;

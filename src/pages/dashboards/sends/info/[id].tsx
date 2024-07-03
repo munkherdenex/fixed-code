@@ -1,7 +1,8 @@
-import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiFlexGrid, EuiFlexItem } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import GeneralDetails from "../../../../components/sends/general_detail";
+import Menu from "../../../../components/sends/menu";
 import DashboardLayout from "../../../../layouts/dashboard";
 
 const SendsInfo = () => {
@@ -38,14 +39,14 @@ const SendsInfo = () => {
         }
       >
         <>
-          <EuiFlexGroup>
+          <EuiFlexGrid columns={3}>
             <EuiFlexItem>
               <GeneralDetails />
             </EuiFlexItem>
-            <EuiFlexItem>
-              <EuiPanel>Overview</EuiPanel>
+            <EuiFlexItem grow={2}>
+              <Menu />
             </EuiFlexItem>
-          </EuiFlexGroup>
+          </EuiFlexGrid>
         </>
       </DashboardLayout>
     </>

@@ -3,32 +3,19 @@ import { BASE_URL } from "../constants";
 import { useRouter } from "next/router";
 import { handleResponseNotOk } from "../utils/error_handler";
 
-export interface Template {
-  id: number;
-  created_at: string;
-  updated_at: string;
-  title: string;
-  kind: "email" | "sms" | "push" | "inapp";
-  body: string;
-  created_by: any;
-  updated_by: any;
-  ch_id: number;
+export interface TemplateCustomer {
+  name: string;
+  type: "customer" | "segment";
+  object_id: number;
 }
 
-export interface TemplateResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Template[];
-}
-
-export default function useGetTemplates<Type>(id?: string | string[] | undefined): {
+export default function useGetTemplatesCustomer<Type>(id: string | string[] | undefined): {
   data: Type;
   error: any;
   isLoading: boolean;
 } {
   const router = useRouter();
-  const path = id ? `/api/v1/dj/templates/${id}/` : `/api/v1/dj/templates/`;
+  const path = `/api/v1/dj/templates/${id}/customers/`;
   const { data, error, isLoading } = useSWR(
     //INFO: slash needs to be added to the end of the path
     router.pathname.includes("dashboard") ? path : null,
@@ -44,7 +31,7 @@ export default function useGetTemplates<Type>(id?: string | string[] | undefined
   );
 
   return {
-    data,
+    data: data || [],
     error,
     isLoading,
   };

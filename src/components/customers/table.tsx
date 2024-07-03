@@ -1,19 +1,13 @@
-import {
-  EuiBasicTable,
-  EuiBasicTableColumn,
-  EuiTableFieldDataColumnType,
-  formatDate,
-} from "@elastic/eui";
+import { EuiBasicTable, EuiBasicTableColumn, EuiTableFieldDataColumnType } from "@elastic/eui";
 import { useRouter } from "next/router";
-import useGetCustomers from "../../hooks/useGetCustomers";
-import { CustomersType } from "../../constants/customer.types";
+import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
 import moment from "moment";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersTable = () => {
   const router = useRouter();
-  const { data } = useGetCustomers();
+  const { data } = useGetCustomers<CustomersResponse>();
 
   const columns: Array<EuiBasicTableColumn<CustomersType>> = [
     {
@@ -52,7 +46,8 @@ const CustomersTable = () => {
       field: "created_at",
       name: "Created at",
       mobileOptions: {
-        render: (customer: CustomersType) => moment(customer.created_at).format('YYYY-MM-DD hh:mm:ss'),
+        render: (customer: CustomersType) =>
+          moment(customer.created_at).format("YYYY-MM-DD hh:mm:ss"),
         enlarge: true,
       },
     },
@@ -69,8 +64,8 @@ const CustomersTable = () => {
   };
 
   const getCellProps = (
-    customer: CustomersType,
-    column: EuiTableFieldDataColumnType<CustomersType>,
+    _customer: CustomersType,
+    _column: EuiTableFieldDataColumnType<CustomersType>,
   ) => {
     return {
       className: "customCellClass",
@@ -81,7 +76,7 @@ const CustomersTable = () => {
   return (
     <EuiBasicTable
       tableCaption="Demo of EuiBasicTable"
-      items={data}
+      items={data?.results || []}
       rowHeader="firstName"
       columns={columns}
       rowProps={getRowProps}

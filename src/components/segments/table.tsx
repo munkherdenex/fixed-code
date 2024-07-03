@@ -1,11 +1,11 @@
 import { EuiBasicTableColumn, EuiTableFieldDataColumnType, EuiBasicTable } from "@elastic/eui";
 import router from "next/router";
-import useGetSegments, { Segment } from "../../hooks/useGetSegments";
+import useGetSegments, { Segment, SegmentResponse } from "../../hooks/useGetSegments";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const SegmentsTable = () => {
-  const { data, isLoading } = useGetSegments<Segment[]>();
+  const { data, isLoading } = useGetSegments<SegmentResponse>();
 
   const columns: Array<EuiBasicTableColumn<Segment>> = [
     {
@@ -83,7 +83,7 @@ const SegmentsTable = () => {
   return (
     <EuiBasicTable
       tableCaption="Demo of EuiBasicTable"
-      items={data || []}
+      items={data?.results || []}
       rowHeader="firstName"
       columns={columns}
       rowProps={getRowProps}

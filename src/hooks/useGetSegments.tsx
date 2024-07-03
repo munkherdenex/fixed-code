@@ -15,6 +15,13 @@ export interface Segment {
   updated_by: number | null;
 }
 
+export interface SegmentResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Segment[];
+}
+
 export default function useGetSegments<Type>(id?: string | string[] | undefined): {
   data: Type;
   error: any;

@@ -15,6 +15,13 @@ export interface Channels {
   updated_by: number;
 }
 
+export interface ChannelsResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Channels[];
+}
+
 export default function useGetChannels<Type>(id?: string | string[] | undefined): {
   data: Type;
   error: any;

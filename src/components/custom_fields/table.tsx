@@ -1,17 +1,11 @@
-import {
-  EuiBasicTableColumn,
-  EuiTableFieldDataColumnType,
-  EuiBasicTable,
-  formatDate,
-} from "@elastic/eui";
-import moment from "moment";
+import { EuiBasicTableColumn, EuiTableFieldDataColumnType, EuiBasicTable } from "@elastic/eui";
 import router from "next/router";
-import useGetFields, { Fields } from "../../hooks/useGetFields";
+import useGetFields, { Fields, FieldsResponse } from "../../hooks/useGetFields";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const FieldsTable = () => {
-  const { data, isLoading } = useGetFields<Fields[]>();
+  const { data, isLoading } = useGetFields<FieldsResponse>();
 
   const columns: Array<EuiBasicTableColumn<Fields>> = [
     {
@@ -90,7 +84,7 @@ const FieldsTable = () => {
   return (
     <EuiBasicTable
       tableCaption="Demo of EuiBasicTable"
-      items={data || []}
+      items={data?.results || []}
       rowHeader="firstName"
       columns={columns}
       rowProps={getRowProps}

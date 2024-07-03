@@ -6,7 +6,7 @@ import {
   EuiHorizontalRule,
   EuiPanel,
 } from "@elastic/eui";
-import useGetCustomers from "../../hooks/useGetCustomers";
+import useGetCustomers, { CustomersType } from "../../hooks/useGetCustomers";
 import { useRouter } from "next/router";
 import moment from "moment";
 import { useState } from "react";
@@ -15,12 +15,12 @@ import DeleteCustomerModal from "./delete_customer_modal";
 
 const GeneralDetails = () => {
   const router = useRouter();
-  const { detailData, isLoading } = useGetCustomers(router.query.id);
+  const { data, isLoading } = useGetCustomers<CustomersType>(router.query.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
-  const customerData = detailData?.customer_data
-    ? Object.entries(detailData.customer_data).map(([key, value]) => ({
+  const customerData = data?.customer_data
+    ? Object.entries(data.customer_data).map(([key, value]) => ({
         name: key,
         value,
       }))
@@ -65,19 +65,19 @@ const GeneralDetails = () => {
         <EuiFlexItem>
           <EuiFlexGrid columns={2}>
             <EuiFlexItem>Email address :</EuiFlexItem>
-            <EuiFlexItem>{detailData?.email}</EuiFlexItem>
+            <EuiFlexItem>{data?.email}</EuiFlexItem>
             <EuiHorizontalRule margin="none" />
             <EuiFlexItem>Phone number :</EuiFlexItem>
-            <EuiFlexItem>{detailData?.phone}</EuiFlexItem>
+            <EuiFlexItem>{data?.phone}</EuiFlexItem>
             <EuiHorizontalRule margin="none" />
             <EuiFlexItem>Reference ID :</EuiFlexItem>
-            <EuiFlexItem> {detailData?.rid}</EuiFlexItem>
+            <EuiFlexItem> {data?.rid}</EuiFlexItem>
             <EuiHorizontalRule margin="none" />
             <EuiFlexItem>Created date :</EuiFlexItem>
-            <EuiFlexItem>{moment(detailData?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
+            <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             <EuiHorizontalRule margin="none" />
             <EuiFlexItem>Updated date :</EuiFlexItem>
-            <EuiFlexItem> {moment(detailData?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
+            <EuiFlexItem> {moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             {customerData?.map((data) => (
               <>
                 <EuiHorizontalRule margin="none" />
