@@ -17,6 +17,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import useProfile from "../../hooks/useProfile";
 import MembersTable from "./members";
+import { TeamMembersType } from "../../constants/members.types";
 
 const schema = yup
   .object({
@@ -36,10 +37,10 @@ const TeamMembersComponent = () => {
   });
   const { currentTeam } = useContext(teamsContext);
   const { trigger, isMutating } = useInviteMember(currentTeam?.id);
-  const { mutate, team_members } = useGetCurrentTeamMembers();
+  const { mutate, data } = useGetCurrentTeamMembers<TeamMembersType>();
   const { data: user } = useProfile();
   const isAdmin =
-    team_members?.members?.filter((member) => {
+    data?.members?.filter((member) => {
       return member?.user?.email === user.email;
     })?.[0]?.role === "admin" || false;
 

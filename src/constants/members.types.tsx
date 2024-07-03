@@ -12,3 +12,7 @@ export interface MembersType {
   status: string;
   user: UserDataType;
 }
+
+export interface TeamMembersType {
+  members: MembersType[],
+}
