@@ -1,16 +1,11 @@
-import {
-  EuiBasicTableColumn,
-  EuiTableFieldDataColumnType,
-  EuiBasicTable,
-  EuiCodeBlock,
-} from "@elastic/eui";
+import { EuiBasicTableColumn, EuiTableFieldDataColumnType, EuiBasicTable } from "@elastic/eui";
 import router from "next/router";
-import useGetChannels, { Channels } from "../../hooks/useGetChannels";
+import useGetChannels, { Channels, ChannelsResponse } from "../../hooks/useGetChannels";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const ChannelsTable = () => {
-  const { data, isLoading } = useGetChannels<Channels[]>();
+  const { data, isLoading } = useGetChannels<ChannelsResponse>();
 
   const columns: Array<EuiBasicTableColumn<Channels>> = [
     {
@@ -75,9 +70,7 @@ const ChannelsTable = () => {
 
   return (
     <EuiBasicTable
-      tableCaption="Demo of EuiBasicTable"
-      items={data || []}
-      rowHeader="firstName"
+      items={data?.results || []}
       columns={columns}
       rowProps={getRowProps}
       cellProps={getCellProps}

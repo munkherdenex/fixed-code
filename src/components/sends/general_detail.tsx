@@ -94,12 +94,12 @@ const GeneralDetails = () => {
         <EuiFlexGroup direction="column">
           <EuiFlexItem>
             <EuiPanel paddingSize="s" color="subdued">
-              <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
+              <EuiFlexGroup responsive={false} alignItems="center" justifyContent="spaceBetween">
                 <EuiFlexItem grow={false}>
                   <strong>Send info details</strong>
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
-                  <EuiFlexGroup gutterSize="s">
+                  <EuiFlexGroup responsive={false} gutterSize="s">
                     <EuiFlexItem grow={false}>
                       <EuiButtonIcon
                         display="base"
@@ -124,7 +124,7 @@ const GeneralDetails = () => {
             </EuiPanel>
           </EuiFlexItem>
           <EuiFlexItem>
-            <EuiFlexGrid columns={2}>
+            <EuiFlexGrid columns={2} responsive={false}>
               <EuiFlexItem>Title:</EuiFlexItem>
               <EuiFlexItem>{data.title}</EuiFlexItem>
               <EuiHorizontalRule margin="none" />

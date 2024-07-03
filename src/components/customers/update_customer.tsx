@@ -21,10 +21,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { addToast } from "../toast";
 import useUpdateCustomer from "../../hooks/useUpdateCustomer";
-import useGetCustomers from "../../hooks/useGetCustomers";
+import useGetCustomers, { CustomersType } from "../../hooks/useGetCustomers";
 import { useRouter } from "next/router";
 import { Moment } from "moment";
-import useGetFields, { Fields } from "../../hooks/useGetFields";
+import useGetFields, { FieldsResponse } from "../../hooks/useGetFields";
 import moment from "moment";
 import { mutate } from "swr";
 
@@ -52,10 +52,12 @@ const UpdateCustomerComponent = ({
   const flyoutHeadingId = useGeneratedHtmlId();
   const router = useRouter();
   const { trigger, isMutating } = useUpdateCustomer(router.query.id);
-  const { detailData, isLoading: getCustomersIsLoading } = useGetCustomers(router.query.id);
-  const { data, isLoading: getFieldsIsLoading } = useGetFields<Fields[]>();
+  const { data: detailData, isLoading: getCustomersIsLoading } = useGetCustomers<CustomersType>(
+    router.query.id,
+  );
+  const { data, isLoading: getFieldsIsLoading } = useGetFields<FieldsResponse>();
 
-  const preparedData = data
+  const preparedData = data?.results
     ?.map((field) => {
       const customerData = detailData?.customer_data;
       if (!customerData) return null;
@@ -201,121 +203,123 @@ const UpdateCustomerComponent = ({
             />
           </EuiFormRow>
           <EuiSpacer />
-          {data?.map((field, index) => (
-            <EuiFlexGrid key={field.id} columns={2}>
-              <EuiFlexItem>
-                <EuiFormRow label={`${field.attribute_name} (${field.data_type})`}>
-                  <Controller
-                    control={control}
-                    name={`customer_data.${index}.name`}
-                    defaultValue={field.attribute_name}
-                    render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                      <EuiFieldText
-                        onChange={onChange}
-                        value={value}
-                        onBlur={onBlur}
-                        isInvalid={!!error?.message}
-                        placeholder="Name"
-                        aria-label="name"
-                        readOnly
-                      />
-                    )}
-                  />
-                </EuiFormRow>
-              </EuiFlexItem>
-              <EuiFlexItem>
-                {field.data_type === "str" && (
-                  <EuiFormRow label="Data">
+          {data?.results &&
+            Array.isArray(data?.results) &&
+            data?.results?.map((field, index) => (
+              <EuiFlexGrid key={field.id} columns={2}>
+                <EuiFlexItem>
+                  <EuiFormRow label={`${field.attribute_name} (${field.data_type})`}>
                     <Controller
                       control={control}
-                      name={`customer_data.${index}.value`}
+                      name={`customer_data.${index}.name`}
+                      defaultValue={field.attribute_name}
                       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <EuiFieldText
                           onChange={onChange}
-                          value={value as string}
+                          value={value}
                           onBlur={onBlur}
                           isInvalid={!!error?.message}
-                          placeholder="Data"
-                          aria-label="email"
+                          placeholder="Name"
+                          aria-label="name"
+                          readOnly
                         />
                       )}
                     />
                   </EuiFormRow>
-                )}
-                {field.data_type === "int" && (
-                  <EuiFormRow label="Data">
-                    <Controller
-                      control={control}
-                      name={`customer_data.${index}.value`}
-                      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                        <EuiFieldNumber
-                          onChange={onChange}
-                          value={value as number}
-                          onBlur={onBlur}
-                          isInvalid={!!error?.message}
-                          placeholder="Data"
-                          aria-label="email"
-                        />
-                      )}
-                    />
-                  </EuiFormRow>
-                )}
-                {field.data_type === "datetime" && (
-                  <EuiFormRow label="Data">
-                    <Controller
-                      control={control}
-                      name={`customer_data.${index}.value`}
-                      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                        <EuiDatePicker
-                          showTimeSelect
-                          selected={value as Moment}
-                          onChange={onChange}
-                          onBlur={onBlur}
-                          isInvalid={!!error?.message}
-                          placeholder={field.data_type}
-                          aria-label="email"
-                        />
-                      )}
-                    />
-                  </EuiFormRow>
-                )}
-                {field.data_type === "bool" && (
-                  <EuiFormRow label="Data">
-                    <Controller
-                      control={control}
-                      name={`customer_data.${index}.value`}
-                      render={({ field: { onChange, onBlur, value } }) => (
-                        <EuiSwitch
-                          label="Data"
-                          checked={value as boolean}
-                          onBlur={onBlur}
-                          onChange={(e) => onChange(e.target.checked)}
-                        />
-                      )}
-                    />
-                  </EuiFormRow>
-                )}
-                {field.data_type === "date" && (
-                  <EuiFormRow label="Data">
-                    <Controller
-                      control={control}
-                      name={`customer_data.${index}.value`}
-                      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                        <EuiDatePicker
-                          selected={value as Moment}
-                          onChange={onChange}
-                          onBlur={onBlur}
-                          isInvalid={!!error?.message}
-                          placeholder={field.data_type}
-                          aria-label="email"
-                        />
-                      )}
-                    />
-                  </EuiFormRow>
-                )}
-              </EuiFlexItem>
-            </EuiFlexGrid>
-          ))}
+                </EuiFlexItem>
+                <EuiFlexItem>
+                  {field.data_type === "str" && (
+                    <EuiFormRow label="Data">
+                      <Controller
+                        control={control}
+                        name={`customer_data.${index}.value`}
+                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                          <EuiFieldText
+                            onChange={onChange}
+                            value={value as string}
+                            onBlur={onBlur}
+                            isInvalid={!!error?.message}
+                            placeholder="Data"
+                            aria-label="email"
+                          />
+                        )}
+                      />
+                    </EuiFormRow>
+                  )}
+                  {field.data_type === "int" && (
+                    <EuiFormRow label="Data">
+                      <Controller
+                        control={control}
+                        name={`customer_data.${index}.value`}
+                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                          <EuiFieldNumber
+                            onChange={onChange}
+                            value={value as number}
+                            onBlur={onBlur}
+                            isInvalid={!!error?.message}
+                            placeholder="Data"
+                            aria-label="email"
+                          />
+                        )}
+                      />
+                    </EuiFormRow>
+                  )}
+                  {field.data_type === "datetime" && (
+                    <EuiFormRow label="Data">
+                      <Controller
+                        control={control}
+                        name={`customer_data.${index}.value`}
+                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                          <EuiDatePicker
+                            showTimeSelect
+                            selected={value as Moment}
+                            onChange={onChange}
+                            onBlur={onBlur}
+                            isInvalid={!!error?.message}
+                            placeholder={field.data_type}
+                            aria-label="email"
+                          />
+                        )}
+                      />
+                    </EuiFormRow>
+                  )}
+                  {field.data_type === "bool" && (
+                    <EuiFormRow label="Data">
+                      <Controller
+                        control={control}
+                        name={`customer_data.${index}.value`}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                          <EuiSwitch
+                            label="Data"
+                            checked={value as boolean}
+                            onBlur={onBlur}
+                            onChange={(e) => onChange(e.target.checked)}
+                          />
+                        )}
+                      />
+                    </EuiFormRow>
+                  )}
+                  {field.data_type === "date" && (
+                    <EuiFormRow label="Data">
+                      <Controller
+                        control={control}
+                        name={`customer_data.${index}.value`}
+                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                          <EuiDatePicker
+                            selected={value as Moment}
+                            onChange={onChange}
+                            onBlur={onBlur}
+                            isInvalid={!!error?.message}
+                            placeholder={field.data_type}
+                            aria-label="email"
+                          />
+                        )}
+                      />
+                    </EuiFormRow>
+                  )}
+                </EuiFlexItem>
+              </EuiFlexGrid>
+            ))}
           <EuiFormRow hasEmptyLabelSpace>
             <EuiButton isLoading={isMutating} type="submit">
               Update customer

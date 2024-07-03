@@ -21,7 +21,7 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { addToast } from "../toast";
-import useGetFields, { Fields } from "../../hooks/useGetFields";
+import useGetFields, { FieldsResponse } from "../../hooks/useGetFields";
 import { Moment } from "moment";
 
 const schema = yup
@@ -51,7 +51,7 @@ const CreateCustomerComponent = ({
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
   const { trigger } = useCreateCustomer();
-  const { data } = useGetFields<Fields[]>();
+  const { data } = useGetFields<FieldsResponse>();
   const {
     handleSubmit,
     control,
@@ -154,9 +154,9 @@ const CreateCustomerComponent = ({
               )}
             />
           </EuiFormRow>
-          {data &&
-            Array.isArray(data) &&
-            data.map((field, index) => (
+          {data?.results &&
+            Array.isArray(data?.results) &&
+            data?.results.map((field, index) => (
               <>
                 <EuiSpacer />
                 <EuiFlexGrid key={field.id} columns={2}>
@@ -250,10 +250,7 @@ const CreateCustomerComponent = ({
                         <Controller
                           control={control}
                           name={`customer_data.${index}.value`}
-                          render={({
-                            field: { onChange, onBlur, value },
-                            fieldState: { error },
-                          }) => (
+                          render={({ field: { onChange, onBlur, value } }) => (
                             <EuiSwitch
                               label="Data"
                               checked={value as boolean}

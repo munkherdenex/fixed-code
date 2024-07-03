@@ -1,10 +1,10 @@
 import { EuiBasicTable, EuiBasicTableColumn, EuiTableFieldDataColumnType } from "@elastic/eui";
 import { useRouter } from "next/router";
-import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
+import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 
 const SendsTable = () => {
   const router = useRouter();
-  const { data } = useGetTemplates<Template[]>();
+  const { data } = useGetTemplates<TemplateResponse>();
   const columns: Array<EuiBasicTableColumn<Template>> = [
     {
       field: "id",
@@ -61,9 +61,8 @@ const SendsTable = () => {
 
   return (
     <EuiBasicTable
-      tableCaption="Demo of EuiBasicTable"
-      items={data || []}
-      rowHeader="firstName"
+      tableCaption="Send table"
+      items={data?.results || []}
       columns={columns}
       rowProps={getRowProps}
       cellProps={getCellProps}
