@@ -28,7 +28,7 @@ const schema = yup
     title: yup.string().required(),
     kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api"]).required(),
     body: yup.string().required(),
-    ch_id: yup.number().required(),
+    channel: yup.number().required(),
   })
   .required();
 
@@ -181,21 +181,21 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
           )}
           <EuiFormRow
             label="Channel"
-            isInvalid={!!errors.ch_id?.message}
-            error={[errors.ch_id?.message]}
+            isInvalid={!!errors.channel?.message}
+            error={[errors.channel?.message]}
           >
             <EuiFlexGroup alignItems="center">
               <EuiFlexItem>
                 <Controller
                   control={control}
-                  name="ch_id"
+                  name="channel"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <EuiSelect
                       onChange={onChange}
                       value={value}
                       options={channelDataOptions}
                       onBlur={onBlur}
-                      isInvalid={!!errors.ch_id?.message}
+                      isInvalid={!!errors.channel?.message}
                       aria-label="data type"
                       hasNoInitialSelection
                     />

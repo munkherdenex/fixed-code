@@ -9,12 +9,15 @@ import {
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import useGetTemplatesCustomer, { TemplateCustomer } from "../../hooks/useGetTemplatesCustomer";
+import useGetTemplatesCustomer, {
+  TemplateCustomer,
+  TemplateCustomerResponse,
+} from "../../hooks/useGetTemplatesCustomer";
 import AddAudienceFlyout from "./add_audience_flyot";
 
 const Audience = () => {
   const router = useRouter();
-  const { data } = useGetTemplatesCustomer<TemplateCustomer[]>(router.query.id);
+  const { data } = useGetTemplatesCustomer<TemplateCustomerResponse>(router.query.id);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [isAddAudienceFlyoutVisible, setIsAddAudienceFlyoutVisible] = useState(false);
@@ -48,11 +51,12 @@ const Audience = () => {
   };
 
   const getRowProps = (template: TemplateCustomer) => {
-    const { object_id } = template;
+    const { object_id, type } = template;
     return {
       "data-test-subj": `row-${object_id}`,
       className: "customRowClass",
-      onClick: () => router.push(`/dashboards/customers/info/${object_id}`),
+      //INFO: this is a way to navigate to a different page with the object_id as a parameter
+      onClick: () => router.push(`/dashboards/${type}s/info/${object_id}`),
     };
   };
 
@@ -86,7 +90,7 @@ const Audience = () => {
       <EuiFlexItem>
         <EuiBasicTable
           tableCaption="Template customers"
-          items={data || []}
+          items={data?.results || []}
           columns={columns}
           rowProps={getRowProps}
           cellProps={getCellProps}

@@ -9,7 +9,7 @@ export default function useGetSegmentCustomerList<Type>(id?: string | string[] |
   isLoading: boolean;
 } {
   const router = useRouter();
-  const path = `/api/v1/dj/segments/${id}/customers/`;
+  const path = id ? `/api/v1/dj/segments/${id}/customers/` : null;
   const { data, error, isLoading } = useSWR(
     //INFO: slash needs to be added to the end of the path
     router.pathname.includes("dashboard") ? path : null,
