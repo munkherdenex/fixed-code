@@ -9,13 +9,20 @@ export interface TemplateCustomer {
   object_id: number;
 }
 
+export interface TemplateCustomerResponse {
+  results: TemplateCustomer[];
+  count: number;
+  next: string | null;
+  previous: string | null;
+}
+
 export default function useGetTemplatesCustomer<Type>(id: string | string[] | undefined): {
   data: Type;
   error: any;
   isLoading: boolean;
 } {
   const router = useRouter();
-  const path = `/api/v1/dj/templates/${id}/customers/`;
+  const path = id ? `/api/v1/dj/templates/${id}/customers/` : null;
   const { data, error, isLoading } = useSWR(
     //INFO: slash needs to be added to the end of the path
     router.pathname.includes("dashboard") ? path : null,

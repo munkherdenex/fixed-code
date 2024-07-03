@@ -18,9 +18,9 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { mutate } from "swr";
 import * as yup from "yup";
-import useGetCustomers from "../../hooks/useGetCustomers";
-import useGetSegments, { Segment } from "../../hooks/useGetSegments";
-import useUpdateTemplate from "../../hooks/useUpdateTemplate";
+import useCreateTemplateAudience from "../../hooks/useCreateTemplateAudience";
+import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
+import useGetSegments, { SegmentResponse } from "../../hooks/useGetSegments";
 
 const PAGE_COUNT = 15;
 
@@ -40,9 +40,10 @@ type FormData = yup.InferType<typeof schema>;
 
 const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const router = useRouter();
-  const { isMutating, trigger } = useUpdateTemplate(router.query.id);
-  const { data: customerData } = useGetCustomers();
-  const { data: segmentsData } = useGetSegments<Segment[]>();
+  const { id } = router.query;
+  const { isMutating, trigger } = useCreateTemplateAudience(id);
+  const { data: customerData } = useGetCustomers<CustomersResponse>();
+  const { data: segmentsData } = useGetSegments<SegmentResponse>();
   const [activePage, setActivePage] = useState(0);
 
   const flyoutHeadingId = useGeneratedHtmlId({
@@ -50,15 +51,15 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   });
 
   const preparedCustomerData =
-    Array.isArray(customerData) &&
-    customerData.map((customer) => ({
+    Array.isArray(customerData?.results) &&
+    customerData?.results.map((customer) => ({
       value: customer.id,
       text: customer.email,
     }));
 
   const preparedSegmentData =
-    Array.isArray(segmentsData) &&
-    segmentsData.map((segment) => ({
+    Array.isArray(segmentsData?.results) &&
+    segmentsData?.results.map((segment) => ({
       value: segment.id,
       text: segment.name,
     }));
@@ -81,7 +82,7 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     try {
       const response = await trigger(data);
       if (response) {
-        mutate(`/api/v1/dj/templates/`);
+        mutate(`/api/v1/dj/templates/${id}/customers/`);
         closeFlyout();
       }
     } catch (error) {
@@ -126,7 +127,7 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 <EuiSelect
                   onChange={onChange}
                   value={value}
-                  options={preparedData}
+                  options={preparedData || []}
                   onBlur={onBlur}
                   isInvalid={!!errors.type?.message}
                   aria-label="data type"

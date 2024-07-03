@@ -18,7 +18,7 @@ import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import { mutate } from "swr";
 import * as yup from "yup";
-import useGetChannels, { Channels } from "../../hooks/useGetChannels";
+import useGetChannels, { ChannelsResponse } from "../../hooks/useGetChannels";
 import { Template } from "../../hooks/useGetTemplates";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { isJson } from "../../utils/is_json";
@@ -47,7 +47,7 @@ type FormData = yup.InferType<typeof schema>;
 const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; data: Template }) => {
   const router = useRouter();
   const { isMutating, trigger } = useUpdateTemplate(router.query.id);
-  const { data: channelsData } = useGetChannels<Channels[]>();
+  const { data: channelsData } = useGetChannels<ChannelsResponse>();
 
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
@@ -69,8 +69,8 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
     },
   });
 
-  const channelDataOptions = Array.isArray(channelsData)
-    ? channelsData
+  const channelDataOptions = Array.isArray(channelsData.results)
+    ? channelsData.results
         .filter((channel) => channel.channel_type === watch("kind"))
         .map((channel) => ({
           value: channel.id,
@@ -101,7 +101,7 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
     <EuiFlyout onClose={closeFlyout}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2>Create send</h2>
+          <h2>Update send</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
@@ -199,7 +199,7 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
                     <EuiSelect
                       onChange={onChange}
                       value={value}
-                      options={channelDataOptions}
+                      options={channelDataOptions || []}
                       onBlur={onBlur}
                       isInvalid={!!errors.ch_id?.message}
                       aria-label="data type"
