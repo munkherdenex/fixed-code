@@ -11,10 +11,12 @@ const ApiKeysTable = () => {
     {
       field: "id",
       name: "Id",
+      width: '10%',
     },
     {
       field: "name",
       name: "Name",
+      width: '20%',
     },
     {
       field: "created_at",
@@ -24,7 +26,7 @@ const ApiKeysTable = () => {
       field: "kid",
       name: "Key Id",
       render: (kid: ApiKeysType['kid']) => {
-        return <EuiLink href="#" target="_blank">{kid}  </EuiLink>;
+        return <p >{kid}  </p>;
       },
     },
   ];
