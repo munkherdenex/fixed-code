@@ -56,7 +56,7 @@ const SegmentCustomerList = () => {
     return {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
-      onClick: () => router.push(`/dashboards/customers/info/${id}`),
+      onClick: () => router.push(`/dashboards/audience/info/${id}`),
     };
   };
 

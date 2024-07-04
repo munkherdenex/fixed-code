@@ -137,7 +137,7 @@ const UpdateCustomerComponent = ({
     <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2 id={flyoutHeadingId}>Update customer</h2>
+          <h2 id={flyoutHeadingId}>Update audience</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
@@ -322,7 +322,7 @@ const UpdateCustomerComponent = ({
             ))}
           <EuiFormRow hasEmptyLabelSpace>
             <EuiButton isLoading={isMutating} type="submit">
-              Update customer
+              Update audience
             </EuiButton>
           </EuiFormRow>
         </EuiForm>

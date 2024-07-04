@@ -89,7 +89,7 @@ const CreateCustomerComponent = ({
     <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2 id={flyoutHeadingId}>Create customer</h2>
+          <h2 id={flyoutHeadingId}>Create audience</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
@@ -287,7 +287,7 @@ const CreateCustomerComponent = ({
               </>
             ))}
           <EuiFormRow hasEmptyLabelSpace>
-            <EuiButton type="submit">Create customer</EuiButton>
+            <EuiButton type="submit">Create audience</EuiButton>
           </EuiFormRow>
         </EuiForm>
       </EuiFlyoutBody>

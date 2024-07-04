@@ -21,9 +21,9 @@ const GeneralDetails = () => {
 
   const customerData = data?.customer_data
     ? Object.entries(data.customer_data).map(([key, value]) => ({
-        name: key,
-        value,
-      }))
+      name: key,
+      value,
+    }))
     : [];
 
   if (isLoading) return <div>Loading...</div>;
@@ -35,7 +35,7 @@ const GeneralDetails = () => {
           <EuiPanel paddingSize="s" color="subdued">
             <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
               <EuiFlexItem grow={false}>
-                <strong>Customer details</strong>
+                <strong>Audience details</strong>
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
                 <EuiFlexGrid gutterSize="s" columns={2}>

@@ -25,15 +25,15 @@ const Info = () => {
                 onClick: () => router.push("/dashboards"),
               },
               {
-                text: "Customers",
-                onClick: () => router.push("/dashboards/customers"),
+                text: "Audience",
+                onClick: () => router.push("/dashboards/audience"),
               },
               {
                 text: "Info",
               },
             ]}
             truncate={false}
-            aria-label="Customer info breadCrumb"
+            aria-label="Audience info breadCrumb"
           />
         }
       >
