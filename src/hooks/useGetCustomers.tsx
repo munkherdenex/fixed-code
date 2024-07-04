@@ -1,5 +1,7 @@
+import * as yup from "yup";
 import useSWR from "swr";
 import { BASE_URL } from "../constants";
+import { createParam } from "../utils/createParam";
 import { handleResponseNotOk } from "../utils/error_handler";
 
 export interface CustomerDataType {
@@ -28,14 +30,27 @@ export interface CustomersResponse {
   results: CustomersType[];
 }
 
-export default function useGetCustomers<Type>(id?: string | string[] | undefined): {
+export default function useGetCustomers<Type>(
+  id?: string | string[] | undefined,
+  searchValue?: {
+    email?: string;
+    phone?: string;
+  },
+  limit?: number,
+): {
   data: Type;
   error: any;
   isLoading: boolean;
   mutate: any;
 } {
-  const url = id ? `/api/v1/dj/customers/${id}/?extended=true` : "/api/v1/dj/customers/";
-  const { data, error, isLoading, mutate } = useSWR(url, async (path) => {
+  const path = id ? `/api/v1/dj/customers/${id}/?extended=true` : "/api/v1/dj/customers/";
+
+  const queryParam = createParam({
+    ...searchValue,
+    limit,
+  });
+
+  const { data, error, isLoading, mutate } = useSWR(`${path}?${queryParam}`, async (path) => {
     const res = await fetch(`${BASE_URL}${path}`, {
       method: "GET",
       headers: { "content-type": "application/json" },
