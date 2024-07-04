@@ -9,6 +9,7 @@ import {
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplatesCustomer, {
   TemplateCustomer,
   TemplateCustomerResponse,
@@ -17,16 +18,19 @@ import AddAudienceFlyout from "./add_audience_flyot";
 
 const Audience = () => {
   const router = useRouter();
-  const { data } = useGetTemplatesCustomer<TemplateCustomerResponse>(router.query.id);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [isAddAudienceFlyoutVisible, setIsAddAudienceFlyoutVisible] = useState(false);
 
+  const { data } = useGetTemplatesCustomer<TemplateCustomerResponse>(router.query.id, {
+    limit: `${pageSize}`,
+    offset: `${pageIndex * pageSize}`,
+  });
+
   const pagination = {
     pageIndex,
     pageSize,
-    totalItemCount: 20,
-    pageSizeOptions: [20, 10, 5],
+    pageSizeOptions: PAGINATION_CHOOSES,
   };
 
   const columns: Array<EuiBasicTableColumn<TemplateCustomer>> = [
@@ -94,7 +98,10 @@ const Audience = () => {
           columns={columns}
           rowProps={getRowProps}
           cellProps={getCellProps}
-          pagination={pagination}
+          pagination={{
+            ...pagination,
+            totalItemCount: data?.count || 0,
+          }}
           onChange={onTableChange}
         />
       </EuiFlexItem>

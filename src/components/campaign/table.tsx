@@ -1,7 +1,8 @@
 import {
+  Criteria,
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiButton,
+  EuiButtonIcon,
   EuiFieldSearch,
   EuiFlexGroup,
   EuiFlexItem,
@@ -13,6 +14,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 
 const schema = yup.object({
@@ -22,7 +24,20 @@ const schema = yup.object({
 const SendsTable = () => {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
-  const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, searchValue);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+
+  const pagination = {
+    pageIndex,
+    pageSize,
+    pageSizeOptions: PAGINATION_CHOOSES,
+  };
+
+  const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, {
+    search: searchValue,
+    offset: `${pageIndex * pageSize}`,
+    limit: `${pageSize}`,
+  });
 
   const {
     control,
@@ -67,6 +82,14 @@ const SendsTable = () => {
 
   const onSearch = (value: string) => {
     setSearchValue(value);
+  };
+
+  const onTableChange = ({ page }: Criteria<Template>) => {
+    if (page) {
+      const { index: pageIndex, size: pageSize } = page;
+      setPageIndex(pageIndex);
+      setPageSize(pageSize);
+    }
   };
 
   const getRowProps = (template: Template) => {
@@ -116,9 +139,13 @@ const SendsTable = () => {
             </EuiFormRow>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton isLoading={isLoading} onClick={() => mutate()}>
-              Refresh
-            </EuiButton>
+            <EuiButtonIcon
+              display="base"
+              iconType="refresh"
+              size="s"
+              isLoading={isLoading}
+              onClick={() => mutate()}
+            />
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFlexItem>
@@ -132,6 +159,12 @@ const SendsTable = () => {
             columns={columns}
             rowProps={getRowProps}
             cellProps={getCellProps}
+            pagination={{
+              ...pagination,
+              totalItemCount: data?.count || 0,
+              showPerPageOptions: true,
+            }}
+            onChange={onTableChange}
           />
         )}
       </EuiFlexItem>

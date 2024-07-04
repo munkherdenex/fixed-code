@@ -6,7 +6,7 @@ import {
   EuiFlexItem,
   EuiFieldSearch,
   EuiFormRow,
-  EuiButton,
+  EuiButtonIcon,
 } from "@elastic/eui";
 import * as yup from "yup";
 import router from "next/router";
@@ -132,9 +132,13 @@ const SegmentsTable = () => {
             </EuiFormRow>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton isLoading={isLoading} onClick={() => mutate()}>
-              Refresh
-            </EuiButton>
+            <EuiButtonIcon
+              display="base"
+              iconType="refresh"
+              size="s"
+              isLoading={isLoading}
+              onClick={() => mutate()}
+            />
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFlexItem>

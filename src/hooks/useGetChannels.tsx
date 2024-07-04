@@ -22,9 +22,17 @@ export interface ChannelsResponse {
   results: Channels[];
 }
 
+/**
+ * Fetches the channels from the api
+ * @param id - the id of the channels
+ * @param queryParam - the query parameters
+ * @returns the data, error, isLoading and mutate function
+ */
 export default function useGetChannels<Type>(
   id?: string | string[] | undefined,
-  searchValue?: string,
+  queryParam?: {
+    [key: string]: string;
+  },
 ): {
   data: Type;
   error: any;
@@ -32,13 +40,11 @@ export default function useGetChannels<Type>(
   mutate: () => Promise<Type>;
 } {
   const path = id ? `/api/v1/dj/channels/${id}/` : `/api/v1/dj/channels/`;
-  const queryParam = createParam({
-    name: searchValue,
-  });
+  const preparedQueryParam = createParam(queryParam);
 
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    `${path}?${queryParam}`,
+    `${path}?${preparedQueryParam}`,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

@@ -25,7 +25,9 @@ export interface TemplateResponse {
 
 export default function useGetTemplates<Type>(
   id?: string | string[] | undefined,
-  searchValue?: string,
+  queryParam?: {
+    [key: string]: string;
+  },
 ): {
   data: Type;
   error: any;
@@ -33,13 +35,11 @@ export default function useGetTemplates<Type>(
   mutate: () => Promise<Type>;
 } {
   const path = id ? `/api/v1/dj/templates/${id}/` : `/api/v1/dj/templates/`;
-  const queryParam = createParam({
-    name: searchValue,
-  });
+  const preparedQueryParam = createParam(queryParam);
 
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    `${path}?${queryParam}`,
+    `${path}?${preparedQueryParam}`,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

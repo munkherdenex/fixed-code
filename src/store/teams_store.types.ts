@@ -1,13 +1,13 @@
 export interface Member {
   user: {
-    email: string
-    fname: string,
-    lname: string,
-    registered_date: Date | null
-  },
-  role: string,
-  status: string,
-  joined_date: null | Date
+    email: string;
+    fname: string;
+    lname: string;
+    registered_date: Date | null;
+  };
+  role: string;
+  status: string;
+  joined_date: null | Date;
 }
 
 export interface Teams {

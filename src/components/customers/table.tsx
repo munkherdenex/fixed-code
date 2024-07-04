@@ -1,11 +1,22 @@
-import { EuiBadge, EuiBasicTable, EuiBasicTableColumn, EuiButtonIcon, EuiFieldSearch, EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiTableFieldDataColumnType } from "@elastic/eui";
-import { useRouter } from "next/router";
-import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
-import moment from "moment";
-import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
+import {
+  EuiBadge,
+  EuiBasicTable,
+  EuiBasicTableColumn,
+  EuiButtonIcon,
+  EuiFieldSearch,
+  EuiFlexGrid,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiFormRow,
+  EuiTableFieldDataColumnType,
+} from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import moment from "moment";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -15,27 +26,24 @@ const schema = yup.object({
 
 const CustomersTable = () => {
   const router = useRouter();
-  const [searchValue, setSearchValue] = useState({
-    query: '',
-  },);
-  const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, searchValue);
+  const [searchValue, setSearchValue] = useState("");
+
+  const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, {
+    query: searchValue,
+  });
+
   const {
     control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const onSearchEmailAddress = (value: string) => {
-    setSearchValue({
-      query: value,
-    });
-  };
 
   const columns: Array<EuiBasicTableColumn<CustomersType>> = [
     {
       field: "id",
       name: "ID",
-      width: '8%',
+      width: "8%",
       mobileOptions: {
         render: (customer: CustomersType) => <>{customer.id}</>,
         enlarge: true,
@@ -60,7 +68,7 @@ const CustomersTable = () => {
     {
       field: "source",
       name: "Source",
-      render: (source: CustomersType['source']) => (
+      render: (source: CustomersType["source"]) => (
         <>
           <EuiBadge
             iconType={source === "web" ? "logoWebhook" : "apps"}
@@ -90,6 +98,10 @@ const CustomersTable = () => {
     },
   ];
 
+  const onSearchEmailAddress = (value: string) => {
+    setSearchValue(value);
+  };
+
   const getRowProps = (customer: CustomersType) => {
     const { id } = customer;
     return {
@@ -114,7 +126,7 @@ const CustomersTable = () => {
     <EuiFlexGroup direction="column">
       <EuiFlexItem>
         <EuiFlexGroup justifyContent="spaceBetween" alignItems="flexEnd" gutterSize="s">
-          <EuiFlexGrid columns={2} >
+          <EuiFlexGrid columns={2}>
             <EuiFlexItem grow={false}>
               <EuiFormRow
                 label="Search"
@@ -139,7 +151,13 @@ const CustomersTable = () => {
             </EuiFlexItem>
           </EuiFlexGrid>
           <EuiFlexItem grow={false}>
-            <EuiButtonIcon iconType="refresh" display="base" size="s" isLoading={isLoading} onClick={() => mutate()} />
+            <EuiButtonIcon
+              iconType="refresh"
+              display="base"
+              size="s"
+              isLoading={isLoading}
+              onClick={() => mutate()}
+            />
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFlexItem>
