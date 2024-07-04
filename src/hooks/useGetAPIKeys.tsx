@@ -9,6 +9,7 @@ export interface ApiKeysType {
   created_at: Date;
   expires_at: Date | null;
   data: string;
+  team_name: string;
 }
 
 export default function useGetAPIKeys() {
