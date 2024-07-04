@@ -1,4 +1,5 @@
 import {
+  EuiBadge,
   EuiButtonIcon,
   EuiConfirmModal,
   EuiFieldText,
@@ -131,8 +132,15 @@ const GeneralDetails = () => {
               <EuiFlexItem>Kind:</EuiFlexItem>
               <EuiFlexItem>{data.kind}</EuiFlexItem>
               <EuiHorizontalRule margin="none" />
-              <EuiFlexItem>body:</EuiFlexItem>
+              <EuiFlexItem>Body:</EuiFlexItem>
               <EuiFlexItem>{data.body}</EuiFlexItem>
+              <EuiHorizontalRule margin="none" />
+              <EuiFlexItem>Status:</EuiFlexItem>
+              <EuiFlexItem>
+                <div>
+                  <EuiBadge>{data.status}</EuiBadge>
+                </div>
+              </EuiFlexItem>
               <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>

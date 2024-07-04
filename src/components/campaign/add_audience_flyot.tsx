@@ -1,5 +1,6 @@
 import {
   EuiButton,
+  EuiFieldSearch,
   EuiFlexGroup,
   EuiFlexItem,
   EuiFlyout,
@@ -7,7 +8,6 @@ import {
   EuiFlyoutHeader,
   EuiForm,
   EuiFormRow,
-  EuiPagination,
   EuiSelect,
   EuiTitle,
   useGeneratedHtmlId,
@@ -22,11 +22,10 @@ import useCreateTemplateAudience from "../../hooks/useCreateTemplateAudience";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
 import useGetSegments, { SegmentResponse } from "../../hooks/useGetSegments";
 
-const PAGE_COUNT = 15;
-
 const schema = yup
   .object({
     type: yup.string().oneOf(["customer", "segment"]).required(),
+    search: yup.string().required(),
     id: yup.string().required(),
   })
   .required();
@@ -42,9 +41,10 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const router = useRouter();
   const { id } = router.query;
   const { isMutating, trigger } = useCreateTemplateAudience(id);
-  const { data: customerData } = useGetCustomers<CustomersResponse>();
-  const { data: segmentsData } = useGetSegments<SegmentResponse>();
-  const [activePage, setActivePage] = useState(0);
+
+  const [searchValue, setSearchValue] = useState<any>();
+  const { data: customerData } = useGetCustomers<CustomersResponse>(undefined, searchValue, 20);
+  const { data: segmentsData } = useGetSegments<SegmentResponse>(undefined);
 
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
@@ -77,6 +77,13 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   });
 
   const preparedData = watch("type") === "customer" ? preparedCustomerData : preparedSegmentData;
+
+  const onSearch = async () => {
+    const isEmail = await yup.string().email().isValid(watch("search"));
+    setSearchValue({
+      [isEmail ? "email" : "phone"]: watch("search"),
+    });
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -119,6 +126,38 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
               )}
             />
           </EuiFormRow>
+          <EuiFormRow
+            label={`Search ${watch("type") === "customer" ? "customer" : "segment"}`}
+            isInvalid={!!errors.search?.message}
+            error={[errors.search?.message]}
+          >
+            <EuiFlexGroup>
+              <EuiFlexItem>
+                <Controller
+                  control={control}
+                  name="search"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <EuiFieldSearch
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!errors.search?.message}
+                      aria-label="Search"
+                      placeholder={`Search ${
+                        watch("type") === "customer" ? "customer" : "segment"
+                      }`}
+                      isClearable
+                    />
+                  )}
+                />
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiButton type="button" onClick={() => onSearch()}>
+                  Search
+                </EuiButton>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </EuiFormRow>
           <EuiFormRow label="Ids" isInvalid={!!errors.id?.message} error={[errors.id?.message]}>
             <Controller
               control={control}
@@ -135,18 +174,6 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 />
               )}
             />
-          </EuiFormRow>
-          <EuiFormRow>
-            <EuiFlexGroup justifyContent="spaceAround">
-              <EuiFlexItem grow={false}>
-                <EuiPagination
-                  aria-label="Centered pagination example"
-                  pageCount={PAGE_COUNT / 5}
-                  activePage={activePage}
-                  onPageClick={(activePage) => setActivePage(activePage)}
-                />
-              </EuiFlexItem>
-            </EuiFlexGroup>
           </EuiFormRow>
           <EuiButton isLoading={isMutating} type="submit">
             Add audience
