@@ -31,10 +31,9 @@ export interface CustomersResponse {
 
 export default function useGetCustomers<Type>(
   id?: string | string[] | undefined,
-  searchValue?: {
-    query?: string;
+  queryParam?: {
+    [key: string]: string;
   },
-  limit?: number,
 ): {
   data: Type;
   error: any;
@@ -42,14 +41,10 @@ export default function useGetCustomers<Type>(
   mutate: any;
 } {
   const path = id ? `/api/v1/dj/customers/${id}/?extended=true` : "/api/v1/dj/customers/";
-
-  const queryParam = createParam({
-    ...searchValue,
-    limit,
-  });
+  const preparedQueryParam = createParam(queryParam);
 
   const { data, error, isLoading, mutate } = useSWR(
-    `${path}?${queryParam}`,
+    `${path}?${preparedQueryParam}`,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

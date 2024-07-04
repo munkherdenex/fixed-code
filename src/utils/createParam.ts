@@ -1,7 +1,10 @@
-export const createParam = (params) => {
+export const createParam = (params: { [key: string]: string }) => {
+  if (!params) {
+    return "";
+  }
   const usp = new URLSearchParams();
 
-  for (const [key, value] of Object.entries(params)) {
+  for (const [key, value] of Object?.entries(params)) {
     if (value !== undefined && value !== "") {
       usp.append(key, value);
     }

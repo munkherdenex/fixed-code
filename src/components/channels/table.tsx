@@ -6,7 +6,8 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
-  EuiButton,
+  EuiButtonIcon,
+  Criteria,
 } from "@elastic/eui";
 import * as yup from "yup";
 import router from "next/router";
@@ -14,6 +15,7 @@ import { Controller, useForm } from "react-hook-form";
 import useGetChannels, { Channels, ChannelsResponse } from "../../hooks/useGetChannels";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
+import { PAGINATION_CHOOSES } from "../../constants";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -23,7 +25,20 @@ const schema = yup.object({
 
 const ChannelsTable = () => {
   const [searchValue, setSearchValue] = useState("");
-  const { data, isLoading, mutate } = useGetChannels<ChannelsResponse>(undefined, searchValue);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+
+  const pagination = {
+    pageIndex,
+    pageSize,
+    pageSizeOptions: PAGINATION_CHOOSES,
+  };
+
+  const { data, isLoading, mutate } = useGetChannels<ChannelsResponse>(undefined, {
+    search: searchValue,
+    offset: `${pageIndex * pageSize}`,
+    limit: `${pageSize}`,
+  });
 
   const {
     control,
@@ -69,6 +84,14 @@ const ChannelsTable = () => {
 
   const onSearch = (value: string) => {
     setSearchValue(value);
+  };
+
+  const onTableChange = ({ page }: Criteria<Channels>) => {
+    if (page) {
+      const { index: pageIndex, size: pageSize } = page;
+      setPageIndex(pageIndex);
+      setPageSize(pageSize);
+    }
   };
 
   const getRowProps = (channel: Channels) => {
@@ -124,9 +147,13 @@ const ChannelsTable = () => {
             </EuiFormRow>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton isLoading={isLoading} onClick={() => mutate()}>
-              Refresh
-            </EuiButton>
+            <EuiButtonIcon
+              display="base"
+              iconType="refresh"
+              size="s"
+              isLoading={isLoading}
+              onClick={() => mutate()}
+            />
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFlexItem>
@@ -140,6 +167,12 @@ const ChannelsTable = () => {
             columns={columns}
             rowProps={getRowProps}
             cellProps={getCellProps}
+            pagination={{
+              ...pagination,
+              totalItemCount: data?.count || 0,
+              showPerPageOptions: true,
+            }}
+            onChange={onTableChange}
           />
         )}
       </EuiFlexItem>

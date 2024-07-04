@@ -1,5 +1,6 @@
 import {
   EuiButton,
+  EuiButtonIcon,
   EuiFieldSearch,
   EuiFlexGroup,
   EuiFlexItem,
@@ -16,16 +17,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { mutate } from "swr";
 import * as yup from "yup";
 import useCreateTemplateAudience from "../../hooks/useCreateTemplateAudience";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
 import useGetSegments, { SegmentResponse } from "../../hooks/useGetSegments";
+import { globalMutate } from "../../utils/globalMutate";
 
 const schema = yup
   .object({
     type: yup.string().oneOf(["customer", "segment"]).required(),
-    search: yup.string().required(),
+    search: yup.string().notRequired(),
     id: yup.string().required(),
   })
   .required();
@@ -43,7 +44,10 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const { isMutating, trigger } = useCreateTemplateAudience(id);
 
   const [searchValue, setSearchValue] = useState<any>();
-  const { data: customerData } = useGetCustomers<CustomersResponse>(undefined, searchValue, 20);
+  const { data: customerData } = useGetCustomers<CustomersResponse>(undefined, {
+    query: searchValue,
+    limit: `${10}`,
+  });
   const { data: segmentsData } = useGetSegments<SegmentResponse>(undefined);
 
   const flyoutHeadingId = useGeneratedHtmlId({
@@ -79,17 +83,15 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const preparedData = watch("type") === "customer" ? preparedCustomerData : preparedSegmentData;
 
   const onSearch = async () => {
-    const isEmail = await yup.string().email().isValid(watch("search"));
-    setSearchValue({
-      [isEmail ? "email" : "phone"]: watch("search"),
-    });
+    setSearchValue(watch("search"));
   };
 
   const onSubmit = async (data: FormData) => {
     try {
+      delete data.search;
       const response = await trigger(data);
       if (response) {
-        mutate(`/api/v1/dj/templates/${id}/customers/`);
+        globalMutate(`/api/v1/dj/templates/${id}/segments/`);
         closeFlyout();
       }
     } catch (error) {
@@ -131,7 +133,7 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
             isInvalid={!!errors.search?.message}
             error={[errors.search?.message]}
           >
-            <EuiFlexGroup>
+            <EuiFlexGroup alignItems="center">
               <EuiFlexItem>
                 <Controller
                   control={control}
@@ -152,9 +154,12 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 />
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
-                <EuiButton type="button" onClick={() => onSearch()}>
-                  Search
-                </EuiButton>
+                <EuiButtonIcon
+                  display="base"
+                  iconType="refresh"
+                  size="s"
+                  onClick={() => onSearch()}
+                />
               </EuiFlexItem>
             </EuiFlexGroup>
           </EuiFormRow>
