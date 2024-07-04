@@ -1,4 +1,3 @@
-import * as yup from "yup";
 import useSWR from "swr";
 import { BASE_URL } from "../constants";
 import { createParam } from "../utils/createParam";
@@ -33,8 +32,7 @@ export interface CustomersResponse {
 export default function useGetCustomers<Type>(
   id?: string | string[] | undefined,
   searchValue?: {
-    email?: string;
-    phone?: string;
+    query?: string;
   },
   limit?: number,
 ): {
@@ -50,15 +48,18 @@ export default function useGetCustomers<Type>(
     limit,
   });
 
-  const { data, error, isLoading, mutate } = useSWR(`${path}?${queryParam}`, async (path) => {
-    const res = await fetch(`${BASE_URL}${path}`, {
-      method: "GET",
-      headers: { "content-type": "application/json" },
-      credentials: "include",
-    });
+  const { data, error, isLoading, mutate } = useSWR(
+    `${path}?${queryParam}`,
+    async (path) => {
+      const res = await fetch(`${BASE_URL}${path}`, {
+        method: "GET",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+      });
 
-    return handleResponseNotOk(res);
-  });
+      return handleResponseNotOk(res);
+    },
+  );
 
   return {
     data,

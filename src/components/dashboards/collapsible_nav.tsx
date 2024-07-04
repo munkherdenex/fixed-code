@@ -59,7 +59,7 @@ const CollapsibleNav = () => {
       pinnable: false,
     },
     {
-      label: "Campaign",
+      label: "Segments",
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/segments`);
       },
