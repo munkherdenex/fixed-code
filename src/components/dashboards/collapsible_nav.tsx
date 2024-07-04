@@ -21,9 +21,9 @@ const CollapsibleNav = () => {
 
   const SendsLinks: EuiPinnableListGroupItemProps[] = [
     {
-      label: "Notifications",
+      label: "Campaign",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/sends`);
+        router.push(`${pathPrefix}/dashboards/campaign`);
       },
       pinnable: false,
     },
@@ -37,7 +37,7 @@ const CollapsibleNav = () => {
     {
       label: "Analytics",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/sends`);
+        router.push(`${pathPrefix}/dashboards/analytics`);
       },
       pinnable: false,
     },
@@ -59,7 +59,7 @@ const CollapsibleNav = () => {
       pinnable: false,
     },
     {
-      label: "Segments",
+      label: "Campaign",
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/segments`);
       },
@@ -232,11 +232,11 @@ const CollapsibleNav = () => {
           buttonElement="div"
           iconType="spacesApp"
           isCollapsible={true}
-          initialIsOpen={openGroups.includes("Sends")}
-          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Sends")}
+          initialIsOpen={openGroups.includes("Campaign")}
+          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Campaign")}
         >
           <EuiPinnableListGroup
-            aria-label="Sends" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
+            aria-label="Campaign" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
             listItems={alterLinksWithCurrentState(SendsLinks)}
             pinTitle={addLinkNameToPinTitle}
             onPinClick={addPin}

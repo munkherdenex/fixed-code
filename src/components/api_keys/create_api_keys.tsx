@@ -16,7 +16,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { addToast } from "../toast";
 import useCreateAPIKeys from "../../hooks/useCreateAPIKeys";
-import AceEditorComponent from "../sends/ace_editor";
+import AceEditorComponent from "../campaign/ace_editor";
 import moment from "moment";
 
 const schema = yup
@@ -30,9 +30,9 @@ const schema = yup
 type FormData = yup.InferType<typeof schema>;
 
 export interface ApiKeyResponseDataType {
-  name?: string,
-  kid?: string,
-  secret?: string,
+  name?: string;
+  kid?: string;
+  secret?: string;
 }
 
 const CreateAPIKeysComponent = ({
@@ -59,7 +59,7 @@ const CreateAPIKeysComponent = ({
     try {
       const response = await trigger(data);
       if (response) {
-        console.log(response)
+        console.log(response);
         setIsFlyoutVisible(false);
         setResponseData(response);
         setIsModalVisible(true);
@@ -133,9 +133,7 @@ const CreateAPIKeysComponent = ({
               label="Data"
               helpText="*Optional"
               isInvalid={!!errors?.data?.message}
-              error={[
-                errors?.data?.message
-              ]}
+              error={[errors?.data?.message]}
             >
               <AceEditorComponent control={control} onChange={setAceEditorValue} />
             </EuiFormRow>

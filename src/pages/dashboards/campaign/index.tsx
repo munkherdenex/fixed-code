@@ -2,8 +2,8 @@ import { EuiBreadcrumbs, EuiButton } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import CreateTemplateFlyot from "../../../components/sends/create_template_flyot";
-import SendsTable from "../../../components/sends/table";
+import CreateTemplateFlyot from "../../../components/campaign/create_template_flyot";
+import SendsTable from "../../../components/campaign/table";
 import DashboardLayout from "../../../layouts/dashboard";
 
 const pathPrefix = process.env.PATH_PREFIX;
@@ -19,20 +19,20 @@ const SendsDashboard = () => {
   return (
     <>
       <Head>
-        <title>Sends</title>
+        <title>Campaign</title>
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Sends",
+          pageTitle: "Campaign",
           iconType: "spacesApp",
           rightSideItems: [
             <EuiButton
               color="primary"
               onClick={() => setIsFlyoutVisible(true)}
               fill
-              key="create-sends"
+              key="create-Campaign"
             >
-              Create sends
+              Create Campaign
             </EuiButton>,
           ],
         }}
@@ -44,7 +44,7 @@ const SendsDashboard = () => {
                 onClick: () => router.push(`${pathPrefix}/dashboards`),
               },
               {
-                text: "Sends",
+                text: "Campaign",
               },
             ]}
             truncate={false}

@@ -1,11 +1,36 @@
-import { EuiBasicTableColumn, EuiTableFieldDataColumnType, EuiBasicTable } from "@elastic/eui";
+import {
+  EuiBasicTableColumn,
+  EuiTableFieldDataColumnType,
+  EuiBasicTable,
+  EuiFieldSearch,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiFormRow,
+  EuiButton,
+} from "@elastic/eui";
+import * as yup from "yup";
 import router from "next/router";
+import { Controller, useForm } from "react-hook-form";
 import useGetChannels, { Channels, ChannelsResponse } from "../../hooks/useGetChannels";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useState } from "react";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
+const schema = yup.object({
+  search: yup.string().notRequired(),
+});
+
 const ChannelsTable = () => {
-  const { data, isLoading } = useGetChannels<ChannelsResponse>();
+  const [searchValue, setSearchValue] = useState("");
+  const { data, isLoading, mutate } = useGetChannels<ChannelsResponse>(undefined, searchValue);
+
+  const {
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   const columns: Array<EuiBasicTableColumn<Channels>> = [
     {
@@ -42,6 +67,10 @@ const ChannelsTable = () => {
     },
   ];
 
+  const onSearch = (value: string) => {
+    setSearchValue(value);
+  };
+
   const getRowProps = (channel: Channels) => {
     const { id } = channel;
     return {
@@ -69,12 +98,52 @@ const ChannelsTable = () => {
   }
 
   return (
-    <EuiBasicTable
-      items={data?.results || []}
-      columns={columns}
-      rowProps={getRowProps}
-      cellProps={getCellProps}
-    />
+    <EuiFlexGroup direction="column">
+      <EuiFlexItem>
+        <EuiFlexGroup justifyContent="spaceBetween" alignItems="flexEnd">
+          <EuiFlexItem grow={false}>
+            <EuiFormRow
+              label="Search"
+              isInvalid={!!errors.search?.message}
+              error={[errors.search?.message]}
+            >
+              <Controller
+                control={control}
+                name="search"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <EuiFieldSearch
+                    onChange={onChange}
+                    value={value}
+                    onBlur={onBlur}
+                    onSearch={onSearch}
+                    placeholder="Search channel"
+                    isInvalid={!!errors.search?.message}
+                  />
+                )}
+              />
+            </EuiFormRow>
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            <EuiButton isLoading={isLoading} onClick={() => mutate()}>
+              Refresh
+            </EuiButton>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiFlexItem>
+      <EuiFlexItem>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <EuiBasicTable
+            tableCaption="Channels table"
+            items={data?.results || []}
+            columns={columns}
+            rowProps={getRowProps}
+            cellProps={getCellProps}
+          />
+        )}
+      </EuiFlexItem>
+    </EuiFlexGroup>
   );
 };
 

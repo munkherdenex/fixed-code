@@ -17,9 +17,9 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { mutate } from "swr";
 import * as yup from "yup";
 import useCreateChannel from "../../hooks/useCreateChannel";
+import { globalMutate } from "../../utils/globalMutate";
 
 const schema = yup
   .object({
@@ -117,7 +117,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
         },
       });
       if (response) {
-        mutate(`/api/v1/dj/channels/`);
+        globalMutate(`/api/v1/dj/channels/`);
         closeFlyout();
       }
     } catch (error) {

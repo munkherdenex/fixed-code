@@ -1,8 +1,8 @@
 import { EuiBreadcrumbs, EuiFlexGrid, EuiFlexItem } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import GeneralDetails from "../../../../components/sends/general_detail";
-import Menu from "../../../../components/sends/menu";
+import GeneralDetails from "../../../../components/campaign//general_detail";
+import Menu from "../../../../components/campaign/menu";
 import DashboardLayout from "../../../../layouts/dashboard";
 
 const SendsInfo = () => {
@@ -26,15 +26,15 @@ const SendsInfo = () => {
                 onClick: () => router.push("/dashboards"),
               },
               {
-                text: "Sends",
-                onClick: () => router.push("/dashboards/sends"),
+                text: "Campaign",
+                onClick: () => router.push("/dashboards/campaign"),
               },
               {
                 text: "Info",
               },
             ]}
             truncate={false}
-            aria-label="Sends info breadCrumb"
+            aria-label="Campaign info breadCrumb"
           />
         }
       >
