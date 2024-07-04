@@ -27,7 +27,7 @@ const Dashboard: FunctionComponent = () => {
               footer={
                 <div>
                   <EuiButton
-                    onClick={() => router.push(`${pathPrefix}/dashboards/customers`)}
+                    onClick={() => router.push(`${pathPrefix}/dashboards/audience`)}
                     aria-label="Go to Dashboards"
                   >
                     Go for it

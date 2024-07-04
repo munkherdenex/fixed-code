@@ -47,7 +47,7 @@ const CollapsibleNav = () => {
     {
       label: "Audience base",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/customers`);
+        router.push(`${pathPrefix}/dashboards/audience`);
       },
       pinnable: false,
     },

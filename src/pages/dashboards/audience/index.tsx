@@ -15,20 +15,20 @@ const CustomersDashboard = () => {
   return (
     <>
       <Head>
-        <title>Customers</title>
+        <title>Audience</title>
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Customers",
+          pageTitle: "Audience",
           iconType: "usersRolesApp",
           rightSideItems: [
             <EuiButton
               color="primary"
               onClick={() => setIsFlyoutVisible(true)}
               fill
-              key="create-customer"
+              key="audience-customer"
             >
-              Create customer
+              Create audience
             </EuiButton>,
           ],
         }}
@@ -40,7 +40,7 @@ const CustomersDashboard = () => {
                 onClick: () => router.push(`${pathPrefix}/dashboards`),
               },
               {
-                text: "Customers",
+                text: "Audience",
               },
             ]}
             truncate={false}

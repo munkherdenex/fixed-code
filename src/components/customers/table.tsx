@@ -1,4 +1,4 @@
-import { EuiBasicTable, EuiBasicTableColumn, EuiTableFieldDataColumnType } from "@elastic/eui";
+import { EuiBadge, EuiBasicTable, EuiBasicTableColumn, EuiTableFieldDataColumnType } from "@elastic/eui";
 import { useRouter } from "next/router";
 import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
 import moment from "moment";
@@ -35,6 +35,20 @@ const CustomersTable = () => {
       },
     },
     {
+      field: "source",
+      name: "Source",
+      render: (source: CustomersType['source']) => (
+        <>
+          <EuiBadge
+            iconType={source === "web" ? "logoWebhook" : "apps"}
+            color={source === "web" ? "hollow" : ""}
+          >
+            {source}
+          </EuiBadge>
+        </>
+      ),
+    },
+    {
       field: "created_by",
       name: "Created by",
       mobileOptions: {
@@ -58,7 +72,7 @@ const CustomersTable = () => {
     return {
       className: "customRowClass",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/customers/info/${id}`);
+        router.push(`${pathPrefix}/dashboards/audience/info/${id}`);
       },
     };
   };
@@ -75,9 +89,7 @@ const CustomersTable = () => {
 
   return (
     <EuiBasicTable
-      tableCaption="Demo of EuiBasicTable"
       items={data?.results || []}
-      rowHeader="firstName"
       columns={columns}
       rowProps={getRowProps}
       cellProps={getCellProps}
