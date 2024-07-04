@@ -1,4 +1,4 @@
-import { EuiBreadcrumbs, EuiFlexGrid, EuiFlexItem } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiButton, EuiFlexGrid, EuiFlexItem } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import GeneralDetails from "../../../../components/campaign//general_detail";
@@ -17,6 +17,16 @@ const SendsInfo = () => {
         pageHeader={{
           pageTitle: "Info",
           iconType: "usersRolesApp",
+          rightSideItems: [
+            <EuiButton
+              color="success"
+              onClick={() => console.info("change status")}
+              fill
+              key="create-segment"
+            >
+              Done
+            </EuiButton>,
+          ],
         }}
         breadCrumb={
           <EuiBreadcrumbs
