@@ -15,10 +15,10 @@ import {
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import { mutate } from "swr";
 import * as yup from "yup";
 import useCreateTemplate from "../../hooks/useCreateTemplate";
-import useGetChannels, { Channels, ChannelsResponse } from "../../hooks/useGetChannels";
+import useGetChannels, { ChannelsResponse } from "../../hooks/useGetChannels";
+import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
@@ -83,7 +83,7 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
     try {
       const response = await trigger(data);
       if (response) {
-        mutate(`/api/v1/dj/templates/`);
+        globalMutate("/api/v1/dj/templates/");
         closeFlyout();
       }
     } catch (error) {

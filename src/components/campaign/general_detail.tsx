@@ -34,7 +34,7 @@ const DeleteConfirmModal = ({
   const confirmModal = async () => {
     const response = await trigger();
     if (response) {
-      await router.replace("/dashboards/sends");
+      await router.replace("/dashboards/Campaign");
       setIsModalVisible(false);
       setDeleteConfirmValue("");
     }

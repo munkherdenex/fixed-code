@@ -39,12 +39,12 @@ const Dashboard: FunctionComponent = () => {
           <EuiFlexItem>
             <EuiCard
               icon={<EuiIcon size="xxl" type="notebookApp" />}
-              title="Notifications"
+              title="Campaign"
               description="Example of a short card description."
               footer={
                 <div>
                   <EuiButton
-                    onClick={() => router.push(`${pathPrefix}/dashboards/sends`)}
+                    onClick={() => router.push(`${pathPrefix}/dashboards/campaign`)}
                     aria-label="Go to Save Objects"
                   >
                     Go for it

@@ -10,8 +10,6 @@ const SWRConfigLayout = ({ children }) => {
   return (
     <SWRConfig
       value={{
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
         onError: async (error) => {
           if (error?.status === 401 && router.pathname.includes("dashboard")) {
             await trigger();

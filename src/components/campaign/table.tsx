@@ -1,29 +1,28 @@
 import {
-  EuiBasicTableColumn,
-  EuiTableFieldDataColumnType,
   EuiBasicTable,
+  EuiBasicTableColumn,
+  EuiButton,
+  EuiFieldSearch,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFieldSearch,
   EuiFormRow,
-  EuiButton,
+  EuiTableFieldDataColumnType,
 } from "@elastic/eui";
-import * as yup from "yup";
-import router from "next/router";
-import { useState } from "react";
-import useGetSegments, { Segment, SegmentResponse } from "../../hooks/useGetSegments";
-import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-const pathPrefix = process.env.PATH_PREFIX;
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
+import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 
 const schema = yup.object({
   search: yup.string().notRequired(),
 });
 
-const SegmentsTable = () => {
+const SendsTable = () => {
+  const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
-  const { data, isLoading, mutate } = useGetSegments<SegmentResponse>(undefined, searchValue);
+  const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, searchValue);
 
   const {
     control,
@@ -32,50 +31,37 @@ const SegmentsTable = () => {
     resolver: yupResolver(schema),
   });
 
-  const columns: Array<EuiBasicTableColumn<Segment>> = [
+  const columns: Array<EuiBasicTableColumn<Template>> = [
     {
       field: "id",
       name: "ID",
       "data-test-subj": "idCell",
-      mobileOptions: {
-        render: (segment: Segment) => <>{segment.id}</>,
-        enlarge: true,
-      },
     },
     {
-      field: "name",
-      name: "Name",
-      "data-test-subj": "nameCell",
-      mobileOptions: {
-        render: (segment: Segment) => <>{segment.name}</>,
-        enlarge: true,
-      },
+      field: "title",
+      name: "Title",
+      "data-test-subj": "titleCell",
     },
     {
-      field: "description",
-      name: "Description",
-      "data-test-subj": "descriptionCell",
-      mobileOptions: {
-        render: (segment: Segment) => <>{segment.description}</>,
-        enlarge: true,
-      },
+      field: "kind",
+      name: "Kind",
+      "data-test-subj": "kindCell",
     },
     {
-      field: "type",
-      name: "Type",
-      "data-test-subj": "typeCell",
-      mobileOptions: {
-        render: (segment: Segment) => <>{segment.type}</>,
-        enlarge: true,
-      },
+      field: "body",
+      name: "Body",
+      "data-test-subj": "bodyCell",
+      truncateText: true,
     },
     {
       field: "created_at",
       name: "Created at",
       "data-test-subj": "createdAtCell",
-      mobileOptions: {
-        enlarge: true,
-      },
+    },
+    {
+      field: "created_by",
+      name: "Created by",
+      "data-test-subj": "createdByCell",
     },
   ];
 
@@ -83,19 +69,17 @@ const SegmentsTable = () => {
     setSearchValue(value);
   };
 
-  const getRowProps = (segment: Segment) => {
-    const { id } = segment;
+  const getRowProps = (template: Template) => {
+    const { id } = template;
     return {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
-      onClick: () => {
-        router.push(`${pathPrefix}/dashboards/segments/info/${id}`);
-      },
+      onClick: () => router.push(`/dashboards/campaign/info/${id}`),
     };
   };
 
-  const getCellProps = (segment: Segment, column: EuiTableFieldDataColumnType<Segment>) => {
-    const { id } = segment;
+  const getCellProps = (template: Template, column: EuiTableFieldDataColumnType<Template>) => {
+    const { id } = template;
     const { field } = column;
 
     return {
@@ -124,7 +108,7 @@ const SegmentsTable = () => {
                     value={value}
                     onBlur={onBlur}
                     onSearch={onSearch}
-                    placeholder="Search segments"
+                    placeholder="Search Campaign"
                     isInvalid={!!errors.search?.message}
                   />
                 )}
@@ -143,7 +127,7 @@ const SegmentsTable = () => {
           <div>Loading...</div>
         ) : (
           <EuiBasicTable
-            tableCaption="Segments table"
+            tableCaption="Campaign table"
             items={data?.results || []}
             columns={columns}
             rowProps={getRowProps}
@@ -155,4 +139,4 @@ const SegmentsTable = () => {
   );
 };
 
-export default SegmentsTable;
+export default SendsTable;
