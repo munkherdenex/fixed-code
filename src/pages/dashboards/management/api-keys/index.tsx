@@ -18,7 +18,7 @@ const ApiKeys = () => {
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Api keys",
+          pageTitle: "API keys",
           iconType: "managementApp",
           rightSideItems: [
             <EuiButton
@@ -43,13 +43,23 @@ const ApiKeys = () => {
             >
               <EuiModalHeader>
                 <EuiModalHeaderTitle id='id'>
-                  API Key
+                  API Key created
                 </EuiModalHeaderTitle>
               </EuiModalHeader>
               <EuiModalBody>
                 <div>
                   <EuiFormRow label="Key id">
-                    <EuiFieldText readOnly value={responseData ? responseData?.kid : ''} />
+                    <EuiFieldText readOnly value={responseData ? responseData?.kid : ''}
+                      append={
+                        <EuiCopy textToCopy={responseData ? responseData?.kid : ''}>
+                          {(copy) => (
+                            <EuiFlexItem className="eui-textInheritColor" style={{ maxWidth: 38 }}>
+                              <EuiContextMenuItem key="copy" icon="copy" onClick={copy} />
+                            </EuiFlexItem>
+                          )}
+                        </EuiCopy>
+                      }
+                    />
                   </EuiFormRow>
                   <EuiSpacer size="m" />
                   <EuiFormRow label="Secret key">
@@ -58,9 +68,11 @@ const ApiKeys = () => {
                       aria-readonly
                       value={responseData ? responseData?.secret : ''}
                       append={
-                        <EuiCopy textToCopy={responseData ? responseData?.secret : ''}>
+                        <EuiCopy className="" textToCopy={responseData ? responseData?.secret : ''}>
                           {(copy) => (
-                            <EuiContextMenuItem key="copy" icon="copy" onClick={copy} />
+                            <EuiFlexItem className="eui-textInheritColor" style={{ maxWidth: 38 }}>
+                              <EuiContextMenuItem key="copy" icon="copy" onClick={copy} />
+                            </EuiFlexItem>
                           )}
                         </EuiCopy>
                       }

@@ -9,6 +9,7 @@ import {
   EuiFieldText,
   EuiButton,
   EuiDatePicker,
+  EuiSelect,
 } from "@elastic/eui";
 import { SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -18,10 +19,12 @@ import { addToast } from "../toast";
 import useCreateAPIKeys from "../../hooks/useCreateAPIKeys";
 import AceEditorComponent from "../campaign/ace_editor";
 import moment from "moment";
+import useTeamID from "../../hooks/useTeamID";
 
 const schema = yup
   .object({
     name: yup.string().required("please enter api key name"),
+    team_id: yup.string().notRequired(),
     data: yup.string().notRequired(),
     expires_at: yup.date().notRequired(),
   })
@@ -46,6 +49,14 @@ const CreateAPIKeysComponent = ({
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
   const { trigger } = useCreateAPIKeys();
+  const { data } = useTeamID();
+  const dataTypeOptions =
+    data?.map(team => {
+      return {
+        value: team?.id,
+        text: `${team?.name}`,
+      }
+    }) || [{ value: '', text: '' }];
   const {
     handleSubmit,
     control,
@@ -53,6 +64,9 @@ const CreateAPIKeysComponent = ({
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      team_id: data[0].id.toString() || '',
+    },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -67,7 +81,7 @@ const CreateAPIKeysComponent = ({
           id: "api-keys-success",
           color: "success",
           title: "Success",
-          text: "Successfully register",
+          text: "Successfully created",
         });
       }
     } catch (e) {
@@ -109,6 +123,27 @@ const CreateAPIKeysComponent = ({
                 )}
               />
             </EuiFormRow>
+            <EuiFormRow
+              label="Team name"
+              isInvalid={!!errors.team_id?.message}
+              error={[errors.team_id?.message]}
+            >
+              <Controller
+                control={control}
+                name="team_id"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <EuiSelect
+                    onChange={onChange}
+                    value={value}
+                    options={dataTypeOptions}
+                    onBlur={onBlur}
+                    isInvalid={!!errors.team_id?.message}
+                    aria-label="Team id"
+                  />
+                )}
+              />
+            </EuiFormRow>
+
             <EuiFormRow
               label="Expiry date"
               isInvalid={!!errors.expires_at?.message}

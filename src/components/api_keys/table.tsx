@@ -1,9 +1,9 @@
 import {
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiLink,
 } from "@elastic/eui";
 import useGetAPIKeys, { ApiKeysType } from "../../hooks/useGetAPIKeys";
+import moment from "moment";
 
 const ApiKeysTable = () => {
   const { data } = useGetAPIKeys();
@@ -19,8 +19,15 @@ const ApiKeysTable = () => {
       width: '20%',
     },
     {
+      field: "team_name",
+      name: "Team name",
+      width: '20%',
+    },
+    {
       field: "created_at",
       name: "Created Date",
+      width: '20%',
+      render: (apiKey: ApiKeysType) => moment(apiKey.created_at).format("YYYY-MM-DD hh:mm:ss"),
     },
     {
       field: "kid",
