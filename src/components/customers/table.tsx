@@ -1,18 +1,41 @@
-import { EuiBadge, EuiBasicTable, EuiBasicTableColumn, EuiTableFieldDataColumnType } from "@elastic/eui";
+import { EuiBadge, EuiBasicTable, EuiBasicTableColumn, EuiButtonIcon, EuiFieldSearch, EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiTableFieldDataColumnType } from "@elastic/eui";
 import { useRouter } from "next/router";
 import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
 import moment from "moment";
+import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
+const schema = yup.object({
+  search: yup.string().notRequired(),
+});
+
 const CustomersTable = () => {
   const router = useRouter();
-  const { data } = useGetCustomers<CustomersResponse>();
+  const [searchValue, setSearchValue] = useState({
+    query: '',
+  },);
+  const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, searchValue);
+  const {
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+  const onSearchEmailAddress = (value: string) => {
+    setSearchValue({
+      query: value,
+    });
+  };
 
   const columns: Array<EuiBasicTableColumn<CustomersType>> = [
     {
       field: "id",
       name: "ID",
+      width: '8%',
       mobileOptions: {
         render: (customer: CustomersType) => <>{customer.id}</>,
         enlarge: true,
@@ -88,12 +111,47 @@ const CustomersTable = () => {
   };
 
   return (
-    <EuiBasicTable
-      items={data?.results || []}
-      columns={columns}
-      rowProps={getRowProps}
-      cellProps={getCellProps}
-    />
+    <EuiFlexGroup direction="column">
+      <EuiFlexItem>
+        <EuiFlexGroup justifyContent="spaceBetween" alignItems="flexEnd" gutterSize="s">
+          <EuiFlexGrid columns={2} >
+            <EuiFlexItem grow={false}>
+              <EuiFormRow
+                label="Search"
+                isInvalid={!!errors.search?.message}
+                error={[errors.search?.message]}
+              >
+                <Controller
+                  control={control}
+                  name="search"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <EuiFieldSearch
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      onSearch={onSearchEmailAddress}
+                      placeholder="Search email or phone"
+                      isInvalid={!!errors.search?.message}
+                    />
+                  )}
+                />
+              </EuiFormRow>
+            </EuiFlexItem>
+          </EuiFlexGrid>
+          <EuiFlexItem grow={false}>
+            <EuiButtonIcon iconType="refresh" display="base" size="s" isLoading={isLoading} onClick={() => mutate()} />
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiBasicTable
+          items={data?.results || []}
+          columns={columns}
+          rowProps={getRowProps}
+          cellProps={getCellProps}
+        />
+      </EuiFlexItem>
+    </EuiFlexGroup>
   );
 };
 
