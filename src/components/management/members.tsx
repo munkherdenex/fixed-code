@@ -35,6 +35,7 @@ const MembersTable = () => {
     const roleTypes = [
         { value: "admin", text: "Admin" },
         { value: "member", text: "Member" },
+        { value: "manager", text: "Manager" },
     ];
 
     const onChange = (e, id) => {
@@ -46,17 +47,62 @@ const MembersTable = () => {
                         role: e.target.value,
                     };
                 }
-                return {
-                    ...value
-                };
+                return value;
             }),
         );
     };
 
+    const RoleColumn = ({ role, member }) => (
+        <EuiFlexItem>
+            {isAdmin ? (
+                <>
+                    <EuiSelect
+                        prepend={
+                            <EuiButtonIcon
+                                iconType={member.role === "admin" ? "user" : (member.role === "member" ? "users" : "usersRolesApp")}
+                                color={member.role === "admin" ? "primary" : (member.role === 'member' ? "warning" : "success")}
+                            />
+                        }
+                        id={member.user.email}
+                        options={roleTypes}
+                        defaultValue={role}
+                        onChange={(value) => onChange(value, member.id)}
+                        value={
+                            teamRole?.find((value) => value.id === member.id)?.role || role
+                        }
+                        append={
+                            <EuiToolTip content="Are you sure you want to change?">
+                                <>
+                                    {teamRole !== undefined && teamRole
+                                        ?.filter((value) => value.id === member.id && value.role !== member.role)
+                                        .map((mem, idx) => (
+                                            <UpdateMemberModal
+                                                key={idx}
+                                                selectMemberId={member?.id}
+                                                changed_role={mem.role}
+                                            />
+                                        ))}
+                                </>
+                            </EuiToolTip>
+                        }
+                    />
+                </>
+            ) : (
+                <EuiBadge
+                    iconType={member.role === "admin" ? "user" : (member.role === "member" ? "users" : "usersRolesApp")}
+                    color={member.role === "admin" ? "default" : ""}
+                >
+                    {member.role}
+                </EuiBadge>
+            )}
+        </EuiFlexItem>
+    );
+
     const columns: Array<EuiBasicTableColumn<MembersType>> = [
         {
             field: "user.email",
-            name: "Email",
+            name: "Username & Email",
+            width: '23%',
             render: (role: MembersType["role"], member: MembersType) => (
                 <EuiFlexGroup>
                     <EuiFlexItem grow={false}>
@@ -82,60 +128,9 @@ const MembersTable = () => {
         {
             field: "role",
             name: "Role",
-            render: (role: MembersType["role"], member: MembersType,) => {
-                return <EuiFlexItem>
-                    {isAdmin ? (
-                        <>
-                            <EuiSelect
-                                prepend={
-                                    <EuiButtonIcon
-                                        iconType={member.role === "admin" ? "user" : "users"}
-                                        color={member.role === "admin" ? "primary" : "warning"}
-                                    />
-                                }
-                                id={member.user.email}
-                                options={roleTypes}
-                                defaultValue={role}
-                                onChange={(value) => onChange(value, member.id)}
-                                value={teamRole !== undefined ?
-                                    teamRole.filter(value => {
-                                        return value?.id === member.id
-                                    }).map(mem => {
-                                        if (mem.role !== member.role) {
-                                            return mem.role;
-                                        }
-                                        return roleTypes.filter((option) => option.value === role)[0].value
-                                    })[0]
-                                    : roleTypes.filter((option) => option.value === role)[0].value}
-                                append={
-                                    <EuiToolTip content="Are you sure you want to change?">
-                                        <>
-                                            {teamRole !== undefined && teamRole.filter(value => {
-                                                return value?.id === member.id
-                                            }).map((mem, idx) => {
-                                                if (mem.role !== member.role) {
-                                                    return (
-                                                        <UpdateMemberModal key={idx} selectMemberId={member?.id} changed_role={mem.role} />
-                                                    )
-                                                }
-                                            })}
-                                        </>
-                                    </EuiToolTip>
-                                }
-                            />
-                        </>
-                    ) : (
-                        <div>
-                            <EuiBadge
-                                iconType={member.role === "admin" ? "user" : "users"}
-                                color={member.role === "admin" ? "default" : ""}
-                            >
-                                {member.role}
-                            </EuiBadge>
-                        </div>
-                    )}
-                </EuiFlexItem>
-            },
+            render: (role: MembersType["role"], member: MembersType,) => (
+                <RoleColumn role={role} member={member} />
+            ),
         },
         {
             name: "Joined Date",
