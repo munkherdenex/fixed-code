@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { BASE_URL } from "../constants";
-import { useRouter } from "next/router";
 import { handleResponseNotOk } from "../utils/error_handler";
+import { createParam } from "../utils/createParam";
 
 export interface Fields {
   id: number;
@@ -22,16 +22,22 @@ export interface FieldsResponse {
   results: Fields[];
 }
 
-export default function useGetFields<Type>(id?: string | string[] | undefined): {
+export default function useGetFields<Type>(
+  id?: string | string[] | undefined,
+  queryParam?: {
+    [key: string]: string;
+  },
+): {
   data: Type;
   error: any;
   isLoading: boolean;
 } {
-  const router = useRouter();
   const path = id ? `/api/v1/dj/fields/${id}/` : `/api/v1/dj/fields/`;
+  const preparedQueryParam = createParam(queryParam);
+
   const { data, error, isLoading } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    router.pathname.includes("dashboard") ? path : null,
+    `${path}?${preparedQueryParam}`,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

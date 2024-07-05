@@ -49,14 +49,6 @@ const ChannelsTable = () => {
 
   const columns: Array<EuiBasicTableColumn<Channels>> = [
     {
-      field: "id",
-      name: "ID",
-      "data-test-subj": "idCell",
-      mobileOptions: {
-        enlarge: true,
-      },
-    },
-    {
       field: "name",
       name: "Name",
       "data-test-subj": "nameCell",

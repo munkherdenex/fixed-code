@@ -24,7 +24,6 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import Dynamic from "../../../../components/segments/dynamic";
 import Manual from "../../../../components/segments/manual";
-import Static from "../../../../components/segments/static";
 import useCreateSegment from "../../../../hooks/useCreateSegment";
 import DashboardLayout from "../../../../layouts/dashboard";
 
@@ -41,7 +40,7 @@ const Dashboard: FunctionComponent = () => {
   const router = useRouter();
   const { trigger, isMutating: isCreateSegmentMutating } = useCreateSegment();
   const [firstFormData, setFirstFormData] = useState<FormData | null>(null);
-  const [selectedCard, setCard] = useState(1);
+  const [selectedCard, setCard] = useState(2);
   const [openFlyout, setOpenFlyout] = useState(false);
 
   const {
@@ -159,20 +158,9 @@ const Dashboard: FunctionComponent = () => {
                   <EuiFlexGroup gutterSize="l">
                     <EuiFlexItem>
                       <EuiCard
-                        icon={<EuiIcon size="xxl" type="logoSketch" />}
-                        title="Static"
-                        description="Example of a short card description."
-                        selectable={{
-                          onClick: () => cardClicked(1),
-                          isSelected: selectedCard === 1,
-                        }}
-                      />
-                    </EuiFlexItem>
-                    <EuiFlexItem>
-                      <EuiCard
-                        icon={<EuiIcon size="xxl" type="logoGCP" />}
+                        icon={<EuiIcon size="xxl" type="sqlApp" />}
                         title="Dynamic"
-                        description="Example of a longer card description. See how the footers stay lined up."
+                        description="Create a dynamic segment based on a query."
                         selectable={{
                           onClick: () => cardClicked(2),
                           isSelected: selectedCard === 2,
@@ -181,9 +169,9 @@ const Dashboard: FunctionComponent = () => {
                     </EuiFlexItem>
                     <EuiFlexItem>
                       <EuiCard
-                        icon={<EuiIcon size="xxl" type="logoAerospike" />}
+                        icon={<EuiIcon size="xxl" type="notebookApp" />}
                         title="Manual"
-                        description="Example of a short card description."
+                        description="Create a manual segment based on a file and text."
                         selectable={{
                           onClick: () => cardClicked(3),
                           isSelected: selectedCard === 3,
@@ -209,12 +197,6 @@ const Dashboard: FunctionComponent = () => {
                 </EuiTitle>
               </EuiFlyoutHeader>
               <EuiFlyoutBody>
-                {selectedCard === 1 && (
-                  <Static
-                    createSegment={createSegment}
-                    isCreateSegmentMutating={isCreateSegmentMutating}
-                  />
-                )}
                 {selectedCard === 2 && (
                   <Dynamic
                     createSegment={createSegment}

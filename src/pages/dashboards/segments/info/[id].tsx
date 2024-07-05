@@ -1,4 +1,4 @@
-import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import GeneralDetails from "../../../../components/segments/general_details";

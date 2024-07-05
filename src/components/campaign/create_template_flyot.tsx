@@ -17,7 +17,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useCreateTemplate from "../../hooks/useCreateTemplate";
-import useGetChannels, { ChannelsResponse } from "../../hooks/useGetChannels";
+import useGetChannels, { Channels, ChannelsResponse } from "../../hooks/useGetChannels";
 import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
@@ -44,7 +44,9 @@ type FormData = yup.InferType<typeof schema>;
 
 const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const { isMutating, trigger } = useCreateTemplate();
-  const { data: channelsData } = useGetChannels<ChannelsResponse>();
+  const { data: channelsData } = useGetChannels<Channels[]>(undefined, {
+    all: `${true}`,
+  });
 
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
@@ -63,8 +65,8 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
     },
   });
 
-  const channelDataOptions = Array.isArray(channelsData?.results)
-    ? channelsData?.results
+  const channelDataOptions = Array.isArray(channelsData)
+    ? channelsData
         .filter((channel) => channel.channel_type === watch("kind"))
         .map((channel) => ({
           value: channel.id,
@@ -95,7 +97,7 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
     <EuiFlyout onClose={closeFlyout}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2>Create send</h2>
+          <h2>Create campaign</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
@@ -206,7 +208,7 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
             </EuiFlexGroup>
           </EuiFormRow>
           <EuiButton isLoading={isMutating} type="submit">
-            Create send
+            Create campaign
           </EuiButton>
         </EuiForm>
       </EuiFlyoutBody>
