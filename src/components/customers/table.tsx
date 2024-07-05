@@ -1,4 +1,5 @@
 import {
+  Criteria,
   EuiBadge,
   EuiBasicTable,
   EuiBasicTableColumn,
@@ -17,6 +18,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
+import { PAGINATION_CHOOSES } from "../../constants";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -27,10 +29,20 @@ const schema = yup.object({
 const CustomersTable = () => {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
   const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, {
     query: searchValue,
+    limit: `${pageSize}`,
+    offset: `${pageIndex * pageSize}`,
   });
+
+  const pagination = {
+    pageIndex,
+    pageSize,
+    pageSizeOptions: PAGINATION_CHOOSES,
+  };
 
   const {
     control,
@@ -38,6 +50,15 @@ const CustomersTable = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+
+
+  const onTableChange = ({ page }: Criteria<CustomersType>) => {
+    if (page) {
+      const { index: pageIndex, size: pageSize } = page;
+      setPageIndex(pageIndex);
+      setPageSize(pageSize);
+    }
+  };
 
   const columns: Array<EuiBasicTableColumn<CustomersType>> = [
     {
@@ -167,6 +188,11 @@ const CustomersTable = () => {
           columns={columns}
           rowProps={getRowProps}
           cellProps={getCellProps}
+          pagination={{
+            ...pagination,
+            totalItemCount: data?.count || 0,
+          }}
+          onChange={onTableChange}
         />
       </EuiFlexItem>
     </EuiFlexGroup>
