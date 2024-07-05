@@ -23,6 +23,7 @@ import * as yup from "yup";
 import { addToast } from "../toast";
 import useGetFields, { FieldsResponse } from "../../hooks/useGetFields";
 import { Moment } from "moment";
+import { globalMutate } from "../../utils/globalMutate";
 
 const schema = yup
   .object({
@@ -79,6 +80,7 @@ const CreateCustomerComponent = ({
           title: "Success",
           text: "Successfully register",
         });
+        globalMutate(`/api/v1/dj/customers/`);
       }
     } catch (e) {
       console.error(e);
