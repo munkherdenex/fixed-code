@@ -1,59 +1,61 @@
-import { EuiBasicTableColumn, EuiTableFieldDataColumnType, EuiBasicTable } from "@elastic/eui";
+import {
+  EuiBasicTableColumn,
+  EuiTableFieldDataColumnType,
+  EuiBasicTable,
+  Criteria,
+} from "@elastic/eui";
 import router from "next/router";
+import { useState } from "react";
+import { PAGINATION_CHOOSES } from "../../constants";
 import useGetFields, { Fields, FieldsResponse } from "../../hooks/useGetFields";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const FieldsTable = () => {
-  const { data, isLoading } = useGetFields<FieldsResponse>();
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+
+  const pagination = {
+    pageIndex,
+    pageSize,
+    pageSizeOptions: PAGINATION_CHOOSES,
+  };
+
+  const { data, isLoading } = useGetFields<FieldsResponse>(undefined, {
+    offset: `${pageIndex * pageSize}`,
+    limit: `${pageSize}`,
+  });
 
   const columns: Array<EuiBasicTableColumn<Fields>> = [
-    {
-      field: "id",
-      name: "ID",
-      "data-test-subj": "idCell",
-      mobileOptions: {
-        render: (fields: Fields) => <>{fields.id}</>,
-        enlarge: true,
-      },
-    },
     {
       field: "name",
       name: "Name",
       "data-test-subj": "nameCell",
-      mobileOptions: {
-        render: (fields: Fields) => <>{fields.name}</>,
-        enlarge: true,
-      },
     },
     {
       field: "attribute_name",
       name: "Attribute",
       "data-test-subj": "attributeCell",
-      mobileOptions: {
-        render: (fields: Fields) => <>{fields.attribute_name}</>,
-        enlarge: true,
-      },
     },
     {
       field: "data_type",
       name: "Data type",
       "data-test-subj": "typeCell",
-      render: (data: string) => <>{data}</>,
-      mobileOptions: {
-        render: (fields: Fields) => <>{fields.data_type}</>,
-        enlarge: true,
-      },
     },
     {
       field: "created_at",
       name: "Created at",
       "data-test-subj": "createdAtCell",
-      mobileOptions: {
-        enlarge: true,
-      },
     },
   ];
+
+  const onTableChange = ({ page }: Criteria<Fields>) => {
+    if (page) {
+      const { index: pageIndex, size: pageSize } = page;
+      setPageIndex(pageIndex);
+      setPageSize(pageSize);
+    }
+  };
 
   const getRowProps = (fields: Fields) => {
     const { id } = fields;
@@ -89,6 +91,12 @@ const FieldsTable = () => {
       columns={columns}
       rowProps={getRowProps}
       cellProps={getCellProps}
+      pagination={{
+        ...pagination,
+        totalItemCount: data?.count || 0,
+        showPerPageOptions: true,
+      }}
+      onChange={onTableChange}
     />
   );
 };

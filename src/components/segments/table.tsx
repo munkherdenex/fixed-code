@@ -7,6 +7,7 @@ import {
   EuiFieldSearch,
   EuiFormRow,
   EuiButtonIcon,
+  Criteria,
 } from "@elastic/eui";
 import * as yup from "yup";
 import router from "next/router";
@@ -14,6 +15,7 @@ import { useState } from "react";
 import useGetSegments, { Segment, SegmentResponse } from "../../hooks/useGetSegments";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { PAGINATION_CHOOSES } from "../../constants";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -23,7 +25,19 @@ const schema = yup.object({
 
 const SegmentsTable = () => {
   const [searchValue, setSearchValue] = useState("");
-  const { data, isLoading, mutate } = useGetSegments<SegmentResponse>(undefined, searchValue);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+
+  const pagination = {
+    pageIndex,
+    pageSize,
+    pageSizeOptions: PAGINATION_CHOOSES,
+  };
+  const { data, isLoading, mutate } = useGetSegments<SegmentResponse>(undefined, {
+    search: searchValue,
+    offset: `${pageIndex * pageSize}`,
+    limit: `${pageSize}`,
+  });
 
   const {
     control,
@@ -33,15 +47,6 @@ const SegmentsTable = () => {
   });
 
   const columns: Array<EuiBasicTableColumn<Segment>> = [
-    {
-      field: "id",
-      name: "ID",
-      "data-test-subj": "idCell",
-      mobileOptions: {
-        render: (segment: Segment) => <>{segment.id}</>,
-        enlarge: true,
-      },
-    },
     {
       field: "name",
       name: "Name",
@@ -81,6 +86,14 @@ const SegmentsTable = () => {
 
   const onSearch = (value: string) => {
     setSearchValue(value);
+  };
+
+  const onTableChange = ({ page }: Criteria<Segment>) => {
+    if (page) {
+      const { index: pageIndex, size: pageSize } = page;
+      setPageIndex(pageIndex);
+      setPageSize(pageSize);
+    }
   };
 
   const getRowProps = (segment: Segment) => {
@@ -152,6 +165,12 @@ const SegmentsTable = () => {
             columns={columns}
             rowProps={getRowProps}
             cellProps={getCellProps}
+            pagination={{
+              ...pagination,
+              totalItemCount: data?.count || 0,
+              showPerPageOptions: true,
+            }}
+            onChange={onTableChange}
           />
         )}
       </EuiFlexItem>

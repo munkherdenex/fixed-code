@@ -106,8 +106,8 @@ const ApiKeys = () => {
                       style={{ maxWidth: 390, fontSize: "13px" }}
                     >
                       Please save this secret key somewhere safe and accessible. For security
-                      reasons, you won`&apos;`t be able to view it again through your Data UI. If
-                      you lose this secret key, you`&apos;`ll need to generate a new one.
+                      reasons, you won&apos;t be able to view it again through your Data UI. If you
+                      lose this secret key, you&apos;ll need to generate a new one.
                     </EuiFlexItem>
                   </EuiCallOut>
                 </div>

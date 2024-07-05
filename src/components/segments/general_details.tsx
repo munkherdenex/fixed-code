@@ -1,18 +1,91 @@
 import {
   EuiBadge,
+  EuiButtonIcon,
+  EuiCodeBlock,
+  EuiConfirmModal,
+  EuiFieldText,
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiFlyout,
+  EuiFlyoutBody,
+  EuiFlyoutHeader,
+  EuiFormRow,
   EuiHorizontalRule,
   EuiPanel,
+  EuiTitle,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
+import { SetStateAction, useState } from "react";
+import useDeleteSegment from "../../hooks/useDeleteSegment";
 import useGetSegments, { Segment } from "../../hooks/useGetSegments";
+import EditDynamic from "./edit_dynamic";
+import Manual from "./manual";
+
+const DeleteConfirmModal = ({
+  setIsModalVisible,
+}: {
+  setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
+}) => {
+  const router = useRouter();
+  const modalTitleId = useGeneratedHtmlId();
+  const { trigger, isMutating } = useDeleteSegment(router.query.id);
+  const [deleteConfirmValue, setDeleteConfirmValue] = useState("");
+
+  const closeModal = async () => {
+    setIsModalVisible(false);
+  };
+
+  const confirmModal = async () => {
+    const response = await trigger();
+    if (response) {
+      await router.replace("/dashboards/segments");
+      setIsModalVisible(false);
+      setDeleteConfirmValue("");
+    }
+  };
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDeleteConfirmValue(e.target.value);
+  };
+
+  return (
+    <EuiConfirmModal
+      aria-labelledby={modalTitleId}
+      title="Delete send?"
+      onCancel={closeModal}
+      onConfirm={() => {
+        confirmModal();
+      }}
+      confirmButtonText="Delete"
+      cancelButtonText="Cancel"
+      buttonColor="danger"
+      isLoading={isMutating}
+      confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
+    >
+      <EuiFormRow label="Type the word 'delete' to confirm">
+        <EuiFieldText
+          isLoading={isMutating}
+          name="delete"
+          value={deleteConfirmValue}
+          onChange={onChange}
+        />
+      </EuiFormRow>
+    </EuiConfirmModal>
+  );
+};
 
 const GeneralDetails = () => {
   const router = useRouter();
   const { data, isLoading } = useGetSegments<Segment>(router.query.id);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [openFlyout, setOpenFlyout] = useState(false);
+
+  const flyoutTitleId = useGeneratedHtmlId({
+    prefix: "flyoutTitle",
+  });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -22,13 +95,43 @@ const GeneralDetails = () => {
     return <div>No data</div>;
   }
 
+  console.info();
+
   return (
     <div>
       <EuiPanel>
         <EuiFlexGroup direction="column">
           <EuiFlexItem>
             <EuiPanel paddingSize="s" color="subdued">
-              <strong>Segment details</strong>
+              <EuiFlexGroup responsive={false} alignItems="center" justifyContent="spaceBetween">
+                <EuiFlexItem grow={false}>
+                  <strong>Segment details</strong>
+                </EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                  <EuiFlexGroup responsive={false} gutterSize="s">
+                    {(data.type === "dynamic" || data.type === "static") && (
+                      <EuiFlexItem grow={false}>
+                        <EuiButtonIcon
+                          display="base"
+                          iconType="pencil"
+                          aria-label="Update"
+                          color="primary"
+                          onClick={() => setOpenFlyout(true)}
+                        />
+                      </EuiFlexItem>
+                    )}
+                    <EuiFlexItem grow={false}>
+                      <EuiButtonIcon
+                        display="base"
+                        iconType="trash"
+                        aria-label="Delete"
+                        color="danger"
+                        onClick={() => setIsModalVisible(true)}
+                      />
+                    </EuiFlexItem>
+                  </EuiFlexGroup>
+                </EuiFlexItem>
+              </EuiFlexGroup>
             </EuiPanel>
           </EuiFlexItem>
           <EuiFlexItem>
@@ -39,6 +142,15 @@ const GeneralDetails = () => {
               <EuiFlexItem>description:</EuiFlexItem>
               <EuiFlexItem>{data?.description}</EuiFlexItem>
               <EuiHorizontalRule margin="none" />
+              {(data.type === "dynamic" || data.type === "static") && (
+                <>
+                  <EuiFlexItem>condition:</EuiFlexItem>
+                  <EuiFlexItem>
+                    <EuiCodeBlock lang="json">{data?.condition}</EuiCodeBlock>
+                  </EuiFlexItem>
+                  <EuiHorizontalRule margin="none" />
+                </>
+              )}
               <EuiFlexItem>Type:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
@@ -55,6 +167,29 @@ const GeneralDetails = () => {
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiPanel>
+      {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
+      {openFlyout && (
+        <EuiFlyout onClose={() => setOpenFlyout(false)}>
+          <EuiFlyoutHeader hasBorder aria-labelledby={flyoutTitleId}>
+            <EuiTitle>
+              <h2 id={flyoutTitleId}>{data.type}</h2>
+            </EuiTitle>
+          </EuiFlyoutHeader>
+          <EuiFlyoutBody>
+            {data.type === "dynamic" && (
+              <EditDynamic
+                name={data?.name}
+                description={data?.description}
+                condition={data?.condition}
+                closeFlyout={() => setOpenFlyout(false)}
+              />
+            )}
+            {data.type === "manual" && (
+              <Manual createSegment={() => {}} isCreateSegmentMutating={true} />
+            )}
+          </EuiFlyoutBody>
+        </EuiFlyout>
+      )}
     </div>
   );
 };

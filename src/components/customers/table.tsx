@@ -62,29 +62,12 @@ const CustomersTable = () => {
 
   const columns: Array<EuiBasicTableColumn<CustomersType>> = [
     {
-      field: "id",
-      name: "ID",
-      width: "8%",
-      mobileOptions: {
-        render: (customer: CustomersType) => <>{customer.id}</>,
-        enlarge: true,
-      },
-    },
-    {
       field: "email",
       name: "Email address",
-      mobileOptions: {
-        render: (customer: CustomersType) => <>{customer.email}</>,
-        enlarge: true,
-      },
     },
     {
       field: "phone",
       name: "Phone number",
-      mobileOptions: {
-        render: (customer: CustomersType) => <>{customer.phone}</>,
-        enlarge: true,
-      },
     },
     {
       field: "source",

@@ -13,6 +13,7 @@ export interface Segment {
   type: string;
   updated_at: string;
   updated_by: number | null;
+  condition: string;
 }
 
 export interface SegmentResponse {
@@ -24,7 +25,9 @@ export interface SegmentResponse {
 
 export default function useGetSegments<Type>(
   id?: string | string[] | undefined,
-  searchValue?: string,
+  queryParam?: {
+    [key: string]: string;
+  },
 ): {
   data: Type;
   error: any;
@@ -32,13 +35,11 @@ export default function useGetSegments<Type>(
   mutate: () => Promise<Type>;
 } {
   const path = id ? `/api/v1/dj/segments/${id}/` : `/api/v1/dj/segments/`;
-  const queryParam = createParam({
-    name: searchValue,
-  });
+  const preparedQueryParam = createParam(queryParam);
 
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    `${path}?${queryParam}`,
+    `${path}?${preparedQueryParam}`,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

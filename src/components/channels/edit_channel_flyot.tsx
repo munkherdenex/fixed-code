@@ -19,10 +19,10 @@ import { jsonrepair } from "jsonrepair";
 import { useRouter } from "next/router";
 import { SetStateAction, useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { mutate } from "swr";
 import * as yup from "yup";
 import { Channels } from "../../hooks/useGetChannels";
 import useUpdateChannel from "../../hooks/useUpdateChannel";
+import { globalMutate } from "../../utils/globalMutate";
 
 const schema = yup
   .object({
@@ -141,7 +141,7 @@ const EditChannelFlyot = ({
         },
       });
       if (response) {
-        mutate(`/api/v1/dj/channels/`);
+        globalMutate(`/api/v1/dj/channels/`);
         setIsFlyoutVisible(false);
       }
     } catch (error) {

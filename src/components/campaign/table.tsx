@@ -48,11 +48,6 @@ const SendsTable = () => {
 
   const columns: Array<EuiBasicTableColumn<Template>> = [
     {
-      field: "id",
-      name: "ID",
-      "data-test-subj": "idCell",
-    },
-    {
       field: "title",
       name: "Title",
       "data-test-subj": "titleCell",

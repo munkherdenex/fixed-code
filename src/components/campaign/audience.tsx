@@ -56,11 +56,12 @@ const Audience = () => {
 
   const getRowProps = (template: TemplateCustomer) => {
     const { object_id, type } = template;
+    const type_path = type === "customer" ? "audience" : "segments";
     return {
       "data-test-subj": `row-${object_id}`,
       className: "customRowClass",
       //INFO: this is a way to navigate to a different page with the object_id as a parameter
-      onClick: () => router.push(`/dashboards/${type}s/info/${object_id}`),
+      onClick: () => router.push(`/dashboards/${type_path}/info/${object_id}`),
     };
   };
 
