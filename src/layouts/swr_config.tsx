@@ -16,8 +16,7 @@ const SWRConfigLayout = ({ children }) => {
             await mutate(() => true, undefined, { revalidate: false });
             Cookies.remove("_customer_data_session", { path: "/" });
             localStorage.removeItem("currentTeamId");
-            localStorage.removeItem("currentTeamId");
-            router.replace("/signin");
+            window.location.href = "/";
           }
         },
       }}

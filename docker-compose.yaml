@@ -1,0 +1,9 @@
+version: "3.6"
+
+services:
+  factoring:
+    container_name: factoring
+    build: .
+    ports:
+      - 3636:3000
+    restart: always

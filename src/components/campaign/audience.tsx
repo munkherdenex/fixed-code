@@ -3,17 +3,22 @@ import {
   EuiBasicTable,
   EuiBasicTableColumn,
   EuiButton,
+  EuiButtonIcon,
+  EuiConfirmModal,
   EuiFlexGroup,
   EuiFlexItem,
   EuiTableFieldDataColumnType,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
+import useDeleteTemplateCustomer from "../../hooks/useDeleteTemplateCustomer";
 import useGetTemplatesCustomer, {
   TemplateCustomer,
   TemplateCustomerResponse,
 } from "../../hooks/useGetTemplatesCustomer";
+import { globalMutate } from "../../utils/globalMutate";
 import AddAudienceFlyout from "./add_audience_flyot";
 
 const Audience = () => {
@@ -21,17 +26,25 @@ const Audience = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [isAddAudienceFlyoutVisible, setIsAddAudienceFlyoutVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedAudience, setSelectedAudience] = useState<TemplateCustomer>();
+
+  const modalTitleId = useGeneratedHtmlId({ prefix: "modalTitle" });
 
   const { data } = useGetTemplatesCustomer<TemplateCustomerResponse>(router.query.id, {
     limit: `${pageSize}`,
     offset: `${pageIndex * pageSize}`,
   });
+  const { trigger, isMutating } = useDeleteTemplateCustomer(router.query.id);
 
   const pagination = {
     pageIndex,
     pageSize,
     pageSizeOptions: PAGINATION_CHOOSES,
   };
+
+  const closeModal = () => setIsModalVisible(false);
+  const showModal = () => setIsModalVisible(true);
 
   const columns: Array<EuiBasicTableColumn<TemplateCustomer>> = [
     {
@@ -44,6 +57,45 @@ const Audience = () => {
       name: "Type",
       "data-test-subj": "typeCell",
     },
+    {
+      name: "Actions",
+      actions: [
+        {
+          name: "Delete",
+          isPrimary: true,
+          description: "Delete customer",
+          render: (templateCustomer: TemplateCustomer) => {
+            return (
+              <>
+                <EuiButtonIcon
+                  onClick={() => {
+                    setSelectedAudience(templateCustomer);
+                    showModal();
+                  }}
+                  size="s"
+                  iconType="trash"
+                />
+              </>
+            );
+          },
+        },
+        {
+          render: (templateCustomer: TemplateCustomer) => {
+            const { object_id, type } = templateCustomer;
+            const type_path = type === "customer" ? "audience" : "segments";
+            return (
+              <>
+                <EuiButtonIcon
+                  onClick={() => router.push(`/dashboards/${type_path}/info/${object_id}`)}
+                  size="s"
+                  iconType="arrowRight"
+                />
+              </>
+            );
+          },
+        },
+      ],
+    },
   ];
 
   const onTableChange = ({ page }: Criteria<TemplateCustomer>) => {
@@ -52,17 +104,6 @@ const Audience = () => {
       setPageIndex(pageIndex);
       setPageSize(pageSize);
     }
-  };
-
-  const getRowProps = (template: TemplateCustomer) => {
-    const { object_id, type } = template;
-    const type_path = type === "customer" ? "audience" : "segments";
-    return {
-      "data-test-subj": `row-${object_id}`,
-      className: "customRowClass",
-      //INFO: this is a way to navigate to a different page with the object_id as a parameter
-      onClick: () => router.push(`/dashboards/${type_path}/info/${object_id}`),
-    };
   };
 
   const getCellProps = (
@@ -77,6 +118,17 @@ const Audience = () => {
       "data-test-subj": `cell-${object_id}-${String(field)}`,
       textOnly: true,
     };
+  };
+
+  const handleDeleteModalConfirm = async () => {
+    const response = await trigger({
+      type: selectedAudience.type,
+      id: selectedAudience?.object_id,
+    });
+    if (response) {
+      globalMutate(`/api/v1/dj/templates/${router.query.id}/customers/`);
+      closeModal();
+    }
   };
 
   return (
@@ -97,7 +149,6 @@ const Audience = () => {
           tableCaption="Template customers"
           items={data?.results || []}
           columns={columns}
-          rowProps={getRowProps}
           cellProps={getCellProps}
           pagination={{
             ...pagination,
@@ -108,6 +159,21 @@ const Audience = () => {
       </EuiFlexItem>
       {isAddAudienceFlyoutVisible && (
         <AddAudienceFlyout closeFlyout={() => setIsAddAudienceFlyoutVisible(false)} />
+      )}
+      {isModalVisible && (
+        <EuiConfirmModal
+          aria-labelledby={modalTitleId}
+          title="Delete templates customer"
+          isLoading={isMutating}
+          onCancel={closeModal}
+          onConfirm={handleDeleteModalConfirm}
+          cancelButtonText="Cancel"
+          confirmButtonText="Delete"
+          defaultFocusedButton="confirm"
+          buttonColor="danger"
+        >
+          <p></p>
+        </EuiConfirmModal>
       )}
     </EuiFlexGroup>
   );

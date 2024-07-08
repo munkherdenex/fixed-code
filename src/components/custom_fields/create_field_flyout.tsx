@@ -15,6 +15,7 @@ import { Controller, useForm } from "react-hook-form";
 import { mutate } from "swr";
 import * as yup from "yup";
 import useCreateField from "../../hooks/useCreateCustomField";
+import { globalMutate } from "../../utils/globalMutate";
 
 const schema = yup
   .object({
@@ -55,7 +56,7 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     try {
       const response = await trigger(data);
       if (response) {
-        mutate(`/api/v1/dj/fields/`);
+        globalMutate("/api/v1/dj/fields/");
         closeFlyout();
       }
     } catch (error) {

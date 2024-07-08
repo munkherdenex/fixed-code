@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires,@typescript-eslint/no-use-before-define,@typescript-eslint/no-empty-function,prefer-template */
-const crypto = require('crypto');
-const fs = require('fs');
-const glob = require('glob');
-const path = require('path');
-const iniparser = require('iniparser');
+const crypto = require("crypto");
+const fs = require("fs");
+const glob = require("glob");
+const path = require("path");
+const iniparser = require("iniparser");
 
-const withBundleAnalyzer = require('@next/bundle-analyzer');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const { IgnorePlugin } = require('webpack');
+const withBundleAnalyzer = require("@next/bundle-analyzer");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const { IgnorePlugin } = require("webpack");
 
 /**
  * If you are deploying your site under a directory other than `/` e.g.
@@ -15,13 +15,14 @@ const { IgnorePlugin } = require('webpack');
  * We don't need this during local development, because everything is
  * available under `/`.
  */
-const usePathPrefix = process.env.PATH_PREFIX === 'true';
+const usePathPrefix = process.env.PATH_PREFIX === "true";
 
-const pathPrefix = usePathPrefix ? derivePathPrefix() : '';
+const pathPrefix = usePathPrefix ? derivePathPrefix() : "";
 
 const themeConfig = buildThemeConfig();
 
 const nextConfig = {
+  output: "standalone",
   compiler: {
     emotion: true,
   },
@@ -36,7 +37,7 @@ const nextConfig = {
   basePath: pathPrefix,
 
   images: {
-    loader: 'custom',
+    loader: "custom",
   },
 
   /**
@@ -67,13 +68,13 @@ const nextConfig = {
     // browser by default. We need to configure the build so that these
     // features are either ignored or replaced with stub implementations.
     if (isServer) {
-      config.externals = config.externals.map(eachExternal => {
-        if (typeof eachExternal !== 'function') {
+      config.externals = config.externals.map((eachExternal) => {
+        if (typeof eachExternal !== "function") {
           return eachExternal;
         }
 
         return (context, callback) => {
-          if (context.request.indexOf('@elastic/eui') > -1) {
+          if (context.request.indexOf("@elastic/eui") > -1) {
             return callback();
           }
 
@@ -82,9 +83,7 @@ const nextConfig = {
       });
 
       // Mock HTMLElement on the server-side
-      const definePluginId = config.plugins.findIndex(
-        p => p.constructor.name === 'DefinePlugin'
-      );
+      const definePluginId = config.plugins.findIndex((p) => p.constructor.name === "DefinePlugin");
 
       config.plugins[definePluginId].definitions = {
         ...config.plugins[definePluginId].definitions,
@@ -102,10 +101,10 @@ const nextConfig = {
       new IgnorePlugin({
         resourceRegExp: /^\.\/locale$/,
         contextRegExp: /moment$/,
-      })
+      }),
     );
 
-    config.resolve.mainFields = ['module', 'main'];
+    config.resolve.mainFields = ["module", "main"];
 
     return config;
   },
@@ -118,7 +117,7 @@ const nextConfig = {
  * - Load SCSS files from JavaScript.
  */
 module.exports = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
+  enabled: process.env.ANALYZE === "true",
 })(nextConfig);
 
 /**
@@ -136,14 +135,7 @@ module.exports = withBundleAnalyzer({
  */
 function buildThemeConfig() {
   const themeFiles = glob.sync(
-    path.join(
-      __dirname,
-      'node_modules',
-      '@elastic',
-      'eui',
-      'dist',
-      'eui_theme_*.min.css'
-    )
+    path.join(__dirname, "node_modules", "@elastic", "eui", "dist", "eui_theme_*.min.css"),
   );
 
   const themeConfig = {
@@ -152,19 +144,18 @@ function buildThemeConfig() {
   };
 
   for (const each of themeFiles) {
-    const basename = path.basename(each, '.min.css');
+    const basename = path.basename(each, ".min.css");
 
-    const themeId = basename.replace(/^eui_theme_/, '');
+    const themeId = basename.replace(/^eui_theme_/, "");
 
-    const themeName =
-      themeId[0].toUpperCase() + themeId.slice(1).replace(/_/g, ' ');
+    const themeName = themeId[0].toUpperCase() + themeId.slice(1).replace(/_/g, " ");
 
     const publicPath = `themes/${basename}.${hashFile(each)}.min.css`;
     const toPath = path.join(
       __dirname,
       `public`,
       `themes`,
-      `${basename}.${hashFile(each)}.min.css`
+      `${basename}.${hashFile(each)}.min.css`,
     );
 
     themeConfig.availableThemes.push({
@@ -214,7 +205,7 @@ function hashFile(filePath) {
  * repository name is what will be used to serve the site.
  */
 function derivePathPrefix() {
-  const gitConfigPath = path.join(__dirname, '.git', 'config');
+  const gitConfigPath = path.join(__dirname, ".git", "config");
 
   if (fs.existsSync(gitConfigPath)) {
     const gitConfig = iniparser.parseSync(gitConfigPath);
@@ -223,20 +214,24 @@ function derivePathPrefix() {
       const originUrl = gitConfig['remote "origin"'].url;
 
       // eslint-disable-next-line prettier/prettier
-      return '/' + originUrl.split('/').pop().replace(/\.git$/, '');
+      return (
+        "/" +
+        originUrl
+          .split("/")
+          .pop()
+          .replace(/\.git$/, "")
+      );
     }
   }
 
-  const packageJsonPath = path.join(__dirname, 'package.json');
+  const packageJsonPath = path.join(__dirname, "package.json");
 
   if (fs.existsSync(packageJsonPath)) {
     const { name: packageName } = require(packageJsonPath);
     // Strip out any username / namespace part. This works even if there is
     // no username in the package name.
-    return '/' + packageName.split('/').pop();
+    return "/" + packageName.split("/").pop();
   }
 
-  throw new Error(
-    "Can't derive path prefix, as neither .git/config nor package.json exists"
-  );
+  throw new Error("Can't derive path prefix, as neither .git/config nor package.json exists");
 }

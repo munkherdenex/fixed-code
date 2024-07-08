@@ -23,7 +23,7 @@ const Dashboard: FunctionComponent = () => {
             <EuiCard
               icon={<EuiIcon size="xxl" type="usersRolesApp" />}
               title="Audience & Segment"
-              description="Example of a longer card description. See how the footers stay lined up."
+              description="The audience is the group of people you want to reach with your campaign. A segment is a subset of your audience that you define based on specific criteria."
               footer={
                 <div>
                   <EuiButton
@@ -38,9 +38,9 @@ const Dashboard: FunctionComponent = () => {
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiCard
-              icon={<EuiIcon size="xxl" type="notebookApp" />}
+              icon={<EuiIcon size="xxl" type="spacesApp" />}
               title="Campaign"
-              description="Example of a short card description."
+              description="The campaign is a marketing initiative that you want to send to your audience. It can be a newsletter, a promotion, or a survey."
               footer={
                 <div>
                   <EuiButton
@@ -55,9 +55,9 @@ const Dashboard: FunctionComponent = () => {
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiCard
-              icon={<EuiIcon size="xxl" type="spacesApp" />}
+              icon={<EuiIcon size="xxl" type="managementApp" />}
               title="Settings"
-              description="Example of a short card description."
+              description="The settings are the configurations of your account. You can manage your profile, your team, and your preferences."
               footer={
                 <div>
                   <EuiButton

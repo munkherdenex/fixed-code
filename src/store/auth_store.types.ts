@@ -10,6 +10,7 @@ export interface User {
 
 export interface Initial_Auth_Type {
   user: User | null;
+  isLoading: boolean;
   getToken: () => string | null;
   setToken: (token: string) => void;
   removeToken: () => void;

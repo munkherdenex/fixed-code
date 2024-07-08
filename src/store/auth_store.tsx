@@ -16,6 +16,7 @@ const initial_Auth_State: Initial_Auth_Type = {
     fname: "",
     role: "",
   },
+  isLoading: true,
   getToken: () => "",
   setToken: () => {},
   removeToken: () => {},
@@ -29,7 +30,7 @@ const pathPrefix = process.env.PATH_PREFIX;
 export const AuthProvider = ({ children }) => {
   const router = useRouter();
   const { trigger } = useLogout();
-  const { data: user } = useProfile();
+  const { data: user, isLoading } = useProfile();
   const [userData, setUserData] = useState();
 
   const getToken = () => {
@@ -63,6 +64,7 @@ export const AuthProvider = ({ children }) => {
     <authContext.Provider
       value={{
         user: userData,
+        isLoading,
         getToken,
         setToken,
         removeToken,

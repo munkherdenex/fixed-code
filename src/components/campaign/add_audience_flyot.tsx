@@ -91,7 +91,7 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
       delete data.search;
       const response = await trigger(data);
       if (response) {
-        globalMutate(`/api/v1/dj/templates/${id}/segments/`);
+        globalMutate(`/api/v1/dj/templates/${id}`);
         closeFlyout();
       }
     } catch (error) {
@@ -156,7 +156,7 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
               <EuiFlexItem grow={false}>
                 <EuiButtonIcon
                   display="base"
-                  iconType="refresh"
+                  iconType="search"
                   size="s"
                   onClick={() => onSearch()}
                 />
