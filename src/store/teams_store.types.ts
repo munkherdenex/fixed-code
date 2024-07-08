@@ -1,3 +1,5 @@
+import { TeamsMyProfileResponse } from "../hooks/useGetTeamsMyprofile";
+
 export interface Member {
   user: {
     email: string;
@@ -24,6 +26,7 @@ export interface Teams {
 export interface Initial_Teams_Type {
   teams: Teams[] | null;
   currentTeam: Teams | null;
+  myProfile: TeamsMyProfileResponse | null;
   setCurrentTeam: React.Dispatch<React.SetStateAction<Teams | null>>;
   changeCurrentTeam: (teamId: number) => void;
   clearCurrentTeam: () => void;

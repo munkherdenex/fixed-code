@@ -1,0 +1,15 @@
+build:
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+  only:
+    - /^prod-.*$/i
+    - /^test-.*$/i
+  except:
+    - branches
+  script:
+    - docker build --tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"

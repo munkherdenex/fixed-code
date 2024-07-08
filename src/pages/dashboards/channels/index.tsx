@@ -35,7 +35,7 @@ const Channels = () => {
               fill
               key="create-channels"
             >
-              Create channels
+              Create channel
             </EuiButton>,
           ],
         }}
@@ -55,7 +55,7 @@ const Channels = () => {
         }
       >
         <div css={styles.container}>
-          <ChannelsTable />
+          <ChannelsTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
           {isFlyoutVisible && <CreateChannelFlyout closeFlyout={closeFlyout} />}
         </div>
       </DashboardLayout>

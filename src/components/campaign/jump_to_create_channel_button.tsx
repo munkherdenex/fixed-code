@@ -18,7 +18,7 @@ const JumpToCreateChannelButton = ({ show }: { show: boolean }) => {
         }
         display="base"
         color="primary"
-        iconType="plus"
+        iconType="symlink"
         size="m"
       />
     </EuiFlexItem>

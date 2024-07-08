@@ -8,6 +8,9 @@ import {
   EuiFormRow,
   EuiButtonIcon,
   Criteria,
+  EuiButton,
+  EuiEmptyPrompt,
+  EuiImage,
 } from "@elastic/eui";
 import * as yup from "yup";
 import router from "next/router";
@@ -23,7 +26,7 @@ const schema = yup.object({
   search: yup.string().notRequired(),
 });
 
-const ChannelsTable = () => {
+const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () => void }) => {
   const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -110,6 +113,33 @@ const ChannelsTable = () => {
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (data?.results?.length === 0) {
+    return (
+      <EuiEmptyPrompt
+        icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
+        title={<h2>Create your channel</h2>}
+        layout="horizontal"
+        color="plain"
+        body={
+          <>
+            <p>The channel is a way to communicate with your customers.</p>
+          </>
+        }
+        actions={
+          <EuiButton
+            color="primary"
+            fill
+            onClick={() => {
+              openCreateChannelFlyout();
+            }}
+          >
+            Create channel
+          </EuiButton>
+        }
+      />
+    );
   }
 
   return (

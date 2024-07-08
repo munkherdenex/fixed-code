@@ -18,6 +18,7 @@ import { FunctionComponent } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useLogin from "../../hooks/useLogin";
+import { globalMutate } from "../../utils/globalMutate";
 import { signinFormStyles } from "./signin_form.styles";
 
 const schema = yup
@@ -47,6 +48,7 @@ const SigninForm: FunctionComponent = () => {
     try {
       const response = await trigger(data);
       if (response) {
+        globalMutate("/api/v1/profile");
         router.push("/dashboards");
       }
     } catch (e) {
@@ -102,7 +104,7 @@ const SigninForm: FunctionComponent = () => {
             </EuiFormRow>
             <EuiSpacer size="m" />
             <EuiFlexGroup justifyContent="spaceBetween">
-              <EuiFlexItem >
+              <EuiFlexItem>
                 <div>
                   <EuiButton isLoading={isMutating} type="submit">
                     Sign in
@@ -111,14 +113,14 @@ const SigninForm: FunctionComponent = () => {
               </EuiFlexItem>
               <EuiFlexItem>
                 <EuiText textAlign="right" size="relative" grow={false}>
-                  <EuiLink href={'/forgot_password'}>Forgot password?</EuiLink>
+                  <EuiLink href={"/forgot_password"}>Forgot password?</EuiLink>
                 </EuiText>
               </EuiFlexItem>
             </EuiFlexGroup>
           </EuiForm>
         </EuiPanel>
       </EuiFlexItem>
-    </EuiFlexGroup >
+    </EuiFlexGroup>
   );
 };
 

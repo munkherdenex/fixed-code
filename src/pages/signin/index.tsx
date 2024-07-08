@@ -1,18 +1,33 @@
-import { FunctionComponent } from "react";
+import { useContext, useEffect } from "react";
 import Head from "next/head";
 import Wrapper from "../../components/starter/wrapper";
 import { EuiSpacer, EuiTitle, useEuiTheme } from "@elastic/eui";
 import { signinStyles } from "../../styles/signin.styles";
 import SigninForm from "../../components/signin_form";
+import { authContext } from "../../store/auth_store";
+import { useRouter } from "next/router";
 
-const Index: FunctionComponent = () => {
+const Index = () => {
+  const router = useRouter();
+  const { user } = useContext(authContext);
   const { euiTheme } = useEuiTheme();
   const styles = signinStyles(euiTheme);
+
+  useEffect(() => {
+    if (user) {
+      router.replace("/dashboards");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  if (user) {
+    return null;
+  }
 
   return (
     <>
       <Head>
-        <title>Home</title>
+        <title>Sign in</title>
       </Head>
       <Wrapper>
         <div css={styles.container}>

@@ -1,6 +1,6 @@
 import { addToast } from "../components/toast";
 
-export async function handleResponseNotOk(res: Response) {
+export async function handleResponseNotOk(res: Response, showError: boolean = true) {
   if (!res.ok) {
     let data: any;
     const error = new Error();
@@ -27,12 +27,14 @@ export async function handleResponseNotOk(res: Response) {
 
     error.status = res.status;
 
-    addToast({
-      id: "fields-list-error",
-      color: "danger",
-      title: `${error.status} An error occurred`,
-      text: error?.message,
-    });
+    if (showError) {
+      addToast({
+        id: "fields-list-error",
+        color: "danger",
+        title: `${error.status} An error occurred`,
+        text: error?.message,
+      });
+    }
 
     throw error;
   }

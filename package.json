@@ -46,6 +46,7 @@
     "react-mentions": "^4.4.10",
     "react-querybuilder": "^7.4.3",
     "regenerator-runtime": "^0.13.9",
+    "sharp": "^0.33.4",
     "swr": "^2.2.5",
     "yup": "^1.4.0"
   },

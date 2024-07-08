@@ -13,9 +13,11 @@ import {
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
+import { mutate } from "swr";
 import ThemeSwitcher from "../components/chrome/theme_switcher";
 import CollapsibleNav from "../components/dashboards/collapsible_nav";
 import TeamsTreeView from "../components/management/teams_tree_view";
+import useLogout from "../hooks/useLogout";
 import { authContext } from "../store/auth_store";
 import { teamsContext } from "../store/teams_store";
 import { dashboardHeadersStyles } from "./dashboard_headers.style";
@@ -25,8 +27,8 @@ const pathPrefix = process.env.PATH_PREFIX;
 const HeaderUserMenu = () => {
   const router = useRouter();
   const styles = dashboardHeadersStyles();
-  const { removeUserTokenData, user } = useContext(authContext);
-  const { clearCurrentTeam } = useContext(teamsContext);
+  const { user } = useContext(authContext);
+  const { trigger } = useLogout();
   const headerUserPopoverId = useGeneratedHtmlId({
     prefix: "headerUserPopover",
   });
@@ -83,9 +85,11 @@ const HeaderUserMenu = () => {
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
                 <EuiButtonEmpty
-                  onClick={() => {
-                    removeUserTokenData();
-                    clearCurrentTeam();
+                  onClick={async () => {
+                    await trigger();
+                    await mutate(() => true, undefined, { revalidate: false });
+                    localStorage.removeItem("currentTeamId");
+                    window.location.href = "/";
                   }}
                 >
                   Log out

@@ -2,12 +2,14 @@ import { useRouter } from "next/router";
 import { createContext, useCallback, useEffect, useState } from "react";
 import { mutate } from "swr";
 import useChangeTeam from "../hooks/useChangeTeam";
+import useGetTeamsMyprofile, { TeamsMyProfileResponse } from "../hooks/useGetTeamsMyprofile";
 import useTeams from "../hooks/useTeams";
 import { Initial_Teams_Type, Teams } from "./teams_store.types";
 
 const initial_teams_state: Initial_Teams_Type = {
   teams: null,
   currentTeam: null,
+  myProfile: null,
   setCurrentTeam: () => {},
   changeCurrentTeam: () => {},
   clearCurrentTeam: () => {},
@@ -18,9 +20,13 @@ export const teamsContext = createContext(initial_teams_state);
 export const TeamsProvider = ({ children }) => {
   const router = useRouter();
   const { trigger } = useChangeTeam();
-  const { data: teams, isLoading: teamsIsLoading, error: teamsError } = useTeams();
   const [teamsData, setTeamsData] = useState<Teams[] | null>(null);
   const [currentTeam, setCurrentTeam] = useState<Teams | null>(null);
+
+  const { data: teams, isLoading: teamsIsLoading, error: teamsError } = useTeams();
+  const { data: myProfile } = useGetTeamsMyprofile<TeamsMyProfileResponse | null>(
+    currentTeam?.id?.toString(),
+  );
 
   const changeCurrentTeam = useCallback(
     async (teamId: number) => {
@@ -29,6 +35,7 @@ export const TeamsProvider = ({ children }) => {
         localStorage.setItem("currentTeamId", teamId.toString());
         try {
           await trigger({ team_id: teamId });
+          await router.replace("/dashboards");
           setCurrentTeam(team);
         } catch {
           alert("error");
@@ -37,12 +44,13 @@ export const TeamsProvider = ({ children }) => {
         setCurrentTeam(teamsData[0]);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [teamsData, trigger],
   );
 
   const clearCurrentTeam = () => {
-    setCurrentTeam(null);
     setTeamsData(null);
+    setCurrentTeam(null);
     localStorage.removeItem("currentTeamId");
   };
 
@@ -91,6 +99,7 @@ export const TeamsProvider = ({ children }) => {
       value={{
         teams,
         currentTeam,
+        myProfile,
         setCurrentTeam,
         changeCurrentTeam,
         clearCurrentTeam,

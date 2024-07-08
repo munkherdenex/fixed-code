@@ -52,7 +52,7 @@ const SendsDashboard = () => {
         }
       >
         <div>
-          <SendsTable />
+          <SendsTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
           {isFlyoutVisible && <CreateTemplateFlyot closeFlyout={closeFlyout} />}
         </div>
       </DashboardLayout>

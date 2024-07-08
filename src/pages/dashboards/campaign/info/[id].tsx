@@ -1,17 +1,27 @@
-import { EuiBreadcrumbs, EuiButton, EuiFlexGrid, EuiFlexItem } from "@elastic/eui";
+import {
+  EuiBreadcrumbs,
+  EuiButton,
+  EuiConfirmModal,
+  EuiFlexGrid,
+  EuiFlexItem,
+  useGeneratedHtmlId,
+} from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useContext, useState } from "react";
 import GeneralDetails from "../../../../components/campaign//general_detail";
 import Menu from "../../../../components/campaign/menu";
 import useGetTemplates, { Template } from "../../../../hooks/useGetTemplates";
 import useUpdateApproveTemplate from "../../../../hooks/useUpdateApproveTemplate";
 import useUpdateDoneTemplate from "../../../../hooks/useUpdateDoneTemplate";
 import DashboardLayout from "../../../../layouts/dashboard";
+import { teamsContext } from "../../../../store/teams_store";
 import { globalMutate } from "../../../../utils/globalMutate";
 
 const getRightSideButton = (
   status: string,
-  handleStatusButton: (status: string) => void,
+  role: string,
+  handleStatusButton: () => void,
   isMutating: boolean,
 ) => {
   switch (status.toLowerCase()) {
@@ -20,7 +30,7 @@ const getRightSideButton = (
         <EuiButton
           isLoading={isMutating}
           color="success"
-          onClick={() => handleStatusButton(status)}
+          onClick={handleStatusButton}
           fill
           key="Create-segment"
         >
@@ -28,17 +38,20 @@ const getRightSideButton = (
         </EuiButton>
       );
     case "done":
-      return (
-        <EuiButton
-          isLoading={isMutating}
-          color="primary"
-          onClick={() => handleStatusButton(status)}
-          fill
-          key="Approve-segment"
-        >
-          Approve
-        </EuiButton>
-      );
+      if (role === "admin" || role === "manager") {
+        return (
+          <EuiButton
+            isLoading={isMutating}
+            color="primary"
+            onClick={handleStatusButton}
+            fill
+            key="Approve-segment"
+          >
+            Approve
+          </EuiButton>
+        );
+      }
+      break;
     default:
       return null;
   }
@@ -46,6 +59,9 @@ const getRightSideButton = (
 
 const SendsInfo = () => {
   const router = useRouter();
+  const { myProfile } = useContext(teamsContext);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const { data, isLoading } = useGetTemplates<Template>(router.query.id);
   const { trigger: doneTrigger, isMutating: doneIsMutating } = useUpdateDoneTemplate(
     router.query.id,
@@ -54,20 +70,33 @@ const SendsInfo = () => {
     router.query.id,
   );
 
+  const closeModal = () => setIsModalVisible(false);
+  const showModal = () => setIsModalVisible(true);
+
+  const modalTitleId = useGeneratedHtmlId();
+
   const isMutating = doneIsMutating || approveIsMutating;
 
-  const handleStatusButton = async (status: string) => {
-    switch (status.toLowerCase()) {
+  const handleStatusButton = async () => {
+    showModal();
+  };
+
+  const handleModelConfirm = async () => {
+    let response: any;
+    switch (data.status.toLowerCase()) {
       case "draft":
-        await doneTrigger();
+        response = await doneTrigger();
         break;
       case "done":
-        await approveTrigger();
+        response = await approveTrigger();
         break;
       default:
         break;
     }
-    globalMutate("/api/v1/dj/templates/");
+    if (response) {
+      closeModal();
+      globalMutate("/api/v1/dj/templates/");
+    }
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -81,7 +110,9 @@ const SendsInfo = () => {
         pageHeader={{
           pageTitle: "Info",
           iconType: "usersRolesApp",
-          rightSideItems: [getRightSideButton(data?.status || "", handleStatusButton, isMutating)],
+          rightSideItems: [
+            getRightSideButton(data?.status || "", myProfile?.role, handleStatusButton, isMutating),
+          ],
         }}
         breadCrumb={
           <EuiBreadcrumbs
@@ -112,6 +143,34 @@ const SendsInfo = () => {
               <Menu />
             </EuiFlexItem>
           </EuiFlexGrid>
+          {isModalVisible && data.status === "DRAFT" && (
+            <EuiConfirmModal
+              aria-labelledby={modalTitleId}
+              style={{ width: 600 }}
+              title="Update campaign"
+              onCancel={closeModal}
+              onConfirm={handleModelConfirm}
+              cancelButtonText="Cancel"
+              confirmButtonText="Confirm"
+              defaultFocusedButton="confirm"
+            >
+              <p>The campaign will be marked as done. Are you sure you want to continue?</p>
+            </EuiConfirmModal>
+          )}
+          {isModalVisible && data.status === "DONE" && (
+            <EuiConfirmModal
+              aria-labelledby={modalTitleId}
+              style={{ width: 600 }}
+              title="Update campaign"
+              onCancel={closeModal}
+              onConfirm={handleModelConfirm}
+              cancelButtonText="Cancel"
+              confirmButtonText="Confirm"
+              defaultFocusedButton="confirm"
+            >
+              <p>The campaign will be marked as approved. Are you sure you want to continue?</p>
+            </EuiConfirmModal>
+          )}
         </>
       </DashboardLayout>
     </>

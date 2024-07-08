@@ -2,11 +2,14 @@ import {
   Criteria,
   EuiBasicTable,
   EuiBasicTableColumn,
+  EuiButton,
   EuiButtonIcon,
+  EuiEmptyPrompt,
   EuiFieldSearch,
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
+  EuiImage,
   EuiTableFieldDataColumnType,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,7 +24,7 @@ const schema = yup.object({
   search: yup.string().notRequired(),
 });
 
-const SendsTable = () => {
+const SendsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () => void }) => {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(0);
@@ -106,6 +109,37 @@ const SendsTable = () => {
       textOnly: true,
     };
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (data?.results?.length === 0) {
+    return (
+      <EuiEmptyPrompt
+        icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
+        title={<h2>Create your campaign</h2>}
+        layout="horizontal"
+        color="plain"
+        body={
+          <>
+            <p>The campaign description</p>
+          </>
+        }
+        actions={
+          <EuiButton
+            color="primary"
+            fill
+            onClick={() => {
+              openCreateChannelFlyout();
+            }}
+          >
+            Create campaign
+          </EuiButton>
+        }
+      />
+    );
+  }
 
   return (
     <EuiFlexGroup direction="column">

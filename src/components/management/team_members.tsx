@@ -15,7 +15,6 @@ import { addToast } from "../toast";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import useProfile from "../../hooks/useProfile";
 import MembersTable from "./members";
 import { TeamMembersType } from "../../constants/members.types";
 
@@ -35,14 +34,9 @@ const TeamMembersComponent = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const { currentTeam } = useContext(teamsContext);
+  const { currentTeam, myProfile } = useContext(teamsContext);
   const { trigger, isMutating } = useInviteMember(currentTeam?.id);
-  const { mutate, data } = useGetCurrentTeamMembers<TeamMembersType>();
-  const { data: user } = useProfile();
-  const isAdmin =
-    data?.members?.filter((member) => {
-      return member?.user?.email === user.email;
-    })?.[0]?.role === "admin" || false;
+  const { mutate } = useGetCurrentTeamMembers<TeamMembersType>();
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -69,7 +63,7 @@ const TeamMembersComponent = () => {
   return (
     <Fragment>
       <EuiFlexGroup direction="column">
-        {isAdmin && (
+        {myProfile?.role === "admin" && (
           <EuiFlexItem grow={false}>
             <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
               <EuiFlexGroup direction="column">
