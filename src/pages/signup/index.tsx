@@ -9,7 +9,7 @@ import { authContext } from "../../store/auth_store";
 
 const Index: FunctionComponent = () => {
   const router = useRouter();
-  const { user, isLoading } = useContext(authContext);
+  const { user } = useContext(authContext);
   const { euiTheme } = useEuiTheme();
   const styles = signupStyles(euiTheme);
 
@@ -19,10 +19,6 @@ const Index: FunctionComponent = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
-
-  if (isLoading) {
-    return <div>...loading</div>;
-  }
 
   if (user) {
     return null;
