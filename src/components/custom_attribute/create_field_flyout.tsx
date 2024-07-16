@@ -11,13 +11,10 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useRouter } from "next/router";
-import { SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { mutate } from "swr";
 import * as yup from "yup";
-import { Fields } from "../../hooks/useGetFields";
-import useUpdateField from "../../hooks/useUpdateField";
+import useCreateField from "../../hooks/useCreateCustomField";
 
 const schema = yup
   .object({
@@ -37,15 +34,8 @@ const dataTypeOptions = [
   { value: "date", text: "Date" },
 ];
 
-const UpdateFieldFlyout = ({
-  setIsFlyoutVisible,
-  data,
-}: {
-  setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
-  data: Fields;
-}) => {
-  const router = useRouter();
-  const { trigger, isMutating } = useUpdateField<FormData>(router.query.id);
+const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
+  const { trigger, isMutating } = useCreateField<FormData>();
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
   });
@@ -57,9 +47,7 @@ const UpdateFieldFlyout = ({
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      data_type: data.data_type,
-      name: data.name,
-      attribute_name: data.attribute_name,
+      data_type: "int",
     },
   });
 
@@ -68,7 +56,7 @@ const UpdateFieldFlyout = ({
       const response = await trigger(data);
       if (response) {
         mutate(`/api/v1/dj/fields/`);
-        setIsFlyoutVisible(false);
+        closeFlyout();
       }
     } catch (error) {
       console.error(error);
@@ -76,10 +64,10 @@ const UpdateFieldFlyout = ({
   };
 
   return (
-    <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
+    <EuiFlyout onClose={closeFlyout}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2>Update custom field</h2>
+          <h2>Create custom attribute</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
@@ -145,7 +133,7 @@ const UpdateFieldFlyout = ({
             />
           </EuiFormRow>
           <EuiButton isLoading={isMutating} type="submit">
-            Update custom fields
+            Create custom attribute
           </EuiButton>
         </EuiForm>
       </EuiFlyoutBody>
@@ -153,4 +141,4 @@ const UpdateFieldFlyout = ({
   );
 };
 
-export default UpdateFieldFlyout;
+export default CreateFieldFlyout;

@@ -35,7 +35,7 @@ const DeleteConfirmModal = ({
   const confirmModal = async () => {
     const response = await trigger();
     if (response) {
-      await router.replace("/dashboards/custom_fields");
+      await router.replace("/dashboards/custom_attribute");
       setIsModalVisible(false);
       setDeleteConfirmValue("");
     }
@@ -48,7 +48,7 @@ const DeleteConfirmModal = ({
   return (
     <EuiConfirmModal
       aria-labelledby={modalTitleId}
-      title="Delete custom field?"
+      title="Delete custom attribute?"
       onCancel={closeModal}
       onConfirm={() => {
         confirmModal();
@@ -93,7 +93,7 @@ const GeneralDetails = () => {
             <EuiPanel paddingSize="s" color="subdued">
               <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
                 <EuiFlexItem grow={false}>
-                  <strong>Custom field details</strong>
+                  <strong>Custom attribute details</strong>
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiFlexGroup gutterSize="s">
