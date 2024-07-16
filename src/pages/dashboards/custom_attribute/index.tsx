@@ -2,8 +2,8 @@ import { EuiBreadcrumbs, EuiButton } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import CreateFieldFlyout from "../../../components/custom_fields/create_field_flyout";
-import FieldsTable from "../../../components/custom_fields/table";
+import CreateFieldFlyout from "../../../components/custom_attribute/create_field_flyout";
+import FieldsTable from "../../../components/custom_attribute/table";
 import DashboardLayout from "../../../layouts/dashboard";
 
 const CustomFields = () => {
@@ -17,11 +17,11 @@ const CustomFields = () => {
   return (
     <>
       <Head>
-        <title>Custom fields</title>
+        <title>Custom attribute</title>
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Custom fields",
+          pageTitle: "Custom attribute",
           iconType: "usersRolesApp",
           rightSideItems: [
             <EuiButton
@@ -30,7 +30,7 @@ const CustomFields = () => {
               fill
               key="create-customer"
             >
-              Create custom field
+              Create custom attribute
             </EuiButton>,
           ],
         }}
@@ -42,7 +42,7 @@ const CustomFields = () => {
                 onClick: () => router.push("/dashboards"),
               },
               {
-                text: "Custom fields",
+                text: "Custom attribute",
               },
             ]}
             truncate={false}

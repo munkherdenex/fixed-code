@@ -63,7 +63,7 @@ const FieldsTable = () => {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/custom_fields/info/${id}`);
+        router.push(`${pathPrefix}/dashboards/custom_attribute/info/${id}`);
       },
     };
   };

@@ -54,7 +54,7 @@ const CollapsibleNav = () => {
     {
       label: "Custom attributes",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/custom_fields`);
+        router.push(`${pathPrefix}/dashboards/custom_attribute`);
       },
       pinnable: false,
     },

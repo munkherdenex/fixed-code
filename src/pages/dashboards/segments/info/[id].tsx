@@ -1,9 +1,10 @@
-import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiButton, EuiFlexGroup, EuiFlexItem } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import GeneralDetails from "../../../../components/segments/general_details";
-import SegmentCustomerList from "../../../../components/segments/segment_customer_list";
+import SegmentAudienceList from "../../../../components/segments/segment_audience_list";
 import DashboardLayout from "../../../../layouts/dashboard";
+import Menu from "../../../../components/segments/menu";
 
 const Info = () => {
   const router = useRouter();
@@ -40,11 +41,11 @@ const Info = () => {
       >
         <>
           <EuiFlexGroup>
-            <EuiFlexItem>
+            <EuiFlexItem grow={1}>
               <GeneralDetails />
             </EuiFlexItem>
-            <EuiFlexItem>
-              <SegmentCustomerList />
+            <EuiFlexItem grow={2}>
+              <Menu />
             </EuiFlexItem>
           </EuiFlexGroup>
         </>

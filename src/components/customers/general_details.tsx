@@ -12,11 +12,14 @@ import moment from "moment";
 import { useState } from "react";
 import UpdateCustomerComponent from "./update_customer";
 import DeleteCustomerModal from "./delete_customer_modal";
+import CreateAudienceSegment from "../segments/add_segments_audience";
+import AddAudienceSegment from "./add_audiences_segment";
 
 const GeneralDetails = () => {
   const router = useRouter();
   const { data, isLoading } = useGetCustomers<CustomersType>(router.query.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSegmentFlyoutVisible, setIsSegmentFlyoutVisible] = useState(false);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
   const customerData = data?.customer_data
@@ -38,7 +41,16 @@ const GeneralDetails = () => {
                 <strong>Audience details</strong>
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
-                <EuiFlexGrid gutterSize="s" columns={2}>
+                <EuiFlexGrid gutterSize="s" columns={3}>
+                  <EuiFlexItem grow={false}>
+                    <EuiButtonIcon
+                      display="base"
+                      iconType="listAdd"
+                      aria-label="Add"
+                      color="success"
+                      onClick={() => setIsSegmentFlyoutVisible(true)}
+                    />
+                  </EuiFlexItem>
                   <EuiFlexItem grow={false}>
                     <EuiButtonIcon
                       display="base"
@@ -89,6 +101,7 @@ const GeneralDetails = () => {
         </EuiFlexItem>
       </EuiFlexGroup>
       {isModalVisible && <DeleteCustomerModal setIsModalVisible={setIsModalVisible} />}
+      {isSegmentFlyoutVisible && <AddAudienceSegment setIsFlyoutVisible={setIsSegmentFlyoutVisible} />}
       {isFlyoutVisible && <UpdateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
     </EuiPanel>
   );

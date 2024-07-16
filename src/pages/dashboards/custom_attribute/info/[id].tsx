@@ -1,7 +1,7 @@
 import { EuiBreadcrumbs } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import GeneralDetails from "../../../../components/custom_fields/general_details";
+import GeneralDetails from "../../../../components/custom_attribute/general_details";
 import DashboardLayout from "../../../../layouts/dashboard";
 
 const CustomFieldsInfo = () => {
@@ -25,15 +25,15 @@ const CustomFieldsInfo = () => {
                 onClick: () => router.push("/dashboards"),
               },
               {
-                text: "Custom fields",
-                onClick: () => router.push("/dashboards/custom_fields"),
+                text: "Custom attribute",
+                onClick: () => router.push("/dashboards/custom_attribute"),
               },
               {
                 text: "Info",
               },
             ]}
             truncate={false}
-            aria-label="Custom fields info breadCrumb"
+            aria-label="Custom attribute info breadCrumb"
           />
         }
       >

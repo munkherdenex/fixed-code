@@ -23,6 +23,7 @@ import useDeleteSegment from "../../hooks/useDeleteSegment";
 import useGetSegments, { Segment } from "../../hooks/useGetSegments";
 import EditDynamic from "./edit_dynamic";
 import Manual from "./manual";
+import { jsonrepair } from "jsonrepair";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -146,7 +147,8 @@ const GeneralDetails = () => {
                 <>
                   <EuiFlexItem>condition:</EuiFlexItem>
                   <EuiFlexItem>
-                    <EuiCodeBlock lang="json">{data?.condition}</EuiCodeBlock>
+                    <EuiCodeBlock language="json" fontSize="s" paddingSize="s"
+                    >{data?.condition && jsonrepair(data?.condition)}</EuiCodeBlock>
                   </EuiFlexItem>
                   <EuiHorizontalRule margin="none" />
                 </>
@@ -185,7 +187,7 @@ const GeneralDetails = () => {
               />
             )}
             {data.type === "manual" && (
-              <Manual createSegment={() => {}} isCreateSegmentMutating={true} />
+              <Manual createSegment={() => { }} isCreateSegmentMutating={true} />
             )}
           </EuiFlyoutBody>
         </EuiFlyout>

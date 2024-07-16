@@ -27,9 +27,9 @@ import { globalMutate } from "../../utils/globalMutate";
 
 const schema = yup
   .object({
-    email: yup.string().email().required("please enter your email address"),
-    phone: yup.number().min(6).required("please enter your phone"),
-    rid: yup.string().required("please enter your registration"),
+    email: yup.string().email().notRequired(),
+    phone: yup.number().min(6).notRequired(),
+    rid: yup.string().notRequired(),
     customer_data: yup
       .array(
         yup
