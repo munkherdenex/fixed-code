@@ -292,21 +292,19 @@ const UpdateCustomerComponent = ({
                           />
                         )}
                         {field.data_type === "bool" && (
-                          <EuiFormRow label="Data">
-                            <Controller
-                              control={control}
-                              name={`customer_data.${index}.value`}
-                              render={({ field: { onChange, onBlur, value } }) => (
-                                <EuiSwitch
-                                  label="Data"
-                                  checked={value as boolean}
-                                  onBlur={onBlur}
-                                  onChange={(e) => onChange(e.target.checked)}
-                                  aria-label={field.data_type}
-                                />
-                              )}
-                            />
-                          </EuiFormRow>
+                          <Controller
+                            control={control}
+                            name={`customer_data.${index}.value`}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                              <EuiSwitch
+                                label="Data"
+                                checked={value as boolean}
+                                onBlur={onBlur}
+                                onChange={(e) => onChange(e.target.checked)}
+                                aria-label={field.data_type}
+                              />
+                            )}
+                          />
                         )}
                         {field.data_type === "date" && (
                           <Controller
