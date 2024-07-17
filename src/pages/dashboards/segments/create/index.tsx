@@ -31,7 +31,7 @@ const pathPrefix = process.env.PATH_PREFIX;
 
 const schema = yup.object({
   name: yup.string().required().label("Name"),
-  description: yup.string(),
+  description: yup.string().label("Description"),
 });
 
 type FormData = yup.InferType<typeof schema>;

@@ -17,7 +17,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useCreateTemplate from "../../hooks/useCreateTemplate";
-import useGetChannels, { Channels, ChannelsResponse } from "../../hooks/useGetChannels";
+import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
@@ -25,10 +25,10 @@ import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 
 const schema = yup
   .object({
-    title: yup.string().required(),
-    kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api"]).required(),
-    body: yup.string().required(),
-    channel: yup.number().required(),
+    title: yup.string().required().label("Title"),
+    kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api"]).required().label("Data"),
+    body: yup.string().required().label("Body"),
+    channel: yup.number().required().label("Channel"),
   })
   .required();
 

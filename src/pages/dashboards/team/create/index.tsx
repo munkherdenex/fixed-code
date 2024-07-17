@@ -20,8 +20,8 @@ import { teamsContext } from "../../../../store/teams_store";
 const schema = yup
   .object({
     parent_id: yup.string().notRequired(),
-    name: yup.string().min(5).required(),
-    description: yup.string().required(),
+    name: yup.string().min(5).required().label("Hello"),
+    description: yup.string().required().label("Description"),
   })
   .required();
 
