@@ -91,13 +91,6 @@ const GeneralDetails = () => {
             <EuiHorizontalRule margin="none" />
             <EuiFlexItem>Updated date :</EuiFlexItem>
             <EuiFlexItem> {moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-            {customerData?.map((data) => (
-              <>
-                <EuiHorizontalRule margin="none" />
-                <EuiFlexItem>{data.name} :</EuiFlexItem>
-                <EuiFlexItem>{data.value}</EuiFlexItem>
-              </>
-            ))}
           </EuiFlexGrid>
         </EuiFlexItem>
         {customerData && customerData.length > 0 && (
