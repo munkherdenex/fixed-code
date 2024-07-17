@@ -19,7 +19,11 @@ import { globalMutate } from "../../utils/globalMutate";
 const schema = yup
   .object({
     name: yup.string().required().label("Name"),
-    attribute_name: yup.string().required().label("Attribute name"),
+    attribute_name: yup
+      .string()
+      .matches(/^[a-zA-Z0-9]+$/, "Only alphanumeric characters are allowed.")
+      .required()
+      .label("Attribute name"),
     data_type: yup
       .string()
       .oneOf(["int", "str", "datetime", "bool", "date"])
