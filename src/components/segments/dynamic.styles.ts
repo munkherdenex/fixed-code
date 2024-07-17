@@ -5,5 +5,8 @@ export const dynamicStyles = () => ({
     .ruleGroup {
       overflow: auto;
     }
+    .ruleGroup .ruleGroup .ruleGroup-addGroup {
+      display: none;
+    }
   `,
 });

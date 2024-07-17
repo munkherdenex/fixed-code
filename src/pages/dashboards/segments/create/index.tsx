@@ -30,7 +30,7 @@ import DashboardLayout from "../../../../layouts/dashboard";
 const pathPrefix = process.env.PATH_PREFIX;
 
 const schema = yup.object({
-  name: yup.string().required("please enter your name"),
+  name: yup.string().required().label("Name"),
   description: yup.string(),
 });
 
@@ -132,7 +132,6 @@ const Dashboard: FunctionComponent = () => {
                           onBlur={onBlur}
                           placeholder="title"
                           fullWidth
-                          required
                           isInvalid={!!errors.name?.message}
                         />
                       )}
