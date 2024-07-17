@@ -17,7 +17,7 @@ import {
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Moment } from "moment";
-import { SetStateAction } from "react";
+import { SetStateAction, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useCreateCustomer from "../../hooks/useCreateCustomer";
@@ -32,34 +32,32 @@ const schema = yup
       email: yup
         .string()
         .email()
-        .when(["phone", "rid"], {
-          is: (phone: number, rid: string) => !rid && !phone,
-          then: (schema) => schema.required(),
-          otherwise: (schema) => schema.notRequired(),
+        .when(["phone", "rid"], ([phone, rid], schema) => {
+          if (phone || rid) return schema.notRequired();
+          return schema.required("One of the fields is required");
         })
         .label("Email address"),
       phone: yup
         .number()
-        .when(["email", "rid"], {
-          is: (email: string, rid: string) => !email && !rid,
-          then: (schema) => schema.required(),
-          otherwise: (schema) => schema.notRequired(),
+        .when(["email", "rid"], ([email, rid], schema) => {
+          if (email || rid) return schema.notRequired();
+          return schema.required("One of the fields is required");
         })
+        .typeError("Phone number must be a number")
         .label("Phone number"),
       rid: yup
         .string()
-        .when(["email", "phone"], {
-          is: (email: string, phone: string) => !email && !phone,
-          then: (schema) => schema.required(),
-          otherwise: (schema) => schema.notRequired(),
+        .when(["phone", "email"], ([phone, email], schema) => {
+          if (phone || email) return schema.notRequired();
+          return schema.required("One of the fields is required");
         })
         .label("Reference ID"),
       customer_data: yup
         .array(
           yup
             .object({
-              name: yup.string().required(),
-              value: yup.mixed().required(),
+              name: yup.string().notRequired(),
+              value: yup.mixed().notRequired(),
             })
             .notRequired(),
         )
@@ -140,7 +138,6 @@ const CreateCustomerComponent = ({
                   onChange={onChange}
                   value={value}
                   onBlur={onBlur}
-                  isInvalid={!!errors.email?.message}
                   placeholder="Email address"
                   aria-label="email"
                 />
@@ -157,10 +154,14 @@ const CreateCustomerComponent = ({
               name="phone"
               render={({ field: { onChange, onBlur, value } }) => (
                 <EuiFieldNumber
-                  onChange={onChange}
+                  onChange={(event) => {
+                    if (event.target.value === "" || event.target.value === null) {
+                      return onChange(undefined);
+                    }
+                    onChange(+event.target.value);
+                  }}
                   value={value}
                   onBlur={onBlur}
-                  isInvalid={!!errors.phone?.message}
                   placeholder="Phone number"
                   aria-label="phone"
                 />
@@ -180,7 +181,6 @@ const CreateCustomerComponent = ({
                   onChange={onChange}
                   value={value}
                   onBlur={onBlur}
-                  isInvalid={!!errors.rid?.message}
                   placeholder="Reference ID"
                   aria-label="rid"
                 />
@@ -201,12 +201,11 @@ const CreateCustomerComponent = ({
                         control={control}
                         name={`customer_data.${index}.name`}
                         defaultValue={field.attribute_name}
-                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                        render={({ field: { onChange, onBlur, value } }) => (
                           <EuiFieldText
                             onChange={onChange}
                             value={value}
                             onBlur={onBlur}
-                            isInvalid={!!error?.message}
                             placeholder="Name"
                             aria-label="name"
                             readOnly
@@ -222,15 +221,11 @@ const CreateCustomerComponent = ({
                           <Controller
                             control={control}
                             name={`customer_data.${index}.value`}
-                            render={({
-                              field: { onChange, onBlur, value },
-                              fieldState: { error },
-                            }) => (
+                            render={({ field: { onChange, onBlur, value } }) => (
                               <EuiFieldText
                                 onChange={onChange}
                                 value={value as string}
                                 onBlur={onBlur}
-                                isInvalid={!!error?.message}
                                 placeholder={field.name}
                                 aria-label={field.data_type}
                               />
@@ -241,15 +236,11 @@ const CreateCustomerComponent = ({
                           <Controller
                             control={control}
                             name={`customer_data.${index}.value`}
-                            render={({
-                              field: { onChange, onBlur, value },
-                              fieldState: { error },
-                            }) => (
+                            render={({ field: { onChange, onBlur, value } }) => (
                               <EuiFieldNumber
                                 onChange={onChange}
                                 value={value as number}
                                 onBlur={onBlur}
-                                isInvalid={!!error?.message}
                                 placeholder={field.name}
                                 aria-label={field.data_type}
                               />
@@ -260,16 +251,12 @@ const CreateCustomerComponent = ({
                           <Controller
                             control={control}
                             name={`customer_data.${index}.value`}
-                            render={({
-                              field: { onChange, onBlur, value },
-                              fieldState: { error },
-                            }) => (
+                            render={({ field: { onChange, onBlur, value } }) => (
                               <EuiDatePicker
                                 showTimeSelect
                                 selected={value as Moment}
                                 onChange={onChange}
                                 onBlur={onBlur}
-                                isInvalid={!!error?.message}
                                 placeholder={field.name}
                                 aria-label={field.data_type}
                               />
@@ -277,21 +264,19 @@ const CreateCustomerComponent = ({
                           />
                         )}
                         {field.data_type === "bool" && (
-                          <EuiFormRow label="Data">
-                            <Controller
-                              control={control}
-                              name={`customer_data.${index}.value`}
-                              render={({ field: { onChange, onBlur, value } }) => (
-                                <EuiSwitch
-                                  label="Data"
-                                  checked={value as boolean}
-                                  onBlur={onBlur}
-                                  onChange={(e) => onChange(e.target.checked)}
-                                  aria-label={field.data_type}
-                                />
-                              )}
-                            />
-                          </EuiFormRow>
+                          <Controller
+                            control={control}
+                            name={`customer_data.${index}.value`}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                              <EuiSwitch
+                                label="Data"
+                                checked={value as boolean}
+                                onBlur={onBlur}
+                                onChange={(e) => onChange(e.target.checked)}
+                                aria-label={field.data_type}
+                              />
+                            )}
+                          />
                         )}
                         {field.data_type === "date" && (
                           <Controller
