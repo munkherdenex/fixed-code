@@ -133,7 +133,7 @@ const UpdateCustomerComponent = ({
     resolver: yupResolver(schema),
     defaultValues: {
       email: detailData?.email || undefined,
-      phone: +detailData?.phone || undefined,
+      phone: `${+detailData?.phone}` || undefined,
       rid: detailData?.rid || undefined,
       customer_data: preparedData,
     },
