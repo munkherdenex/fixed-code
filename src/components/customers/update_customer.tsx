@@ -29,13 +29,13 @@ import { addToast } from "../toast";
 
 const schema = yup
   .object({
-    email: yup.string().email().required("please enter your email address"),
-    phone: yup.number().min(6).required("please enter your phone"),
-    rid: yup.string().required("please enter your registration"),
+    email: yup.string().email().required().label("Email address"),
+    phone: yup.number().required().label("Phone number"),
+    rid: yup.string().required().label("Reference ID"),
     customer_data: yup.array(
       yup.object({
-        name: yup.string().required("please enter your name"),
-        value: yup.mixed().required("please enter your value"),
+        name: yup.string().notRequired(),
+        value: yup.mixed().notRequired(),
       }),
     ),
   })
@@ -53,6 +53,9 @@ const UpdateCustomerComponent = ({
   const { trigger, isMutating } = useUpdateCustomer(router.query.id);
   const { data: detailData, isLoading: getCustomersIsLoading } = useGetCustomers<CustomersType>(
     router.query.id,
+    {
+      extended: "true",
+    },
   );
   const { data, isLoading: getFieldsIsLoading } = useGetFields<FieldsResponse>();
 
@@ -216,12 +219,11 @@ const UpdateCustomerComponent = ({
                         control={control}
                         name={`customer_data.${index}.name`}
                         defaultValue={field.attribute_name}
-                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                        render={({ field: { onChange, onBlur, value } }) => (
                           <EuiFieldText
                             onChange={onChange}
                             value={value}
                             onBlur={onBlur}
-                            isInvalid={!!error?.message}
                             placeholder="Name"
                             aria-label="name"
                             readOnly
@@ -237,15 +239,11 @@ const UpdateCustomerComponent = ({
                           <Controller
                             control={control}
                             name={`customer_data.${index}.value`}
-                            render={({
-                              field: { onChange, onBlur, value },
-                              fieldState: { error },
-                            }) => (
+                            render={({ field: { onChange, onBlur, value } }) => (
                               <EuiFieldText
                                 onChange={onChange}
                                 value={value as string}
                                 onBlur={onBlur}
-                                isInvalid={!!error?.message}
                                 placeholder={field.name}
                                 aria-label={field.data_type}
                               />
@@ -256,15 +254,11 @@ const UpdateCustomerComponent = ({
                           <Controller
                             control={control}
                             name={`customer_data.${index}.value`}
-                            render={({
-                              field: { onChange, onBlur, value },
-                              fieldState: { error },
-                            }) => (
+                            render={({ field: { onChange, onBlur, value } }) => (
                               <EuiFieldNumber
                                 onChange={onChange}
                                 value={value as number}
                                 onBlur={onBlur}
-                                isInvalid={!!error?.message}
                                 placeholder={field.name}
                                 aria-label={field.data_type}
                               />
@@ -275,16 +269,12 @@ const UpdateCustomerComponent = ({
                           <Controller
                             control={control}
                             name={`customer_data.${index}.value`}
-                            render={({
-                              field: { onChange, onBlur, value },
-                              fieldState: { error },
-                            }) => (
+                            render={({ field: { onChange, onBlur, value } }) => (
                               <EuiDatePicker
                                 showTimeSelect
                                 selected={value as Moment}
                                 onChange={onChange}
                                 onBlur={onBlur}
-                                isInvalid={!!error?.message}
                                 placeholder={field.name}
                                 aria-label={field.data_type}
                               />
@@ -310,15 +300,11 @@ const UpdateCustomerComponent = ({
                           <Controller
                             control={control}
                             name={`customer_data.${index}.value`}
-                            render={({
-                              field: { onChange, onBlur, value },
-                              fieldState: { error },
-                            }) => (
+                            render={({ field: { onChange, onBlur, value } }) => (
                               <EuiDatePicker
                                 selected={value as Moment}
                                 onChange={onChange}
                                 onBlur={onBlur}
-                                isInvalid={!!error?.message}
                                 placeholder={field.name}
                                 aria-label={field.data_type}
                               />
