@@ -74,6 +74,9 @@ const Audience = () => {
                   }}
                   size="s"
                   iconType="trash"
+                  display="base"
+                  aria-label="Delete"
+                  color="danger"
                 />
               </>
             );

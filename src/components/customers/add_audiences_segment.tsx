@@ -38,25 +38,27 @@ const AddAudienceSegment = ({
   const { id } = router.query;
   const { trigger } = useCreateSegmentsAudience(id);
   const { data: customerSegments } = useGetSegments<SegmentResponse>();
-  const dataTypeOptions: EuiComboBoxOptionOption[] =
-    customerSegments?.results?.map(segment => {
-      return {
-        label: String(segment?.id),
-      }
-    }) || [{ label: '' }];
+  const dataTypeOptions: EuiComboBoxOptionOption[] = customerSegments?.results?.map((segment) => {
+    return {
+      label: String(segment?.id),
+    };
+  }) || [{ label: "" }];
 
-  const [selectedOptions, setSelected] = useState([{
-    label: '',
-  }]);
+  const [selectedOptions, setSelected] = useState([
+    {
+      label: "",
+    },
+  ]);
 
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      segment: customerSegments?.results[0]?.id.toString() || '',
+      segment: customerSegments?.results[0]?.id.toString() || "",
     },
   });
 
@@ -64,8 +66,8 @@ const AddAudienceSegment = ({
     try {
       const prepareData = {
         ...data,
-        customer: id
-      }
+        customer: id,
+      };
       const response = await trigger(prepareData);
       if (response) {
         setIsFlyoutVisible(false);
@@ -119,7 +121,7 @@ const AddAudienceSegment = ({
           </EuiFormRow>
         </EuiForm>
       </EuiFlyoutBody>
-    </EuiFlyout >
+    </EuiFlyout>
   );
 };
 

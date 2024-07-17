@@ -39,7 +39,7 @@ const SecurityComponent = () => {
   const { euiTheme } = useEuiTheme();
   const styles = signinFormStyles(euiTheme);
   const { trigger, isMutating } = useChangePassword<FormData>();
-  const { removeUserTokenData, user } = useContext(authContext);
+  const { removeUserTokenData } = useContext(authContext);
   const { clearCurrentTeam } = useContext(teamsContext);
 
   const {
@@ -47,6 +47,7 @@ const SecurityComponent = () => {
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 

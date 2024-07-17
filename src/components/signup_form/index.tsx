@@ -48,6 +48,7 @@ const SignupForm: FunctionComponent = () => {
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 
@@ -72,106 +73,111 @@ const SignupForm: FunctionComponent = () => {
     <EuiFlexGroup gutterSize="xl" css={styles.container}>
       <EuiFlexItem>
         <EuiPanel>
-          {
-            showMessage ?
-              <EuiEmptyPrompt
-                iconType='checkInCircleFilled'
-                title={<h2>Thank you!</h2>}
-                body={<p>Your submission has been sent.</p>}
-                actions={
-                  <EuiButton color="primary" fill onClick={() => { router.push("/signin") }}>
-                    Ok
-                  </EuiButton>
-                }
-              /> :
-
-              <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit(onSubmit)}>
-                <EuiFormRow
-                  label="First name"
-                  isInvalid={!!errors.fname?.message}
-                  error={[errors.fname?.message]}
+          {showMessage ? (
+            <EuiEmptyPrompt
+              iconType="checkInCircleFilled"
+              title={<h2>Thank you!</h2>}
+              body={<p>Your submission has been sent.</p>}
+              actions={
+                <EuiButton
+                  color="primary"
+                  fill
+                  onClick={() => {
+                    router.push("/signin");
+                  }}
                 >
-                  <Controller
-                    control={control}
-                    name="fname"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <EuiFieldText
-                        onChange={onChange}
-                        value={value}
-                        onBlur={onBlur}
-                        isInvalid={!!errors.fname?.message}
-                        placeholder="First name"
-                        aria-label="first name"
-                      />
-                    )}
-                  />
-                </EuiFormRow>
-                <EuiFormRow
-                  label="Last name"
-                  isInvalid={!!errors.lname?.message}
-                  error={[errors.lname?.message]}
-                >
-                  <Controller
-                    control={control}
-                    name="lname"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <EuiFieldText
-                        onChange={onChange}
-                        value={value}
-                        onBlur={onBlur}
-                        isInvalid={!!errors.lname?.message}
-                        placeholder="Last name"
-                        aria-label="last name"
-                      />
-                    )}
-                  />
-                </EuiFormRow>
-                <EuiFormRow
-                  label="Email"
-                  isInvalid={!!errors.email?.message}
-                  error={[errors.email?.message]}
-                >
-                  <Controller
-                    control={control}
-                    name="email"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <EuiFieldText
-                        onChange={onChange}
-                        value={value}
-                        onBlur={onBlur}
-                        isInvalid={!!errors.email?.message}
-                        placeholder="Email"
-                        aria-label="email"
-                      />
-                    )}
-                  />
-                </EuiFormRow>
-                <EuiFormRow
-                  label="Password"
-                  isInvalid={!!errors.password?.message}
-                  error={[errors.password?.message]}
-                >
-                  <Controller
-                    control={control}
-                    name="password"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <EuiFieldPassword
-                        onChange={onChange}
-                        value={value}
-                        onBlur={onBlur}
-                        isInvalid={!!errors.password?.message}
-                        type="dual"
-                        placeholder="Password"
-                        aria-label="password"
-                      />
-                    )}
-                  />
-                </EuiFormRow>
-                <EuiButton type="submit" isLoading={isMutating} fill>
-                  Register
+                  Ok
                 </EuiButton>
-              </EuiForm>
-          }
+              }
+            />
+          ) : (
+            <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit(onSubmit)}>
+              <EuiFormRow
+                label="First name"
+                isInvalid={!!errors.fname?.message}
+                error={[errors.fname?.message]}
+              >
+                <Controller
+                  control={control}
+                  name="fname"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <EuiFieldText
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!errors.fname?.message}
+                      placeholder="First name"
+                      aria-label="first name"
+                    />
+                  )}
+                />
+              </EuiFormRow>
+              <EuiFormRow
+                label="Last name"
+                isInvalid={!!errors.lname?.message}
+                error={[errors.lname?.message]}
+              >
+                <Controller
+                  control={control}
+                  name="lname"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <EuiFieldText
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!errors.lname?.message}
+                      placeholder="Last name"
+                      aria-label="last name"
+                    />
+                  )}
+                />
+              </EuiFormRow>
+              <EuiFormRow
+                label="Email"
+                isInvalid={!!errors.email?.message}
+                error={[errors.email?.message]}
+              >
+                <Controller
+                  control={control}
+                  name="email"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <EuiFieldText
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!errors.email?.message}
+                      placeholder="Email"
+                      aria-label="email"
+                    />
+                  )}
+                />
+              </EuiFormRow>
+              <EuiFormRow
+                label="Password"
+                isInvalid={!!errors.password?.message}
+                error={[errors.password?.message]}
+              >
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <EuiFieldPassword
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!errors.password?.message}
+                      type="dual"
+                      placeholder="Password"
+                      aria-label="password"
+                    />
+                  )}
+                />
+              </EuiFormRow>
+              <EuiButton type="submit" isLoading={isMutating} fill>
+                Register
+              </EuiButton>
+            </EuiForm>
+          )}
         </EuiPanel>
       </EuiFlexItem>
     </EuiFlexGroup>

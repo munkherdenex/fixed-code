@@ -6,27 +6,28 @@ import {
   EuiHorizontalRule,
   EuiPanel,
 } from "@elastic/eui";
-import useGetCustomers, { CustomersType } from "../../hooks/useGetCustomers";
-import { useRouter } from "next/router";
 import moment from "moment";
+import { useRouter } from "next/router";
 import { useState } from "react";
-import UpdateCustomerComponent from "./update_customer";
-import DeleteCustomerModal from "./delete_customer_modal";
-import CreateAudienceSegment from "../segments/add_segments_audience";
+import useGetCustomers, { CustomersType } from "../../hooks/useGetCustomers";
 import AddAudienceSegment from "./add_audiences_segment";
+import DeleteCustomerModal from "./delete_customer_modal";
+import UpdateCustomerComponent from "./update_customer";
 
 const GeneralDetails = () => {
   const router = useRouter();
-  const { data, isLoading } = useGetCustomers<CustomersType>(router.query.id);
+  const { data, isLoading } = useGetCustomers<CustomersType>(router.query.id, {
+    extended: "true",
+  });
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSegmentFlyoutVisible, setIsSegmentFlyoutVisible] = useState(false);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
   const customerData = data?.customer_data
     ? Object.entries(data.customer_data).map(([key, value]) => ({
-      name: key,
-      value,
-    }))
+        name: key,
+        value,
+      }))
     : [];
 
   if (isLoading) return <div>Loading...</div>;
@@ -99,9 +100,35 @@ const GeneralDetails = () => {
             ))}
           </EuiFlexGrid>
         </EuiFlexItem>
+        {customerData && customerData.length > 0 && (
+          <>
+            <EuiFlexItem>
+              <EuiPanel paddingSize="s" color="subdued">
+                <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
+                  <EuiFlexItem grow={false}>
+                    <strong>Custom attributes</strong>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiPanel>
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiFlexGrid columns={2}>
+                {customerData?.map((data) => (
+                  <>
+                    <EuiHorizontalRule margin="none" />
+                    <EuiFlexItem>{data.name} :</EuiFlexItem>
+                    <EuiFlexItem>{data.value}</EuiFlexItem>
+                  </>
+                ))}
+              </EuiFlexGrid>
+            </EuiFlexItem>
+          </>
+        )}
       </EuiFlexGroup>
       {isModalVisible && <DeleteCustomerModal setIsModalVisible={setIsModalVisible} />}
-      {isSegmentFlyoutVisible && <AddAudienceSegment setIsFlyoutVisible={setIsSegmentFlyoutVisible} />}
+      {isSegmentFlyoutVisible && (
+        <AddAudienceSegment setIsFlyoutVisible={setIsSegmentFlyoutVisible} />
+      )}
       {isFlyoutVisible && <UpdateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
     </EuiPanel>
   );

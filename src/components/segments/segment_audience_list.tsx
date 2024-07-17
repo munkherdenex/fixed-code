@@ -11,7 +11,10 @@ import {
   EuiSpacer,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import useGetSegmentAudienceList, { SegmentAudience, SegmentAudienceResponse } from "../../hooks/useGetSegmentAudienceList";
+import useGetSegmentAudienceList, {
+  SegmentAudience,
+  SegmentAudienceResponse,
+} from "../../hooks/useGetSegmentAudienceList";
 import { useState } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -49,6 +52,7 @@ const SegmentAudienceList = () => {
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 
@@ -95,9 +99,7 @@ const SegmentAudienceList = () => {
     {
       name: "Action",
       field: "",
-      render: (audience: SegmentAudience) => (
-        <DeleteSegmentAudience audience_id={audience.id} />
-      ),
+      render: (audience: SegmentAudience) => <DeleteSegmentAudience audience_id={audience.id} />,
     },
   ];
 
@@ -111,11 +113,10 @@ const SegmentAudienceList = () => {
 
   return (
     <>
-
       <EuiFlexGroup direction="column">
         <EuiFlexItem grow={true}>
           <EuiFlexGroup responsive={false} alignItems="center" justifyContent="spaceBetween">
-            <EuiFlexItem grow={false} >
+            <EuiFlexItem grow={false}>
               <EuiFormRow
                 label=""
                 isInvalid={!!errors.search?.message}
@@ -124,7 +125,6 @@ const SegmentAudienceList = () => {
                 <Controller
                   control={control}
                   name="search"
-
                   render={({ field: { onChange, onBlur, value } }) => (
                     <EuiFieldSearch
                       onChange={onChange}
@@ -140,7 +140,6 @@ const SegmentAudienceList = () => {
               </EuiFormRow>
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
-
               <EuiButton
                 size="m"
                 iconType="plusInCircle"

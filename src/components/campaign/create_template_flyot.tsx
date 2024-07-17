@@ -59,6 +59,7 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
     setValue,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
       kind: "api",

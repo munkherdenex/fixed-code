@@ -12,15 +12,19 @@ import {
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import { mutate } from "swr";
 import * as yup from "yup";
 import useCreateField from "../../hooks/useCreateCustomField";
+import { globalMutate } from "../../utils/globalMutate";
 
 const schema = yup
   .object({
-    name: yup.string().required(),
-    attribute_name: yup.string().required(),
-    data_type: yup.string().oneOf(["int", "str", "datetime", "bool", "date"]).required(),
+    name: yup.string().required().label("Name"),
+    attribute_name: yup.string().required().label("Attribute name"),
+    data_type: yup
+      .string()
+      .oneOf(["int", "str", "datetime", "bool", "date"])
+      .required()
+      .label("Data type"),
   })
   .required();
 
@@ -45,6 +49,7 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
       data_type: "int",
@@ -55,7 +60,7 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     try {
       const response = await trigger(data);
       if (response) {
-        mutate(`/api/v1/dj/fields/`);
+        globalMutate("fields");
         closeFlyout();
       }
     } catch (error) {
@@ -114,8 +119,8 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
           </EuiFormRow>
           <EuiFormRow
             label="Data type"
-            isInvalid={!!errors.attribute_name?.message}
-            error={[errors.attribute_name?.message]}
+            isInvalid={!!errors.data_type?.message}
+            error={[errors.data_type?.message]}
           >
             <Controller
               control={control}
@@ -128,6 +133,7 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                   onBlur={onBlur}
                   isInvalid={!!errors.data_type?.message}
                   aria-label="data type"
+                  hasNoInitialSelection
                 />
               )}
             />

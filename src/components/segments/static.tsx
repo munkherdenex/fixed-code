@@ -22,6 +22,7 @@ const Static = ({
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
       team_id: currentTeam?.id.toString(),

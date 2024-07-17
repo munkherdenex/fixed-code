@@ -18,11 +18,14 @@ import { useRouter } from "next/router";
 
 const schema = yup
   .object({
-    password: yup.string().min(8)
-      .matches(/[0-9]/, 'Password requires a number')
-      .matches(/[a-z]/, 'Password requires a lowercase letter')
-      .matches(/[A-Z]/, 'Password requires an uppercase letter')
-      .matches(/[^\w]/, 'Password requires a symbol').required("please enter your password"),
+    password: yup
+      .string()
+      .min(8)
+      .matches(/[0-9]/, "Password requires a number")
+      .matches(/[a-z]/, "Password requires a lowercase letter")
+      .matches(/[A-Z]/, "Password requires an uppercase letter")
+      .matches(/[^\w]/, "Password requires a symbol")
+      .required("please enter your password"),
     confirm_password: yup.string().required("please enter old password"),
   })
   .required();
@@ -40,19 +43,20 @@ const ResetPassword = () => {
     control,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema)
+    mode: "onBlur",
+    resolver: yupResolver(schema),
   });
 
   const onSubmit = async (data: FormData) => {
-    const token = router.query?.p3 || '';
-    const email = router.query?.p4 || '';
+    const token = router.query?.p3 || "";
+    const email = router.query?.p4 || "";
     if (token && email) {
       try {
         const request_data = {
           ...data,
           token: token,
           email: email,
-        }
+        };
         const response = await trigger(request_data);
         if (response) {
           addToast({
@@ -61,7 +65,7 @@ const ResetPassword = () => {
             title: "Success",
             text: "Successfully reset",
           });
-          router.push('/signin');
+          router.push("/signin");
         }
       } catch (e) {
         console.log(e);

@@ -40,7 +40,7 @@ export default function useGetCustomers<Type>(
   isLoading: boolean;
   mutate: any;
 } {
-  const path = id ? `/api/v1/dj/customers/${id}/?extended=true` : "/api/v1/dj/customers/";
+  const path = id ? `/api/v1/dj/customers/${id}/` : "/api/v1/dj/customers/";
   const preparedQueryParam = createParam(queryParam);
 
   const { data, error, isLoading, mutate } = useSWR(

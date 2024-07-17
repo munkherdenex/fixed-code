@@ -74,6 +74,7 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     watch,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
       type: "customer",

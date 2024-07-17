@@ -50,22 +50,22 @@ const CreateAPIKeysComponent = ({
   const flyoutHeadingId = useGeneratedHtmlId();
   const { trigger } = useCreateAPIKeys();
   const { data } = useTeamID();
-  const dataTypeOptions =
-    data?.map(team => {
-      return {
-        value: team?.id,
-        text: `${team?.name}`,
-      }
-    }) || [{ value: '', text: '' }];
+  const dataTypeOptions = data?.map((team) => {
+    return {
+      value: team?.id,
+      text: `${team?.name}`,
+    };
+  }) || [{ value: "", text: "" }];
   const {
     handleSubmit,
     control,
     setValue,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      team_id: data[0].id.toString() || '',
+      team_id: data[0].id.toString() || "",
     },
   });
 

@@ -47,6 +47,7 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 

@@ -38,36 +38,40 @@ const CreateAudienceSegment = ({
   const { id } = router.query;
   const { trigger } = useCreateSegmentsAudience(id);
   const { data: segmentCustomers } = useGetCustomers<CustomersResponse>();
-  const dataTypeOptions: EuiComboBoxOptionOption[] =
-    segmentCustomers?.results?.map(customer => {
-      return {
-        label: String(customer?.email),
-        value: String(customer?.id),
-      }
-    }) || [{ label: '', value: '' }];
+  const dataTypeOptions: EuiComboBoxOptionOption[] = segmentCustomers?.results?.map((customer) => {
+    return {
+      label: String(customer?.email),
+      value: String(customer?.id),
+    };
+  }) || [{ label: "", value: "" }];
 
-  const [selectedOptions, setSelected] = useState([{
-    label: '',
-  }]);
+  const [selectedOptions, setSelected] = useState([
+    {
+      label: "",
+    },
+  ]);
 
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      customer: segmentCustomers?.results[0]?.id.toString() || '',
+      customer: segmentCustomers?.results[0]?.id.toString() || "",
     },
   });
 
   const onSubmit = async (data: FormData) => {
     try {
-      const customer_data = segmentCustomers?.results?.find((value) => value.email === data?.customer)?.id
+      const customer_data = segmentCustomers?.results?.find(
+        (value) => value.email === data?.customer,
+      )?.id;
       const prepareData = {
         customer: customer_data,
-        segment: id
-      }
+        segment: id,
+      };
       const response = await trigger(prepareData);
       if (response) {
         setIsFlyoutVisible(false);
@@ -121,7 +125,7 @@ const CreateAudienceSegment = ({
           </EuiFormRow>
         </EuiForm>
       </EuiFlyoutBody>
-    </EuiFlyout >
+    </EuiFlyout>
   );
 };
 

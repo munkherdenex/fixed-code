@@ -48,9 +48,9 @@ const CustomersTable = () => {
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
   });
-
 
   const onTableChange = ({ page }: Criteria<CustomersType>) => {
     if (page) {

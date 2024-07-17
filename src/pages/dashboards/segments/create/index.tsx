@@ -48,6 +48,7 @@ const Dashboard: FunctionComponent = () => {
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 

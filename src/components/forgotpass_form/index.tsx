@@ -1,4 +1,13 @@
-import { EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiFieldText, EuiButton, EuiPanel, EuiEmptyPrompt } from "@elastic/eui";
+import {
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiForm,
+  EuiFormRow,
+  EuiFieldText,
+  EuiButton,
+  EuiPanel,
+  EuiEmptyPrompt,
+} from "@elastic/eui";
 import { useEuiTheme } from "@elastic/eui";
 import { forgotFormStyles } from "./forgotpass_form.styles";
 import { Controller, useForm } from "react-hook-form";
@@ -10,7 +19,7 @@ import { addToast } from "../toast";
 
 const schema = yup
   .object({
-    email: yup.string().email().required("please enter your email address")
+    email: yup.string().email().required("please enter your email address"),
   })
   .required();
 
@@ -27,6 +36,7 @@ function ForgotPasswordForm() {
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 
@@ -51,39 +61,38 @@ function ForgotPasswordForm() {
     <EuiFlexGroup gutterSize="xl" css={styles.container}>
       <EuiFlexItem>
         <EuiPanel>
-          {
-            showMessage ?
-              <EuiEmptyPrompt
-                title={<h2>Success</h2>}
-                body={<p>Please check your email address</p>}
-              />
-
-              : <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit(onSubmit)}>
-                <EuiFormRow
-                  label="Email"
-                  isInvalid={!!errors.email?.message}
-                  error={[errors.email?.message]}
-                >
-                  <Controller
-                    control={control}
-                    name="email"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <EuiFieldText
-                        onChange={onChange}
-                        value={value}
-                        onBlur={onBlur}
-                        isInvalid={!!errors.email?.message}
-                        placeholder="Email"
-                        aria-label="email"
-                      />
-                    )}
-                  />
-                </EuiFormRow>
-                <EuiButton isLoading={isMutating} type="submit">
-                  Get reset info
-                </EuiButton>
-              </EuiForm>
-          }
+          {showMessage ? (
+            <EuiEmptyPrompt
+              title={<h2>Success</h2>}
+              body={<p>Please check your email address</p>}
+            />
+          ) : (
+            <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit(onSubmit)}>
+              <EuiFormRow
+                label="Email"
+                isInvalid={!!errors.email?.message}
+                error={[errors.email?.message]}
+              >
+                <Controller
+                  control={control}
+                  name="email"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <EuiFieldText
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!errors.email?.message}
+                      placeholder="Email"
+                      aria-label="email"
+                    />
+                  )}
+                />
+              </EuiFormRow>
+              <EuiButton isLoading={isMutating} type="submit">
+                Get reset info
+              </EuiButton>
+            </EuiForm>
+          )}
         </EuiPanel>
       </EuiFlexItem>
     </EuiFlexGroup>

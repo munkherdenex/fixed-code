@@ -55,6 +55,7 @@ const UpdateFieldFlyout = ({
     control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
       data_type: data.data_type,

@@ -32,6 +32,7 @@ const TeamMembersComponent = () => {
     formState: { errors },
     reset,
   } = useForm({
+    mode: "onBlur",
     resolver: yupResolver(schema),
   });
   const { currentTeam, myProfile } = useContext(teamsContext);
