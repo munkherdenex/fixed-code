@@ -28,17 +28,49 @@ import useUpdateCustomer from "../../hooks/useUpdateCustomer";
 import { addToast } from "../toast";
 
 const schema = yup
-  .object({
-    email: yup.string().email().required().label("Email address"),
-    phone: yup.number().required().label("Phone number"),
-    rid: yup.string().required().label("Reference ID"),
-    customer_data: yup.array(
-      yup.object({
-        name: yup.string().notRequired(),
-        value: yup.mixed().notRequired(),
-      }),
-    ),
-  })
+  .object()
+  .shape(
+    {
+      email: yup
+        .string()
+        .email()
+        .when(["phone", "rid"], ([phone, rid], schema) => {
+          if (phone || rid) return schema.notRequired();
+          return schema.required("One of the fields is required");
+        })
+        .label("Email address"),
+      phone: yup
+        .string()
+        .when(["email", "rid"], ([email, rid], schema) => {
+          if (email || rid) return schema.notRequired().nullable();
+          return schema.required("One of the fields is required");
+        })
+        .matches(/^[0-9]+$/, "Phone number must be a number")
+        .label("Phone number"),
+      rid: yup
+        .string()
+        .when(["phone", "email"], ([phone, email], schema) => {
+          if (phone || email) return schema.notRequired();
+          return schema.required("One of the fields is required");
+        })
+        .label("Reference ID"),
+      customer_data: yup
+        .array(
+          yup
+            .object({
+              name: yup.string().notRequired(),
+              value: yup.mixed().notRequired(),
+            })
+            .notRequired(),
+        )
+        .notRequired(),
+    },
+    [
+      ["email", "phone"],
+      ["email", "rid"],
+      ["phone", "rid"],
+    ],
+  )
   .required();
 
 type FormData = yup.InferType<typeof schema>;
@@ -100,9 +132,9 @@ const UpdateCustomerComponent = ({
     mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      email: detailData?.email || "",
-      phone: +detailData?.phone || 0,
-      rid: detailData?.rid || "",
+      email: detailData?.email || undefined,
+      phone: +detailData?.phone || undefined,
+      rid: detailData?.rid || undefined,
       customer_data: preparedData,
     },
   });
@@ -174,7 +206,7 @@ const UpdateCustomerComponent = ({
               control={control}
               name="phone"
               render={({ field: { onChange, onBlur, value } }) => (
-                <EuiFieldNumber
+                <EuiFieldText
                   onChange={onChange}
                   value={value}
                   onBlur={onBlur}
