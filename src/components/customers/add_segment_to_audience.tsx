@@ -28,7 +28,7 @@ const schema = yup
 
 type FormData = yup.InferType<typeof schema>;
 
-const AddAudienceSegment = ({
+const AddSegmentsToAudience = ({
   setIsFlyoutVisible,
 }: {
   setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
@@ -125,4 +125,4 @@ const AddAudienceSegment = ({
   );
 };
 
-export default AddAudienceSegment;
+export default AddSegmentsToAudience;

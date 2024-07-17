@@ -17,7 +17,7 @@ import {
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Moment } from "moment";
-import { SetStateAction, useEffect } from "react";
+import { SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useCreateCustomer from "../../hooks/useCreateCustomer";

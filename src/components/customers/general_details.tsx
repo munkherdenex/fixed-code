@@ -10,7 +10,7 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import useGetCustomers, { CustomersType } from "../../hooks/useGetCustomers";
-import AddAudienceSegment from "./add_audiences_segment";
+import AddSegmentsToAudience from "./add_segment_to_audience";
 import DeleteCustomerModal from "./delete_customer_modal";
 import UpdateCustomerComponent from "./update_customer";
 
@@ -120,7 +120,7 @@ const GeneralDetails = () => {
       </EuiFlexGroup>
       {isModalVisible && <DeleteCustomerModal setIsModalVisible={setIsModalVisible} />}
       {isSegmentFlyoutVisible && (
-        <AddAudienceSegment setIsFlyoutVisible={setIsSegmentFlyoutVisible} />
+        <AddSegmentsToAudience setIsFlyoutVisible={setIsSegmentFlyoutVisible} />
       )}
       {isFlyoutVisible && <UpdateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
     </EuiPanel>

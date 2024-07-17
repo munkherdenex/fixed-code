@@ -105,7 +105,7 @@ export const TeamsProvider = ({ children }) => {
         clearCurrentTeam,
       }}
     >
-      {children}
+      {!currentTeam && !router.pathname.includes("team/create") ? <div>loading</div> : children}
     </teamsContext.Provider>
   );
 };
