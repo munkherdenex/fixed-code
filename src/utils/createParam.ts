@@ -1,4 +1,8 @@
-export const createParam = (params: { [key: string]: string }) => {
+/**
+ * @param params {Object} - Object with key value pairs
+ * @returns {string} - Returns a string with key value pairs
+ */
+export function createParam(params: { [key: string]: string }) {
   if (!params) {
     return "";
   }
@@ -12,4 +16,4 @@ export const createParam = (params: { [key: string]: string }) => {
 
   usp.sort();
   return usp.toString();
-};
+}
