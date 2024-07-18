@@ -23,56 +23,9 @@ import * as yup from "yup";
 import { Channels } from "../../hooks/useGetChannels";
 import useUpdateChannel from "../../hooks/useUpdateChannel";
 import { globalMutate } from "../../utils/globalMutate";
+import { createChannelSchema } from "./schema";
 
-const schema = yup
-  .object({
-    channel_type: yup.string().required(),
-    name: yup.string().required(),
-    data: yup
-      .object({
-        url: yup.string().notRequired().default(undefined),
-        headers: yup
-          .array()
-          .of(
-            yup
-              .object()
-              .shape({
-                key: yup.string().notRequired().default(undefined),
-                value: yup.string().notRequired().default(undefined),
-              })
-              .notRequired()
-              .default(undefined),
-          )
-          .notRequired()
-          .default(undefined),
-        rate_limit: yup.number().notRequired().default(undefined),
-      })
-      .when("channel_type", (channel_type, schema) => {
-        if (channel_type[0] === "api") {
-          return schema.shape({
-            url: yup.string().url().required(),
-            headers: yup.array().of(
-              yup.object().shape({
-                key: yup.string().required("Key is required"),
-                value: yup.string().required("Value is required"),
-              }),
-            ),
-            rate_limit: yup.number().positive().integer(),
-          });
-        }
-        if (channel_type[0] === "email") {
-          return schema.shape({
-            email: yup.string().email().required(),
-          });
-        }
-        return schema.shape({
-          url: yup.string().notRequired().default(undefined),
-        });
-      }),
-  })
-  .required();
-
-type FormData = yup.InferType<typeof schema>;
+type FormData = yup.InferType<typeof createChannelSchema>;
 
 const dataTypeOptions = [
   { value: "email", text: "Email" },
@@ -111,7 +64,7 @@ const EditChannelFlyot = ({
     formState: { errors },
   } = useForm({
     mode: "onBlur",
-    resolver: yupResolver(schema),
+    resolver: yupResolver(createChannelSchema),
     defaultValues: {
       channel_type: data?.channel_type,
       name: data?.name,
