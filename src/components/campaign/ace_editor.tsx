@@ -26,7 +26,7 @@ const AceEditorComponent = ({
     <div css={styles.container}>
       <Controller
         control={control}
-        name="email"
+        name="body"
         render={({ field: { onBlur, value } }) => (
           <AceEditor
             ref={aceEditor}

@@ -152,14 +152,8 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
             <EuiFormRow
               label="Data"
               helpText="Use custom attributes to make data dynamic. {{custom_attribute}}"
-              isInvalid={!!errors?.body?.message || !isJson(watch("body"))}
-              error={[
-                errors?.body?.message
-                  ? errors?.body?.message
-                  : !isJson(watch("body"))
-                  ? "Invalid json"
-                  : "",
-              ]}
+              isInvalid={!!errors?.body?.message}
+              error={[errors?.body?.message]}
             >
               <AceEditorComponent control={control} onChange={setAceEditorValue} />
             </EuiFormRow>
