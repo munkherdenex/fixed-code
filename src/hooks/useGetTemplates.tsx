@@ -17,9 +17,7 @@ export interface Template {
 }
 
 export interface TemplateResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
+  total_count: number;
   results: Template[];
 }
 

@@ -11,9 +11,7 @@ export interface TemplateCustomer {
 
 export interface TemplateCustomerResponse {
   results: TemplateCustomer[];
-  count: number;
-  next: string | null;
-  previous: string | null;
+  total_count: number;
 }
 
 export default function useGetTemplatesCustomer<Type>(

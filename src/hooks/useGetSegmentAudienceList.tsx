@@ -18,21 +18,21 @@ export interface SegmentAudience {
 }
 
 export interface SegmentAudienceResponse {
-  count: number;
-  next: string;
-  previous: string;
+  total_count: number;
   results: SegmentAudience[];
 }
 
-export default function useGetSegmentAudienceList<Type>(id?: string | string[] | undefined,
+export default function useGetSegmentAudienceList<Type>(
+  id?: string | string[] | undefined,
   queryParam?: {
     [key: string]: string;
-  }): {
-    data: Type;
-    error: any;
-    isLoading: boolean;
-    mutate: any;
-  } {
+  },
+): {
+  data: Type;
+  error: any;
+  isLoading: boolean;
+  mutate: any;
+} {
   const router = useRouter();
   const path = id ? `/api/v1/dj/segments/${id}/customers/` : null;
   const preparedQueryParam = createParam(queryParam);

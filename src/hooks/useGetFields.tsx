@@ -16,9 +16,7 @@ export interface Fields {
 }
 
 export interface FieldsResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
+  total_count: number;
   results: Fields[];
 }
 

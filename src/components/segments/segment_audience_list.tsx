@@ -160,7 +160,7 @@ const SegmentAudienceList = () => {
             columns={columns}
             pagination={{
               ...pagination,
-              totalItemCount: data?.count || 0,
+              totalItemCount: data?.total_count || 0,
             }}
             onChange={onTableChange}
           />

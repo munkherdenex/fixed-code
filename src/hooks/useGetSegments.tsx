@@ -17,9 +17,7 @@ export interface Segment {
 }
 
 export interface SegmentResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
+  total_count: number;
   results: Segment[];
 }
 

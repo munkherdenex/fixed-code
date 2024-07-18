@@ -12,18 +12,17 @@ import {
   EuiTableFieldDataColumnType,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
-import moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
 import { PAGINATION_CHOOSES } from "../../constants";
+import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const schema = yup.object({
-  search: yup.string().notRequired(),
+  search: yup.string().notRequired().label("Search"),
 });
 
 const CustomersTable = () => {
@@ -87,16 +86,17 @@ const CustomersTable = () => {
       field: "created_by",
       name: "Created by",
       mobileOptions: {
-        render: (customer: CustomersType) => <>{customer.created_by}</>,
         enlarge: true,
       },
     },
     {
       field: "created_at",
       name: "Created at",
+      align: "right",
+      footer: () => {
+        return <strong>Total: {data?.total_count || 0}</strong>;
+      },
       mobileOptions: {
-        render: (customer: CustomersType) =>
-          moment(customer.created_at).format("YYYY-MM-DD hh:mm:ss"),
         enlarge: true,
       },
     },
@@ -173,7 +173,7 @@ const CustomersTable = () => {
           cellProps={getCellProps}
           pagination={{
             ...pagination,
-            totalItemCount: data?.count || 0,
+            totalItemCount: data?.total_count || 0,
           }}
           onChange={onTableChange}
         />

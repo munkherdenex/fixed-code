@@ -169,7 +169,7 @@ const FieldsTable = () => {
         cellProps={getCellProps}
         pagination={{
           ...pagination,
-          totalItemCount: data?.count || 0,
+          totalItemCount: data?.total_count || 0,
           showPerPageOptions: true,
         }}
         onChange={onTableChange}

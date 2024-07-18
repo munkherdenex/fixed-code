@@ -142,12 +142,12 @@ const CreateCustomerComponent = ({
               )}
             />
           </EuiFormRow>
+          <EuiSpacer />
+          <strong>Custom attributes</strong>
           {data?.results &&
             Array.isArray(data?.results) &&
             data?.results.map((field, index) => (
               <>
-                <EuiSpacer />
-                <strong>Custom attributes</strong>
                 <EuiSpacer size="s" />
                 <EuiFlexGrid key={field.id} columns={2}>
                   <EuiFlexItem style={{ visibility: "hidden", display: "none" }}>
@@ -161,8 +161,8 @@ const CreateCustomerComponent = ({
                             onChange={onChange}
                             value={value}
                             onBlur={onBlur}
-                            placeholder="Name"
-                            aria-label="name"
+                            placeholder={field.name}
+                            aria-label={field.data_type}
                             readOnly
                           />
                         )}

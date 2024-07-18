@@ -23,9 +23,7 @@ export interface CustomersType {
 }
 
 export interface CustomersResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
+  total_count: number;
   results: CustomersType[];
 }
 
