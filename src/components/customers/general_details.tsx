@@ -25,10 +25,12 @@ const GeneralDetails = () => {
   const [isSegmentFlyoutVisible, setIsSegmentFlyoutVisible] = useState(false);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
-  const extendedCustomerData = fields?.results?.map((field) => ({
-    ...field,
-    value: data?.customer_data ? data.customer_data[field.attribute_name] : undefined,
-  }));
+  const extendedCustomerData = fields?.results
+    ?.map((field) => ({
+      ...field,
+      value: data?.customer_data ? data.customer_data[field.attribute_name] : undefined,
+    }))
+    .filter((data) => data.value !== undefined);
 
   if (isLoading) return <div>Loading...</div>;
 
