@@ -14,13 +14,13 @@ export const createCustomerSchema = yup
         })
         .label("Email address"),
       phone: yup
-        .number()
+        .string()
         .test("len", "Must be less than 20 characters", (val) => val?.toString().length <= 20)
         .when(["email", "rid"], ([email, rid], schema) => {
           if (email || rid) return schema.notRequired();
           return schema.required("One of the fields is required");
         })
-        .typeError("Phone number must be a number")
+        .matches(/^[0-9]+$/, "Phone number must be a number")
         .label("Phone number"),
       rid: yup
         .string()
