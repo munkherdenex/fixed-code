@@ -1,4 +1,4 @@
-import { EuiButtonIcon, EuiFlexItem } from "@elastic/eui";
+import { EuiButton, EuiButtonIcon, EuiFlexItem } from "@elastic/eui";
 import { useRouter } from "next/router";
 
 const JumpToCreateChannelButton = ({ show }: { show: boolean }) => {
@@ -7,8 +7,8 @@ const JumpToCreateChannelButton = ({ show }: { show: boolean }) => {
   if (!show) return null;
 
   return (
-    <EuiFlexItem grow={false}>
-      <EuiButtonIcon
+    <EuiFlexItem>
+      <EuiButton
         onClick={() =>
           router.push("/dashboards/channels", {
             query: {
@@ -16,11 +16,13 @@ const JumpToCreateChannelButton = ({ show }: { show: boolean }) => {
             },
           })
         }
-        display="base"
         color="primary"
-        iconType="symlink"
+        iconType="plus"
         size="m"
-      />
+        fullWidth
+      >
+        Add channel
+      </EuiButton>
     </EuiFlexItem>
   );
 };

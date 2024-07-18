@@ -1,6 +1,8 @@
+import { jsonrepair } from "jsonrepair";
+
 export function isJson(str) {
   try {
-    JSON.parse(str);
+    jsonrepair(str);
   } catch (e) {
     return false;
   }

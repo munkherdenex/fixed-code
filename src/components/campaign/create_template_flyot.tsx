@@ -57,6 +57,7 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
     control,
     watch,
     setValue,
+    setError,
     formState: { errors },
   } = useForm({
     mode: "onBlur",
@@ -80,7 +81,11 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
   };
 
   const onSubmit = async (data: FormData) => {
-    if (isJson(watch("body"))) {
+    if (!isJson(watch("body"))) {
+      setError("body", {
+        message: "Invalid json",
+        type: "manual",
+      });
       return;
     }
     try {
@@ -147,11 +152,11 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
             <EuiFormRow
               label="Data"
               helpText="Use custom attributes to make data dynamic. {{custom_attribute}}"
-              isInvalid={!!errors?.body?.message || isJson(watch("body"))}
+              isInvalid={!!errors?.body?.message || !isJson(watch("body"))}
               error={[
                 errors?.body?.message
                   ? errors?.body?.message
-                  : isJson(watch("body"))
+                  : !isJson(watch("body"))
                   ? "Invalid json"
                   : "",
               ]}
@@ -188,7 +193,15 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
             error={[errors.channel?.message]}
           >
             <EuiFlexGroup alignItems="center">
-              <EuiFlexItem>
+              <EuiFlexItem
+                style={
+                  channelDataOptions.length === 0
+                    ? {
+                        display: "none",
+                      }
+                    : {}
+                }
+              >
                 <Controller
                   control={control}
                   name="channel"

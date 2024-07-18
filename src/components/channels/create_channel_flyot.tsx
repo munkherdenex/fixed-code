@@ -241,7 +241,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
           <EuiFormRow>
             <EuiFlexGroup gutterSize="s">
               <EuiFlexItem grow={false}>
-                <EuiButton type="submit">Create custom attribute</EuiButton>
+                <EuiButton type="submit">Create channel</EuiButton>
               </EuiFlexItem>
               {watch("channel_type") === "api" && (
                 <EuiFlexItem grow={false}>
