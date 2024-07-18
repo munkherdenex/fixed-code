@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { createContext, useCallback, useEffect, useState } from "react";
 import { mutate } from "swr";
+import GlobalLoading from "../components/global-loading";
 import useChangeTeam from "../hooks/useChangeTeam";
 import useGetTeamsMyprofile, { TeamsMyProfileResponse } from "../hooks/useGetTeamsMyprofile";
 import useTeams from "../hooks/useTeams";
@@ -22,14 +23,15 @@ export const TeamsProvider = ({ children }) => {
   const { trigger } = useChangeTeam();
   const [teamsData, setTeamsData] = useState<Teams[] | null>(null);
   const [currentTeam, setCurrentTeam] = useState<Teams | null>(null);
+  const [globalLoading, setGlobalLoading] = useState<boolean>(false);
 
   const { data: teams, isLoading: teamsIsLoading, error: teamsError } = useTeams();
-  const { data: myProfile } = useGetTeamsMyprofile<TeamsMyProfileResponse | null>(
-    currentTeam?.id?.toString(),
-  );
+  const { data: myProfile, isLoading: profileIsLoading } =
+    useGetTeamsMyprofile<TeamsMyProfileResponse | null>(currentTeam?.id?.toString());
 
   const changeCurrentTeam = useCallback(
     async (teamId: number) => {
+      setGlobalLoading(true);
       const team = teamsData.find((team) => team.id === teamId);
       if (team) {
         localStorage.setItem("currentTeamId", teamId.toString());
@@ -43,6 +45,7 @@ export const TeamsProvider = ({ children }) => {
       } else {
         setCurrentTeam(teamsData[0]);
       }
+      setGlobalLoading(false);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [teamsData, trigger],
@@ -105,7 +108,12 @@ export const TeamsProvider = ({ children }) => {
         clearCurrentTeam,
       }}
     >
-      {teamsIsLoading && !router.pathname.includes("team/create") ? <div>loading</div> : children}
+      {(teamsIsLoading || profileIsLoading || globalLoading) &&
+      !router.pathname.includes("team/create") ? (
+        <GlobalLoading />
+      ) : (
+        children
+      )}
     </teamsContext.Provider>
   );
 };

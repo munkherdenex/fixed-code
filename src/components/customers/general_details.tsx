@@ -10,6 +10,7 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import useGetCustomers, { CustomersType } from "../../hooks/useGetCustomers";
+import useGetFields, { FieldsResponse } from "../../hooks/useGetFields";
 import AddSegmentsToAudience from "./add_segment_to_audience";
 import DeleteCustomerModal from "./delete_customer_modal";
 import UpdateCustomerComponent from "./update_customer";
@@ -19,16 +20,15 @@ const GeneralDetails = () => {
   const { data, isLoading } = useGetCustomers<CustomersType>(router.query.id, {
     extended: "true",
   });
+  const { data: fields } = useGetFields<FieldsResponse>();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSegmentFlyoutVisible, setIsSegmentFlyoutVisible] = useState(false);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
-  const customerData = data?.customer_data
-    ? Object.entries(data.customer_data).map(([key, value]) => ({
-        name: key,
-        value,
-      }))
-    : [];
+  const extendedCustomerData = fields?.results?.map((field) => ({
+    ...field,
+    value: data?.customer_data ? data.customer_data[field.attribute_name] : undefined,
+  }));
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -93,7 +93,7 @@ const GeneralDetails = () => {
             <EuiFlexItem> {moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
           </EuiFlexGrid>
         </EuiFlexItem>
-        {customerData && customerData.length > 0 && (
+        {extendedCustomerData && extendedCustomerData?.length > 0 && (
           <>
             <EuiFlexItem>
               <EuiPanel paddingSize="s" color="subdued">
@@ -106,10 +106,12 @@ const GeneralDetails = () => {
             </EuiFlexItem>
             <EuiFlexItem>
               <EuiFlexGrid columns={2}>
-                {customerData?.map((data) => (
+                {extendedCustomerData?.map((data) => (
                   <>
                     <EuiHorizontalRule margin="none" />
-                    <EuiFlexItem>{data.name} :</EuiFlexItem>
+                    <EuiFlexItem>
+                      {data.name} ({data.attribute_name}) :
+                    </EuiFlexItem>
                     <EuiFlexItem>{data.value}</EuiFlexItem>
                   </>
                 ))}
