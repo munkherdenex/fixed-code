@@ -109,6 +109,9 @@ const FieldsTable = () => {
     },
     {
       name: "Actions",
+      footer: () => {
+        return <strong>Total: {data?.total_count || 0}</strong>;
+      },
       actions: [
         {
           name: "Delete",

@@ -99,6 +99,9 @@ const SegmentAudienceList = () => {
     {
       name: "Action",
       field: "",
+      footer: () => {
+        return <strong>Total: {data?.total_count || 0}</strong>;
+      },
       render: (audience: SegmentAudience) => <DeleteSegmentAudience audience_id={audience.id} />,
     },
   ];

@@ -76,6 +76,9 @@ const SendsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () =
       field: "created_by",
       name: "Created by",
       "data-test-subj": "createdByCell",
+      footer: () => {
+        return <strong>Total: {data?.total_count || 0}</strong>;
+      },
     },
   ];
 

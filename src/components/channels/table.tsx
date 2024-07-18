@@ -72,6 +72,9 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
       field: "created_at",
       name: "Created at",
       "data-test-subj": "createdAtCell",
+      footer: () => {
+        return <strong>Total: {data?.total_count || 0}</strong>;
+      },
       mobileOptions: {
         enlarge: true,
       },

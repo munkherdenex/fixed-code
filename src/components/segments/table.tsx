@@ -79,6 +79,9 @@ const SegmentsTable = () => {
       field: "created_at",
       name: "Created at",
       "data-test-subj": "createdAtCell",
+      footer: () => {
+        return <strong>Total: {data?.total_count || 0}</strong>;
+      },
       mobileOptions: {
         enlarge: true,
       },
