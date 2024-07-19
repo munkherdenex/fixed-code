@@ -114,6 +114,7 @@ const GeneralDetails = () => {
                     <EuiFlexItem>
                       {data.name} ({data.attribute_name}) :
                     </EuiFlexItem>
+                    {/* TODO: Fix datetime */}
                     <EuiFlexItem>{data.value}</EuiFlexItem>
                   </>
                 ))}

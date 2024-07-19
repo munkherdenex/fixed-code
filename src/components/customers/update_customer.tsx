@@ -16,7 +16,7 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
-import moment, { Moment } from "moment";
+import moment, { Moment } from "moment-timezone";
 import { useRouter } from "next/router";
 import { SetStateAction, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -60,6 +60,7 @@ const UpdateCustomerComponent = ({
           formattedValue = moment(value);
           break;
         case "bool":
+          //TODO: Check this
           formattedValue = !!value;
           break;
         case "int":
@@ -98,6 +99,7 @@ const UpdateCustomerComponent = ({
 
   const onSubmit = async (data: FormData) => {
     try {
+      //TODO: Fix datetime
       const preparedData = {
         ...data,
         customer_data: data.customer_data.reduce((a, v) => ({ ...a, [v.name]: v.value }), {}),
