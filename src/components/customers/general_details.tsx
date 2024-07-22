@@ -115,8 +115,11 @@ const GeneralDetails = () => {
                     <EuiFlexItem>
                       {data.name} ({data.attribute_name}) :
                     </EuiFlexItem>
-                    {/* TODO: Fix datetime */}
-                    <EuiFlexItem>{data.value}</EuiFlexItem>
+                    {moment(data.value, "YYYY-MM-DD HH:mm", true).isValid() ? (
+                      <EuiFlexItem>{moment(data.value).format("YYYY-MM-DD LT")}</EuiFlexItem>
+                    ) : (
+                      <EuiFlexItem>{data.value}</EuiFlexItem>
+                    )}
                   </React.Fragment>
                 ))}
               </EuiFlexGrid>

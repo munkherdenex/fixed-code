@@ -202,7 +202,7 @@ const UpdateCustomerComponent = ({
                 <EuiSpacer size="s" />
                 <EuiFlexGrid key={field.id} columns={2}>
                   <EuiFlexItem style={{ visibility: "hidden", display: "none" }}>
-                    <EuiFormRow label={`${field.name} (${field.data_type})`}>
+                    <EuiFormRow label={`${field.name} (${field.attribute_name})`}>
                       <Controller
                         control={control}
                         name={`customer_data.${index}.name`}
@@ -222,7 +222,7 @@ const UpdateCustomerComponent = ({
                     </EuiFormRow>
                   </EuiFlexItem>
                   <EuiFlexItem>
-                    <EuiFormRow label={`${field.name} (${field.data_type})`}>
+                    <EuiFormRow label={`${field.name} (${field.attribute_name})`}>
                       <>
                         {field.data_type === "str" && (
                           <Controller
@@ -276,7 +276,7 @@ const UpdateCustomerComponent = ({
                             name={`customer_data.${index}.value`}
                             render={({ field: { onChange, onBlur, value } }) => (
                               <EuiSwitch
-                                label="Data"
+                                label=""
                                 checked={value as boolean}
                                 onBlur={onBlur}
                                 onChange={(e) => onChange(e.target.checked)}
