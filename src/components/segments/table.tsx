@@ -125,7 +125,7 @@ const SegmentsTable = () => {
   return (
     <EuiFlexGroup direction="column">
       <EuiFlexItem>
-        <EuiFlexGroup justifyContent="spaceBetween" alignItems="flexEnd">
+        <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="flexEnd">
           <EuiFlexItem grow={false}>
             <EuiFormRow
               label="Search"
