@@ -1,3 +1,4 @@
+import React from "react";
 import {
   EuiButton,
   EuiDatePicker,
@@ -197,7 +198,7 @@ const UpdateCustomerComponent = ({
           {data?.results &&
             Array.isArray(data?.results) &&
             data?.results.map((field, index) => (
-              <>
+              <React.Fragment key={index}>
                 <EuiSpacer size="s" />
                 <EuiFlexGrid key={field.id} columns={2}>
                   <EuiFlexItem style={{ visibility: "hidden", display: "none" }}>
@@ -303,7 +304,7 @@ const UpdateCustomerComponent = ({
                     </EuiFormRow>
                   </EuiFlexItem>
                 </EuiFlexGrid>
-              </>
+              </React.Fragment>
             ))}
           <EuiFormRow hasEmptyLabelSpace>
             <EuiButton isLoading={isMutating} type="submit">
