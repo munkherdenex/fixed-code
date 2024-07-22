@@ -40,12 +40,12 @@ const GeneralDetails = () => {
       <EuiFlexGroup direction="column">
         <EuiFlexItem>
           <EuiPanel paddingSize="s" color="subdued">
-            <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
+            <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="center">
               <EuiFlexItem grow={false}>
                 <strong>Audience details</strong>
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
-                <EuiFlexGrid gutterSize="s" columns={3}>
+                <EuiFlexGrid responsive={false} gutterSize="s" columns={3}>
                   <EuiFlexItem grow={false}>
                     <EuiButtonIcon
                       display="base"
@@ -79,7 +79,7 @@ const GeneralDetails = () => {
           </EuiPanel>
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiFlexGrid columns={2}>
+          <EuiFlexGrid responsive={false} columns={2}>
             <EuiFlexItem>Email address :</EuiFlexItem>
             <EuiFlexItem>{data?.email}</EuiFlexItem>
             <EuiHorizontalRule margin="none" />
@@ -108,7 +108,7 @@ const GeneralDetails = () => {
               </EuiPanel>
             </EuiFlexItem>
             <EuiFlexItem>
-              <EuiFlexGrid columns={2}>
+              <EuiFlexGrid responsive={false} columns={2}>
                 {extendedCustomerData?.map((data) => (
                   <React.Fragment key={data.id}>
                     <EuiHorizontalRule margin="none" />

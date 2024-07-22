@@ -7,7 +7,10 @@ export const createCustomerSchema = yup
       email: yup
         .string()
         .email()
-        .test("len", "Must be less than 254 characters", (val) => val?.length <= 254)
+        .test("len", "Must be less than 254 characters", (val) => {
+          if (!val) return true;
+          return val?.length <= 254;
+        })
         .when(["phone", "rid"], ([phone, rid], schema) => {
           if (phone || rid) return schema.notRequired();
           return schema.required("One of the fields is required");
@@ -15,7 +18,10 @@ export const createCustomerSchema = yup
         .label("Email address"),
       phone: yup
         .string()
-        .test("len", "Must be less than 20 characters", (val) => val?.toString().length <= 20)
+        .test("len", "Must be less than 20 characters", (val) => {
+          if (!val) return true;
+          return val?.toString().length <= 20;
+        })
         .when(["email", "rid"], ([email, rid], schema) => {
           if (email || rid) return schema.notRequired();
           return schema.required("One of the fields is required");
@@ -24,7 +30,10 @@ export const createCustomerSchema = yup
         .label("Phone number"),
       rid: yup
         .string()
-        .test("len", "Must be less than 100 characters", (val) => val?.length <= 100)
+        .test("len", "Must be less than 100 characters", (val) => {
+          if (!val) return true;
+          return val?.length <= 100;
+        })
         .when(["phone", "email"], ([phone, email], schema) => {
           if (phone || email) return schema.notRequired();
           return schema.required("One of the fields is required");

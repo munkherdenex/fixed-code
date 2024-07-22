@@ -129,7 +129,12 @@ const CustomersTable = () => {
   return (
     <EuiFlexGroup direction="column">
       <EuiFlexItem>
-        <EuiFlexGroup justifyContent="spaceBetween" alignItems="flexEnd" gutterSize="s">
+        <EuiFlexGroup
+          responsive={false}
+          justifyContent="spaceBetween"
+          alignItems="flexEnd"
+          gutterSize="s"
+        >
           <EuiFlexGrid columns={2}>
             <EuiFlexItem grow={false}>
               <EuiFormRow
