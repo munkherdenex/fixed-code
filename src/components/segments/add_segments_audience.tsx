@@ -37,7 +37,17 @@ const CreateAudienceSegment = ({
   const router = useRouter();
   const { id } = router.query;
   const { trigger } = useCreateSegmentsAudience(id);
-  const { data: segmentCustomers } = useGetCustomers<CustomersResponse>();
+
+  const [searchValue, setSearchValue] = useState("");
+  const [pageSize, setPageSize] = useState(3);
+
+  const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null,
+    {
+      query: searchValue,
+      limit: `${pageSize}`,
+    }
+  );
+
   const dataTypeOptions: EuiComboBoxOptionOption[] = segmentCustomers?.results?.map((customer) => {
     return {
       label: String(customer?.email),
@@ -63,6 +73,13 @@ const CreateAudienceSegment = ({
     },
   });
 
+  const onSearchChange = (value) => {
+    // const total_count = segmentCustomers?.total_count || 50;
+    const total_count = 1000000000;
+    setPageSize(total_count);
+    setSearchValue(value);
+  };
+
   const onSubmit = async (data: FormData) => {
     try {
       const customer_data = segmentCustomers?.results?.find(
@@ -79,7 +96,7 @@ const CreateAudienceSegment = ({
           id: "segment-audience-success",
           color: "success",
           title: "Success",
-          text: "Successfully register",
+          text: "Audience added to the segment.",
         });
         globalMutate(`/api/v1/dj/segments/${id}/customers/`);
       }
@@ -115,6 +132,7 @@ const CreateAudienceSegment = ({
                     onChange(selected[0]?.label);
                   }}
                   selectedOptions={selectedOptions}
+                  onSearchChange={onSearchChange}
                   onBlur={onBlur}
                 />
               )}

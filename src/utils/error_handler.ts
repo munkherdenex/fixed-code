@@ -20,6 +20,9 @@ export async function handleResponseNotOk(res: Response, showError: boolean = tr
       if (data.errors) {
         error.message = data.errors;
       }
+      if(data.non_field_errors){
+        error.message = data.non_field_errors;
+      }
       if (data.detail) {
         error.message = data.detail;
       }

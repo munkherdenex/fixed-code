@@ -8,6 +8,7 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
+  EuiLink,
   EuiSpacer,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
@@ -27,6 +28,9 @@ import DeleteSegmentAudience from "./delete_segment_audience";
 const schema = yup.object({
   search: yup.string().notRequired(),
 });
+
+
+const pathPrefix = process.env.PATH_PREFIX;
 
 const SegmentAudienceList = () => {
   const router = useRouter();
@@ -68,6 +72,14 @@ const SegmentAudienceList = () => {
     {
       field: "email",
       name: "Email address",
+      width: "25%",
+      render: (email: SegmentAudience["email"], SegmentAudience: SegmentAudience) => (
+        <>
+          <EuiLink onClick={() => { router.push(`${pathPrefix}/dashboards/audience/info/${SegmentAudience?.id}`); }}>
+            {email}
+          </EuiLink>
+        </>
+      ),
     },
     {
       field: "phone",
@@ -97,12 +109,20 @@ const SegmentAudienceList = () => {
       },
     },
     {
-      name: "Action",
+      name: "Actions",
       field: "",
+      width: "10%",
       footer: () => {
         return <strong>Total: {data?.total_count || 0}</strong>;
       },
-      render: (audience: SegmentAudience) => <DeleteSegmentAudience audience_id={audience.id} />,
+      actions: [
+        {
+          name: "Delete",
+          isPrimary: true,
+          description: "Delete customer",
+          render: (audience: SegmentAudience) => <DeleteSegmentAudience audience_id={audience.id} />,
+        }
+      ]
     },
   ];
 
