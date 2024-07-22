@@ -160,6 +160,9 @@ const GeneralDetails = () => {
                 </div>
               </EuiFlexItem>
               <EuiHorizontalRule margin="none" />
+              <EuiFlexItem>Created by :</EuiFlexItem>
+              <EuiFlexItem>{data?.created_by}</EuiFlexItem>
+              <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>
               <EuiHorizontalRule margin="none" />
