@@ -1,3 +1,4 @@
+import React from "react";
 import {
   EuiButtonIcon,
   EuiFlexGrid,
@@ -109,14 +110,14 @@ const GeneralDetails = () => {
             <EuiFlexItem>
               <EuiFlexGrid columns={2}>
                 {extendedCustomerData?.map((data) => (
-                  <>
+                  <React.Fragment key={data.id}>
                     <EuiHorizontalRule margin="none" />
                     <EuiFlexItem>
                       {data.name} ({data.attribute_name}) :
                     </EuiFlexItem>
                     {/* TODO: Fix datetime */}
                     <EuiFlexItem>{data.value}</EuiFlexItem>
-                  </>
+                  </React.Fragment>
                 ))}
               </EuiFlexGrid>
             </EuiFlexItem>
