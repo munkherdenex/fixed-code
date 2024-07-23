@@ -11,7 +11,7 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import useGetCustomers, { CustomersType } from "../../hooks/useGetCustomers";
-import useGetFields, { FieldsResponse } from "../../hooks/useGetFields";
+import useGetFields, { Fields } from "../../hooks/useGetFields";
 import AddSegmentsToAudience from "./add_segment_to_audience";
 import DeleteCustomerModal from "./delete_customer_modal";
 import UpdateCustomerComponent from "./update_customer";
@@ -21,12 +21,14 @@ const GeneralDetails = () => {
   const { data, isLoading } = useGetCustomers<CustomersType>(router.query.id, {
     extended: "true",
   });
-  const { data: fields } = useGetFields<FieldsResponse>();
+  const { data: fields } = useGetFields<Fields[]>(undefined, {
+    all: "true",
+  });
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSegmentFlyoutVisible, setIsSegmentFlyoutVisible] = useState(false);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
-  const extendedCustomerData = fields?.results
+  const extendedCustomerData = fields
     ?.map((field) => ({
       ...field,
       value: data?.customer_data ? data.customer_data[field.attribute_name] : undefined,
@@ -116,7 +118,11 @@ const GeneralDetails = () => {
                       {data.name} ({data.attribute_name}) :
                     </EuiFlexItem>
                     {moment(data.value, "YYYY-MM-DD HH:mm", true).isValid() ? (
-                      <EuiFlexItem>{moment(data.value).format("YYYY-MM-DD LT")}</EuiFlexItem>
+                      <EuiFlexItem>
+                        {data.data_type === "date" && moment(data.value).format("YYYY-MM-DD")}
+                        {data.data_type === "datetime" &&
+                          moment(data.value).format("YYYY-MM-DD LT")}
+                      </EuiFlexItem>
                     ) : (
                       <EuiFlexItem>{data.value}</EuiFlexItem>
                     )}

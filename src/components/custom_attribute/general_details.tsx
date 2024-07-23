@@ -136,10 +136,10 @@ const GeneralDetails = () => {
               </EuiFlexItem>
               <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Created date :</EuiFlexItem>
-              <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>
+              <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
               <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Updated date :</EuiFlexItem>
-              <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>
+              <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>
           </EuiFlexItem>
         </EuiFlexGroup>

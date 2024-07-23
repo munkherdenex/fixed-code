@@ -101,24 +101,28 @@ const GeneralDetails = () => {
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiFlexGroup responsive={false} gutterSize="s">
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonIcon
-                        display="base"
-                        iconType="pencil"
-                        aria-label="Update"
-                        color="primary"
-                        onClick={() => setIsEditFlyoutVisible(true)}
-                      />
-                    </EuiFlexItem>
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonIcon
-                        display="base"
-                        iconType="trash"
-                        aria-label="Delete"
-                        color="danger"
-                        onClick={() => setIsModalVisible(true)}
-                      />
-                    </EuiFlexItem>
+                    {data.status.toLocaleLowerCase() === "draft" && (
+                      <EuiFlexItem grow={false}>
+                        <EuiButtonIcon
+                          display="base"
+                          iconType="pencil"
+                          aria-label="Update"
+                          color="primary"
+                          onClick={() => setIsEditFlyoutVisible(true)}
+                        />
+                      </EuiFlexItem>
+                    )}
+                    {data.status !== "APPROVED" && data.status !== "PUBLISHED" && (
+                      <EuiFlexItem grow={false}>
+                        <EuiButtonIcon
+                          display="base"
+                          iconType="trash"
+                          aria-label="Delete"
+                          color="danger"
+                          onClick={() => setIsModalVisible(true)}
+                        />
+                      </EuiFlexItem>
+                    )}
                   </EuiFlexGroup>
                 </EuiFlexItem>
               </EuiFlexGroup>
@@ -143,10 +147,10 @@ const GeneralDetails = () => {
               </EuiFlexItem>
               <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Created date :</EuiFlexItem>
-              <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>
+              <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
               <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Updated date :</EuiFlexItem>
-              <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>
+              <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>
           </EuiFlexItem>
         </EuiFlexGroup>

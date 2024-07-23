@@ -1,4 +1,3 @@
-import React from "react";
 import {
   EuiButton,
   EuiDatePicker,
@@ -19,12 +18,12 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import moment, { Moment } from "moment-timezone";
 import { useRouter } from "next/router";
-import { SetStateAction, useEffect } from "react";
+import React, { SetStateAction, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { mutate } from "swr";
 import * as yup from "yup";
 import useGetCustomers, { CustomersType } from "../../hooks/useGetCustomers";
-import useGetFields, { FieldsResponse } from "../../hooks/useGetFields";
+import useGetFields, { Fields } from "../../hooks/useGetFields";
 import useUpdateCustomer from "../../hooks/useUpdateCustomer";
 import { addToast } from "../toast";
 import { createCustomerSchema } from "./schema";
@@ -45,9 +44,11 @@ const UpdateCustomerComponent = ({
       extended: "true",
     },
   );
-  const { data, isLoading: getFieldsIsLoading } = useGetFields<FieldsResponse>();
+  const { data: fieldsData, isLoading: getFieldsIsLoading } = useGetFields<Fields[]>(undefined, {
+    all: "true",
+  });
 
-  const preparedData = data?.results
+  const preparedData = fieldsData
     ?.map((field) => {
       const customerData = detailData?.customer_data;
 
@@ -195,9 +196,9 @@ const UpdateCustomerComponent = ({
           </EuiFormRow>
           <EuiSpacer />
           <strong>Custom attributes</strong>
-          {data?.results &&
-            Array.isArray(data?.results) &&
-            data?.results.map((field, index) => (
+          {fieldsData &&
+            Array.isArray(fieldsData) &&
+            fieldsData.map((field, index) => (
               <React.Fragment key={index}>
                 <EuiSpacer size="s" />
                 <EuiFlexGrid key={field.id} columns={2}>

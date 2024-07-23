@@ -150,7 +150,7 @@ const MembersTable = () => {
       name: "Joined Date",
       field: "joined_date",
       render: (joined_date: MembersType["joined_date"]) => (
-        <EuiFlexItem>{moment(joined_date).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>
+        <EuiFlexItem>{moment(joined_date).format("YYYY-MM-DD LT")}</EuiFlexItem>
       ),
     },
     {

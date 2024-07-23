@@ -75,7 +75,7 @@ const HeaderUserMenu = () => {
             <EuiText css={styles.title}>
               <p>{name}</p>
             </EuiText>
-            <EuiFlexGroup>
+            <EuiFlexGroup responsive={false}>
               <EuiFlexItem grow={false}>
                 <EuiButtonEmpty
                   onClick={() => router.push(`${pathPrefix}/dashboards/management/profile`)}
