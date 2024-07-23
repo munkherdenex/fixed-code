@@ -58,7 +58,7 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     Array.isArray(customerData?.results) &&
     customerData?.results.map((customer) => ({
       value: customer.id,
-      text: customer.email,
+      text: customer.email || customer.phone || customer.rid,
     }));
 
   const preparedSegmentData =

@@ -6,10 +6,6 @@ export const signinFormStyles = (euiTheme) => ({
 
     @media (max-width: ${euiTheme.breakpoint.m}px) {
       text-align: center;
-
-      > .euiFlexItem:first-of-type {
-        order: 2;
-      }
     }
   `,
   form: {

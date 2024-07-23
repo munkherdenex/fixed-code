@@ -29,7 +29,6 @@ const schema = yup.object({
   search: yup.string().notRequired(),
 });
 
-
 const pathPrefix = process.env.PATH_PREFIX;
 
 const SegmentAudienceList = () => {
@@ -75,7 +74,11 @@ const SegmentAudienceList = () => {
       width: "25%",
       render: (email: SegmentAudience["email"], SegmentAudience: SegmentAudience) => (
         <>
-          <EuiLink onClick={() => { router.push(`${pathPrefix}/dashboards/audience/info/${SegmentAudience?.id}`); }}>
+          <EuiLink
+            onClick={() => {
+              router.push(`${pathPrefix}/dashboards/audience/info/${SegmentAudience?.id}`);
+            }}
+          >
             {email}
           </EuiLink>
         </>
@@ -103,8 +106,7 @@ const SegmentAudienceList = () => {
       field: "created_at",
       name: "Created at",
       mobileOptions: {
-        render: (customer: SegmentAudience) =>
-          moment(customer.created_at).format("YYYY-MM-DD hh:mm:ss"),
+        render: (customer: SegmentAudience) => moment(customer.created_at).format("YYYY-MM-DD LT"),
         enlarge: true,
       },
     },
@@ -120,9 +122,11 @@ const SegmentAudienceList = () => {
           name: "Delete",
           isPrimary: true,
           description: "Delete customer",
-          render: (audience: SegmentAudience) => <DeleteSegmentAudience audience_id={audience.id} />,
-        }
-      ]
+          render: (audience: SegmentAudience) => (
+            <DeleteSegmentAudience audience_id={audience.id} />
+          ),
+        },
+      ],
     },
   ];
 

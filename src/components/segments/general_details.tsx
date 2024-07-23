@@ -147,8 +147,9 @@ const GeneralDetails = () => {
                 <>
                   <EuiFlexItem>condition:</EuiFlexItem>
                   <EuiFlexItem>
-                    <EuiCodeBlock language="json" fontSize="s" paddingSize="s"
-                    >{data?.condition && jsonrepair(data?.condition)}</EuiCodeBlock>
+                    <EuiCodeBlock language="json" fontSize="s" paddingSize="s">
+                      {data?.condition && jsonrepair(data?.condition)}
+                    </EuiCodeBlock>
                   </EuiFlexItem>
                   <EuiHorizontalRule margin="none" />
                 </>
@@ -164,10 +165,10 @@ const GeneralDetails = () => {
               <EuiFlexItem>{data?.created_by}</EuiFlexItem>
               <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Created date :</EuiFlexItem>
-              <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>
+              <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
               <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Updated date :</EuiFlexItem>
-              <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD hh:mm:ss")}</EuiFlexItem>
+              <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>
           </EuiFlexItem>
         </EuiFlexGroup>
@@ -190,7 +191,7 @@ const GeneralDetails = () => {
               />
             )}
             {data.type === "manual" && (
-              <Manual createSegment={() => { }} isCreateSegmentMutating={true} />
+              <Manual createSegment={() => {}} isCreateSegmentMutating={true} />
             )}
           </EuiFlyoutBody>
         </EuiFlyout>

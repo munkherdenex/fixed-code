@@ -63,38 +63,25 @@ const Audience = () => {
         {
           name: "Delete",
           isPrimary: true,
+          icon: "trash",
+          color: "danger",
+          type: "icon",
           description: "Delete customer",
-          render: (templateCustomer: TemplateCustomer) => {
-            return (
-              <>
-                <EuiButtonIcon
-                  onClick={() => {
-                    setSelectedAudience(templateCustomer);
-                    showModal();
-                  }}
-                  size="s"
-                  iconType="trash"
-                  display="base"
-                  aria-label="Delete"
-                  color="danger"
-                />
-              </>
-            );
+          onClick: (templateCustomer: TemplateCustomer) => {
+            setSelectedAudience(templateCustomer);
+            showModal();
           },
         },
         {
-          render: (templateCustomer: TemplateCustomer) => {
+          name: "View",
+          icon: "arrowRight",
+          color: "primary",
+          type: "icon",
+          description: "view customer",
+          onClick: (templateCustomer: TemplateCustomer) => {
             const { object_id, type } = templateCustomer;
             const type_path = type === "customer" ? "audience" : "segments";
-            return (
-              <>
-                <EuiButtonIcon
-                  onClick={() => router.push(`/dashboards/${type_path}/info/${object_id}`)}
-                  size="s"
-                  iconType="arrowRight"
-                />
-              </>
-            );
+            router.push(`/dashboards/${type_path}/info/${object_id}`);
           },
         },
       ],

@@ -64,7 +64,7 @@ const Settings = () => {
   };
 
   return (
-    <EuiFlexGroup css={styles.container} direction="column">
+    <EuiFlexGroup responsive={false} css={styles.container} direction="column">
       <EuiFlexItem>
         <EuiSwitch label="Edit profile" checked={isEditProfile} onChange={(e) => onChange(e)} />
       </EuiFlexItem>
