@@ -50,6 +50,8 @@ const Audience = () => {
   const closeModal = () => setIsModalVisible(false);
   const showModal = () => setIsModalVisible(true);
 
+  const actionEnabled = template?.status === "DRAFT" || template?.status === "ERROR";
+
   const columns: Array<EuiBasicTableColumn<TemplateCustomer>> = [
     {
       field: "name",
@@ -130,7 +132,7 @@ const Audience = () => {
 
   return (
     <EuiFlexGroup direction="column">
-      {template?.status === "DRAFT" && (
+      {actionEnabled && (
         <EuiFlexItem grow={false}>
           <div>
             <EuiButton
@@ -147,7 +149,7 @@ const Audience = () => {
         <EuiBasicTable
           tableCaption="Template customers"
           items={templateCustomers?.results || []}
-          columns={[...columns, ...(template?.status === "DRAFT" ? actions : [])]}
+          columns={[...columns, ...(actionEnabled ? actions : [])]}
           cellProps={getCellProps}
           pagination={
             templateCustomers?.total_count > pageSize
