@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useDeleteTemplateCustomer from "../../hooks/useDeleteTemplateCustomer";
+import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 import useGetTemplatesCustomer, {
   TemplateCustomer,
   TemplateCustomerResponse,
@@ -30,10 +31,14 @@ const Audience = () => {
 
   const modalTitleId = useGeneratedHtmlId({ prefix: "modalTitle" });
 
-  const { data } = useGetTemplatesCustomer<TemplateCustomerResponse>(router.query.id, {
-    limit: `${pageSize}`,
-    offset: `${pageIndex * pageSize}`,
-  });
+  const { data: template } = useGetTemplates<Template>(router.query.id);
+  const { data: templateCustomers } = useGetTemplatesCustomer<TemplateCustomerResponse>(
+    router.query.id,
+    {
+      limit: `${pageSize}`,
+      offset: `${pageIndex * pageSize}`,
+    },
+  );
   const { trigger, isMutating } = useDeleteTemplateCustomer(router.query.id);
 
   const pagination = {
@@ -56,6 +61,9 @@ const Audience = () => {
       name: "Type",
       "data-test-subj": "typeCell",
     },
+  ];
+
+  const actions: Array<EuiBasicTableColumn<TemplateCustomer>> = [
     {
       name: "Actions",
       actions: [
@@ -122,28 +130,30 @@ const Audience = () => {
 
   return (
     <EuiFlexGroup direction="column">
-      <EuiFlexItem grow={false}>
-        <div>
-          <EuiButton
-            size="s"
-            iconType="plusInCircle"
-            onClick={() => setIsAddAudienceFlyoutVisible(true)}
-          >
-            Add audience
-          </EuiButton>
-        </div>
-      </EuiFlexItem>
+      {template?.status === "DRAFT" && (
+        <EuiFlexItem grow={false}>
+          <div>
+            <EuiButton
+              size="s"
+              iconType="plusInCircle"
+              onClick={() => setIsAddAudienceFlyoutVisible(true)}
+            >
+              Add audience
+            </EuiButton>
+          </div>
+        </EuiFlexItem>
+      )}
       <EuiFlexItem>
         <EuiBasicTable
           tableCaption="Template customers"
-          items={data?.results || []}
-          columns={columns}
+          items={templateCustomers?.results || []}
+          columns={[...columns, ...(template?.status === "DRAFT" ? actions : [])]}
           cellProps={getCellProps}
           pagination={
-            data?.total_count > pageSize
+            templateCustomers?.total_count > pageSize
               ? {
                   ...pagination,
-                  totalItemCount: data?.total_count || 0,
+                  totalItemCount: templateCustomers?.total_count || 0,
                 }
               : {
                   totalItemCount: 0,
