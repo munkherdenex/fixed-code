@@ -1,12 +1,18 @@
 import { EuiPanel, EuiTab, EuiTabs } from "@elastic/eui";
 import { useMemo, useState } from "react";
 import Audience from "./audience";
+import Logs from "./logs";
 
 const tabs = [
   {
     id: "audience--id",
     name: "Audience",
     content: <Audience />,
+  },
+  {
+    id: "logs--id",
+    name: "Logs",
+    content: <Logs />,
   },
 ];
 

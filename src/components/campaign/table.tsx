@@ -1,5 +1,6 @@
 import {
   Criteria,
+  EuiBadge,
   EuiBasicTable,
   EuiBasicTableColumn,
   EuiButton,
@@ -19,6 +20,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
+import { badgeColor } from "../../utils/badge_color";
 
 const schema = yup.object({
   search: yup.string().notRequired(),
@@ -62,10 +64,15 @@ const SendsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () =
       "data-test-subj": "kindCell",
     },
     {
-      field: "body",
-      name: "Body",
-      "data-test-subj": "bodyCell",
-      truncateText: true,
+      name: "Status",
+      render: (template: Template) => {
+        const { status } = template;
+        return (
+          <span>
+            <EuiBadge color={badgeColor(status)}>{status}</EuiBadge>
+          </span>
+        );
+      },
     },
     {
       field: "created_at",
@@ -192,11 +199,19 @@ const SendsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () =
             columns={columns}
             rowProps={getRowProps}
             cellProps={getCellProps}
-            pagination={{
-              ...pagination,
-              totalItemCount: data?.total_count || 0,
-              showPerPageOptions: true,
-            }}
+            pagination={
+              data?.total_count > pageSize
+                ? {
+                    ...pagination,
+                    totalItemCount: data?.total_count || 0,
+                    showPerPageOptions: true,
+                  }
+                : {
+                    totalItemCount: 0,
+                    pageSize: 0,
+                    pageIndex: 0,
+                  }
+            }
             onChange={onTableChange}
           />
         )}

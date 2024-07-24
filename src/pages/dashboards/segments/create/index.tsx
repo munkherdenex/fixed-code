@@ -118,19 +118,19 @@ const Dashboard: FunctionComponent = () => {
               <EuiFlexGroup direction="column">
                 <EuiFlexItem>
                   <EuiFormRow
-                    label="Title"
+                    label="Name"
                     isInvalid={!!errors.name?.message}
                     error={[errors.name?.message]}
                   >
                     <Controller
                       control={control}
                       name="name"
-                      render={({ field: { onChange, onBlur, value } }) => (
+                      render={({ field: { onChange, onBlur, value, name } }) => (
                         <EuiFieldText
                           onChange={onChange}
                           value={value}
                           onBlur={onBlur}
-                          placeholder="title"
+                          placeholder={name}
                           fullWidth
                           isInvalid={!!errors.name?.message}
                         />

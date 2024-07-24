@@ -1,7 +1,8 @@
-import { EuiPageSidebarProps, EuiPageTemplate, EuiPanel } from "@elastic/eui";
+import { EuiPageSidebarProps, EuiPageTemplate, useIsWithinMaxBreakpoint } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { ReactElement, useContext } from "react";
 import { SWRConfig } from "swr";
+import Sidebar from "../components/management/sidebar";
 import { authContext } from "../store/auth_store";
 import { teamsContext } from "../store/teams_store";
 import { dashboardsLayoutStyles } from "./dashboard.styles";
@@ -23,6 +24,7 @@ const DashboardLayout = ({
 }) => {
   const router = useRouter();
   const styles = dashboardsLayoutStyles();
+  const largeMaxBreakpoint = useIsWithinMaxBreakpoint("l");
   const { removeUserTokenData } = useContext(authContext);
   const { clearCurrentTeam } = useContext(teamsContext);
 
@@ -47,15 +49,18 @@ const DashboardLayout = ({
             bottomBorder={true}
             {...rest}
           >
-            {sidebar && (
-              <EuiPageTemplate.Sidebar sticky={sidebarSticky}>{sidebar}</EuiPageTemplate.Sidebar>
+            {!largeMaxBreakpoint && (
+              <EuiPageTemplate.Sidebar sticky={sidebarSticky}>
+                <Sidebar />
+              </EuiPageTemplate.Sidebar>
             )}
             {pageHeader && <EuiPageTemplate.Header {...pageHeader} />}
-            {breadCrumb && (
-              <EuiPageTemplate.Section grow={false}>
-                <EuiPanel>{breadCrumb}</EuiPanel>
-              </EuiPageTemplate.Section>
-            )}
+            {/* INFO: breadCrumb arilgasan  */}
+            {/* {breadCrumb && ( */}
+            {/*   <EuiPageTemplate.Section grow={false}> */}
+            {/*     <EuiPanel>{breadCrumb}</EuiPanel> */}
+            {/*   </EuiPageTemplate.Section> */}
+            {/* )} */}
             <EuiPageTemplate.Section>{children}</EuiPageTemplate.Section>
           </EuiPageTemplate>
         </div>

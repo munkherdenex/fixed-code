@@ -45,7 +45,7 @@ const CollapsibleNav = () => {
 
   const CustomersLinks: EuiPinnableListGroupItemProps[] = [
     {
-      label: "Audience base",
+      label: "Audience",
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/audience`);
       },

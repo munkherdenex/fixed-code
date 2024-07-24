@@ -3,7 +3,6 @@ import {
   EuiBasicTable,
   EuiBasicTableColumn,
   EuiButton,
-  EuiButtonIcon,
   EuiConfirmModal,
   EuiFlexGroup,
   EuiFlexItem,
@@ -140,10 +139,18 @@ const Audience = () => {
           items={data?.results || []}
           columns={columns}
           cellProps={getCellProps}
-          pagination={{
-            ...pagination,
-            totalItemCount: data?.total_count || 0,
-          }}
+          pagination={
+            data?.total_count > pageSize
+              ? {
+                  ...pagination,
+                  totalItemCount: data?.total_count || 0,
+                }
+              : {
+                  totalItemCount: 0,
+                  pageSize: 0,
+                  pageIndex: 0,
+                }
+          }
           onChange={onTableChange}
         />
       </EuiFlexItem>

@@ -193,11 +193,19 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
             columns={columns}
             rowProps={getRowProps}
             cellProps={getCellProps}
-            pagination={{
-              ...pagination,
-              totalItemCount: data?.total_count || 0,
-              showPerPageOptions: true,
-            }}
+            pagination={
+              data?.total_count > pageSize
+                ? {
+                    ...pagination,
+                    totalItemCount: data?.total_count || 0,
+                    showPerPageOptions: true,
+                  }
+                : {
+                    totalItemCount: 0,
+                    pageIndex: 0,
+                    pageSize: 0,
+                  }
+            }
             onChange={onTableChange}
           />
         )}

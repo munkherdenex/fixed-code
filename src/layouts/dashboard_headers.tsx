@@ -10,6 +10,7 @@ import {
   EuiPopover,
   EuiText,
   useGeneratedHtmlId,
+  useIsWithinMaxBreakpoint,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
@@ -147,6 +148,7 @@ const TeamSwitcher = () => {
 
 const DashboardHeaders = () => {
   const router = useRouter();
+  const largeMaxBreakpoint = useIsWithinMaxBreakpoint("l");
   const leftSectionItems = [<CollapsibleNav key={useGeneratedHtmlId()} />];
 
   return (
@@ -164,7 +166,7 @@ const DashboardHeaders = () => {
               >
                 Data dashboard
               </EuiHeaderLogo>,
-              leftSectionItems,
+              largeMaxBreakpoint && leftSectionItems,
             ],
             borders: "none",
           },
