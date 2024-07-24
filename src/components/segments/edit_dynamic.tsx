@@ -1,5 +1,6 @@
 import { EuiButton, EuiFieldText, EuiForm, EuiFormRow, EuiTextArea } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { jsonrepair } from "jsonrepair";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -9,7 +10,9 @@ import * as yup from "yup";
 import { REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
 import useUpdateSegment from "../../hooks/useUpdateSegment";
+import { additionalOperator } from "../../utils/additional_operator";
 import { globalMutate } from "../../utils/globalMutate";
+import { customRuleProcessor } from "../../utils/rule_processer";
 import { addToast } from "../toast";
 import { dynamicStyles } from "./dynamic.styles";
 
@@ -44,7 +47,9 @@ const EditDynamic = ({
   });
   const [query, setQuery] = useState<RuleGroupType>(() => {
     try {
-      return parseMongoDB(condition);
+      return parseMongoDB(condition, {
+        additionalOperators: additionalOperator,
+      });
     } catch {
       return { id: "root", combinator: "and", rules: [] };
     }
@@ -77,7 +82,12 @@ const EditDynamic = ({
       const response = await trigger({
         name: data.name,
         description: data.description,
-        condition: formatQuery(query, "mongodb"),
+        condition: jsonrepair(
+          formatQuery(query, {
+            format: "mongodb",
+            ruleProcessor: customRuleProcessor,
+          }),
+        ),
         type: "dynamic",
       });
       if (response) {

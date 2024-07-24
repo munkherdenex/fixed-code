@@ -1,8 +1,10 @@
 import { EuiButton, EuiForm, EuiFormRow } from "@elastic/eui";
+import { jsonrepair } from "jsonrepair";
 import { useState } from "react";
 import { ActionElement, Field, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
 import { REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
+import { customRuleProcessor } from "../../utils/rule_processer";
 import { dynamicStyles } from "./dynamic.styles";
 
 const fields: Field[] = [
@@ -41,7 +43,12 @@ const Dynamic = ({
   const handleSubmit = (createSegment: (data: any) => void) => (e: any) => {
     e.preventDefault();
     createSegment({
-      condition: formatQuery(query, "mongodb"),
+      condition: jsonrepair(
+        formatQuery(query, {
+          format: "mongodb",
+          ruleProcessor: customRuleProcessor,
+        }),
+      ),
     });
   };
 
