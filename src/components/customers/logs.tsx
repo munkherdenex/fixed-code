@@ -1,4 +1,11 @@
-import { EuiFlexGroup, EuiFlexItem, EuiPagination, EuiText, EuiTimeline } from "@elastic/eui";
+import {
+  EuiEmptyPrompt,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiPagination,
+  EuiText,
+  EuiTimeline,
+} from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import useGetLogs, { LogsResponse } from "../../hooks/useGetLogs";
@@ -35,28 +42,38 @@ const Logs: React.FC = () => {
 
   if (data?.results?.length === 0)
     return (
-      <EuiText>
-        <p>No logs found</p>
-      </EuiText>
+      <EuiFlexGroup>
+        <EuiFlexItem>
+          <EuiEmptyPrompt
+            iconType="list"
+            title={<h2>No log found</h2>}
+            body={<p>No log recorded in this campaign</p>}
+          />
+        </EuiFlexItem>
+      </EuiFlexGroup>
     );
 
   return (
-    <div>
-      <EuiTimeline items={preparedData} />
+    <EuiFlexGroup direction="column">
+      <EuiFlexItem>
+        <EuiTimeline items={preparedData} />
+      </EuiFlexItem>
       {data.total_count > LIMIT && (
-        <EuiFlexGroup justifyContent="spaceAround">
-          <EuiFlexItem grow={false}>
-            <EuiPagination
-              aria-label="Customer logs"
-              pageCount={Math.ceil(data?.total_count / LIMIT) || 0}
-              activePage={activePage}
-              onPageClick={(activePage) => setActivePage(activePage)}
-              compressed
-            />
-          </EuiFlexItem>
-        </EuiFlexGroup>
+        <EuiFlexItem>
+          <EuiFlexGroup responsive={false} justifyContent="spaceAround">
+            <EuiFlexItem grow={false}>
+              <EuiPagination
+                aria-label="Customer logs"
+                pageCount={Math.ceil(data?.total_count / LIMIT) || 0}
+                activePage={activePage}
+                onPageClick={(activePage) => setActivePage(activePage)}
+                compressed
+              />
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiFlexItem>
       )}
-    </div>
+    </EuiFlexGroup>
   );
 };
 
