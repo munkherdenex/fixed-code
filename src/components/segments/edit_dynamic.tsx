@@ -3,18 +3,19 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Field, QueryBuilder, RuleGroupType } from "react-querybuilder";
+import { Field, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
+import { parseMongoDB } from "react-querybuilder/parseMongoDB";
 import * as yup from "yup";
+import { REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
 import useUpdateSegment from "../../hooks/useUpdateSegment";
-import { convertMongoQueryToJson, convertToMongoQuery } from "../../utils/convertToMongoQuery";
 import { globalMutate } from "../../utils/globalMutate";
 import { addToast } from "../toast";
 import { dynamicStyles } from "./dynamic.styles";
 
 const schema = yup.object({
   name: yup.string().required("please enter your name"),
-  description: yup.string(),
+  description: yup.string().notRequired(),
 });
 
 type FormData = yup.InferType<typeof schema>;
@@ -43,7 +44,7 @@ const EditDynamic = ({
   });
   const [query, setQuery] = useState<RuleGroupType>(() => {
     try {
-      return convertMongoQueryToJson(JSON.parse(condition));
+      return parseMongoDB(condition);
     } catch {
       return { id: "root", combinator: "and", rules: [] };
     }
@@ -72,12 +73,11 @@ const EditDynamic = ({
     : [];
 
   const createSegment = async (data: FormData) => {
-    console.info(data);
     try {
       const response = await trigger({
         name: data.name,
         description: data.description,
-        condition: convertToMongoQuery(query),
+        condition: formatQuery(query, "mongodb"),
         type: "dynamic",
       });
       if (response) {
@@ -131,7 +131,12 @@ const EditDynamic = ({
           />
         </EuiFormRow>
         <EuiFormRow css={styles.queryBuilderContainer} label="Team id" fullWidth>
-          <QueryBuilder fields={[...fields, ...output]} query={query} onQueryChange={setQuery} />
+          <QueryBuilder
+            fields={[...fields, ...output]}
+            query={query}
+            operators={REACT_QUERY_BUILDER_OPERATORS}
+            onQueryChange={setQuery}
+          />
         </EuiFormRow>
         <EuiFormRow>
           <EuiButton type="submit" isLoading={isMutating}>

@@ -29,6 +29,7 @@ export const TeamsProvider = ({ children }) => {
   const { data: myProfile, isLoading: profileIsLoading } =
     useGetTeamsMyprofile<TeamsMyProfileResponse | null>(currentTeam?.id?.toString());
 
+  //INFO: idk what is going on here
   const changeCurrentTeam = useCallback(
     async (teamId: number) => {
       setGlobalLoading(true);
@@ -37,7 +38,7 @@ export const TeamsProvider = ({ children }) => {
         localStorage.setItem("currentTeamId", teamId.toString());
         try {
           await trigger({ team_id: teamId });
-          await router.replace("/dashboards");
+          if (window.location.pathname.includes("/info/")) await router.replace("/dashboards");
           setCurrentTeam(team);
         } catch {
           alert("error");

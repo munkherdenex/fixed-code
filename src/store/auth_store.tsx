@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove("token");
     Cookies.remove("_customer_data_session", { path: "/", domain: pathPrefix });
     localStorage.removeItem("currentTeamId");
-    router.replace("/signin");
+    window.location.href = "/";
   };
 
   useEffect(() => {

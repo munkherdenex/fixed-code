@@ -16,21 +16,21 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
-import { mutate } from "swr";
 import * as yup from "yup";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { Template } from "../../hooks/useGetTemplates";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
+import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 
 const schema = yup
   .object({
-    title: yup.string().required(),
-    kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api"]).required(),
-    body: yup.string().required(),
-    ch_id: yup.number().required(),
+    title: yup.string().required().label("Title"),
+    kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api"]).required().label("Data"),
+    body: yup.string().required().label("Body"),
+    channel: yup.number().required().label("Channel"),
   })
   .required();
 
@@ -60,6 +60,7 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
     control,
     watch,
     setValue,
+    setError,
     formState: { errors },
   } = useForm({
     mode: "onBlur",
@@ -68,7 +69,7 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
       kind: data.kind,
       body: data.body,
       title: data.title,
-      ch_id: data.ch_id,
+      channel: data.channel,
     },
   });
 
@@ -86,13 +87,17 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
   };
 
   const onSubmit = async (data: FormData) => {
-    if (isJson(watch("body"))) {
+    if (!isJson(watch("body")) && watch("kind") === "api") {
+      setError("body", {
+        message: "Invalid json",
+        type: "manual",
+      });
       return;
     }
     try {
       const response = await trigger(data);
       if (response) {
-        mutate(`/api/v1/dj/templates/`);
+        globalMutate("/api/v1/dj/templates/");
         closeFlyout();
       }
     } catch (error) {
@@ -153,14 +158,8 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
             <EuiFormRow
               label="Data"
               helpText="Use custom attributes to make data dynamic. {{custom_attribute}}"
-              isInvalid={!!errors?.body?.message || isJson(watch("body"))}
-              error={[
-                errors?.body?.message
-                  ? errors?.body?.message
-                  : isJson(watch("body"))
-                  ? "Invalid json"
-                  : "",
-              ]}
+              isInvalid={!!errors?.body?.message}
+              error={[errors?.body?.message]}
             >
               <AceEditorComponent control={control} onChange={setAceEditorValue} />
             </EuiFormRow>
@@ -190,21 +189,29 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
           )}
           <EuiFormRow
             label="Channel"
-            isInvalid={!!errors.ch_id?.message}
-            error={[errors.ch_id?.message]}
+            isInvalid={!!errors.channel?.message}
+            error={[errors.channel?.message]}
           >
             <EuiFlexGroup alignItems="center">
-              <EuiFlexItem>
+              <EuiFlexItem
+                style={
+                  channelDataOptions.length === 0
+                    ? {
+                        display: "none",
+                      }
+                    : {}
+                }
+              >
                 <Controller
                   control={control}
-                  name="ch_id"
+                  name="channel"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <EuiSelect
                       onChange={onChange}
                       value={value}
-                      options={channelDataOptions || []}
+                      options={channelDataOptions}
                       onBlur={onBlur}
-                      isInvalid={!!errors.ch_id?.message}
+                      isInvalid={!!errors.channel?.message}
                       aria-label="data type"
                       hasNoInitialSelection
                     />

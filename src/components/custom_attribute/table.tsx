@@ -2,7 +2,6 @@ import {
   Criteria,
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiButtonIcon,
   EuiConfirmModal,
   EuiFieldText,
   EuiFormRow,
@@ -116,23 +115,13 @@ const FieldsTable = () => {
         {
           name: "Delete",
           isPrimary: true,
+          icon: "trash",
+          color: "danger",
+          type: "icon",
           description: "Delete customer",
-          render: (field: Fields) => {
-            return (
-              <>
-                <EuiButtonIcon
-                  onClick={() => {
-                    setSelectedField(field);
-                    setIsDeleteModalVisible(true);
-                  }}
-                  size="s"
-                  iconType="trash"
-                  display="base"
-                  aria-label="Delete"
-                  color="danger"
-                />
-              </>
-            );
+          onClick: (field: Fields) => {
+            setSelectedField(field);
+            setIsDeleteModalVisible(true);
           },
         },
       ],
@@ -170,11 +159,19 @@ const FieldsTable = () => {
         rowHeader="firstName"
         columns={columns}
         cellProps={getCellProps}
-        pagination={{
-          ...pagination,
-          totalItemCount: data?.total_count || 0,
-          showPerPageOptions: true,
-        }}
+        pagination={
+          data?.total_count > pageSize
+            ? {
+                ...pagination,
+                totalItemCount: data?.total_count || 0,
+                showPerPageOptions: true,
+              }
+            : {
+                totalItemCount: 0,
+                pageSize: 0,
+                pageIndex: 0,
+              }
+        }
         onChange={onTableChange}
       />
       {isDeleteModalVisible && (

@@ -1,6 +1,5 @@
 import Head from "next/head";
 import SecurityComponent from "../../../../components/management/security";
-import Sidebar from "../../../../components/management/sidebar";
 import DashboardLayout from "../../../../layouts/dashboard";
 
 const Security = () => {
@@ -14,7 +13,6 @@ const Security = () => {
           pageTitle: "Security",
           iconType: "managementApp",
         }}
-        sidebar={<Sidebar active="security" />}
       >
         <SecurityComponent />
       </DashboardLayout>

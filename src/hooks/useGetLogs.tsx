@@ -3,36 +3,39 @@ import { BASE_URL } from "../constants";
 import { handleResponseNotOk } from "../utils/error_handler";
 import { createParam } from "../utils/createParam";
 
-export interface Template {
-  id: number;
+export interface Logs {
   created_at: string;
   updated_at: string;
+  template_id: number;
+  customer_id: number;
   title: string;
-  kind: "email" | "sms" | "push" | "inapp";
-  status: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
   body: string;
-  created_by: any;
-  updated_by: any;
-  channel: number;
+  response: string;
+  response_status: string;
 }
 
-export interface TemplateResponse {
+export interface LogsResponse {
   total_count: number;
-  results: Template[];
+  results: Logs[];
 }
 
-export default function useGetTemplates<Type>(
-  id?: string | string[] | undefined,
-  queryParam?: {
-    [key: string]: string;
-  },
-): {
+/**
+ * Get logs data from the server
+ * @param queryParam: { limit?: string, offset?: string, template_id?: string, customer_id?: string }
+ * @returns data: Type, error: any, isLoading: boolean, mutate: () => Promise<Type>
+ */
+export default function useGetLogs<Type>(queryParam?: {
+  limit?: string;
+  offset?: string;
+  template_id?: string;
+  customer_id?: string;
+}): {
   data: Type;
   error: any;
   isLoading: boolean;
   mutate: () => Promise<Type>;
 } {
-  const path = id ? `/api/v1/dj/templates/${id}/` : `/api/v1/dj/templates/`;
+  const path = `/api/v1/dj/logs/`;
   const preparedQueryParam = createParam(queryParam);
 
   const { data, error, isLoading, mutate } = useSWR(

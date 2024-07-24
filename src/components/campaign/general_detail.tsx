@@ -101,7 +101,7 @@ const GeneralDetails = () => {
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiFlexGroup responsive={false} gutterSize="s">
-                    {data.status.toLocaleLowerCase() === "draft" && (
+                    {(data.status === "DRAFT" || data.status === "ERROR") && (
                       <EuiFlexItem grow={false}>
                         <EuiButtonIcon
                           display="base"

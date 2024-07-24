@@ -81,7 +81,7 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
   };
 
   const onSubmit = async (data: FormData) => {
-    if (!isJson(watch("body"))) {
+    if (!isJson(watch("body")) && watch("kind") === "api") {
       setError("body", {
         message: "Invalid json",
         type: "manual",

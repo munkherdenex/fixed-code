@@ -19,7 +19,6 @@ import CreateAPIKeysComponent, {
   ApiKeyResponseDataType,
 } from "../../../../components/api_keys/create_api_keys";
 import ApiKeysTable from "../../../../components/api_keys/table";
-import Sidebar from "../../../../components/management/sidebar";
 import DashboardLayout from "../../../../layouts/dashboard";
 
 const ApiKeys = () => {
@@ -47,7 +46,6 @@ const ApiKeys = () => {
             </EuiButton>,
           ],
         }}
-        sidebar={<Sidebar active="api-keys" />}
       >
         <div>
           <ApiKeysTable />

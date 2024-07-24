@@ -2,9 +2,56 @@ import { EuiSideNav, htmlIdGenerator } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-const pathPrefix = process.env.PATH_PREFIX;
+const audienceSegmentPaths = [
+  {
+    path: "/dashboards/audience",
+    name: "Audience",
+  },
+  {
+    path: "/dashboards/custom_attribute",
+    name: "Custom attributes",
+  },
+  {
+    path: "/dashboards/segments",
+    name: "Segments",
+  },
+];
 
-const Sidebar = ({ active }: { active: string }) => {
+const notificationPaths = [
+  {
+    path: "/dashboards/campaign",
+    name: "Campaign",
+  },
+  {
+    path: "/dashboards/channels",
+    name: "Channels",
+  },
+  {
+    path: "/dashboards/analytics",
+    name: "Analytics",
+  },
+];
+
+const managementPaths = [
+  {
+    path: "/dashboards/management/profile",
+    name: "Profile",
+  },
+  {
+    path: "/dashboards/management/security",
+    name: "Security",
+  },
+  {
+    path: "/dashboards/management",
+    name: "Team",
+  },
+  {
+    path: "/dashboards/management/api-keys",
+    name: "Api keys",
+  },
+];
+
+const Sidebar = () => {
   const router = useRouter();
   const [isSideNavOpenOnMobile, setisSideNavOpenOnMobile] = useState(false);
 
@@ -14,50 +61,53 @@ const Sidebar = ({ active }: { active: string }) => {
 
   const sideNav = [
     {
+      name: "Audience & Segments",
+      id: htmlIdGenerator("audience&Segments")(),
+      items: audienceSegmentPaths.map((path) => {
+        return {
+          name: path.name,
+          id: htmlIdGenerator(path.name)(),
+          isSelected: router.pathname === path.path,
+          onClick: () => {
+            router.push(path.path);
+          },
+        };
+      }),
+    },
+    {
+      name: "Notifications",
+      id: htmlIdGenerator("notifications")(),
+      items: notificationPaths.map((path) => {
+        return {
+          name: path.name,
+          id: htmlIdGenerator(path.name)(),
+          isSelected: router.pathname === path.path,
+          onClick: () => {
+            router.push(path.path);
+          },
+        };
+      }),
+    },
+    {
       name: "Management",
       id: htmlIdGenerator("Management")(),
-      items: [
-        {
-          name: "Profile",
-          id: htmlIdGenerator("Profile")(),
-          isSelected: active === "settings",
+      items: managementPaths.map((path) => {
+        return {
+          name: path.name,
+          id: htmlIdGenerator(path.name)(),
+          isSelected: router.pathname === path.path,
           onClick: () => {
-            router.push(`${pathPrefix}/dashboards/management/profile`);
+            router.push(path.path);
           },
-        },
-        {
-          name: "Security",
-          id: htmlIdGenerator("Security")(),
-          isSelected: active === "security",
-          onClick: () => {
-            router.push(`${pathPrefix}/dashboards/management/security`);
-          },
-        },
-        {
-          name: "Team",
-          id: htmlIdGenerator("Team")(),
-          isSelected: active === "teamMembers",
-          onClick: () => {
-            router.push(`${pathPrefix}/dashboards/management`);
-          },
-        },
-        {
-          name: "API keys",
-          id: htmlIdGenerator("api-keys")(),
-          isSelected: active === "api-keys",
-          onClick: () => {
-            router.push(`${pathPrefix}/dashboards/management/api-keys`);
-          },
-        },
-        ,
-      ],
+        };
+      }),
     },
   ];
 
   return (
     <EuiSideNav
-      aria-label="Management"
-      mobileTitle="Management"
+      aria-label="Menu"
+      mobileTitle="Menu"
       toggleOpenOnMobile={() => toggleOpenOnMobile()}
       isOpenOnMobile={isSideNavOpenOnMobile}
       style={{ width: 192 }}

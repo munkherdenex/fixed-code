@@ -176,10 +176,18 @@ const CustomersTable = () => {
           columns={columns}
           rowProps={getRowProps}
           cellProps={getCellProps}
-          pagination={{
-            ...pagination,
-            totalItemCount: data?.total_count || 0,
-          }}
+          pagination={
+            data?.total_count > pageSize
+              ? {
+                  ...pagination,
+                  totalItemCount: data?.total_count || 0,
+                }
+              : {
+                  totalItemCount: 0,
+                  pageSize: 0,
+                  pageIndex: 0,
+                }
+          }
           onChange={onTableChange}
         />
       </EuiFlexItem>

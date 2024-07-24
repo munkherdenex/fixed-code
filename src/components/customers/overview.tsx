@@ -9,6 +9,7 @@ import {
   EuiTimelineProps,
 } from "@elastic/eui";
 import { Fragment, useMemo, useState } from "react";
+import Logs from "./logs";
 
 const items: EuiTimelineProps["items"] = [
   {
@@ -46,12 +47,12 @@ const items: EuiTimelineProps["items"] = [
 
 const tabs = [
   {
-    id: "posts--id",
-    name: "Posts",
+    id: "logs--id",
+    name: "Logs",
     content: (
       <Fragment>
         <EuiPanel>
-          <EuiTimeline items={items} />
+          <Logs />
         </EuiPanel>
       </Fragment>
     ),
@@ -59,7 +60,7 @@ const tabs = [
 ];
 
 const Overview = () => {
-  const [selectedTabId, setSelectedTabId] = useState("posts--id");
+  const [selectedTabId, setSelectedTabId] = useState("logs--id");
   const selectedTabContent = useMemo(() => {
     return tabs.find((obj) => obj.id === selectedTabId)?.content;
   }, [selectedTabId]);

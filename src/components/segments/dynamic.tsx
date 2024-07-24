@@ -1,8 +1,8 @@
 import { EuiButton, EuiForm, EuiFormRow } from "@elastic/eui";
 import { useState } from "react";
-import { ActionElement, Field, QueryBuilder, RuleGroupType } from "react-querybuilder";
+import { ActionElement, Field, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
+import { REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
-import { convertToMongoQuery } from "../../utils/convertToMongoQuery";
 import { dynamicStyles } from "./dynamic.styles";
 
 const fields: Field[] = [
@@ -41,7 +41,7 @@ const Dynamic = ({
   const handleSubmit = (createSegment: (data: any) => void) => (e: any) => {
     e.preventDefault();
     createSegment({
-      condition: convertToMongoQuery(query),
+      condition: formatQuery(query, "mongodb"),
     });
   };
 
@@ -52,6 +52,7 @@ const Dynamic = ({
           <QueryBuilder
             fields={[...fields, ...output]}
             query={query}
+            operators={REACT_QUERY_BUILDER_OPERATORS}
             onQueryChange={setQuery}
             controlElements={{
               addGroupAction: (props) => (props.level === 0 ? <ActionElement {...props} /> : null),

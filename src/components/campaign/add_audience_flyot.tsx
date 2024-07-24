@@ -48,7 +48,10 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     query: searchValue,
     limit: `${10}`,
   });
-  const { data: segmentsData } = useGetSegments<SegmentResponse>(undefined);
+  const { data: segmentsData } = useGetSegments<SegmentResponse>(undefined, {
+    query: searchValue,
+    limit: `${10}`,
+  });
 
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",

@@ -1,6 +1,5 @@
 import Head from "next/head";
 import Settings from "../../../../components/management/settings";
-import Sidebar from "../../../../components/management/sidebar";
 import DashboardLayout from "../../../../layouts/dashboard";
 
 const Management = () => {
@@ -14,7 +13,6 @@ const Management = () => {
           pageTitle: "Settings",
           iconType: "managementApp",
         }}
-        sidebar={<Sidebar active="settings" />}
       >
         <Settings />
       </DashboardLayout>
