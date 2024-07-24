@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
+import { badgeColor } from "../../utils/badge_color";
 import EditTemplateFlyout from "./edit_template_flyout";
 
 const DeleteConfirmModal = ({
@@ -142,7 +143,7 @@ const GeneralDetails = () => {
               <EuiFlexItem>Status:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
-                  <EuiBadge>{data.status}</EuiBadge>
+                  <EuiBadge color={badgeColor(data.status)}>{data.status}</EuiBadge>
                 </div>
               </EuiFlexItem>
               <EuiHorizontalRule margin="none" />
