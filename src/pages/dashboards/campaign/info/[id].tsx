@@ -2,7 +2,7 @@ import {
   EuiBreadcrumbs,
   EuiButton,
   EuiConfirmModal,
-  EuiFlexGrid,
+  EuiFlexGroup,
   EuiFlexItem,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -18,7 +18,7 @@ import DashboardLayout from "../../../../layouts/dashboard";
 import { teamsContext } from "../../../../store/teams_store";
 import { globalMutate } from "../../../../utils/globalMutate";
 
-const getRightSideButton = (
+export const getRightSideButton = (
   status: string,
   role: string,
   handleStatusButton: () => void,
@@ -135,14 +135,14 @@ const SendsInfo = () => {
         }
       >
         <>
-          <EuiFlexGrid columns={3}>
+          <EuiFlexGroup>
             <EuiFlexItem>
               <GeneralDetails />
             </EuiFlexItem>
             <EuiFlexItem grow={2}>
               <Menu />
             </EuiFlexItem>
-          </EuiFlexGrid>
+          </EuiFlexGroup>
           {isModalVisible && data.status === "DRAFT" && (
             <EuiConfirmModal
               aria-labelledby={modalTitleId}
