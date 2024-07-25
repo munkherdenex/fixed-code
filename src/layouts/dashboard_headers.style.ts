@@ -7,4 +7,5 @@ export const dashboardHeadersStyles = () => ({
   title: css`
     padding-left: 8px;
   `,
+  popover: css``,
 });

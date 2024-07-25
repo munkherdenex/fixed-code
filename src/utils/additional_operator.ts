@@ -8,4 +8,13 @@ export const additionalOperator = {
   $eq: (field: string, _operator: string, value: any, _opts: any) => {
     return { field, operator: "=", value: value };
   },
+  $ne: (field: string, _operator: string, value: any, _opts: any) => {
+    return { field, operator: "!=", value: value };
+  },
+  $gt: (field: string, _operator: string, value: any, _opts: any) => {
+    return { field, operator: ">", value: value };
+  },
+  $lt: (field: string, _operator: string, value: any, _opts: any) => {
+    return { field, operator: "<", value: value };
+  },
 };

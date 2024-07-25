@@ -1,4 +1,4 @@
-import { Operator } from "react-querybuilder";
+import { Field, Operator } from "react-querybuilder";
 
 export const BASE_URL = `${(global?.window && window?.env?.BACKEND_URL) || ""}`;
 
@@ -9,7 +9,11 @@ export const REACT_QUERY_BUILDER_OPERATORS: Operator[] = [
   { name: "!=", label: "!=" },
   { name: ">", label: ">" },
   { name: "<", label: "<" },
-  { name: ">=", label: ">=" },
-  { name: "<=", label: "<=" },
   { name: "contains", label: "contains" },
+];
+
+export const QUERY_BUILDER_DEFAULT_FIELD: Field[] = [
+  { name: "email", label: "Email", datatype: "string" },
+  { name: "phone", label: "Phone", datatype: "int" },
+  { name: "rid", label: "Reference id", datatype: "string" },
 ];

@@ -4,14 +4,16 @@ import { jsonrepair } from "jsonrepair";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Field, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
+import { ActionElement, Field, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
 import { parseMongoDB } from "react-querybuilder/parseMongoDB";
 import * as yup from "yup";
-import { REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
+import { QUERY_BUILDER_DEFAULT_FIELD, REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
 import useUpdateSegment from "../../hooks/useUpdateSegment";
 import { additionalOperator } from "../../utils/additional_operator";
+import { CustomValueEditor } from "../../utils/custom_value_editor";
 import { globalMutate } from "../../utils/globalMutate";
+import { processDynamicFieldData } from "../../utils/process_data";
 import { customRuleProcessor } from "../../utils/rule_processer";
 import { addToast } from "../toast";
 import { dynamicStyles } from "./dynamic.styles";
@@ -22,12 +24,6 @@ const schema = yup.object({
 });
 
 type FormData = yup.InferType<typeof schema>;
-
-const fields: Field[] = [
-  { name: "email", label: "Email" },
-  { name: "phone", label: "Phone" },
-  { name: "rid", label: "Reference id" },
-];
 
 const EditDynamic = ({
   name,
@@ -70,12 +66,7 @@ const EditDynamic = ({
     },
   });
 
-  const output = Array.isArray(data)
-    ? data.map((item) => ({
-        name: `cf_${item.attribute_name}`,
-        label: `CF ${item.name.charAt(0).toUpperCase() + item.name.slice(1)}`,
-      }))
-    : [];
+  const output = processDynamicFieldData(data);
 
   const createSegment = async (data: FormData) => {
     try {
@@ -142,10 +133,14 @@ const EditDynamic = ({
         </EuiFormRow>
         <EuiFormRow css={styles.queryBuilderContainer} label="Team id" fullWidth>
           <QueryBuilder
-            fields={[...fields, ...output]}
+            fields={[...QUERY_BUILDER_DEFAULT_FIELD, ...output]}
             query={query}
             operators={REACT_QUERY_BUILDER_OPERATORS}
             onQueryChange={setQuery}
+            controlElements={{
+              addGroupAction: (props) => (props.level === 0 ? <ActionElement {...props} /> : null),
+              valueEditor: CustomValueEditor,
+            }}
           />
         </EuiFormRow>
         <EuiFormRow>

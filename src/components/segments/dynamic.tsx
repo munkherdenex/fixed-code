@@ -2,17 +2,12 @@ import { EuiButton, EuiForm, EuiFormRow } from "@elastic/eui";
 import { jsonrepair } from "jsonrepair";
 import { useState } from "react";
 import { ActionElement, Field, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
-import { REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
+import { QUERY_BUILDER_DEFAULT_FIELD, REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
 import { CustomValueEditor } from "../../utils/custom_value_editor";
+import { processDynamicFieldData } from "../../utils/process_data";
 import { customRuleProcessor } from "../../utils/rule_processer";
 import { dynamicStyles } from "./dynamic.styles";
-
-const fields: Field[] = [
-  { name: "email", label: "Email", datatype: "string" },
-  { name: "phone", label: "Phone", datatype: "int" },
-  { name: "rid", label: "Reference id", datatype: "string" },
-];
 
 const Dynamic = ({
   createSegment,
@@ -34,13 +29,7 @@ const Dynamic = ({
     ],
   });
 
-  const output = Array.isArray(data)
-    ? data.map((item) => ({
-        name: `cf_${item.attribute_name}`,
-        label: `CF ${item.name.charAt(0).toUpperCase() + item.name.slice(1)}`,
-        datatype: item?.data_type,
-      }))
-    : [];
+  const output = processDynamicFieldData(data);
 
   const handleSubmit = (createSegment: (data: any) => void) => (e: any) => {
     e.preventDefault();
@@ -59,7 +48,7 @@ const Dynamic = ({
       <EuiForm component="form" onSubmit={handleSubmit(createSegment)}>
         <EuiFormRow css={styles.queryBuilderContainer} label="Team id" fullWidth>
           <QueryBuilder
-            fields={[...fields, ...output]}
+            fields={[...QUERY_BUILDER_DEFAULT_FIELD, ...output]}
             query={query}
             operators={REACT_QUERY_BUILDER_OPERATORS}
             onQueryChange={setQuery}

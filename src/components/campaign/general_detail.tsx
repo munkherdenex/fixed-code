@@ -7,7 +7,6 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
-  EuiHorizontalRule,
   EuiPanel,
   useGeneratedHtmlId,
 } from "@elastic/eui";

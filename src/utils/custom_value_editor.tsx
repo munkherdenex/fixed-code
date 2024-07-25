@@ -1,4 +1,4 @@
-import { EuiDatePicker, EuiFieldNumber, EuiFieldText } from "@elastic/eui";
+import { EuiDatePicker, EuiFieldNumber, EuiFieldText, EuiSwitch } from "@elastic/eui";
 import moment from "moment";
 import { ValueEditorProps, ValueEditor } from "react-querybuilder";
 
@@ -9,6 +9,18 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
     return (
       <div>
         <EuiDatePicker
+          compressed
+          selected={!props.value ? null : moment(props.value, dateFormat)}
+          onChange={(d) => props.handleOnChange(d ? moment(d, dateFormat) : null)}
+        />
+      </div>
+    );
+  }
+  if (props.fieldData.datatype === "datetime") {
+    return (
+      <div>
+        <EuiDatePicker
+          showTimeSelect
           compressed
           selected={!props.value ? null : moment(props.value, dateFormat)}
           onChange={(d) => props.handleOnChange(d ? moment(d, dateFormat) : null)}
@@ -36,6 +48,18 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
           value={!props?.value ? "" : props.value}
           onChange={(e) => props.handleOnChange(e.target.value)}
           aria-label="Use aria labels when no actual label is in use"
+        />
+      </div>
+    );
+  }
+  if (props.fieldData.datatype === "bool") {
+    return (
+      <div>
+        <EuiSwitch
+          compressed
+          checked={!props?.value ? "" : props.value}
+          onChange={(e) => props.handleOnChange(e.target.checked)}
+          label=""
         />
       </div>
     );

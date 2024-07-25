@@ -15,6 +15,18 @@ export const customRuleProcessor: RuleProcessor = (rule, options) => {
     return `{\"${rule.field}\":{\"$eq\":\"${rule.value}\"}}`;
   }
 
+  if (rule.operator === "!=") {
+    return `{\"${rule.field}\":{\"$ne\":\"${rule.value}\"}}`;
+  }
+
+  if (rule.operator === ">") {
+    return `{\"${rule.field}\":{\"$gt\":\"${rule.value}\"}}`;
+  }
+
+  if (rule.operator === "<") {
+    return `{\"${rule.field}\":{\"$lt\":\"${rule.value}\"}}`;
+  }
+
   // Defer to the default processor for all other operators
   return defaultRuleProcessorMongoDB(rule, options);
 };

@@ -133,6 +133,7 @@ const TeamSwitcher = () => {
       closePopover={closePopover}
       anchorPosition="downRight"
       panelPaddingSize="s"
+      css={styles.popover}
     >
       <EuiFlexGroup direction="column" gutterSize="s">
         <TeamsTreeView />
