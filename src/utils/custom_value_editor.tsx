@@ -2,16 +2,14 @@ import { EuiDatePicker, EuiFieldNumber, EuiFieldText, EuiSwitch } from "@elastic
 import moment from "moment";
 import { ValueEditorProps, ValueEditor } from "react-querybuilder";
 
-const dateFormat = "YYYY-MM-DD";
-
 export const CustomValueEditor = (props: ValueEditorProps) => {
   if (props.fieldData.datatype === "date") {
     return (
       <div>
         <EuiDatePicker
           compressed
-          selected={!props.value ? null : moment(props.value, dateFormat)}
-          onChange={(d) => props.handleOnChange(d ? moment(d, dateFormat) : null)}
+          selected={!props.value ? null : moment(props.value)}
+          onChange={(d) => props.handleOnChange(d ? moment(d) : null)}
         />
       </div>
     );
@@ -22,8 +20,8 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
         <EuiDatePicker
           showTimeSelect
           compressed
-          selected={!props.value ? null : moment(props.value, dateFormat)}
-          onChange={(d) => props.handleOnChange(d ? moment(d, dateFormat) : null)}
+          selected={!props.value ? null : moment(props.value)}
+          onChange={(d) => props.handleOnChange(d ? moment(d) : null)}
         />
       </div>
     );
