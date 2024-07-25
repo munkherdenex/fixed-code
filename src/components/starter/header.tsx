@@ -25,7 +25,6 @@ const Header = () => {
               </a>
             </Link>,
           ],
-          borders: "none",
         },
         {
           items: [
@@ -42,7 +41,6 @@ const Header = () => {
             </Link>,
             <ThemeSwitcher key="theme-switcher" />,
           ],
-          borders: "none",
         },
       ]}
     />

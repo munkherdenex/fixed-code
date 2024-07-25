@@ -139,10 +139,10 @@ const GeneralDetails = () => {
             <EuiFlexGrid columns={2} responsive={false}>
               <EuiFlexItem>Name:</EuiFlexItem>
               <EuiFlexItem>{data?.name}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>description:</EuiFlexItem>
               <EuiFlexItem>{data?.description}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               {(data.type === "dynamic" || data.type === "static") && (
                 <>
                   <EuiFlexItem>condition:</EuiFlexItem>
@@ -151,7 +151,6 @@ const GeneralDetails = () => {
                       {data?.condition && jsonrepair(data?.condition)}
                     </EuiCodeBlock>
                   </EuiFlexItem>
-                  <EuiHorizontalRule margin="none" />
                 </>
               )}
               <EuiFlexItem>Type:</EuiFlexItem>
@@ -160,13 +159,13 @@ const GeneralDetails = () => {
                   <EuiBadge>{data?.type}</EuiBadge>
                 </div>
               </EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Created by :</EuiFlexItem>
               <EuiFlexItem>{data?.created_by}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Updated date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>

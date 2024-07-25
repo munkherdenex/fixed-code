@@ -2,7 +2,6 @@ import { EuiPanel, EuiTab, EuiTabs } from "@elastic/eui";
 import { useMemo, useState } from "react";
 import SegmentAudienceList from "./segment_audience_list";
 
-
 const tabs = [
   {
     id: "audience--id",

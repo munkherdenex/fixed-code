@@ -124,20 +124,20 @@ const GeneralDetails = () => {
             <EuiFlexGrid columns={2}>
               <EuiFlexItem>Name:</EuiFlexItem>
               <EuiFlexItem>{data?.name}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Attribute name:</EuiFlexItem>
               <EuiFlexItem>{data?.attribute_name}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Data type:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
                   <EuiBadge>{data?.data_type}</EuiBadge>
                 </div>
               </EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Updated date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>

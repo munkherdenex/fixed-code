@@ -180,7 +180,7 @@ const CollapsibleNav = () => {
           />
         </EuiCollapsibleNavGroup>
       </EuiFlexItem>
-      <EuiHorizontalRule margin="none" />
+
       {/* Menu items */}
       <EuiFlexItem className="eui-yScroll">
         <EuiCollapsibleNavGroup
@@ -232,7 +232,6 @@ const CollapsibleNav = () => {
                 Elastic
               </EuiHeaderLogo>,
             ],
-            borders: "none",
           },
           {
             items: [
@@ -241,7 +240,6 @@ const CollapsibleNav = () => {
                 <EuiAvatar name="John Username" size="s" />
               </EuiHeaderSectionItemButton>,
             ],
-            borders: "none",
           },
         ]}
       />
@@ -251,7 +249,6 @@ const CollapsibleNav = () => {
         sections={[
           {
             items: leftSectionItems,
-            borders: "right",
           },
           {
             items: [
@@ -260,7 +257,6 @@ const CollapsibleNav = () => {
               </EuiHeaderSectionItemButton>,
             ],
             breadcrumbs: breadcrumbs,
-            borders: "right",
           },
         ]}
       />

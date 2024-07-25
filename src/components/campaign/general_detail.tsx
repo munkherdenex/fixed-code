@@ -133,23 +133,21 @@ const GeneralDetails = () => {
             <EuiFlexGrid columns={2} responsive={false}>
               <EuiFlexItem>Title:</EuiFlexItem>
               <EuiFlexItem>{data.title}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Kind:</EuiFlexItem>
               <EuiFlexItem>{data.kind}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Body:</EuiFlexItem>
               <EuiFlexItem>{data.body}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Status:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
                   <EuiBadge color={badgeColor(data.status)}>{data.status}</EuiBadge>
                 </div>
               </EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
               <EuiFlexItem>Updated date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>

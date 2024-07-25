@@ -221,7 +221,7 @@ const CollapsibleNav = () => {
           />
         </EuiCollapsibleNavGroup>
       </EuiFlexItem>
-      <EuiHorizontalRule margin="none" />
+
       <EuiFlexItem grow={false}>
         <EuiCollapsibleNavGroup
           title={
@@ -247,7 +247,7 @@ const CollapsibleNav = () => {
           />
         </EuiCollapsibleNavGroup>
       </EuiFlexItem>
-      <EuiHorizontalRule margin="none" />
+
       <EuiFlexItem grow={false}>
         <EuiCollapsibleNavGroup
           title={

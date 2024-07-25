@@ -20,7 +20,7 @@ const UpdateMemberModal = ({
       };
       const response = await trigger(preparedData);
       if (response) {
-        mutate('/api/v1/teams/');
+        mutate("/api/v1/teams/");
         addToast({
           id: "member-success",
           color: "success",
@@ -31,15 +31,13 @@ const UpdateMemberModal = ({
     } catch (e) {
       console.error(e);
     }
-  }
-
-
+  };
 
   return (
     <EuiButtonIcon
       isLoading={isMutating}
-      iconType='save'
-      value='Save'
+      iconType="save"
+      value="Save"
       onClick={() => {
         changeMemberRole(changed_role);
       }}

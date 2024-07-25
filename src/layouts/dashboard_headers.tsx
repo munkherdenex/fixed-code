@@ -168,7 +168,6 @@ const DashboardHeaders = () => {
               </EuiHeaderLogo>,
               largeMaxBreakpoint && leftSectionItems,
             ],
-            borders: "none",
           },
           {
             items: [
@@ -176,7 +175,6 @@ const DashboardHeaders = () => {
               <ThemeSwitcher key={useGeneratedHtmlId()} />,
               <HeaderUserMenu key={useGeneratedHtmlId()} />,
             ],
-            borders: "none",
           },
         ]}
       />

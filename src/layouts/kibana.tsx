@@ -1,10 +1,10 @@
 import { FunctionComponent } from "react";
 import CollapsibleNav from "./kibana_collapsible_nav";
 import { kibanaLayoutStyles } from "./kibana.styles";
-import { EuiPageTemplate, EuiPageTemplateProps, EuiPageContentHeaderProps } from "@elastic/eui";
+import { EuiPageTemplate, EuiPageTemplateProps, EuiPageHeaderProps } from "@elastic/eui";
 
 interface KibanaLayoutProps extends EuiPageTemplateProps {
-  pageHeader: EuiPageContentHeaderProps;
+  pageHeader: EuiPageHeaderProps;
 }
 
 const KibanaLayout: FunctionComponent<KibanaLayoutProps> = ({ children, pageHeader, ...rest }) => {

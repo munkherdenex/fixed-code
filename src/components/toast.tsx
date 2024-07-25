@@ -1,8 +1,8 @@
-import { ReactChild, ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { EuiGlobalToastList } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 
-let addToastHandler: (color: string, title: ReactNode, text: ReactChild) => void;
+let addToastHandler: (color: string, title: ReactNode, text: any) => void;
 let removeAllToastsHandler: () => void;
 let toastId = 0;
 

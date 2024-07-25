@@ -110,7 +110,6 @@ const Sidebar = () => {
       mobileTitle="Menu"
       toggleOpenOnMobile={() => toggleOpenOnMobile()}
       isOpenOnMobile={isSideNavOpenOnMobile}
-      style={{ width: 192 }}
       items={sideNav}
     />
   );

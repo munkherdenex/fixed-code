@@ -84,16 +84,16 @@ const GeneralDetails = () => {
           <EuiFlexGrid responsive={false} columns={2}>
             <EuiFlexItem>Email address :</EuiFlexItem>
             <EuiFlexItem>{data?.email}</EuiFlexItem>
-            <EuiHorizontalRule margin="none" />
+
             <EuiFlexItem>Phone number :</EuiFlexItem>
             <EuiFlexItem>{data?.phone}</EuiFlexItem>
-            <EuiHorizontalRule margin="none" />
+
             <EuiFlexItem>Reference ID :</EuiFlexItem>
             <EuiFlexItem> {data?.rid}</EuiFlexItem>
-            <EuiHorizontalRule margin="none" />
+
             <EuiFlexItem>Created date :</EuiFlexItem>
             <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-            <EuiHorizontalRule margin="none" />
+
             <EuiFlexItem>Updated date :</EuiFlexItem>
             <EuiFlexItem> {moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
           </EuiFlexGrid>
@@ -113,7 +113,6 @@ const GeneralDetails = () => {
               <EuiFlexGrid responsive={false} columns={2}>
                 {extendedCustomerData?.map((data) => (
                   <React.Fragment key={data.id}>
-                    <EuiHorizontalRule margin="none" />
                     <EuiFlexItem>
                       {data.name} ({data.attribute_name}) :
                     </EuiFlexItem>

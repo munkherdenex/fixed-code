@@ -4,13 +4,14 @@ import { useState } from "react";
 import { ActionElement, Field, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
 import { REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
+import { CustomValueEditor } from "../../utils/custom_value_editor";
 import { customRuleProcessor } from "../../utils/rule_processer";
 import { dynamicStyles } from "./dynamic.styles";
 
 const fields: Field[] = [
-  { name: "email", label: "Email" },
-  { name: "phone", label: "Phone" },
-  { name: "rid", label: "Reference id" },
+  { name: "email", label: "Email", datatype: "string" },
+  { name: "phone", label: "Phone", datatype: "int" },
+  { name: "rid", label: "Reference id", datatype: "string" },
 ];
 
 const Dynamic = ({
@@ -37,6 +38,7 @@ const Dynamic = ({
     ? data.map((item) => ({
         name: `cf_${item.attribute_name}`,
         label: `CF ${item.name.charAt(0).toUpperCase() + item.name.slice(1)}`,
+        datatype: item?.data_type,
       }))
     : [];
 
@@ -63,6 +65,7 @@ const Dynamic = ({
             onQueryChange={setQuery}
             controlElements={{
               addGroupAction: (props) => (props.level === 0 ? <ActionElement {...props} /> : null),
+              valueEditor: CustomValueEditor,
             }}
           />
         </EuiFormRow>

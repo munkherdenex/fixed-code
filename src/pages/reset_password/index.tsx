@@ -34,12 +34,12 @@ export async function getServerSideProps(context) {
   if (query?.p3 && query?.p4) {
     return {
       props: {},
-    }
+    };
   }
   return {
     redirect: {
       permanent: false,
-      destination: '/signin',
+      destination: "/signin",
     },
     props: {},
   };

@@ -14,5 +14,5 @@ export interface MembersType {
 }
 
 export interface TeamMembersType {
-  members: MembersType[],
+  members: MembersType[];
 }

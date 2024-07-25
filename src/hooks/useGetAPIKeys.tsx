@@ -13,7 +13,7 @@ export interface ApiKeysType {
 }
 
 export default function useGetAPIKeys() {
-  const { data, error, isLoading, mutate } = useSWR('/api/v1/apikey', async (path) => {
+  const { data, error, isLoading, mutate } = useSWR("/api/v1/apikey", async (path) => {
     const res = await fetch(`${BASE_URL}${path}`, {
       method: "GET",
       headers: { "content-type": "application/json" },
@@ -24,7 +24,7 @@ export default function useGetAPIKeys() {
   });
 
   return {
-    data: data as ApiKeysType[] || [],
+    data: (data as ApiKeysType[]) || [],
     error,
     isLoading,
     mutate,

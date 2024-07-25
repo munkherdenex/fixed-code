@@ -40,6 +40,6 @@ export default function useUpdateMemberRole<Type>(id: string | string[] | undefi
     data: data,
     error,
     isMutating,
-    trigger
+    trigger,
   };
 }

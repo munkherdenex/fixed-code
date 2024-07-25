@@ -126,24 +126,24 @@ const GeneralDetails = () => {
             <EuiFlexGrid columns={2}>
               <EuiFlexItem>Name:</EuiFlexItem>
               <EuiFlexItem>{data?.name}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Channel type:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
                   <EuiBadge>{data?.channel_type}</EuiBadge>
                 </div>
               </EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Data:</EuiFlexItem>
               <EuiFlexItem>
                 <EuiCodeBlock language="json" fontSize="m" paddingSize="m" lineNumbers>
                   {data?.data && jsonrepair(data?.data)}
                 </EuiCodeBlock>
               </EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-              <EuiHorizontalRule margin="none" />
+
               <EuiFlexItem>Updated date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>

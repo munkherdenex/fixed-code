@@ -45,11 +45,9 @@ const DocsLayout = ({ pageHeader, children }) => {
                 Elastic docs
               </EuiHeaderLogo>,
             ],
-            borders: "none",
           },
           {
             items: [<ThemeSwitcher key={useGeneratedHtmlId()} />],
-            borders: "none",
           },
         ]}
       />
