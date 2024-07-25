@@ -2,10 +2,12 @@ import AceEditor from "react-ace";
 
 import "ace-builds/src-noconflict/mode-java";
 import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/theme-solarized_dark";
 import "ace-builds/src-noconflict/ext-language_tools";
 import { aceEditorStyles } from "./ace_editor.styles";
 import { Control, Controller } from "react-hook-form";
 import { useRef } from "react";
+import { getTheme } from "../../lib/theme";
 
 const AceEditorComponent = ({
   control,
@@ -36,7 +38,7 @@ const AceEditorComponent = ({
             mode="json"
             width="400px"
             height="300px"
-            theme="github"
+            theme={getTheme() === "dark" ? "solarized_dark" : "github"}
             name="ace-editor"
             onLoad={onLoad}
             onChange={onChange}
