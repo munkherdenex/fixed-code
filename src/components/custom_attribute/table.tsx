@@ -154,7 +154,7 @@ const FieldsTable = () => {
   return (
     <>
       <EuiBasicTable
-        tableCaption="Demo of EuiBasicTable"
+        tableCaption="Custom attribute table caption"
         items={data?.results || []}
         rowHeader="firstName"
         columns={columns}
