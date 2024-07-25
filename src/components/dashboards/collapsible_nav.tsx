@@ -178,7 +178,6 @@ const CollapsibleNav = () => {
     <EuiCollapsibleNav
       ownFocus={false}
       css={css`
-        margin-top: 48px; // one top navs
         min-height: calc(100vh - 48px);
         display: flex;
       `}
