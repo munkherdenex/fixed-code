@@ -58,7 +58,7 @@ const Logs: React.FC = () => {
       <EuiFlexItem>
         <EuiTimeline items={preparedData} />
       </EuiFlexItem>
-      {data.total_count > LIMIT && (
+      {data?.total_count > LIMIT && (
         <EuiFlexItem>
           <EuiFlexGroup responsive={false} justifyContent="spaceAround">
             <EuiFlexItem grow={false}>
