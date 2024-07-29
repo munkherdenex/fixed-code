@@ -39,7 +39,7 @@ const QuillEditorComponent = ({
   };
 
   return (
-    <div css={styles.container}>
+    <div >
       <Controller
         control={control}
         name="body"
@@ -50,6 +50,7 @@ const QuillEditorComponent = ({
             value={value}
             onBlur={onBlur}
             onChange={onChange}
+            style={{ height: '50px', minHeight: '150px' }}
           />
         )}
       />

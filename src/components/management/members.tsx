@@ -64,15 +64,15 @@ const MembersTable = () => {
                   member.role === "admin"
                     ? "user"
                     : member.role === "member"
-                    ? "users"
-                    : "usersRolesApp"
+                      ? "users"
+                      : "usersRolesApp"
                 }
                 color={
                   member.role === "admin"
                     ? "primary"
                     : member.role === "member"
-                    ? "warning"
-                    : "success"
+                      ? "warning"
+                      : "success"
                 }
               />
             }
@@ -170,21 +170,24 @@ const MembersTable = () => {
       ),
     },
     {
-      name: "Action",
+      name: `${isAdmin ? 'Actions' : ''}`,
       field: "",
+      width: `${isAdmin ? '6%' : '0%'}`,
       hidden: !isAdmin,
-      render: (member: MembersType) => (
-        <EuiButtonIcon
-          display="base"
-          iconType="trash"
-          aria-label="Delete"
-          color="danger"
-          onClick={() => {
+      actions: [
+        {
+          name: "Delete",
+          isPrimary: true,
+          icon: "trash",
+          color: "danger",
+          type: "icon",
+          description: "Delete member",
+          onClick: (member: MembersType) => {
             setSelectedMemberId(member?.id);
             setIsModalVisible(true);
-          }}
-        />
-      ),
+          },
+        },
+      ],
     },
   ];
 
