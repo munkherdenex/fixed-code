@@ -8,6 +8,7 @@ import {
   EuiTableFieldDataColumnType,
   useGeneratedHtmlId,
 } from "@elastic/eui";
+import moment from "moment";
 import { SetStateAction, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useDeleteField from "../../hooks/useDeleteCustomField";
@@ -105,6 +106,9 @@ const FieldsTable = () => {
       field: "created_at",
       name: "Created at",
       "data-test-subj": "createdAtCell",
+      render: (date: string) => {
+        return moment(date).format("YYYY-MM-DD LT");
+      },
     },
     {
       name: "Actions",

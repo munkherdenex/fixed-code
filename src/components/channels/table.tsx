@@ -19,6 +19,7 @@ import useGetChannels, { Channels, ChannelsResponse } from "../../hooks/useGetCh
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
+import moment from "moment";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -72,6 +73,9 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
       field: "created_at",
       name: "Created at",
       "data-test-subj": "createdAtCell",
+      render: (date: string) => {
+        return moment(date).format("YYYY-MM-DD LT");
+      },
       footer: () => {
         return <strong>Total: {data?.total_count || 0}</strong>;
       },

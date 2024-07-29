@@ -74,7 +74,7 @@ const EditDynamic = ({
         name: data.name,
         description: data.description,
         condition: jsonrepair(
-          formatQuery(query, {
+          formatQuery(JSON.parse(JSON.stringify(query)), {
             format: "mongodb",
             ruleProcessor: customRuleProcessor,
           }),

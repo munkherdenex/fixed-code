@@ -9,7 +9,10 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
         <EuiDatePicker
           compressed
           selected={!props.value ? null : moment(props.value)}
-          onChange={(d) => props.handleOnChange(d ? moment(d) : null)}
+          onChange={(d) => {
+            console.info(JSON.stringify(d.startOf("day")));
+            props.handleOnChange(d ? moment(d).startOf("day") : null);
+          }}
         />
       </div>
     );
@@ -21,7 +24,10 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
           showTimeSelect
           compressed
           selected={!props.value ? null : moment(props.value)}
-          onChange={(d) => props.handleOnChange(d ? moment(d) : null)}
+          onChange={(d) => {
+            console.info(JSON.stringify(d));
+            props.handleOnChange(d ? moment(d) : null);
+          }}
         />
       </div>
     );

@@ -12,6 +12,7 @@ import {
   EuiTableFieldDataColumnType,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -93,6 +94,9 @@ const CustomersTable = () => {
       field: "created_at",
       name: "Created at",
       align: "right",
+      render: (date: string) => {
+        return moment(date).format("YYYY-MM-DD LT");
+      },
       footer: () => {
         return <strong>Total: {data?.total_count || 0}</strong>;
       },

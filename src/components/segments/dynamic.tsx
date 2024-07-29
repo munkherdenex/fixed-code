@@ -1,7 +1,7 @@
 import { EuiButton, EuiForm, EuiFormRow } from "@elastic/eui";
 import { jsonrepair } from "jsonrepair";
 import { useState } from "react";
-import { ActionElement, Field, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
+import { ActionElement, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
 import { QUERY_BUILDER_DEFAULT_FIELD, REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
 import { CustomValueEditor } from "../../utils/custom_value_editor";
@@ -35,13 +35,15 @@ const Dynamic = ({
     e.preventDefault();
     createSegment({
       condition: jsonrepair(
-        formatQuery(query, {
+        formatQuery(JSON.parse(JSON.stringify(query)), {
           format: "mongodb",
           ruleProcessor: customRuleProcessor,
         }),
       ),
     });
   };
+
+  console.info(JSON.stringify(query.rules));
 
   return (
     <>

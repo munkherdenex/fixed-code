@@ -16,6 +16,7 @@ import useGetSegments, { Segment, SegmentResponse } from "../../hooks/useGetSegm
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PAGINATION_CHOOSES } from "../../constants";
+import moment from "moment";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -78,7 +79,11 @@ const SegmentsTable = () => {
     {
       field: "created_at",
       name: "Created at",
+      align: "right",
       "data-test-subj": "createdAtCell",
+      render: (date: string) => {
+        return moment(date).format("YYYY-MM-DD LT");
+      },
       footer: () => {
         return <strong>Total: {data?.total_count || 0}</strong>;
       },
