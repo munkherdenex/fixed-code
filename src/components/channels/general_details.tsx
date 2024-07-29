@@ -134,7 +134,7 @@ const GeneralDetails = () => {
               <EuiFlexItem>Data:</EuiFlexItem>
               <EuiFlexItem>
                 <EuiCodeBlock language="json" fontSize="m" paddingSize="m" lineNumbers>
-                  {data?.data && jsonrepair(data?.data)}
+                  <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.data)), null, 2)}</pre>
                 </EuiCodeBlock>
               </EuiFlexItem>
               <EuiFlexItem>Created date :</EuiFlexItem>
