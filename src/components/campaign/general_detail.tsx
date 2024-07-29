@@ -1,6 +1,7 @@
 import {
   EuiBadge,
   EuiButtonIcon,
+  EuiCodeBlock,
   EuiConfirmModal,
   EuiFieldText,
   EuiFlexGrid,
@@ -10,6 +11,7 @@ import {
   EuiPanel,
   useGeneratedHtmlId,
 } from "@elastic/eui";
+import { jsonrepair } from "jsonrepair";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
@@ -135,7 +137,11 @@ const GeneralDetails = () => {
               <EuiFlexItem>Kind:</EuiFlexItem>
               <EuiFlexItem>{data.kind}</EuiFlexItem>
               <EuiFlexItem>Body:</EuiFlexItem>
-              <EuiFlexItem>{data.body}</EuiFlexItem>
+              <EuiFlexItem>
+                <EuiCodeBlock language="json" fontSize="s" paddingSize="s" isCopyable>
+                  <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.body)), null, 2)}</pre>
+                </EuiCodeBlock>
+              </EuiFlexItem>
               <EuiFlexItem>Status:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
