@@ -1,20 +1,20 @@
-import "../custom_typings/index.d.ts";
-import "core-js/stable";
-import "regenerator-runtime/runtime";
-import { FunctionComponent } from "react";
-import { AppProps } from "next/app";
-import Head from "next/head";
 import { EuiErrorBoundary } from "@elastic/eui";
 import { Global } from "@emotion/react";
+import "core-js/stable";
+import { AppProps } from "next/app";
+import Head from "next/head";
+import Script from "next/script";
+import { FunctionComponent } from "react";
+import "react-querybuilder/dist/query-builder.css";
+import "regenerator-runtime/runtime";
 import Chrome from "../components/chrome";
 import { Theme } from "../components/theme";
-import { globalStyes } from "../styles/global.styles";
-import "react-querybuilder/dist/query-builder.css";
-import Script from "next/script";
-import { AuthProvider } from "../store/auth_store";
 import GlobalToastList from "../components/toast";
+import "../custom_typings/index.d.ts";
 import SWRConfigLayout from "../layouts/swr_config";
+import { AuthProvider } from "../store/auth_store";
 import { TeamsProvider } from "../store/teams_store";
+import { globalStyes } from "../styles/global.styles";
 
 declare global {
   interface Window {

@@ -11,11 +11,11 @@ import {
   EuiFlyoutBody,
   EuiFlyoutHeader,
   EuiFormRow,
-  EuiHorizontalRule,
   EuiPanel,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
+import { jsonrepair } from "jsonrepair";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
@@ -23,7 +23,6 @@ import useDeleteSegment from "../../hooks/useDeleteSegment";
 import useGetSegments, { Segment } from "../../hooks/useGetSegments";
 import EditDynamic from "./edit_dynamic";
 import Manual from "./manual";
-import { jsonrepair } from "jsonrepair";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -96,8 +95,6 @@ const GeneralDetails = () => {
     return <div>No data</div>;
   }
 
-  console.info();
-
   return (
     <div>
       <EuiPanel>
@@ -139,16 +136,14 @@ const GeneralDetails = () => {
             <EuiFlexGrid columns={2} responsive={false}>
               <EuiFlexItem>Name:</EuiFlexItem>
               <EuiFlexItem>{data?.name}</EuiFlexItem>
-
               <EuiFlexItem>description:</EuiFlexItem>
               <EuiFlexItem>{data?.description}</EuiFlexItem>
-
               {(data.type === "dynamic" || data.type === "static") && (
                 <>
                   <EuiFlexItem>condition:</EuiFlexItem>
                   <EuiFlexItem>
-                    <EuiCodeBlock language="json" fontSize="s" paddingSize="s">
-                      {data?.condition && jsonrepair(data?.condition)}
+                    <EuiCodeBlock language="json" fontSize="s" paddingSize="s" isCopyable>
+                      <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.condition)), null, 2)}</pre>
                     </EuiCodeBlock>
                   </EuiFlexItem>
                 </>
@@ -159,13 +154,10 @@ const GeneralDetails = () => {
                   <EuiBadge>{data?.type}</EuiBadge>
                 </div>
               </EuiFlexItem>
-
               <EuiFlexItem>Created by :</EuiFlexItem>
               <EuiFlexItem>{data?.created_by}</EuiFlexItem>
-
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-
               <EuiFlexItem>Updated date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>
