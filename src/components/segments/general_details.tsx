@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
 import useDeleteSegment from "../../hooks/useDeleteSegment";
 import useGetSegments, { Segment } from "../../hooks/useGetSegments";
+import { badgeColor } from "../../utils/badge_color";
 import EditDynamic from "./edit_dynamic";
 import Manual from "./manual";
 
@@ -141,13 +142,13 @@ const GeneralDetails = () => {
               <EuiFlexItem>Status:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
-                  <EuiBadge>{data?.status}</EuiBadge>
+                  <EuiBadge color={badgeColor(data?.status)}>{data?.status}</EuiBadge>
                 </div>
               </EuiFlexItem>
               <EuiFlexItem>Type:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
-                  <EuiBadge>{data?.type}</EuiBadge>
+                  <EuiBadge color={badgeColor(data?.type)}>{data?.type}</EuiBadge>
                 </div>
               </EuiFlexItem>
               {(data.type === "dynamic" || data.type === "static") && (
