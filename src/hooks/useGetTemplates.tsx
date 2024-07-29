@@ -14,6 +14,7 @@ export interface Template {
   created_by: any;
   updated_by: any;
   channel: number;
+  aud_count: number;
 }
 
 export interface TemplateResponse {

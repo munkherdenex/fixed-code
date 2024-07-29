@@ -154,7 +154,10 @@ const SendsInfo = () => {
               confirmButtonText="Confirm"
               defaultFocusedButton="confirm"
             >
-              <p>The campaign will be marked as done. Are you sure you want to continue?</p>
+              <p>
+                The campaign will be marked as done, and it has reached an audience of{" "}
+                <strong>{data?.aud_count}</strong>. Are you sure you want to continue?
+              </p>
             </EuiConfirmModal>
           )}
           {isModalVisible && data.status === "DONE" && (
@@ -168,7 +171,10 @@ const SendsInfo = () => {
               confirmButtonText="Confirm"
               defaultFocusedButton="confirm"
             >
-              <p>The campaign will be marked as approved. Are you sure you want to continue?</p>
+              <p>
+                The campaign will be marked as approved, and it has reached an audience of{" "}
+                <strong>{data?.aud_count}</strong>. Are you sure you want to continue?
+              </p>
             </EuiConfirmModal>
           )}
         </>
