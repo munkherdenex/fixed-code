@@ -40,7 +40,7 @@ const Info = () => {
       >
         <>
           <EuiFlexGroup>
-            <EuiFlexItem grow={1}>
+            <EuiFlexItem>
               <GeneralDetails />
             </EuiFlexItem>
             <EuiFlexItem grow={2}>
