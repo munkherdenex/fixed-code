@@ -59,7 +59,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const prepared_headers = data?.data?.headers
+      const preparedHeaders = data?.data?.headers
         ? data.data.headers.reduce((a, v) => ({ ...a, [v.key]: v.value }), {})
         : [];
 
@@ -67,9 +67,10 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
         ...data,
         data: {
           ...data.data,
-          headers: prepared_headers,
+          ...(data.channel_type === "api" && { headers: preparedHeaders }),
         },
       });
+
       if (response) {
         globalMutate(`/api/v1/dj/channels/`);
         closeFlyout();
