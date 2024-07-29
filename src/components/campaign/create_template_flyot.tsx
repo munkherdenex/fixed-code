@@ -22,6 +22,7 @@ import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
+import QuillEditorComponent from "./quill_editor";
 
 const schema = yup
   .object({
@@ -69,14 +70,18 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-        .filter((channel) => channel.channel_type === watch("kind"))
-        .map((channel) => ({
-          value: channel.id,
-          text: channel.name,
-        }))
+      .filter((channel) => channel.channel_type === watch("kind"))
+      .map((channel) => ({
+        value: channel.id,
+        text: channel.name,
+      }))
     : [];
 
   const setAceEditorValue = (value: string) => {
+    setValue("body", value);
+  };
+
+  const setReactQuill = (value: string) => {
     setValue("body", value);
   };
 
@@ -181,6 +186,16 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
               />
             </EuiFormRow>
           )}
+          {watch("kind") === "email" && (
+            <EuiFormRow
+              label="Data"
+              helpText="..."
+              isInvalid={!!errors?.body?.message}
+              error={[errors?.body?.message]}
+            >
+              <QuillEditorComponent control={control} onChange={setReactQuill} />
+            </EuiFormRow>
+          )}
           <EuiFormRow
             label="Channel"
             isInvalid={!!errors.channel?.message}
@@ -191,8 +206,8 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 style={
                   channelDataOptions.length === 0
                     ? {
-                        display: "none",
-                      }
+                      display: "none",
+                    }
                     : {}
                 }
               >
