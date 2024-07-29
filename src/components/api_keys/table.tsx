@@ -15,8 +15,10 @@ const ApiKeysTable = () => {
     },
     {
       field: "created_at",
-      name: "Created Date",
-      render: (apiKey: ApiKeysType) => moment(apiKey.created_at).format("YYYY-MM-DD LT"),
+      name: "Created at",
+      render: (date: string) => {
+        return moment(date).format("YYYY-MM-DD LT");
+      },
     },
     {
       field: "kid",

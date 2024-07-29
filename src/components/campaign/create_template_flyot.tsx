@@ -189,9 +189,9 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
           {watch("kind") === "email" && (
             <EuiFormRow
               label="Data"
-              helpText="..."
               isInvalid={!!errors?.body?.message}
               error={[errors?.body?.message]}
+              style={{ maxWidth: '100%', minHeight: '250px' }}
             >
               <QuillEditorComponent control={control} onChange={setReactQuill} />
             </EuiFormRow>
