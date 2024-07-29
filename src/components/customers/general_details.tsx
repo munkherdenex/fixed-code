@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  EuiButtonIcon,
-  EuiFlexGrid,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiHorizontalRule,
-  EuiPanel,
-} from "@elastic/eui";
+import { EuiButtonIcon, EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -84,16 +77,12 @@ const GeneralDetails = () => {
           <EuiFlexGrid responsive={false} columns={2}>
             <EuiFlexItem>Email address :</EuiFlexItem>
             <EuiFlexItem>{data?.email}</EuiFlexItem>
-
             <EuiFlexItem>Phone number :</EuiFlexItem>
             <EuiFlexItem>{data?.phone}</EuiFlexItem>
-
             <EuiFlexItem>Reference ID :</EuiFlexItem>
             <EuiFlexItem> {data?.rid}</EuiFlexItem>
-
             <EuiFlexItem>Created date :</EuiFlexItem>
             <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-
             <EuiFlexItem>Updated date :</EuiFlexItem>
             <EuiFlexItem> {moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
           </EuiFlexGrid>

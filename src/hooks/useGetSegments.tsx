@@ -14,6 +14,7 @@ export interface Segment {
   updated_at: string;
   updated_by: number | null;
   condition: string;
+  status: string;
 }
 
 export interface SegmentResponse {

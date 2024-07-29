@@ -136,11 +136,23 @@ const GeneralDetails = () => {
             <EuiFlexGrid columns={2} responsive={false}>
               <EuiFlexItem>Name:</EuiFlexItem>
               <EuiFlexItem>{data?.name}</EuiFlexItem>
-              <EuiFlexItem>description:</EuiFlexItem>
+              <EuiFlexItem>Description:</EuiFlexItem>
               <EuiFlexItem>{data?.description}</EuiFlexItem>
+              <EuiFlexItem>Status:</EuiFlexItem>
+              <EuiFlexItem>
+                <div>
+                  <EuiBadge>{data?.status}</EuiBadge>
+                </div>
+              </EuiFlexItem>
+              <EuiFlexItem>Type:</EuiFlexItem>
+              <EuiFlexItem>
+                <div>
+                  <EuiBadge>{data?.type}</EuiBadge>
+                </div>
+              </EuiFlexItem>
               {(data.type === "dynamic" || data.type === "static") && (
                 <>
-                  <EuiFlexItem>condition:</EuiFlexItem>
+                  <EuiFlexItem>Condition:</EuiFlexItem>
                   <EuiFlexItem>
                     <EuiCodeBlock language="json" fontSize="s" paddingSize="s" isCopyable>
                       <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.condition)), null, 2)}</pre>
@@ -148,12 +160,6 @@ const GeneralDetails = () => {
                   </EuiFlexItem>
                 </>
               )}
-              <EuiFlexItem>Type:</EuiFlexItem>
-              <EuiFlexItem>
-                <div>
-                  <EuiBadge>{data?.type}</EuiBadge>
-                </div>
-              </EuiFlexItem>
               <EuiFlexItem>Created by :</EuiFlexItem>
               <EuiFlexItem>{data?.created_by}</EuiFlexItem>
               <EuiFlexItem>Created date :</EuiFlexItem>

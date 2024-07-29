@@ -134,17 +134,14 @@ const GeneralDetails = () => {
               <EuiFlexItem>{data.title}</EuiFlexItem>
               <EuiFlexItem>Kind:</EuiFlexItem>
               <EuiFlexItem>{data.kind}</EuiFlexItem>
-
               <EuiFlexItem>Body:</EuiFlexItem>
               <EuiFlexItem>{data.body}</EuiFlexItem>
-
               <EuiFlexItem>Status:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
                   <EuiBadge color={badgeColor(data.status)}>{data.status}</EuiBadge>
                 </div>
               </EuiFlexItem>
-
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
               <EuiFlexItem>Updated date :</EuiFlexItem>
