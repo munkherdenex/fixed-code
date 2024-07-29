@@ -38,7 +38,7 @@ export const createChannelSchema = yup
         }
         if (channel_type[0] === "email") {
           return schema.shape({
-            email: yup.string().email().required(),
+            email: yup.string().email().notRequired(),
           });
         }
         return schema.shape({
