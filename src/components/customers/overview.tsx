@@ -1,49 +1,6 @@
-import {
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiPanel,
-  EuiTab,
-  EuiTabs,
-  EuiText,
-  EuiTimeline,
-  EuiTimelineProps,
-} from "@elastic/eui";
+import { EuiFlexGroup, EuiFlexItem, EuiPanel, EuiTab, EuiTabs } from "@elastic/eui";
 import { Fragment, useMemo, useState } from "react";
 import Logs from "./logs";
-
-const items: EuiTimelineProps["items"] = [
-  {
-    icon: "email",
-    iconAriaLabel: "Invitation",
-    children: (
-      <EuiText size="s">
-        <p>
-          <strong>janet@elastic.co</strong> was invited to the project.
-        </p>
-      </EuiText>
-    ),
-  },
-  {
-    icon: "pencil",
-    iconAriaLabel: "Edited",
-    children: (
-      <EuiText size="s">
-        <p>
-          The project was renamed to <strong>Revenue Dashboard</strong>.
-        </p>
-      </EuiText>
-    ),
-  },
-  {
-    icon: "folderClosed",
-    iconAriaLabel: "Project closed",
-    children: (
-      <EuiText size="s">
-        <p>The project was archived.</p>
-      </EuiText>
-    ),
-  },
-];
 
 const tabs = [
   {

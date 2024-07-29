@@ -8,30 +8,27 @@ import {
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import useGetLogs, { LogsResponse } from "../../hooks/useGetLogs";
+import useGetCustomerLogs, { CustomerLogsResponse } from "../../hooks/useGetCustomerLogs";
 
 const LIMIT = 10;
 
 const Logs: React.FC = () => {
   const router = useRouter();
   const [activePage, setActivePage] = useState(0);
-  const { data, isLoading } = useGetLogs<LogsResponse>({
-    customer_id: router.query.id as string,
+  const { data, isLoading } = useGetCustomerLogs<CustomerLogsResponse>(router.query.id, {
     offset: `${activePage * LIMIT}`,
     limit: `${LIMIT}`,
   });
 
   const preparedData = data?.results.map((log) => ({
     icon: "email",
-    iconAriaLabel: log.body,
+    iconAriaLabel: log.title,
     children: (
       <EuiText size="s">
         <h4>
           <strong>{log.title}</strong>
         </h4>
-        <p>{log.body}</p>
-        <p>{log.response}</p>
-        <p>{log.response_status}</p>
+        <p>{log.type}</p>
       </EuiText>
     ),
   }));
