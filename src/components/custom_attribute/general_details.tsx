@@ -7,7 +7,6 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
-  EuiHorizontalRule,
   EuiPanel,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -124,20 +123,16 @@ const GeneralDetails = () => {
             <EuiFlexGrid columns={2}>
               <EuiFlexItem>Name:</EuiFlexItem>
               <EuiFlexItem>{data?.name}</EuiFlexItem>
-
               <EuiFlexItem>Attribute name:</EuiFlexItem>
               <EuiFlexItem>{data?.attribute_name}</EuiFlexItem>
-
               <EuiFlexItem>Data type:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
                   <EuiBadge>{data?.data_type}</EuiBadge>
                 </div>
               </EuiFlexItem>
-
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-
               <EuiFlexItem>Updated date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>
