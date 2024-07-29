@@ -12,6 +12,10 @@ import useGetCustomerLogs, { CustomerLogsResponse } from "../../hooks/useGetCust
 
 const LIMIT = 10;
 
+/**
+ * The logs of the customer
+ * @returns the logs of the customer
+ */
 const Logs: React.FC = () => {
   const router = useRouter();
   const [activePage, setActivePage] = useState(0);
