@@ -70,11 +70,11 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-      .filter((channel) => channel.channel_type === watch("kind"))
-      .map((channel) => ({
-        value: channel.id,
-        text: channel.name,
-      }))
+        .filter((channel) => channel.channel_type === watch("kind"))
+        .map((channel) => ({
+          value: channel.id,
+          text: channel.name,
+        }))
     : [];
 
   const setAceEditorValue = (value: string) => {
@@ -191,7 +191,7 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
               label="Data"
               isInvalid={!!errors?.body?.message}
               error={[errors?.body?.message]}
-              style={{ maxWidth: '100%', minHeight: '250px' }}
+              style={{ maxWidth: "100%", minHeight: "250px" }}
             >
               <QuillEditorComponent control={control} onChange={setReactQuill} />
             </EuiFormRow>
@@ -206,8 +206,8 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 style={
                   channelDataOptions.length === 0
                     ? {
-                      display: "none",
-                    }
+                        display: "none",
+                      }
                     : {}
                 }
               >

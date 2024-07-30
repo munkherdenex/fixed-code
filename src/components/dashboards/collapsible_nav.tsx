@@ -3,7 +3,6 @@ import {
   EuiCollapsibleNavGroup,
   EuiFlexItem,
   EuiHeaderSectionItemButton,
-  EuiHorizontalRule,
   EuiIcon,
   EuiPinnableListGroup,
   EuiPinnableListGroupItemProps,

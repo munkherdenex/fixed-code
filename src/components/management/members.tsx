@@ -64,15 +64,15 @@ const MembersTable = () => {
                   member.role === "admin"
                     ? "user"
                     : member.role === "member"
-                      ? "users"
-                      : "usersRolesApp"
+                    ? "users"
+                    : "usersRolesApp"
                 }
                 color={
                   member.role === "admin"
                     ? "primary"
                     : member.role === "member"
-                      ? "warning"
-                      : "success"
+                    ? "warning"
+                    : "success"
                 }
               />
             }
@@ -170,9 +170,9 @@ const MembersTable = () => {
       ),
     },
     {
-      name: `${isAdmin ? 'Actions' : ''}`,
+      name: `${isAdmin ? "Actions" : ""}`,
       field: "",
-      width: `${isAdmin ? '6%' : '0%'}`,
+      width: `${isAdmin ? "6%" : "0%"}`,
       hidden: !isAdmin,
       actions: [
         {
