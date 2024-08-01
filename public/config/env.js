@@ -1,4 +1,3 @@
 window.env = {
-    BACKEND_URL: "http://app.local:90",
+  BACKEND_URL: "https://rs-staging.invescore.mn",
 };
-  
