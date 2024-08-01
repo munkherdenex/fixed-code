@@ -24,7 +24,7 @@ export default function useGetTeamsMyprofile<Type>(currentTeamId?: string): {
 
   const { data, error, isLoading } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    `${path}`,
+    path,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",
