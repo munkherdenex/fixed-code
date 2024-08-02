@@ -10,6 +10,7 @@ import {
   EuiFlexItem,
   EuiFormRow,
   EuiTableFieldDataColumnType,
+  EuiTextColor,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import moment from "moment";
@@ -64,10 +65,20 @@ const CustomersTable = () => {
     {
       field: "email",
       name: "Email address",
+      render: (email: CustomersType["email"]) => (
+        <>
+          {email ? email : <EuiTextColor color="subdued" style={{ fontSize: '9px' }}> &lt; Not field &gt; </EuiTextColor>}
+        </>
+      )
     },
     {
       field: "phone",
       name: "Phone number",
+      render: (phone: CustomersType["phone"]) => (
+        <>
+          {phone ? phone : <EuiTextColor color="subdued" style={{ fontSize: '9px' }}> &lt; Not field &gt; </EuiTextColor>}
+        </>
+      )
     },
     {
       field: "source",
@@ -183,14 +194,14 @@ const CustomersTable = () => {
           pagination={
             data?.total_count > pageSize
               ? {
-                  ...pagination,
-                  totalItemCount: data?.total_count || 0,
-                }
+                ...pagination,
+                totalItemCount: data?.total_count || 0,
+              }
               : {
-                  totalItemCount: 0,
-                  pageSize: 0,
-                  pageIndex: 0,
-                }
+                totalItemCount: 0,
+                pageSize: 0,
+                pageIndex: 0,
+              }
           }
           onChange={onTableChange}
         />
