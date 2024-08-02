@@ -1,5 +1,6 @@
 import {
   EuiBadge,
+  EuiButton,
   EuiButtonIcon,
   EuiCodeBlock,
   EuiConfirmModal,
@@ -8,6 +9,11 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
+  EuiModal,
+  EuiModalBody,
+  EuiModalFooter,
+  EuiModalHeader,
+  EuiModalHeaderTitle,
   EuiPanel,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -76,9 +82,15 @@ const DeleteConfirmModal = ({
 
 const GeneralDetails = () => {
   const router = useRouter();
+  const modalTitleId = useGeneratedHtmlId();
+
   const { data, isLoading } = useGetTemplates<Template>(router.query.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
+  const [isEmailModalVisible, setIsEmailModalVisible] = useState(false);
+
+  const closeEmailModal = () => setIsEmailModalVisible(false);
+  const showEmailModal = () => setIsEmailModalVisible(true);
   const styles = quillEditorStyles();
 
   const closeFlyout = () => {
@@ -140,22 +152,43 @@ const GeneralDetails = () => {
               <EuiFlexItem>{data.kind}</EuiFlexItem>
               <EuiFlexItem>Body:</EuiFlexItem>
               <EuiFlexItem>
-                {
-                  data?.kind === 'email' ?
-                    <>
-                      <EuiCodeBlock whiteSpace="pre-wrap" overflowHeight={'100%'} css={styles.quill_result} fontSize="s" paddingSize="s" transparentBackground >
-                        <pre>
-                          <div dangerouslySetInnerHTML={{ __html: data?.body }} />
-                        </pre>
-                      </EuiCodeBlock>
-                    </>
-                    :
-                    <EuiCodeBlock language="json" fontSize="s" paddingSize="s" isCopyable >
-                      <pre>
-                        {JSON.stringify(JSON.parse(jsonrepair(data?.body)), null, 2)}
-                      </pre>
-                    </EuiCodeBlock>
-                }
+                {data?.kind === "email" && (
+                  <>
+                    <EuiButton onClick={showEmailModal} size="s">
+                      Show modal
+                    </EuiButton>
+                    {isEmailModalVisible && (
+                      <EuiModal
+                        style={{ width: 800, height: 600 }}
+                        aria-labelledby={modalTitleId}
+                        onClose={closeEmailModal}
+                      >
+                        <EuiModalHeader>
+                          <EuiModalHeaderTitle id={modalTitleId}></EuiModalHeaderTitle>
+                        </EuiModalHeader>
+                        <EuiModalBody>
+                          <iframe srcDoc={data?.body} css={styles.iframe} />
+                        </EuiModalBody>
+                        <EuiModalFooter>
+                          <EuiButton onClick={closeEmailModal} fill>
+                            Close
+                          </EuiButton>
+                        </EuiModalFooter>
+                      </EuiModal>
+                    )}
+                  </>
+                )}
+                {data?.kind === "api" && (
+                  <EuiCodeBlock
+                    language="json"
+                    fontSize="s"
+                    paddingSize="s"
+                    isCopyable
+                    overflowHeight={300}
+                  >
+                    <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.body)), null, 2)}</pre>
+                  </EuiCodeBlock>
+                )}
               </EuiFlexItem>
               <EuiFlexItem>Status:</EuiFlexItem>
               <EuiFlexItem>

@@ -1,6 +1,11 @@
 import { css } from "@emotion/react";
 
-export const quillEditorStyles = (data_null=null) => ({
+export const quillEditorStyles = () => ({
+  iframe: css`
+    width: 100%;
+    height: 100%;
+    border: none;
+  `,
   quill_container: css`
     height: 140px;
     max-height: 150px;

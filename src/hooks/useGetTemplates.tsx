@@ -8,7 +8,7 @@ export interface Template {
   created_at: string;
   updated_at: string;
   title: string;
-  kind: "email" | "sms" | "push" | "inapp";
+  kind: "email" | "sms" | "push" | "inapp" | "api";
   status: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
   body: string;
   created_by: any;
