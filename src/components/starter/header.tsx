@@ -5,8 +5,11 @@ import { imageLoader } from "../../lib/loader";
 import ThemeSwitcher from "./theme_switcher";
 import { headerStyles } from "./header.styles";
 import Logo from "../../../public/images/logo-eui.svg";
+import { useContext } from "react";
+import { authContext } from "../../store/auth_store";
 
 const Header = () => {
+  const { user } = useContext(authContext);
   const { euiTheme } = useEuiTheme();
   const styles = headerStyles(euiTheme);
 
@@ -27,20 +30,27 @@ const Header = () => {
           ],
         },
         {
-          items: [
-            <Link key="signin" href="/signin" passHref>
-              <EuiButton style={{ minWidth: 80, margin: 10 }} color="success" size="s">
-                Sign In
-              </EuiButton>
-            </Link>,
-
-            <Link key="signup" href="/signup" passHref>
-              <EuiButton style={{ minWidth: 80 }} size="s">
-                Sign Up
-              </EuiButton>
-            </Link>,
-            <ThemeSwitcher key="theme-switcher" />,
-          ],
+          items: user
+            ? [
+                <Link key="dashboards" href="/dashboards" passHref>
+                  <EuiButton style={{ minWidth: 80, margin: 10 }} color="primary" fill size="s">
+                    Dashboards
+                  </EuiButton>
+                </Link>,
+              ]
+            : [
+                <Link key="signin" href="/signin" passHref>
+                  <EuiButton style={{ minWidth: 80, margin: 10 }} color="success" size="s">
+                    Sign In
+                  </EuiButton>
+                </Link>,
+                <Link key="signup" href="/signup" passHref>
+                  <EuiButton style={{ minWidth: 80 }} size="s">
+                    Sign Up
+                  </EuiButton>
+                </Link>,
+                <ThemeSwitcher key="theme-switcher" />,
+              ],
         },
       ]}
     />

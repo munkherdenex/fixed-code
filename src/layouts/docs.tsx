@@ -15,17 +15,12 @@ const DocsLayout = ({ pageHeader, children }) => {
   const sideNav = [
     {
       name: "Docs",
-      id: htmlIdGenerator("basicExample")(),
+      id: htmlIdGenerator("campaignDocs")(),
       items: [
         {
-          name: "Home",
-          id: htmlIdGenerator("basicExample")(),
+          name: "Campaign",
+          id: htmlIdGenerator("campaignDocs")(),
           href: `${pathPrefix}/docs`,
-        },
-        {
-          name: "Page 2",
-          id: htmlIdGenerator("basicExample")(),
-          href: `${pathPrefix}/docs/page-2`,
         },
       ],
     },
@@ -41,7 +36,7 @@ const DocsLayout = ({ pageHeader, children }) => {
         sections={[
           {
             items: [
-              <EuiHeaderLogo key="elastic-docs" iconType="logoElastic" href={`${pathPrefix}/docs`}>
+              <EuiHeaderLogo key="elastic-docs" iconType="logoElastic" href={`${pathPrefix}/`}>
                 Elastic docs
               </EuiHeaderLogo>,
             ],

@@ -1,4 +1,3 @@
-import { FunctionComponent } from "react";
 import Header from "./header";
 import GradientBg from "./gradient_bg";
 import { useEuiTheme } from "@elastic/eui";

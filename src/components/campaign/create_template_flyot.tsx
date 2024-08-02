@@ -8,9 +8,11 @@ import {
   EuiFlyoutHeader,
   EuiForm,
   EuiFormRow,
+  EuiIcon,
   EuiSelect,
   EuiTextArea,
   EuiTitle,
+  EuiToolTip,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,8 +23,22 @@ import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
+import { createTemplateFlyoutStyles } from "./create_teamplate_flyout.styles";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 import QuillEditorComponent from "./quill_editor";
+
+const bodyHelpText = "Use custom attributes to make data dynamic. {{cf_*}}";
+
+const BodyInfoToolTip = () => {
+  return (
+    <EuiToolTip
+      position="bottom"
+      content="You need to define the custom fields you plan to use. Common custom fields might include {{email}}, {{phone}}, {{cf_company_name}}, {{cf_email}}, etc."
+    >
+      <EuiIcon tabIndex={0} type="questionInCircle" title="Icon with tooltip" />
+    </EuiToolTip>
+  );
+};
 
 const schema = yup
   .object({
@@ -44,6 +60,7 @@ const dataTypeOptions = [
 type FormData = yup.InferType<typeof schema>;
 
 const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
+  const styles = createTemplateFlyoutStyles();
   const { isMutating, trigger } = useCreateTemplate();
   const { data: channelsData } = useGetChannels<Channels[]>(undefined, {
     all: `${true}`,
@@ -156,7 +173,8 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
           {watch("kind") === "api" && (
             <EuiFormRow
               label="Data"
-              helpText="Use custom attributes to make data dynamic. {{custom_attribute}}"
+              labelAppend={<BodyInfoToolTip />}
+              helpText={bodyHelpText}
               isInvalid={!!errors?.body?.message}
               error={[errors?.body?.message]}
             >
@@ -166,7 +184,8 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
           {watch("kind") === "sms" && (
             <EuiFormRow
               label="Data"
-              helpText="Use custom attributes to make data dynamic. {{custom_attribute}}"
+              labelAppend={<BodyInfoToolTip />}
+              helpText={bodyHelpText}
               isInvalid={!!errors?.body?.message}
               error={[errors?.body?.message]}
             >
@@ -189,9 +208,11 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
           {watch("kind") === "email" && (
             <EuiFormRow
               label="Data"
+              labelAppend={<BodyInfoToolTip />}
+              helpText={bodyHelpText}
               isInvalid={!!errors?.body?.message}
               error={[errors?.body?.message]}
-              style={{ maxWidth: "100%", minHeight: "250px" }}
+              css={styles.quillEditorContainer}
             >
               <QuillEditorComponent control={control} onChange={setReactQuill} />
             </EuiFormRow>

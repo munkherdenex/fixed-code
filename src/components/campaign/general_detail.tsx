@@ -155,7 +155,7 @@ const GeneralDetails = () => {
                 {data?.kind === "email" && (
                   <>
                     <EuiButton onClick={showEmailModal} size="s">
-                      Show modal
+                      Preview
                     </EuiButton>
                     {isEmailModalVisible && (
                       <EuiModal
