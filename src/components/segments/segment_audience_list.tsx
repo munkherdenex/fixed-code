@@ -1,5 +1,6 @@
 import {
   Criteria,
+  EuiAvatar,
   EuiBadge,
   EuiBasicTable,
   EuiBasicTableColumn,
@@ -10,6 +11,7 @@ import {
   EuiFormRow,
   EuiLink,
   EuiSpacer,
+  EuiText,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import useGetSegmentAudienceList, {
@@ -69,9 +71,9 @@ const SegmentAudienceList = () => {
 
   const columns: Array<EuiBasicTableColumn<SegmentAudience>> = [
     {
-      field: "email",
-      name: "Email address",
-      width: "25%",
+      field: "ids",
+      name: "Ids",
+      width: "37%",
       render: (email: SegmentAudience["email"], SegmentAudience: SegmentAudience) => (
         <>
           <EuiLink
@@ -79,14 +81,28 @@ const SegmentAudienceList = () => {
               router.push(`${pathPrefix}/dashboards/audience/info/${SegmentAudience?.id}`);
             }}
           >
-            {email}
+            <EuiFlexGroup>
+              <EuiFlexItem grow={false}>
+                <EuiAvatar size="m" name={SegmentAudience.email || SegmentAudience.phone || ''} />
+              </EuiFlexItem>
+              <EuiFlexItem>
+                <EuiFlexGroup direction="column" gutterSize="none">
+                  <EuiFlexItem grow={false}>
+                    <EuiText size="s">
+                      <strong>
+                        {SegmentAudience.email}
+                      </strong>{" "}
+                    </EuiText>
+                  </EuiFlexItem>
+                  <EuiFlexItem grow={false}>
+                    <EuiText size="xs">{SegmentAudience.phone}</EuiText>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiFlexItem>
+            </EuiFlexGroup>
           </EuiLink>
         </>
       ),
-    },
-    {
-      field: "phone",
-      name: "Phone number",
     },
     {
       field: "source",
