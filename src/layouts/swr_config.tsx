@@ -13,11 +13,11 @@ const SWRConfigLayout = ({ children }) => {
         onError: async (error) => {
           console.error(error);
           if (error?.status === 401 && router.pathname.includes("dashboards")) {
-            // await trigger();
-            // await mutate(() => true, undefined, { revalidate: false });
-            // Cookies.remove("_customer_data_session", { path: "/" });
-            // localStorage.removeItem("currentTeamId");
-            // window.location.href = "/";
+            await trigger();
+            await mutate(() => true, undefined, { revalidate: false });
+            Cookies.remove("_customer_data_session", { path: "/" });
+            localStorage.removeItem("currentTeamId");
+            window.location.href = "/";
           }
         },
         onErrorRetry: (error) => {

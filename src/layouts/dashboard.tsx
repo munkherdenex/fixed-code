@@ -34,8 +34,8 @@ const DashboardLayout = ({
         onError: async (error) => {
           console.error(error);
           if (error?.status === 401 && router.pathname.includes("dashboard")) {
-            // removeUserTokenData();
-            // clearCurrentTeam();
+            removeUserTokenData();
+            clearCurrentTeam();
           }
         },
       }}
