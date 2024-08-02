@@ -2,16 +2,13 @@ import { FunctionComponent, useContext, useEffect } from "react";
 import Head from "next/head";
 import Wrapper from "../../components/starter/wrapper";
 import SignupForm from "../../components/signup_form";
-import { EuiSpacer, EuiTitle, useEuiTheme } from "@elastic/eui";
-import { signupStyles } from "../../styles/signup.styles";
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiTitle } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { authContext } from "../../store/auth_store";
 
 const Index: FunctionComponent = () => {
   const router = useRouter();
   const { user } = useContext(authContext);
-  const { euiTheme } = useEuiTheme();
-  const styles = signupStyles(euiTheme);
 
   useEffect(() => {
     if (user) {
@@ -30,14 +27,23 @@ const Index: FunctionComponent = () => {
         <title>Sign up</title>
       </Head>
       <Wrapper>
-        <div css={styles.container}>
-          <EuiSpacer size="xl" />
-          <EuiTitle>
-            <h1>Sign Up</h1>
-          </EuiTitle>
-          <EuiSpacer size="m" />
-          <SignupForm />
-        </div>
+        <EuiFlexGroup direction="column" alignItems="center" gutterSize="xs">
+          <EuiFlexItem grow={false}>
+            <EuiSpacer size="xl" />
+            <EuiTitle>
+              <h1>Sign up</h1>
+            </EuiTitle>
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            <EuiSpacer size="xl" />
+            <SignupForm />
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            <EuiButton size="s" href="/api/v1/login">
+              Login with keycloak
+            </EuiButton>
+          </EuiFlexItem>
+        </EuiFlexGroup>
       </Wrapper>
     </>
   );
