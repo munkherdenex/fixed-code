@@ -34,7 +34,7 @@ const Header = () => {
             ? [
                 <Link key="dashboards" href="/dashboards" passHref>
                   <EuiButton style={{ minWidth: 80, margin: 10 }} color="primary" fill size="s">
-                    Dashboards
+                    Dashboard
                   </EuiButton>
                 </Link>,
               ]
