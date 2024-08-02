@@ -24,6 +24,8 @@ import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
+import QuillEditorComponent from "./quill_editor";
+import { quillEditorStyles } from "./quill_editor.styles";
 
 const schema = yup
   .object({
@@ -72,17 +74,22 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
       channel: data.channel,
     },
   });
+  const styles = quillEditorStyles();
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-        .filter((channel) => channel.channel_type === watch("kind"))
-        .map((channel) => ({
-          value: channel.id,
-          text: channel.name,
-        }))
+      .filter((channel) => channel.channel_type === watch("kind"))
+      .map((channel) => ({
+        value: channel.id,
+        text: channel.name,
+      }))
     : [];
 
   const setAceEditorValue = (value: string) => {
+    setValue("body", value);
+  };
+
+  const setReactQuill = (value: string) => {
     setValue("body", value);
   };
 
@@ -187,6 +194,16 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
               />
             </EuiFormRow>
           )}
+          {watch("kind") === "email" && (
+            <EuiFormRow
+              label="Data"
+              isInvalid={!!errors?.body?.message}
+              error={[errors?.body?.message]}
+              css={styles.quill_edit}
+            >
+              <QuillEditorComponent control={control} onChange={setReactQuill} />
+            </EuiFormRow>
+          )}
           <EuiFormRow
             label="Channel"
             isInvalid={!!errors.channel?.message}
@@ -197,8 +214,8 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
                 style={
                   channelDataOptions.length === 0
                     ? {
-                        display: "none",
-                      }
+                      display: "none",
+                    }
                     : {}
                 }
               >

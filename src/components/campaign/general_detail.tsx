@@ -19,6 +19,7 @@ import useDeleteTemplate from "../../hooks/useDeleteTemplate";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
 import EditTemplateFlyout from "./edit_template_flyout";
+import { quillEditorStyles } from "./quill_editor.styles";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -78,6 +79,7 @@ const GeneralDetails = () => {
   const { data, isLoading } = useGetTemplates<Template>(router.query.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
+  const styles = quillEditorStyles();
 
   const closeFlyout = () => {
     setIsEditFlyoutVisible(false);
@@ -138,9 +140,22 @@ const GeneralDetails = () => {
               <EuiFlexItem>{data.kind}</EuiFlexItem>
               <EuiFlexItem>Body:</EuiFlexItem>
               <EuiFlexItem>
-                <EuiCodeBlock language="json" fontSize="s" paddingSize="s" isCopyable>
-                  <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.body)), null, 2)}</pre>
-                </EuiCodeBlock>
+                {
+                  data?.kind === 'email' ?
+                    <>
+                      <EuiCodeBlock whiteSpace="pre-wrap" overflowHeight={'100%'} css={styles.quill_result} fontSize="s" paddingSize="s" transparentBackground >
+                        <pre>
+                          <div dangerouslySetInnerHTML={{ __html: data?.body }} />
+                        </pre>
+                      </EuiCodeBlock>
+                    </>
+                    :
+                    <EuiCodeBlock language="json" fontSize="s" paddingSize="s" isCopyable >
+                      <pre>
+                        {JSON.stringify(JSON.parse(jsonrepair(data?.body)), null, 2)}
+                      </pre>
+                    </EuiCodeBlock>
+                }
               </EuiFlexItem>
               <EuiFlexItem>Status:</EuiFlexItem>
               <EuiFlexItem>

@@ -1,8 +1,8 @@
 import { Control, Controller } from "react-hook-form";
 import { useMemo } from "react";
-import { quillEditorStyles } from "./quill_editor.styles";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
+import { quillEditorStyles } from "./quill_editor.styles";
 
 const QuillEditorComponent = ({
   control,
@@ -11,9 +11,7 @@ const QuillEditorComponent = ({
   control: Control;
   onChange: (value: string) => void;
 }) => {
-  const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
-
-  const styles = quillEditorStyles();
+  const ReactQuill = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }), []);
   var toolbarOptions = [
     ["bold", "italic", "underline", "strike"],
     ["blockquote", "code-block"],
@@ -34,6 +32,8 @@ const QuillEditorComponent = ({
 
     ["clean"],
   ];
+  const styles = quillEditorStyles();
+
   const module = {
     toolbar: toolbarOptions,
   };
@@ -50,7 +50,7 @@ const QuillEditorComponent = ({
             value={value}
             onBlur={onBlur}
             onChange={onChange}
-            style={{ height: "50px", minHeight: "150px" }}
+            css={!value && styles.quill_container}
           />
         )}
       />
