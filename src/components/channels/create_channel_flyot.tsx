@@ -130,7 +130,6 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                   onBlur={onBlur}
                   isInvalid={!!errors.channel_type?.message}
                   aria-label="channel type"
-                  hasNoInitialSelection
                 />
               )}
             />
