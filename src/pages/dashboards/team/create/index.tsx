@@ -14,7 +14,7 @@ import * as yup from "yup";
 import useCreateTeam from "../../../../hooks/useCreateTeam";
 import { useRouter } from "next/router";
 import { mutate } from "swr";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { teamsContext } from "../../../../store/teams_store";
 
 const schema = yup
@@ -40,17 +40,21 @@ const TeamCreate = () => {
   const { teams } = useContext(teamsContext);
   const { isMutating, trigger } = useCreateTeam<FormData>();
 
-  const teamOptions = Array.isArray(teams)
-    ? [
-        { value: "", text: "" },
-        ...teams
-          .filter((team) => !team.parent_id)
-          .map((team) => ({
-            value: team.id,
-            text: team.name,
-          })),
-      ]
-    : [];
+  const teamOptions = useMemo(
+    () =>
+      Array.isArray(teams) && teams.length > 0
+        ? [
+            { value: "", text: "" },
+            ...teams
+              .filter((team) => !team.parent_id)
+              .map((team) => ({
+                value: team.id,
+                text: team.name,
+              })),
+          ]
+        : [],
+    [teams],
+  );
 
   const onSubmit = async (data: FormData) => {
     try {

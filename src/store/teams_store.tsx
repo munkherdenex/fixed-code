@@ -68,7 +68,12 @@ export const TeamsProvider = ({ children }) => {
     if (teamsData?.length === 0 || !teamsData) {
       setCurrentTeam(null);
     }
-    if (teamsData?.length === 0 && !teamsIsLoading && !teamsError) {
+    if (
+      teamsData?.length === 0 &&
+      !teamsIsLoading &&
+      !teamsError &&
+      router.pathname !== "/dashboards/team/create"
+    ) {
       router.replace("/dashboards/team/create");
       return;
     }
