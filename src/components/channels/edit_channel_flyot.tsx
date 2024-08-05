@@ -69,9 +69,13 @@ const EditChannelFlyot = ({
       channel_type: data?.channel_type,
       name: data?.name,
       data: {
-        url: parsedData?.url || "",
-        headers: preparedHeaders || [],
-        rate_limit: parsedData?.rate_limit || 0,
+        host: parsedData?.host || undefined,
+        port: parsedData?.port || undefined,
+        host_user: parsedData?.host_user || undefined,
+        host_password: parsedData?.host_password || undefined,
+        url: parsedData?.url || undefined,
+        headers: preparedHeaders || undefined,
+        rate_limit: parsedData?.rate_limit || undefined,
       },
     },
   });
