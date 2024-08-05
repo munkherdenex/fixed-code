@@ -20,7 +20,7 @@ const UpdateMemberModal = ({
       };
       const response = await trigger(preparedData);
       if (response) {
-        mutate("/api/v1/teams/");
+        mutate();
         addToast({
           id: "member-success",
           color: "success",

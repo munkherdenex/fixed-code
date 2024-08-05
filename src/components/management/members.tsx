@@ -12,32 +12,35 @@ import {
   EuiToolTip,
 } from "@elastic/eui";
 import moment from "moment";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MembersType, TeamMembersType } from "../../constants/members.types";
 import useGetCurrentTeamMembers from "../../hooks/useCurrentTeamMembers";
-import useProfile from "../../hooks/useProfile";
+import { teamsContext } from "../../store/teams_store";
+import { logColor } from "../../utils/badge_color";
+import { logIcon } from "../../utils/log_icon";
 import DeleteMemberModal from "./delete_member_modal";
 import UpdateMemberModal from "./update_member_modal";
 
 const MembersTable = () => {
   const { data: teamMembers, isLoading: isMembersLoading } =
     useGetCurrentTeamMembers<TeamMembersType>();
-  const { data: user, isLoading: isProfileLoading } = useProfile();
+  const { myProfile } = useContext(teamsContext);
 
-  const isAdmin =
-    teamMembers?.members?.some(
-      (member) => member?.user?.email === user.email && member?.role === "admin",
-    ) || false;
+  const isAdmin = myProfile?.role === "admin";
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectMemberId, setSelectedMemberId] = useState<any>();
-  const [teamRole, setTeamRole] = useState(teamMembers?.members);
+  const [teamRole, setTeamRole] = useState([]);
 
   const roleTypes = [
     { value: "admin", text: "Admin" },
     { value: "member", text: "Member" },
     { value: "manager", text: "Manager" },
   ];
+
+  useEffect(() => {
+    setTeamRole(teamMembers?.members);
+  }, [teamMembers]);
 
   const onChange = (e, id) => {
     setTeamRole(
@@ -53,70 +56,43 @@ const MembersTable = () => {
     );
   };
 
-  const RoleColumn = ({ role, member }) => (
-    <EuiFlexItem>
-      {isAdmin ? (
-        <>
+  const RoleColumn = ({ role, member }) => {
+    const currentRole = teamRole?.filter((value) => value.id === member.id)[0]?.role;
+
+    return (
+      <EuiFlexItem>
+        {isAdmin && (
           <EuiSelect
-            prepend={
-              <EuiButtonIcon
-                iconType={
-                  member.role === "admin"
-                    ? "user"
-                    : member.role === "member"
-                    ? "users"
-                    : "usersRolesApp"
-                }
-                color={
-                  member.role === "admin"
-                    ? "primary"
-                    : member.role === "member"
-                    ? "warning"
-                    : "success"
-                }
-              />
-            }
             id={member.user.email}
-            options={roleTypes}
             defaultValue={role}
-            onChange={(value) => onChange(value, member.id)}
-            value={teamRole?.find((value) => value.id === member.id)?.role || role}
+            options={roleTypes}
+            value={currentRole}
+            onChange={(event) => onChange(event, member.id)}
+            prepend={
+              <EuiButtonIcon iconType={logIcon(currentRole)} color={logColor(currentRole)} />
+            }
             append={
-              <EuiToolTip content="Are you sure you want to change?">
-                <>
-                  {teamRole !== undefined &&
-                    teamRole
-                      ?.filter((value) => value.id === member.id && value.role !== member.role)
-                      .map((mem, idx) => (
-                        <UpdateMemberModal
-                          key={idx}
-                          selectMemberId={member?.id}
-                          changed_role={mem.role}
-                        />
-                      ))}
-                </>
-              </EuiToolTip>
+              currentRole !== role && (
+                <EuiToolTip content="Are you sure you want to change?">
+                  <UpdateMemberModal selectMemberId={member?.id} changed_role={currentRole} />
+                </EuiToolTip>
+              )
             }
           />
-        </>
-      ) : (
-        <EuiBadge
-          iconType={
-            member.role === "admin" ? "user" : member.role === "member" ? "users" : "usersRolesApp"
-          }
-          color={member.role === "admin" ? "default" : ""}
-        >
-          {member.role}
-        </EuiBadge>
-      )}
-    </EuiFlexItem>
-  );
+        )}
+        {!isAdmin && (
+          <EuiBadge iconType={logIcon(member.role)} color={logColor(member.role)}>
+            {member.role}
+          </EuiBadge>
+        )}
+      </EuiFlexItem>
+    );
+  };
 
   const columns: Array<EuiBasicTableColumn<MembersType>> = [
     {
       field: "user.email",
       name: "Username & Email",
-      width: "23%",
       render: (role: MembersType["role"], member: MembersType) => (
         <EuiFlexGroup>
           <EuiFlexItem grow={false}>
@@ -128,7 +104,7 @@ const MembersTable = () => {
                 <EuiText size="s">
                   <strong>
                     {member?.user?.lname} {member?.user?.fname}
-                  </strong>{" "}
+                  </strong>
                 </EuiText>
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
@@ -171,8 +147,6 @@ const MembersTable = () => {
     },
     {
       name: `${isAdmin ? "Actions" : ""}`,
-      field: "",
-      width: `${isAdmin ? "6%" : "0%"}`,
       hidden: !isAdmin,
       actions: [
         {
@@ -191,7 +165,7 @@ const MembersTable = () => {
     },
   ];
 
-  if (isProfileLoading || isMembersLoading) return <div>Loading...</div>;
+  if (isMembersLoading) return <div>Loading...</div>;
 
   return (
     <>

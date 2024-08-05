@@ -1,7 +1,6 @@
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
-import { useContext, useEffect } from "react";
-import { addToast } from "../components/toast";
+import { useContext } from "react";
 import { handleResponseNotOk } from "../utils/error_handler";
 import { teamsContext } from "../store/teams_store";
 
@@ -24,17 +23,6 @@ export default function useUpdateMemberRole<Type>(id: string | string[] | undefi
       return handleResponseNotOk(res);
     },
   );
-
-  useEffect(() => {
-    if (error) {
-      addToast({
-        id: "update_member-error",
-        color: "danger",
-        title: "An error occurred",
-        text: error,
-      });
-    }
-  }, [error]);
 
   return {
     data: data,

@@ -7,6 +7,12 @@ export function logIcon(status: string) {
   switch (status) {
     case "create":
       return "document";
+    case "admin":
+      return "user";
+    case "member":
+      return "users";
+    case "manager":
+      return "usersRolesApp";
     default:
       return "default";
   }
