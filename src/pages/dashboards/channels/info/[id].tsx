@@ -14,7 +14,7 @@ const ChannelInfo = () => {
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Info",
+          pageTitle: "Channel info",
           iconType: "usersRolesApp",
         }}
         breadCrumb={

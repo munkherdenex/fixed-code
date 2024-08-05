@@ -108,7 +108,7 @@ const SendsInfo = () => {
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Info",
+          pageTitle: "Campaign info",
           iconType: "usersRolesApp",
           rightSideItems: [
             getRightSideButton(data?.status || "", myProfile?.role, handleStatusButton, isMutating),

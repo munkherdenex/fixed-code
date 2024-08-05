@@ -48,6 +48,9 @@ export default function useGetTemplates<Type>(
 
       return handleResponseNotOk(res);
     },
+    {
+      refreshInterval: 5000,
+    },
   );
 
   return {
