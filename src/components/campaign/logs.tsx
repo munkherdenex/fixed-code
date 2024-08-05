@@ -2,11 +2,9 @@ import {
   EuiEmptyPrompt,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiLink,
   EuiPagination,
   EuiText,
   EuiTimeline,
-  EuiTitle,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useState } from "react";

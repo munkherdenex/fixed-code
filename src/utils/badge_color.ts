@@ -8,6 +8,6 @@ export function badgeColor(status: string) {
     case "APPROVED":
       return "green";
     default:
-      return "gray";
+      return "default";
   }
 }

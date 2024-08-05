@@ -9,6 +9,7 @@ import {
 import { useRouter } from "next/router";
 import { useState } from "react";
 import useGetCustomerLogs, { CustomerLogsResponse } from "../../hooks/useGetCustomerLogs";
+import { logIcon } from "../../utils/log_icon";
 
 const LIMIT = 10;
 
@@ -25,14 +26,14 @@ const Logs: React.FC = () => {
   });
 
   const preparedData = data?.results.map((log) => ({
-    icon: "email",
+    icon: logIcon(log.type),
     iconAriaLabel: log.title,
     children: (
       <EuiText size="s">
         <h4>
-          <strong>{log.title}</strong>
+          <strong>{log.type}</strong>
         </h4>
-        <p>{log.type}</p>
+        <p>{log.title}</p>
       </EuiText>
     ),
   }));
