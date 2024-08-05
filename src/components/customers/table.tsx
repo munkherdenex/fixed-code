@@ -3,12 +3,15 @@ import {
   EuiBadge,
   EuiBasicTable,
   EuiBasicTableColumn,
+  EuiButton,
   EuiButtonIcon,
+  EuiEmptyPrompt,
   EuiFieldSearch,
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
+  EuiImage,
   EuiTableFieldDataColumnType,
   EuiTextColor,
 } from "@elastic/eui";
@@ -27,7 +30,7 @@ const schema = yup.object({
   search: yup.string().notRequired().label("Search"),
 });
 
-const CustomersTable = () => {
+const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () => void }) => {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(0);
@@ -67,18 +70,32 @@ const CustomersTable = () => {
       name: "Email address",
       render: (email: CustomersType["email"]) => (
         <>
-          {email ? email : <EuiTextColor color="subdued" style={{ fontSize: '9px' }}> &lt; Not field &gt; </EuiTextColor>}
+          {email ? (
+            email
+          ) : (
+            <EuiTextColor color="subdued" style={{ fontSize: "9px" }}>
+              {" "}
+              &lt; Not field &gt;{" "}
+            </EuiTextColor>
+          )}
         </>
-      )
+      ),
     },
     {
       field: "phone",
       name: "Phone number",
       render: (phone: CustomersType["phone"]) => (
         <>
-          {phone ? phone : <EuiTextColor color="subdued" style={{ fontSize: '9px' }}> &lt; Not field &gt; </EuiTextColor>}
+          {phone ? (
+            phone
+          ) : (
+            <EuiTextColor color="subdued" style={{ fontSize: "9px" }}>
+              {" "}
+              &lt; Not field &gt;{" "}
+            </EuiTextColor>
+          )}
         </>
-      )
+      ),
     },
     {
       field: "source",
@@ -141,6 +158,32 @@ const CustomersTable = () => {
     };
   };
 
+  if (data?.results?.length === 0) {
+    return (
+      <EuiEmptyPrompt
+        icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
+        title={<h2>Create your customer</h2>}
+        layout="horizontal"
+        color="plain"
+        body={
+          <>
+            <p>The customer description</p>
+          </>
+        }
+        actions={
+          <EuiButton
+            color="primary"
+            fill
+            onClick={() => {
+              openCreateChannelFlyout();
+            }}
+          >
+            Create customer
+          </EuiButton>
+        }
+      />
+    );
+  }
   return (
     <EuiFlexGroup direction="column">
       <EuiFlexItem>
@@ -194,14 +237,14 @@ const CustomersTable = () => {
           pagination={
             data?.total_count > pageSize
               ? {
-                ...pagination,
-                totalItemCount: data?.total_count || 0,
-              }
+                  ...pagination,
+                  totalItemCount: data?.total_count || 0,
+                }
               : {
-                totalItemCount: 0,
-                pageSize: 0,
-                pageIndex: 0,
-              }
+                  totalItemCount: 0,
+                  pageSize: 0,
+                  pageIndex: 0,
+                }
           }
           onChange={onTableChange}
         />

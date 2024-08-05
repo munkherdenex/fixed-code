@@ -8,6 +8,9 @@ import {
   EuiFormRow,
   EuiButtonIcon,
   Criteria,
+  EuiEmptyPrompt,
+  EuiButton,
+  EuiImage,
 } from "@elastic/eui";
 import * as yup from "yup";
 import router from "next/router";
@@ -126,6 +129,33 @@ const SegmentsTable = () => {
       textOnly: true,
     };
   };
+
+  if (data?.results?.length === 0) {
+    return (
+      <EuiEmptyPrompt
+        icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
+        title={<h2>Create your segment</h2>}
+        layout="horizontal"
+        color="plain"
+        body={
+          <>
+            <p>The segment description</p>
+          </>
+        }
+        actions={
+          <EuiButton
+            color="primary"
+            fill
+            onClick={() => {
+              router.push(`${pathPrefix}/dashboards/segments/create`);
+            }}
+          >
+            Create segment
+          </EuiButton>
+        }
+      />
+    );
+  }
 
   return (
     <EuiFlexGroup direction="column">

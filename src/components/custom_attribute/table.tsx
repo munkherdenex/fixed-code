@@ -2,13 +2,17 @@ import {
   Criteria,
   EuiBasicTable,
   EuiBasicTableColumn,
+  EuiButton,
   EuiConfirmModal,
+  EuiEmptyPrompt,
   EuiFieldText,
   EuiFormRow,
+  EuiImage,
   EuiTableFieldDataColumnType,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import moment from "moment";
+import router from "next/router";
 import { SetStateAction, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useDeleteField from "../../hooks/useDeleteCustomField";
@@ -69,7 +73,7 @@ const DeleteConfirmModal = ({
   );
 };
 
-const FieldsTable = () => {
+const FieldsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () => void }) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
@@ -153,6 +157,33 @@ const FieldsTable = () => {
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (data?.results?.length === 0) {
+    return (
+      <EuiEmptyPrompt
+        icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
+        title={<h2>Create your custom attribute</h2>}
+        layout="horizontal"
+        color="plain"
+        body={
+          <>
+            <p>The custom attribute description</p>
+          </>
+        }
+        actions={
+          <EuiButton
+            color="primary"
+            fill
+            onClick={() => {
+              openCreateChannelFlyout();
+            }}
+          >
+            Create custom attribute
+          </EuiButton>
+        }
+      />
+    );
   }
 
   return (

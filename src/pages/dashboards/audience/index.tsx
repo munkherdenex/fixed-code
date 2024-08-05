@@ -49,7 +49,7 @@ const CustomersDashboard = () => {
         }
       >
         <div>
-          <CustomersTable />
+          <CustomersTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
           {isFlyoutVisible && <CreateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
         </div>
       </DashboardLayout>

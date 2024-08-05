@@ -51,7 +51,7 @@ const CustomFields = () => {
         }
       >
         <div>
-          <FieldsTable />
+          <FieldsTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
           {isFlyoutVisible && <CreateFieldFlyout closeFlyout={closeFlyout} />}
         </div>
       </DashboardLayout>

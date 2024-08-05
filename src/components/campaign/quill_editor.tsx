@@ -11,7 +11,7 @@ const QuillEditorComponent = ({
   control: Control;
   onChange: (value: string) => void;
 }) => {
-  const ReactQuill = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }), []);
+  const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
   var toolbarOptions = [
     ["bold", "italic", "underline", "strike"],
     ["blockquote", "code-block"],
