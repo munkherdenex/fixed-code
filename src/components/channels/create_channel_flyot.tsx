@@ -134,109 +134,190 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
               )}
             />
           </EuiFormRow>
-          {watch("channel_type") === "api" && (
-            <Controller
-              control={control}
-              name={`data.url`}
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <EuiFormRow label="Url" isInvalid={!!error?.message} error={[error?.message]}>
-                  <EuiFieldText
-                    onChange={onChange}
-                    value={value as string}
-                    onBlur={onBlur}
+          {watch("channel_type") === "email" && (
+            <>
+              <Controller
+                control={control}
+                name={`data.host`}
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <EuiFormRow label="Host" isInvalid={!!error?.message} error={[error?.message]}>
+                    <EuiFieldText
+                      onChange={onChange}
+                      value={value as string}
+                      onBlur={onBlur}
+                      isInvalid={!!error?.message}
+                      placeholder="host"
+                      aria-label="host"
+                    />
+                  </EuiFormRow>
+                )}
+              />
+              <Controller
+                control={control}
+                name={`data.port`}
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <EuiFormRow label="Port" isInvalid={!!error?.message} error={[error?.message]}>
+                    <EuiFieldNumber
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!error?.message}
+                      placeholder="port"
+                      aria-label="port"
+                    />
+                  </EuiFormRow>
+                )}
+              />
+              <Controller
+                control={control}
+                name={`data.host_user`}
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <EuiFormRow
+                    label="Host user"
                     isInvalid={!!error?.message}
-                    placeholder="url"
-                    aria-label="url"
-                  />
-                </EuiFormRow>
-              )}
-            />
+                    error={[error?.message]}
+                  >
+                    <EuiFieldText
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!error?.message}
+                      placeholder="Host user"
+                      aria-label="host user"
+                    />
+                  </EuiFormRow>
+                )}
+              />
+              <Controller
+                control={control}
+                name={`data.host_password`}
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <EuiFormRow
+                    label="Host password"
+                    isInvalid={!!error?.message}
+                    error={[error?.message]}
+                  >
+                    <EuiFieldText
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!error?.message}
+                      placeholder="host password"
+                      aria-label="host password"
+                    />
+                  </EuiFormRow>
+                )}
+              />
+            </>
           )}
-          {watch("channel_type") === "api" &&
-            fields.map((field, index) => (
-              <>
-                <EuiFormRow>
-                  <EuiFlexGroup alignItems="center">
-                    <EuiFlexItem>
-                      <Controller
-                        key={field.id}
-                        control={control}
-                        name={`data.headers.${index}.key`}
-                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                          <EuiFormRow
-                            label="Key"
-                            isInvalid={!!error?.message}
-                            error={[error?.message]}
-                          >
-                            <EuiFieldText
-                              onChange={onChange}
-                              value={value as string}
-                              onBlur={onBlur}
-                              isInvalid={!!error?.message}
-                              placeholder="key"
-                              aria-label="key"
-                            />
-                          </EuiFormRow>
-                        )}
-                      />
-                    </EuiFlexItem>
-                    <EuiFlexItem>
-                      <Controller
-                        key={field.id}
-                        control={control}
-                        name={`data.headers.${index}.value`}
-                        render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                          <EuiFormRow
-                            label="Value"
-                            isInvalid={!!error?.message}
-                            error={[error?.message]}
-                          >
-                            <EuiFieldText
-                              onChange={onChange}
-                              value={value as string}
-                              onBlur={onBlur}
-                              isInvalid={!!error?.message}
-                              placeholder="value"
-                              aria-label="value"
-                            />
-                          </EuiFormRow>
-                        )}
-                      />
-                    </EuiFlexItem>
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonIcon
-                        size="m"
-                        iconType="cross"
-                        type="button"
-                        style={{ marginTop: "20px" }}
-                        onClick={() => remove(index)}
-                      />
-                    </EuiFlexItem>
-                  </EuiFlexGroup>
-                </EuiFormRow>
-              </>
-            ))}
           {watch("channel_type") === "api" && (
-            <Controller
-              control={control}
-              name={`data.rate_limit`}
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <EuiFormRow
-                  label="Rate limit"
-                  isInvalid={!!error?.message}
-                  error={[error?.message]}
-                >
-                  <EuiFieldNumber
-                    onChange={onChange}
-                    value={value as number}
-                    onBlur={onBlur}
+            <>
+              <Controller
+                control={control}
+                name={`data.url`}
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <EuiFormRow label="Url" isInvalid={!!error?.message} error={[error?.message]}>
+                    <EuiFieldText
+                      onChange={onChange}
+                      value={value as string}
+                      onBlur={onBlur}
+                      isInvalid={!!error?.message}
+                      placeholder="url"
+                      aria-label="url"
+                    />
+                  </EuiFormRow>
+                )}
+              />
+              {fields.map((field, index) => (
+                <>
+                  <EuiFormRow>
+                    <EuiFlexGroup alignItems="center">
+                      <EuiFlexItem>
+                        <Controller
+                          key={field.id}
+                          control={control}
+                          name={`data.headers.${index}.key`}
+                          render={({
+                            field: { onChange, onBlur, value },
+                            fieldState: { error },
+                          }) => (
+                            <EuiFormRow
+                              label="Key"
+                              isInvalid={!!error?.message}
+                              error={[error?.message]}
+                            >
+                              <EuiFieldText
+                                onChange={onChange}
+                                value={value as string}
+                                onBlur={onBlur}
+                                isInvalid={!!error?.message}
+                                placeholder="key"
+                                aria-label="key"
+                              />
+                            </EuiFormRow>
+                          )}
+                        />
+                      </EuiFlexItem>
+                      <EuiFlexItem>
+                        <Controller
+                          key={field.id}
+                          control={control}
+                          name={`data.headers.${index}.value`}
+                          render={({
+                            field: { onChange, onBlur, value },
+                            fieldState: { error },
+                          }) => (
+                            <EuiFormRow
+                              label="Value"
+                              isInvalid={!!error?.message}
+                              error={[error?.message]}
+                            >
+                              <EuiFieldText
+                                onChange={onChange}
+                                value={value as string}
+                                onBlur={onBlur}
+                                isInvalid={!!error?.message}
+                                placeholder="value"
+                                aria-label="value"
+                              />
+                            </EuiFormRow>
+                          )}
+                        />
+                      </EuiFlexItem>
+                      <EuiFlexItem grow={false}>
+                        <EuiButtonIcon
+                          size="m"
+                          iconType="cross"
+                          type="button"
+                          style={{ marginTop: "20px" }}
+                          onClick={() => remove(index)}
+                        />
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
+                  </EuiFormRow>
+                </>
+              ))}
+              <Controller
+                control={control}
+                name={`data.rate_limit`}
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <EuiFormRow
+                    label="Rate limit"
                     isInvalid={!!error?.message}
-                    placeholder="rate limit"
-                    aria-label="rate limit"
-                  />
-                </EuiFormRow>
-              )}
-            />
+                    error={[error?.message]}
+                  >
+                    <EuiFieldNumber
+                      onChange={onChange}
+                      value={value as number}
+                      onBlur={onBlur}
+                      isInvalid={!!error?.message}
+                      placeholder="rate limit"
+                      aria-label="rate limit"
+                    />
+                  </EuiFormRow>
+                )}
+              />
+            </>
           )}
           <EuiFormRow>
             <EuiFlexGroup gutterSize="s">
