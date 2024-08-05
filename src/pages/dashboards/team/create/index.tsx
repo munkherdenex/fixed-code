@@ -50,7 +50,7 @@ const TeamCreate = () => {
             text: team.name,
           })),
       ]
-    : [{ value: "", text: "" }];
+    : [];
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -78,29 +78,31 @@ const TeamCreate = () => {
       </EuiFlexItem>
       <EuiFlexItem grow={false}>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-          <EuiFormRow
-            label="Parent team*"
-            helpText="If you want to create a sub team, select the parent team"
-            isInvalid={!!errors.parent_id?.message}
-            error={[errors.parent_id?.message]}
-          >
-            <Controller
-              name="parent_id"
-              control={control}
-              defaultValue=""
-              render={({ field: { onChange, onBlur, value } }) => (
-                <EuiSelect
-                  onChange={onChange}
-                  value={value}
-                  options={teamOptions}
-                  onBlur={onBlur}
-                  isInvalid={!!errors.parent_id?.message}
-                  aria-label="channel type"
-                  hasNoInitialSelection
-                />
-              )}
-            />
-          </EuiFormRow>
+          {teamOptions?.length === 0 && (
+            <EuiFormRow
+              label="Parent team*"
+              helpText="If you want to create a sub team, select the parent team"
+              isInvalid={!!errors.parent_id?.message}
+              error={[errors.parent_id?.message]}
+            >
+              <Controller
+                name="parent_id"
+                control={control}
+                defaultValue=""
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <EuiSelect
+                    onChange={onChange}
+                    value={value}
+                    options={teamOptions}
+                    onBlur={onBlur}
+                    isInvalid={!!errors.parent_id?.message}
+                    aria-label="channel type"
+                    hasNoInitialSelection
+                  />
+                )}
+              />
+            </EuiFormRow>
+          )}
           <EuiFormRow
             label="Team name"
             isInvalid={!!errors.name?.message}
@@ -144,18 +146,20 @@ const TeamCreate = () => {
               Create Team
             </EuiButton>
           </EuiFormRow>
-          <EuiFormRow>
-            <EuiButton
-              color="danger"
-              onClick={() => router.push("/dashboards")}
-              type="button"
-              size="s"
-              fullWidth
-              fill
-            >
-              Cancel
-            </EuiButton>
-          </EuiFormRow>
+          {teamOptions?.length === 0 && (
+            <EuiFormRow>
+              <EuiButton
+                color="danger"
+                onClick={() => router.push("/dashboards")}
+                type="button"
+                size="s"
+                fullWidth
+                fill
+              >
+                Cancel
+              </EuiButton>
+            </EuiFormRow>
+          )}
         </EuiForm>
       </EuiFlexItem>
     </EuiFlexGroup>
