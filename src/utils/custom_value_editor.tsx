@@ -3,7 +3,6 @@ import moment from "moment";
 import { ValueEditorProps, ValueEditor } from "react-querybuilder";
 
 export const CustomValueEditor = (props: ValueEditorProps) => {
-  console.info(JSON.stringify(props.fieldData));
   if (props.fieldData.datatype === "date") {
     return (
       <div>
@@ -11,7 +10,6 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
           compressed
           selected={!props.value ? null : moment(props.value)}
           onChange={(d) => {
-            console.info(JSON.stringify(d.startOf("day")));
             props.handleOnChange(d ? moment(d).startOf("day") : null);
           }}
         />
@@ -26,7 +24,6 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
           compressed
           selected={!props.value ? null : moment(props.value)}
           onChange={(d) => {
-            console.info(JSON.stringify(d));
             props.handleOnChange(d ? moment(d) : null);
           }}
         />

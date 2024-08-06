@@ -43,8 +43,6 @@ const Dynamic = ({
     });
   };
 
-  console.info(JSON.stringify(query.rules));
-
   return (
     <>
       <EuiForm component="form" onSubmit={handleSubmit(createSegment)}>
