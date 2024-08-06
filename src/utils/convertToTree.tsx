@@ -8,6 +8,7 @@ export const convertToTree = (data: Teams[], changeCurrentTeam: (teamId: number)
   const idMapping = data.reduce((acc, el) => {
     acc[el.id] = {
       ...el,
+      id: `${el.id}`,
       label: el.name,
       callback: () => changeCurrentTeam(el.id),
       children: [],
