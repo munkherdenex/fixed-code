@@ -172,7 +172,11 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 control={control}
                 name={`data.from_email`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                  <EuiFormRow label="Port" isInvalid={!!error?.message} error={[error?.message]}>
+                  <EuiFormRow
+                    label="From email"
+                    isInvalid={!!error?.message}
+                    error={[error?.message]}
+                  >
                     <EuiFieldText
                       onChange={onChange}
                       value={value}
