@@ -197,6 +197,22 @@ const EditChannelFlyot = ({
               />
               <Controller
                 control={control}
+                name={`data.from_email`}
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <EuiFormRow label="Port" isInvalid={!!error?.message} error={[error?.message]}>
+                    <EuiFieldText
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!error?.message}
+                      placeholder="From email"
+                      aria-label="from email"
+                    />
+                  </EuiFormRow>
+                )}
+              />
+              <Controller
+                control={control}
                 name={`data.host_user`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <EuiFormRow

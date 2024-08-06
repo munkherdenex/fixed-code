@@ -8,6 +8,7 @@ export const createChannelSchema = yup
       .object({
         host: yup.string().url().notRequired().default(undefined).label("Host"),
         port: yup.number().positive().notRequired().default(undefined).label("Port"),
+        from_email: yup.string().notRequired().default(undefined).label("Host user"),
         host_user: yup.string().notRequired().default(undefined).label("Host user"),
         host_password: yup.string().notRequired().default(undefined).label("Host password"),
         url: yup.string().notRequired().default(undefined).label("URL"),
@@ -49,6 +50,7 @@ export const createChannelSchema = yup
           return schema.shape({
             host: yup.string().required().label("Host"),
             port: yup.number().positive().required().label("Port"),
+            from_email: yup.string().required().label("From email"),
             host_user: yup.string().notRequired().label("Host user"),
             host_password: yup.string().notRequired().label("Host password"),
           });
