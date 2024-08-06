@@ -155,7 +155,13 @@ const GeneralDetails = () => {
                 <>
                   <EuiFlexItem>Condition:</EuiFlexItem>
                   <EuiFlexItem>
-                    <EuiCodeBlock language="json" fontSize="s" paddingSize="s" isCopyable>
+                    <EuiCodeBlock
+                      language="json"
+                      fontSize="s"
+                      paddingSize="s"
+                      isCopyable
+                      overflowHeight={300}
+                    >
                       <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.condition)), null, 2)}</pre>
                     </EuiCodeBlock>
                   </EuiFlexItem>

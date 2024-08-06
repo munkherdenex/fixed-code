@@ -133,7 +133,14 @@ const GeneralDetails = () => {
               </EuiFlexItem>
               <EuiFlexItem>Data:</EuiFlexItem>
               <EuiFlexItem>
-                <EuiCodeBlock language="json" fontSize="s" paddingSize="s" lineNumbers isCopyable>
+                <EuiCodeBlock
+                  language="json"
+                  fontSize="s"
+                  paddingSize="s"
+                  lineNumbers
+                  isCopyable
+                  overflowHeight={300}
+                >
                   <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.data)), null, 2)}</pre>
                 </EuiCodeBlock>
               </EuiFlexItem>
