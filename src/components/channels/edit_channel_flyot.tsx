@@ -43,12 +43,13 @@ const EditChannelFlyot = ({
   data: Channels;
 }) => {
   const parsedData = JSON.parse(jsonrepair(data?.data));
-  const preparedHeaders = parsedData.headers
-    ? Object.entries(parsedData.headers).map(([key, value]: [string, any]) => ({
-        key,
-        value,
-      }))
-    : [];
+  const preparedHeaders =
+    Object.keys(parsedData?.headers).length > 0 && parsedData.headers
+      ? Object.entries(parsedData.headers).map(([key, value]: [string, any]) => ({
+          key,
+          value,
+        }))
+      : undefined;
 
   const router = useRouter();
   const flyoutHeadingId = useGeneratedHtmlId({
@@ -71,6 +72,7 @@ const EditChannelFlyot = ({
       data: {
         host: parsedData?.host || undefined,
         port: parsedData?.port || undefined,
+        from_email: parsedData?.from_email || undefined,
         host_user: parsedData?.host_user || undefined,
         host_password: parsedData?.host_password || undefined,
         url: parsedData?.url || undefined,

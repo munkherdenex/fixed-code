@@ -61,7 +61,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     try {
       const preparedHeaders = data?.data?.headers
         ? data.data.headers.reduce((a, v) => ({ ...a, [v.key]: v.value }), {})
-        : [];
+        : {};
 
       const response = await trigger({
         ...data,
