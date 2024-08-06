@@ -2,7 +2,7 @@ import { EuiButton, EuiFieldText, EuiForm, EuiFormRow, EuiTextArea } from "@elas
 import { yupResolver } from "@hookform/resolvers/yup";
 import { jsonrepair } from "jsonrepair";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ActionElement, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
 import { parseMongoDB } from "react-querybuilder/parseMongoDB";
@@ -26,7 +26,7 @@ const schema = yup.object({
 type FormData = yup.InferType<typeof schema>;
 
 const removeDeletedCustomFields = (data: Fields[], query: RuleGroupType) => {
-  const fields = [...data?.map((item) => `cf_${item.name}`), "email", "phone", "rid"];
+  const fields = [...(data ? data?.map((item) => `cf_${item.name}`) : []), "email", "phone", "rid"];
 
   // Recursive function to filter rules
   const filterRules = (rules: any) => {
@@ -87,7 +87,18 @@ const EditDynamic = ({
     },
   });
 
-  const output = processDynamicFieldData(data);
+  const output = useMemo(() => processDynamicFieldData(data), [data]);
+
+  useEffect(() => {
+    setQuery(() =>
+      removeDeletedCustomFields(
+        data,
+        parseMongoDB(condition, {
+          additionalOperators: additionalOperator,
+        }),
+      ),
+    );
+  }, [data, condition]);
 
   const createSegment = async (data: FormData) => {
     try {
