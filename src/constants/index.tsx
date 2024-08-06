@@ -13,7 +13,7 @@ export const REACT_QUERY_BUILDER_OPERATORS: Operator[] = [
 ];
 
 export const QUERY_BUILDER_DEFAULT_FIELD: Field[] = [
-  { name: "email", label: "Email", datatype: "string" },
+  { name: "email", label: "Email", datatype: "str" },
   { name: "phone", label: "Phone", datatype: "int" },
-  { name: "rid", label: "Reference id", datatype: "string" },
+  { name: "rid", label: "Reference id", datatype: "str" },
 ];

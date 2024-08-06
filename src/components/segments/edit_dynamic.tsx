@@ -4,7 +4,7 @@ import { jsonrepair } from "jsonrepair";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ActionElement, Field, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
+import { ActionElement, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
 import { parseMongoDB } from "react-querybuilder/parseMongoDB";
 import * as yup from "yup";
 import { QUERY_BUILDER_DEFAULT_FIELD, REACT_QUERY_BUILDER_OPERATORS } from "../../constants";

@@ -3,6 +3,7 @@ import moment from "moment";
 import { ValueEditorProps, ValueEditor } from "react-querybuilder";
 
 export const CustomValueEditor = (props: ValueEditorProps) => {
+  console.info(JSON.stringify(props.fieldData));
   if (props.fieldData.datatype === "date") {
     return (
       <div>
@@ -44,7 +45,7 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
       </div>
     );
   }
-  if (props.fieldData.datatype === "string") {
+  if (props.fieldData.datatype === "str" || props.fieldData.datatype === "string") {
     return (
       <div>
         <EuiFieldText

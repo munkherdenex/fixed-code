@@ -10,7 +10,7 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useDeleteTemplateCustomer from "../../hooks/useDeleteTemplateCustomer";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
@@ -65,37 +65,61 @@ const Audience = () => {
     },
   ];
 
-  const actions: Array<EuiBasicTableColumn<TemplateCustomer>> = [
-    {
-      name: "Actions",
-      actions: [
+  const actions: Array<EuiBasicTableColumn<TemplateCustomer>> = useMemo(() => {
+    if (actionEnabled)
+      return [
         {
-          name: "Delete",
-          isPrimary: true,
-          icon: "trash",
-          color: "danger",
-          type: "icon",
-          description: "Delete customer",
-          onClick: (templateCustomer: TemplateCustomer) => {
-            setSelectedAudience(templateCustomer);
-            showModal();
-          },
+          name: "Actions",
+          actions: [
+            {
+              name: "Delete",
+              isPrimary: true,
+              icon: "trash",
+              color: "danger",
+              type: "icon",
+              description: "Delete customer",
+              onClick: (templateCustomer: TemplateCustomer) => {
+                setSelectedAudience(templateCustomer);
+                showModal();
+              },
+            },
+            {
+              name: "View",
+              icon: "arrowRight",
+              color: "primary",
+              type: "icon",
+              description: "view customer",
+              onClick: (templateCustomer: TemplateCustomer) => {
+                const { object_id, type } = templateCustomer;
+                const type_path = type === "customer" ? "audience" : "segments";
+                router.push(`/dashboards/${type_path}/info/${object_id}`);
+              },
+            },
+          ],
         },
-        {
-          name: "View",
-          icon: "arrowRight",
-          color: "primary",
-          type: "icon",
-          description: "view customer",
-          onClick: (templateCustomer: TemplateCustomer) => {
-            const { object_id, type } = templateCustomer;
-            const type_path = type === "customer" ? "audience" : "segments";
-            router.push(`/dashboards/${type_path}/info/${object_id}`);
+      ];
+
+    return [
+      {
+        name: "Actions",
+        actions: [
+          {
+            name: "View",
+            icon: "arrowRight",
+            color: "primary",
+            type: "icon",
+            description: "view customer",
+            onClick: (templateCustomer: TemplateCustomer) => {
+              const { object_id, type } = templateCustomer;
+              const type_path = type === "customer" ? "audience" : "segments";
+              router.push(`/dashboards/${type_path}/info/${object_id}`);
+            },
           },
-        },
-      ],
-    },
-  ];
+        ],
+      },
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionEnabled]);
 
   const onTableChange = ({ page }: Criteria<TemplateCustomer>) => {
     if (page) {
@@ -149,7 +173,7 @@ const Audience = () => {
         <EuiBasicTable
           tableCaption="Template customers"
           items={templateCustomers?.results || []}
-          columns={[...columns, ...(actionEnabled ? actions : [])]}
+          columns={[...columns, ...actions]}
           cellProps={getCellProps}
           pagination={
             templateCustomers?.total_count > pageSize
