@@ -165,7 +165,7 @@ const CreateTemplateFlyot = ({
             <Controller
               control={control}
               name="title"
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
                 <EuiFieldText
                   onChange={onChange}
                   value={value}
@@ -186,7 +186,7 @@ const CreateTemplateFlyot = ({
             <Controller
               control={control}
               name="kind"
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
                 <EuiSelect
                   onChange={onChange}
                   value={value}
@@ -220,7 +220,7 @@ const CreateTemplateFlyot = ({
               <Controller
                 control={control}
                 name="body"
-                render={({ field: { onChange, onBlur, value } }) => (
+                render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
                   <EuiTextArea
                     onChange={onChange}
                     value={value}
@@ -263,7 +263,7 @@ const CreateTemplateFlyot = ({
                 <Controller
                   control={control}
                   name="channel"
-                  render={({ field: { onChange, onBlur, value } }) => (
+                  render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
                     <EuiSelect
                       onChange={onChange}
                       value={value}

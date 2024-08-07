@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import { mutate } from "swr";
 import { useContext, useMemo } from "react";
 import { teamsContext } from "../../../../store/teams_store";
+import { globalMutate } from "../../../../utils/globalMutate";
 
 const schema = yup
   .object({
@@ -60,8 +61,8 @@ const TeamCreate = () => {
     try {
       const response = await trigger(data);
       if (response) {
-        await mutate("/api/v1/teams");
-        router.push("/dashboards/");
+        await router.push("/dashboards/");
+        globalMutate("/api/v1/teams");
       }
     } catch (error) {
       console.error(error);
@@ -116,9 +117,11 @@ const TeamCreate = () => {
               name="name"
               control={control}
               defaultValue=""
-              render={({ field }) => (
+              render={({ field: { onChange, value, onBlur }, formState: { errors } }) => (
                 <EuiFieldText
-                  {...field}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
                   placeholder="Enter team name"
                   aria-label="Enter team name"
                   isInvalid={!!errors.name?.message}
@@ -135,9 +138,11 @@ const TeamCreate = () => {
               name="description"
               control={control}
               defaultValue=""
-              render={({ field }) => (
+              render={({ field: { onChange, value, onBlur }, formState: { errors } }) => (
                 <EuiFieldText
-                  {...field}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
                   placeholder="Enter team description"
                   aria-label="Enter team description"
                   isInvalid={!!errors.description?.message}
