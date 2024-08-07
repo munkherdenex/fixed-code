@@ -82,7 +82,7 @@ const TeamCreate = () => {
       </EuiFlexItem>
       <EuiFlexItem grow={false}>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-          {teamOptions?.length > 0 && (
+          {teamOptions?.length > 0 ? (
             <EuiFormRow
               label="Parent team*"
               helpText="If you want to create a sub team, select the parent team"
@@ -106,7 +106,7 @@ const TeamCreate = () => {
                 )}
               />
             </EuiFormRow>
-          )}
+          ) : null}
           <EuiFormRow
             label="Team name"
             isInvalid={!!errors.name?.message}
@@ -150,7 +150,7 @@ const TeamCreate = () => {
               Create Team
             </EuiButton>
           </EuiFormRow>
-          {teamOptions?.length > 0 && (
+          {teamOptions?.length > 0 ? (
             <EuiFormRow>
               <EuiButton
                 color="danger"
@@ -163,7 +163,7 @@ const TeamCreate = () => {
                 Cancel
               </EuiButton>
             </EuiFormRow>
-          )}
+          ) : null}
         </EuiForm>
       </EuiFlexItem>
     </EuiFlexGroup>
