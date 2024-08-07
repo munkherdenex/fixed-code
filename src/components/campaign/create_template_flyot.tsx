@@ -1,5 +1,6 @@
 import {
   EuiButton,
+  EuiCallOut,
   EuiFieldText,
   EuiFlexGroup,
   EuiFlexItem,
@@ -16,6 +17,7 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useCreateTemplate from "../../hooks/useCreateTemplate";
@@ -43,7 +45,7 @@ const BodyInfoToolTip = () => {
 const schema = yup
   .object({
     title: yup.string().required().label("Title"),
-    kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api"]).required().label("Data"),
+    kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api", ""]).required().label("Data"),
     body: yup.string().required().label("Body"),
     channel: yup.number().required().label("Channel"),
   })
@@ -59,8 +61,15 @@ const dataTypeOptions = [
 
 type FormData = yup.InferType<typeof schema>;
 
-const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
+const CreateTemplateFlyot = ({
+  closeFlyout,
+  dataType,
+}: {
+  closeFlyout: () => void;
+  dataType: FormData["kind"];
+}) => {
   const styles = createTemplateFlyoutStyles();
+  const router = useRouter();
   const { isMutating, trigger } = useCreateTemplate();
   const { data: channelsData } = useGetChannels<Channels[]>(undefined, {
     all: `${true}`,
@@ -81,7 +90,7 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
     mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      kind: "api",
+      kind: dataType,
     },
   });
 
@@ -130,6 +139,24 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+          {channelDataOptions.length === 0 && (
+            <EuiFormRow>
+              <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
+                <p>You need to create a channel before you can create a campaign.</p>
+                <EuiButton
+                  onClick={() =>
+                    router.push("/dashboards/channels", {
+                      query: {
+                        create: true,
+                      },
+                    })
+                  }
+                >
+                  Create
+                </EuiButton>
+              </EuiCallOut>
+            </EuiFormRow>
+          )}
           <EuiFormRow
             label="Title"
             isInvalid={!!errors.title?.message}
@@ -154,6 +181,7 @@ const CreateTemplateFlyot = ({ closeFlyout }: { closeFlyout: () => void }) => {
             label="Data type"
             isInvalid={!!errors.kind?.message}
             error={[errors.kind?.message]}
+            style={{ display: "none" }}
           >
             <Controller
               control={control}

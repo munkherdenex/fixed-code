@@ -17,3 +17,12 @@ export const QUERY_BUILDER_DEFAULT_FIELD: Field[] = [
   { name: "phone", label: "Phone", datatype: "int" },
   { name: "rid", label: "Reference id", datatype: "str" },
 ];
+
+export const TEMPLATE_DATA_TYPE_OPTIONS = [
+  { value: "", inputDisplay: "Create new" },
+  { value: "email", inputDisplay: "Email" },
+  { value: "sms", inputDisplay: "Sms" },
+  { value: "push", inputDisplay: "Push" },
+  { value: "inapp", inputDisplay: "Inapp" },
+  { value: "api", inputDisplay: "Api" },
+];

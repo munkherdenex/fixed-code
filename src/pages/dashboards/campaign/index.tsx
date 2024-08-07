@@ -1,9 +1,10 @@
-import { EuiBreadcrumbs, EuiButton } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiFlexItem, EuiSuperSelect } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import CreateTemplateFlyot from "../../../components/campaign/create_template_flyot";
 import SendsTable from "../../../components/campaign/table";
+import { TEMPLATE_DATA_TYPE_OPTIONS } from "../../../constants";
 import DashboardLayout from "../../../layouts/dashboard";
 
 const pathPrefix = process.env.PATH_PREFIX;
@@ -11,9 +12,11 @@ const pathPrefix = process.env.PATH_PREFIX;
 const SendsDashboard = () => {
   const router = useRouter();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
+  const [dataType, setDataType] = useState<any>("");
 
   const closeFlyout = () => {
     setIsFlyoutVisible(false);
+    setDataType("");
   };
 
   return (
@@ -26,14 +29,18 @@ const SendsDashboard = () => {
           pageTitle: "Campaign",
           iconType: "spacesApp",
           rightSideItems: [
-            <EuiButton
-              color="primary"
-              onClick={() => setIsFlyoutVisible(true)}
-              fill
-              key="create-Campaign"
-            >
-              Create Campaign
-            </EuiButton>,
+            <EuiFlexItem key="create_campaign">
+              <EuiSuperSelect
+                onChange={(value) => {
+                  setDataType(value);
+                  setIsFlyoutVisible(true);
+                }}
+                valueOfSelected={dataType}
+                options={TEMPLATE_DATA_TYPE_OPTIONS}
+                aria-label="data type"
+                aria-placeholder="Create new campaign"
+              />
+            </EuiFlexItem>,
           ],
         }}
         breadCrumb={
@@ -53,7 +60,7 @@ const SendsDashboard = () => {
       >
         <div>
           <SendsTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
-          {isFlyoutVisible && <CreateTemplateFlyot closeFlyout={closeFlyout} />}
+          {isFlyoutVisible && <CreateTemplateFlyot closeFlyout={closeFlyout} dataType={dataType} />}
         </div>
       </DashboardLayout>
     </>

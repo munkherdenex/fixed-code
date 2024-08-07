@@ -1,4 +1,4 @@
-import { EuiButton, EuiButtonIcon, EuiFlexItem } from "@elastic/eui";
+import { EuiButton, EuiFlexItem } from "@elastic/eui";
 import { useRouter } from "next/router";
 
 const JumpToCreateChannelButton = ({ show }: { show: boolean }) => {
