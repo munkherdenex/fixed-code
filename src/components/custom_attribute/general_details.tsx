@@ -1,6 +1,7 @@
 import {
   EuiBadge,
   EuiButtonIcon,
+  EuiCallOut,
   EuiConfirmModal,
   EuiFieldText,
   EuiFlexGrid,
@@ -8,6 +9,7 @@ import {
   EuiFlexItem,
   EuiFormRow,
   EuiPanel,
+  EuiSpacer,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import moment from "moment";
@@ -58,6 +60,13 @@ const DeleteConfirmModal = ({
       isLoading={isMutating}
       confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
     >
+      <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
+        <p>
+          This action cannot be undone. This will permanently delete the custom attribute from your
+          account.
+        </p>
+      </EuiCallOut>
+      <EuiSpacer />
       <EuiFormRow label="Type the word 'delete' to confirm">
         <EuiFieldText
           isLoading={isMutating}

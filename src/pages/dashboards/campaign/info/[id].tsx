@@ -1,16 +1,19 @@
 import {
   EuiBreadcrumbs,
   EuiButton,
+  EuiCallOut,
   EuiConfirmModal,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiSpacer,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
-import GeneralDetails from "../../../../components/campaign//general_detail";
+import GeneralDetails from "../../../../components/campaign/general_detail";
 import Menu from "../../../../components/campaign/menu";
+import ChannelGeneralDetails from "../../../../components/channels/general_details";
 import useGetTemplates, { Template } from "../../../../hooks/useGetTemplates";
 import useUpdateApproveTemplate from "../../../../hooks/useUpdateApproveTemplate";
 import useUpdateDoneTemplate from "../../../../hooks/useUpdateDoneTemplate";
@@ -18,7 +21,7 @@ import DashboardLayout from "../../../../layouts/dashboard";
 import { teamsContext } from "../../../../store/teams_store";
 import { globalMutate } from "../../../../utils/globalMutate";
 
-export const getRightSideButton = (
+const getRightSideButton = (
   status: string,
   role: string,
   handleStatusButton: () => void,
@@ -57,7 +60,7 @@ export const getRightSideButton = (
   }
 };
 
-const SendsInfo = () => {
+const CampaignInfo = () => {
   const router = useRouter();
   const { myProfile } = useContext(teamsContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -109,7 +112,7 @@ const SendsInfo = () => {
       <DashboardLayout
         pageHeader={{
           pageTitle: "Campaign info",
-          iconType: "usersRolesApp",
+          iconType: "spacesApp",
           rightSideItems: [
             getRightSideButton(data?.status || "", myProfile?.role, handleStatusButton, isMutating),
           ],
@@ -135,10 +138,18 @@ const SendsInfo = () => {
         }
       >
         <>
-          <EuiFlexGroup direction="column">
+          <EuiFlexGroup>
             <EuiFlexItem>
-              <GeneralDetails />
+              <GeneralDetails templateStatus={data?.status} />
             </EuiFlexItem>
+            {data?.channel && (
+              <EuiFlexItem>
+                <ChannelGeneralDetails id={`${data?.channel}`} />
+              </EuiFlexItem>
+            )}
+          </EuiFlexGroup>
+          <EuiSpacer />
+          <EuiFlexGroup>
             <EuiFlexItem>
               <Menu />
             </EuiFlexItem>
@@ -150,10 +161,15 @@ const SendsInfo = () => {
               title="Update campaign"
               onCancel={closeModal}
               onConfirm={handleModelConfirm}
+              confirmButtonDisabled={data?.aud_count === 0}
               cancelButtonText="Cancel"
               confirmButtonText="Confirm"
-              defaultFocusedButton="confirm"
+              defaultFocusedButton={data?.aud_count === 0 ? "cancel" : "confirm"}
             >
+              <EuiCallOut title="Warning" color="warning" iconType="warning">
+                <p>Audience must be added to the campaign before marking it as done.</p>
+              </EuiCallOut>
+              <EuiSpacer />
               <p>
                 The campaign will be marked as done, and it has reached an audience of{" "}
                 <strong>{data?.aud_count}</strong>. Are you sure you want to continue?
@@ -183,4 +199,4 @@ const SendsInfo = () => {
   );
 };
 
-export default SendsInfo;
+export default CampaignInfo;

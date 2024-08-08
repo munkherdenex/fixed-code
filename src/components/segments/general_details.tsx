@@ -1,6 +1,7 @@
 import {
   EuiBadge,
   EuiButtonIcon,
+  EuiCallOut,
   EuiCodeBlock,
   EuiConfirmModal,
   EuiFieldText,
@@ -12,6 +13,7 @@ import {
   EuiFlyoutHeader,
   EuiFormRow,
   EuiPanel,
+  EuiSpacer,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -66,6 +68,10 @@ const DeleteConfirmModal = ({
       isLoading={isMutating}
       confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
     >
+      <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
+        <p>This action cannot be undone. This will permanently delete the segment.</p>
+      </EuiCallOut>
+      <EuiSpacer />
       <EuiFormRow label="Type the word 'delete' to confirm">
         <EuiFieldText
           isLoading={isMutating}

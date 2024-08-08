@@ -2,6 +2,7 @@ import {
   EuiBadge,
   EuiButton,
   EuiButtonIcon,
+  EuiCallOut,
   EuiCodeBlock,
   EuiConfirmModal,
   EuiFieldText,
@@ -15,6 +16,7 @@ import {
   EuiModalHeader,
   EuiModalHeaderTitle,
   EuiPanel,
+  EuiSpacer,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { jsonrepair } from "jsonrepair";
@@ -68,6 +70,13 @@ const DeleteConfirmModal = ({
       isLoading={isMutating}
       confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
     >
+      <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
+        <p>
+          You are about to delete this campaign. This is a destructive action and cannot be undone.
+          Are you sure you want to proceed?
+        </p>
+      </EuiCallOut>
+      <EuiSpacer />
       <EuiFormRow label="Type the word 'delete' to confirm">
         <EuiFieldText
           isLoading={isMutating}
@@ -80,11 +89,21 @@ const DeleteConfirmModal = ({
   );
 };
 
-const GeneralDetails = () => {
+const GeneralDetails = ({
+  templateStatus,
+}: {
+  templateStatus?: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
+}) => {
   const router = useRouter();
   const modalTitleId = useGeneratedHtmlId();
 
-  const { data, isLoading } = useGetTemplates<Template>(router.query.id);
+  const { data, isLoading } = useGetTemplates<Template>(
+    router.query.id,
+    {},
+    {
+      refreshInterval: templateStatus !== "DRAFT" ? 1000 : 0,
+    },
+  );
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
   const [isEmailModalVisible, setIsEmailModalVisible] = useState(false);
@@ -149,7 +168,11 @@ const GeneralDetails = () => {
               <EuiFlexItem>Title:</EuiFlexItem>
               <EuiFlexItem>{data.title}</EuiFlexItem>
               <EuiFlexItem>Kind:</EuiFlexItem>
-              <EuiFlexItem>{data.kind}</EuiFlexItem>
+              <EuiFlexItem>
+                <div>
+                  <EuiBadge color={badgeColor(data.kind)}>{data.kind}</EuiBadge>
+                </div>
+              </EuiFlexItem>
               <EuiFlexItem>Body:</EuiFlexItem>
               <EuiFlexItem>
                 {data?.kind === "email" && (

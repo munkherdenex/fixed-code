@@ -1,6 +1,7 @@
 import {
   EuiBadge,
   EuiButtonIcon,
+  EuiCallOut,
   EuiCodeBlock,
   EuiConfirmModal,
   EuiFieldText,
@@ -9,6 +10,7 @@ import {
   EuiFlexItem,
   EuiFormRow,
   EuiPanel,
+  EuiSpacer,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { jsonrepair } from "jsonrepair";
@@ -17,16 +19,19 @@ import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
 import useDeleteChannel from "../../hooks/useDeleteChannel";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
+import { badgeColor } from "../../utils/badge_color";
 import EditChannelFlyot from "./edit_channel_flyot";
 
 const DeleteConfirmModal = ({
+  channelId,
   setIsModalVisible,
 }: {
+  channelId?: string | string[];
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const router = useRouter();
   const modalTitleId = useGeneratedHtmlId();
-  const { trigger, isMutating } = useDeleteChannel(router.query.id);
+  const { trigger, isMutating } = useDeleteChannel(channelId || router.query.id);
   const [deleteConfirmValue, setDeleteConfirmValue] = useState("");
 
   const closeModal = async () => {
@@ -60,6 +65,13 @@ const DeleteConfirmModal = ({
       isLoading={isMutating}
       confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
     >
+      <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
+        <p>
+          This will delete the channel and all its data. This action cannot be undone. Please type
+          the word &quot;delete&quot; to confirm. (Campaigns and other related data will be)
+        </p>
+      </EuiCallOut>
+      <EuiSpacer />
       <EuiFormRow label="Type the word 'delete' to confirm">
         <EuiFieldText
           isLoading={isMutating}
@@ -72,9 +84,10 @@ const DeleteConfirmModal = ({
   );
 };
 
-const GeneralDetails = () => {
+const GeneralDetails = ({ id }: { id?: string }) => {
   const router = useRouter();
-  const { data, isLoading } = useGetChannels<Channels>(router.query.id);
+  const channelId = id || router.query.id;
+  const { data, isLoading } = useGetChannels<Channels>(channelId);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
 
@@ -128,7 +141,7 @@ const GeneralDetails = () => {
               <EuiFlexItem>Channel type:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
-                  <EuiBadge>{data?.channel_type}</EuiBadge>
+                  <EuiBadge color={badgeColor(data.channel_type)}>{data?.channel_type}</EuiBadge>
                 </div>
               </EuiFlexItem>
               <EuiFlexItem>Data:</EuiFlexItem>
@@ -152,9 +165,15 @@ const GeneralDetails = () => {
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiPanel>
-      {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
+      {isModalVisible && (
+        <DeleteConfirmModal channelId={channelId} setIsModalVisible={setIsModalVisible} />
+      )}
       {isEditFlyoutVisible && (
-        <EditChannelFlyot setIsFlyoutVisible={setIsEditFlyoutVisible} data={data} />
+        <EditChannelFlyot
+          channelId={channelId}
+          setIsFlyoutVisible={setIsEditFlyoutVisible}
+          data={data}
+        />
       )}
     </div>
   );

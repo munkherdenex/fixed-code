@@ -27,6 +27,9 @@ export default function useGetTemplates<Type>(
   queryParam?: {
     [key: string]: string;
   },
+  external?: {
+    refreshInterval: number;
+  },
 ): {
   data: Type;
   error: any;
@@ -49,7 +52,7 @@ export default function useGetTemplates<Type>(
       return handleResponseNotOk(res);
     },
     {
-      refreshInterval: 5000,
+      refreshInterval: external?.refreshInterval || 0,
     },
   );
 

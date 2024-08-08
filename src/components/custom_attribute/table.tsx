@@ -3,16 +3,17 @@ import {
   EuiBasicTable,
   EuiBasicTableColumn,
   EuiButton,
+  EuiCallOut,
   EuiConfirmModal,
   EuiEmptyPrompt,
   EuiFieldText,
   EuiFormRow,
   EuiImage,
+  EuiSpacer,
   EuiTableFieldDataColumnType,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import moment from "moment";
-import router from "next/router";
 import { SetStateAction, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useDeleteField from "../../hooks/useDeleteCustomField";
@@ -61,6 +62,13 @@ const DeleteConfirmModal = ({
       isLoading={isMutating}
       confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
     >
+      <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
+        <p>
+          You are about to delete this custom attribute. This is a destructive action and cannot be
+          undone. Are you sure you want to proceed?
+        </p>
+      </EuiCallOut>
+      <EuiSpacer />
       <EuiFormRow label="Type the word 'delete' to confirm">
         <EuiFieldText
           isLoading={isMutating}
