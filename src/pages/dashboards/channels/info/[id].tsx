@@ -15,7 +15,7 @@ const ChannelInfo = () => {
       <DashboardLayout
         pageHeader={{
           pageTitle: "Channel info",
-          iconType: "usersRolesApp",
+          iconType: "spacesApp",
         }}
         breadCrumb={
           <EuiBreadcrumbs

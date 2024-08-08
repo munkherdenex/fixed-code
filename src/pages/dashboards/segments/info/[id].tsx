@@ -16,7 +16,7 @@ const Info = () => {
       <DashboardLayout
         pageHeader={{
           pageTitle: "Segments info",
-          iconType: "usersRolesApp",
+          iconType: "dashboardApp",
         }}
         breadCrumb={
           <EuiBreadcrumbs
