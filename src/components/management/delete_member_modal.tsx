@@ -3,6 +3,7 @@ import { SetStateAction, useState } from "react";
 import { addToast } from "../toast";
 import useDeleteMember from "../../hooks/useDeleteMember";
 import useGetCurrentTeamMembers from "../../hooks/useCurrentTeamMembers";
+import { globalMutate } from "../../utils/globalMutate";
 
 const DeleteMemberModal = ({
   selectMember,
@@ -31,7 +32,8 @@ const DeleteMemberModal = ({
               text: "Successfully deleted",
             });
             setIsModalVisible(false);
-            mutate(`/api/v1/teams/`);
+            mutate();
+            globalMutate("/api/v1/teams");
           }
         } catch (error) {
           console.error("ERROR:: ", error);

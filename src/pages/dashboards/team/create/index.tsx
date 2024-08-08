@@ -13,7 +13,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import useCreateTeam from "../../../../hooks/useCreateTeam";
 import { useRouter } from "next/router";
-import { mutate } from "swr";
 import { useContext, useMemo } from "react";
 import { teamsContext } from "../../../../store/teams_store";
 import { globalMutate } from "../../../../utils/globalMutate";
@@ -45,7 +44,6 @@ const TeamCreate = () => {
     () =>
       Array.isArray(teams) && teams.length > 0
         ? [
-            { value: "", text: "" },
             ...teams
               .filter((team) => !team.parent_id)
               .map((team) => ({

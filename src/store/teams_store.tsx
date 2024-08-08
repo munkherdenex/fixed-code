@@ -21,72 +21,80 @@ export const teamsContext = createContext(initial_teams_state);
 export const TeamsProvider = ({ children }) => {
   const router = useRouter();
   const { trigger } = useChangeTeam();
-  const [teamsData, setTeamsData] = useState<Teams[] | null>(null);
   const [currentTeam, setCurrentTeam] = useState<Teams | null>(null);
-  const [globalLoading, setGlobalLoading] = useState<boolean>(false);
 
-  const { data: teams, isLoading: teamsIsLoading, error: teamsError } = useTeams();
+  const { data: teams, isLoading: teamsIsLoading } = useTeams();
   const { data: myProfile, isLoading: profileIsLoading } =
     useGetTeamsMyprofile<TeamsMyProfileResponse | null>(currentTeam?.id?.toString());
 
-  //INFO: idk what is going on here
   const changeCurrentTeam = useCallback(
     async (teamId: number) => {
-      setGlobalLoading(true);
-      const team = teamsData.find((team) => team.id === teamId);
+      if (teams.length === 0) {
+        return;
+      }
+
+      const team = teams.find((team) => team.id === teamId);
+
       if (team) {
         localStorage.setItem("currentTeamId", teamId.toString());
+
         try {
           await trigger({ team_id: teamId });
           if (window.location.pathname.includes("/info/")) await router.replace("/dashboards");
           setCurrentTeam(team);
         } catch {
-          alert("error");
+          alert("Refresh site");
         }
       } else {
-        setCurrentTeam(teamsData?.[0]);
+        const parentTeam = teams.find((team) => team.parent_id === null);
+        localStorage.setItem("currentTeamId", parentTeam?.id.toString());
+        setCurrentTeam(parentTeam);
       }
-      setGlobalLoading(false);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [teamsData, trigger],
+    [teams, trigger],
   );
 
   const clearCurrentTeam = () => {
-    setTeamsData(null);
     setCurrentTeam(null);
     localStorage.removeItem("currentTeamId");
   };
 
   useEffect(() => {
-    if (teams) {
-      setTeamsData(teams);
+    if (!router.pathname.includes("dashboards")) {
+      return;
     }
-  }, [teams]);
 
-  useEffect(() => {
-    if (teamsData?.length === 0 || !teamsData) {
-      setCurrentTeam(null);
+    if (!teams) {
+      return;
     }
-    if (
-      teamsData?.length === 0 &&
-      !teamsIsLoading &&
-      !teamsError &&
-      router.pathname !== "/dashboards/team/create"
-    ) {
+
+    if (teams.length === 0 && !router.pathname.includes("/dashboards/team/create")) {
       router.replace("/dashboards/team/create");
       return;
     }
-    if (teamsData && !currentTeam) {
-      const currentTeamId = localStorage.getItem("currentTeamId");
-      if (currentTeamId && isNaN(+currentTeamId) === false) {
-        const team = teamsData.find((team) => team.id === +currentTeamId);
-        changeCurrentTeam(team?.id);
+
+    const parentTeam = teams.find((team) => team.parent_id === null);
+
+    if (!parentTeam && !router.pathname.includes("/dashboards/team/create")) {
+      router.replace("/dashboards/team/create");
+      return;
+    }
+
+    if (!currentTeam) {
+      const teamId = +localStorage.getItem("currentTeamId");
+      if (!isNaN(teamId)) {
+        changeCurrentTeam(teamId);
       } else {
-        changeCurrentTeam(teamsData[0]?.id);
+        changeCurrentTeam(parentTeam?.id);
       }
     }
-  }, [teamsData, router, teamsIsLoading, teamsError, currentTeam, changeCurrentTeam]);
+
+    return () => {
+      setCurrentTeam(null);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teams]);
 
   useEffect(() => {
     //INFO: currentTeam uurchlugduh uyed teams profile-aas busdiig n dahij shinechlene
@@ -114,8 +122,7 @@ export const TeamsProvider = ({ children }) => {
         clearCurrentTeam,
       }}
     >
-      {(teamsIsLoading || profileIsLoading || globalLoading) &&
-      !router.pathname.includes("team/create") ? (
+      {(teamsIsLoading || profileIsLoading) && !router.pathname.includes("team/create") ? (
         <GlobalLoading />
       ) : (
         children
