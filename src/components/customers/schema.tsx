@@ -26,7 +26,7 @@ export const createCustomerSchema = yup
           if (email || rid) return schema.notRequired();
           return schema.required("One of the fields is required");
         })
-        .matches(/^[0-9]+$/, "Phone number must be a number")
+        .matches(/^[0-9]+$|^$/, "Phone number must be a number")
         .label("Phone number"),
       rid: yup
         .string()

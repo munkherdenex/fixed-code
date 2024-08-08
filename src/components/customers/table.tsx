@@ -69,32 +69,21 @@ const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: 
       field: "email",
       name: "Email address",
       render: (email: CustomersType["email"]) => (
-        <>
-          {email ? (
-            email
-          ) : (
-            <EuiTextColor color="subdued" style={{ fontSize: "9px" }}>
-              {" "}
-              &lt; Not field &gt;{" "}
-            </EuiTextColor>
-          )}
-        </>
+        <>{email ? email : <EuiTextColor color="subdued">None</EuiTextColor>}</>
       ),
     },
     {
       field: "phone",
       name: "Phone number",
       render: (phone: CustomersType["phone"]) => (
-        <>
-          {phone ? (
-            phone
-          ) : (
-            <EuiTextColor color="subdued" style={{ fontSize: "9px" }}>
-              {" "}
-              &lt; Not field &gt;{" "}
-            </EuiTextColor>
-          )}
-        </>
+        <>{phone ? phone : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+      ),
+    },
+    {
+      field: "rid",
+      name: "Reference ID",
+      render: (rid: CustomersType["rid"]) => (
+        <>{rid ? rid : <EuiTextColor color="subdued">None</EuiTextColor>}</>
       ),
     },
     {
@@ -162,12 +151,12 @@ const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: 
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
-        title={<h2>Create your customer</h2>}
+        title={<h2>Create your audience</h2>}
         layout="horizontal"
         color="plain"
         body={
           <>
-            <p>The customer description</p>
+            <p>The audience description</p>
           </>
         }
         actions={
@@ -178,7 +167,7 @@ const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: 
               openCreateChannelFlyout();
             }}
           >
-            Create customer
+            Create audience
           </EuiButton>
         }
       />

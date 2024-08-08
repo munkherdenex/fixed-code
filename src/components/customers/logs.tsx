@@ -6,12 +6,13 @@ import {
   EuiText,
   EuiTimeline,
 } from "@elastic/eui";
+import moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import useGetCustomerLogs, { CustomerLogsResponse } from "../../hooks/useGetCustomerLogs";
 import { logIcon } from "../../utils/log_icon";
 
-const LIMIT = 10;
+const LIMIT = 5;
 
 /**
  * The logs of the customer
@@ -30,10 +31,8 @@ const Logs: React.FC = () => {
     iconAriaLabel: log.title,
     children: (
       <EuiText size="s">
-        <h4>
-          <strong>{log.type}</strong>
-        </h4>
-        <p>{log.title}</p>
+        <h4>{log.title}</h4>
+        <p>{moment(log.created_at).format("YYYY-MM-DD LT")}</p>
       </EuiText>
     ),
   }));

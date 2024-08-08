@@ -9,6 +9,7 @@ export interface CustomerLogs {
   status?: "visible" | "hidden";
   title: string;
   data?: {};
+  created_at: string;
 }
 
 export interface CustomerLogsResponse {
@@ -48,6 +49,9 @@ export default function useGetCustomerLogs<Type>(
       });
 
       return handleResponseNotOk(res);
+    },
+    {
+      refreshInterval: 1000,
     },
   );
 

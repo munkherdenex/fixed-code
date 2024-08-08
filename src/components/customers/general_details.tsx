@@ -1,5 +1,12 @@
 import React from "react";
-import { EuiButtonIcon, EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
+import {
+  EuiButtonIcon,
+  EuiFlexGrid,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiPanel,
+  EuiTextColor,
+} from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -76,11 +83,17 @@ const GeneralDetails = () => {
         <EuiFlexItem>
           <EuiFlexGrid responsive={false} columns={2}>
             <EuiFlexItem>Email address :</EuiFlexItem>
-            <EuiFlexItem>{data?.email}</EuiFlexItem>
+            <EuiFlexItem>
+              {data?.email ? data?.email : <EuiTextColor color="subdued">None</EuiTextColor>}
+            </EuiFlexItem>
             <EuiFlexItem>Phone number :</EuiFlexItem>
-            <EuiFlexItem>{data?.phone}</EuiFlexItem>
+            <EuiFlexItem>
+              {data?.phone ? data.phone : <EuiTextColor color="subdued">None</EuiTextColor>}
+            </EuiFlexItem>
             <EuiFlexItem>Reference ID :</EuiFlexItem>
-            <EuiFlexItem> {data?.rid}</EuiFlexItem>
+            <EuiFlexItem>
+              {data?.rid ? data?.rid : <EuiTextColor color="subdued">None</EuiTextColor>}
+            </EuiFlexItem>
             <EuiFlexItem>Created date :</EuiFlexItem>
             <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             <EuiFlexItem>Updated date :</EuiFlexItem>

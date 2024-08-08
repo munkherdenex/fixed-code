@@ -7,6 +7,10 @@ export function logIcon(status: string) {
   switch (status) {
     case "create":
       return "document";
+    case "update":
+      return "documentEdit";
+    case "event":
+      return "analyzeEvent";
     case "admin":
       return "user";
     case "member":
