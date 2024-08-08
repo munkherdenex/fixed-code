@@ -57,7 +57,7 @@ const DeleteConfirmModal = ({
   return (
     <EuiConfirmModal
       aria-labelledby={modalTitleId}
-      title="Delete send?"
+      title="Delete segment?"
       onCancel={closeModal}
       onConfirm={() => {
         confirmModal();

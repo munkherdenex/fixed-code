@@ -59,7 +59,7 @@ const DeleteConfirmModal = ({
   return (
     <EuiConfirmModal
       aria-labelledby={modalTitleId}
-      title="Delete send?"
+      title="Delete campaign?"
       onCancel={closeModal}
       onConfirm={() => {
         confirmModal();
@@ -132,7 +132,7 @@ const GeneralDetails = ({
             <EuiPanel paddingSize="s" color="subdued">
               <EuiFlexGroup responsive={false} alignItems="center" justifyContent="spaceBetween">
                 <EuiFlexItem grow={false}>
-                  <strong>Send info details</strong>
+                  <strong>Campaign info details</strong>
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiFlexGroup responsive={false} gutterSize="s">
