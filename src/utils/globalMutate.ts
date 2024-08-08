@@ -4,7 +4,6 @@ export const globalMutate = async (path: string) => {
   await mutate(
     (key) => {
       if (`${key}`.includes(path)) {
-        console.info(path);
         return true;
       }
       return false;
