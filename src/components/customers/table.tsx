@@ -147,6 +147,10 @@ const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: 
     };
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   if (data?.results?.length === 0) {
     return (
       <EuiEmptyPrompt
