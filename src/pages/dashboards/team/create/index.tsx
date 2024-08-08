@@ -44,6 +44,7 @@ const TeamCreate = () => {
     () =>
       Array.isArray(teams) && teams.length > 0
         ? [
+            { value: "", text: "" },
             ...teams
               .filter((team) => !team.parent_id)
               .map((team) => ({
