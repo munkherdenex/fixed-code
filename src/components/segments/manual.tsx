@@ -117,6 +117,7 @@ const TextContent = ({ control }: { control: Control<FieldValues, any> }) => {
               minWidth={300}
               onFinish={() => {
                 setIsTourOpen(false);
+                localStorage.setItem("isManualSegmentTourOptionsOpen", "false");
                 localStorage.setItem("isSegmentTextTourOpen", "false");
               }}
               step={1}

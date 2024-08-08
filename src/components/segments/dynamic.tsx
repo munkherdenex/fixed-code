@@ -46,7 +46,7 @@ const Dynamic = ({
   return (
     <>
       <EuiForm component="form" onSubmit={handleSubmit(createSegment)}>
-        <EuiFormRow css={styles.queryBuilderContainer} label="Team id" fullWidth>
+        <EuiFormRow css={styles.queryBuilderContainer} label="Dynamic query builder" fullWidth>
           <QueryBuilder
             fields={[...QUERY_BUILDER_DEFAULT_FIELD, ...output]}
             query={query}
