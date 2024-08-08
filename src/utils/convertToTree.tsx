@@ -1,6 +1,11 @@
+import { EuiIcon } from "@elastic/eui";
 import { Teams } from "../store/teams_store.types";
 
-export const convertToTree = (data: Teams[], changeCurrentTeam: (teamId: number) => void) => {
+export const convertToTree = (
+  data: Teams[],
+  changeCurrentTeam: (teamId: number) => void,
+  currentTeam: Teams,
+) => {
   if (!Array.isArray(data)) {
     return [];
   }
@@ -9,6 +14,7 @@ export const convertToTree = (data: Teams[], changeCurrentTeam: (teamId: number)
     acc[el.id] = {
       ...el,
       id: `${el.id}`,
+      icon: el.id === currentTeam?.id ? <EuiIcon type="check" /> : null,
       label: el.name,
       callback: () => changeCurrentTeam(el.id),
       children: [],
