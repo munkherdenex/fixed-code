@@ -1,4 +1,4 @@
-import { EuiBreadcrumbs, EuiFlexItem, EuiSuperSelect } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiSuperSelect } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -29,18 +29,17 @@ const SendsDashboard = () => {
           pageTitle: "Campaign",
           iconType: "spacesApp",
           rightSideItems: [
-            <EuiFlexItem key="create_campaign">
-              <EuiSuperSelect
-                onChange={(value) => {
-                  setDataType(value);
-                  setIsFlyoutVisible(true);
-                }}
-                valueOfSelected={dataType}
-                options={TEMPLATE_DATA_TYPE_OPTIONS}
-                aria-label="data type"
-                aria-placeholder="Create new campaign"
-              />
-            </EuiFlexItem>,
+            <EuiSuperSelect
+              key="create-campaign"
+              onChange={(value) => {
+                setDataType(value);
+                setIsFlyoutVisible(true);
+              }}
+              valueOfSelected={dataType}
+              options={TEMPLATE_DATA_TYPE_OPTIONS}
+              aria-label="data type"
+              aria-placeholder="Create new campaign"
+            />,
           ],
         }}
         breadCrumb={
@@ -59,7 +58,21 @@ const SendsDashboard = () => {
         }
       >
         <div>
-          <SendsTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
+          <SendsTable
+            createCampaignAction={
+              <EuiSuperSelect
+                key="create-campaign"
+                onChange={(value) => {
+                  setDataType(value);
+                  setIsFlyoutVisible(true);
+                }}
+                valueOfSelected={dataType}
+                options={TEMPLATE_DATA_TYPE_OPTIONS}
+                aria-label="data type"
+                aria-placeholder="Create new campaign"
+              />
+            }
+          />
           {isFlyoutVisible && <CreateTemplateFlyot closeFlyout={closeFlyout} dataType={dataType} />}
         </div>
       </DashboardLayout>

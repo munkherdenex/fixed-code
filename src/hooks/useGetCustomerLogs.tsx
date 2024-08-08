@@ -51,7 +51,7 @@ export default function useGetCustomerLogs<Type>(
       return handleResponseNotOk(res);
     },
     {
-      refreshInterval: 1000,
+      refreshInterval: 3000,
     },
   );
 

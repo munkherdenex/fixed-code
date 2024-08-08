@@ -3,7 +3,6 @@ import {
   EuiBadge,
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiButton,
   EuiButtonIcon,
   EuiEmptyPrompt,
   EuiFieldSearch,
@@ -16,7 +15,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { PAGINATION_CHOOSES } from "../../constants";
@@ -27,7 +26,7 @@ const schema = yup.object({
   search: yup.string().notRequired(),
 });
 
-const SendsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () => void }) => {
+const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactElement }) => {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(0);
@@ -141,17 +140,7 @@ const SendsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () =
             <p>The campaign description</p>
           </>
         }
-        actions={
-          <EuiButton
-            color="primary"
-            fill
-            onClick={() => {
-              openCreateChannelFlyout();
-            }}
-          >
-            Create campaign
-          </EuiButton>
-        }
+        actions={createCampaignAction}
       />
     );
   }
