@@ -44,7 +44,7 @@ export const TeamsProvider = ({ children }) => {
           alert("error");
         }
       } else {
-        setCurrentTeam(teamsData[0]);
+        setCurrentTeam(teamsData?.[0]);
       }
       setGlobalLoading(false);
     },
@@ -83,7 +83,7 @@ export const TeamsProvider = ({ children }) => {
         const team = teamsData.find((team) => team.id === +currentTeamId);
         changeCurrentTeam(team?.id);
       } else {
-        changeCurrentTeam(teamsData[0].id);
+        changeCurrentTeam(teamsData[0]?.id);
       }
     }
   }, [teamsData, router, teamsIsLoading, teamsError, currentTeam, changeCurrentTeam]);
