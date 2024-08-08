@@ -9,3 +9,9 @@ export const globalStyes = css`
     height: 100%;
   }
 `;
+
+export const commonStyles = () => ({
+  tourStep: css`
+    width: 100%;
+  `,
+});

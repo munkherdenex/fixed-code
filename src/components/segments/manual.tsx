@@ -1,87 +1,157 @@
 import {
   EuiButton,
+  EuiCodeBlock,
   EuiFilePicker,
   EuiFlexGroup,
   EuiFlexItem,
   EuiForm,
   EuiFormRow,
   EuiSelect,
+  EuiSpacer,
   EuiTab,
   EuiTabs,
+  EuiText,
   EuiTextArea,
+  EuiTourStep,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Fragment, useMemo, useState } from "react";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { commonStyles } from "../../styles/global.styles";
+
+const FileContent = ({ control }: { control: Control<FieldValues, any> }) => {
+  const styles = commonStyles();
+  const [isTourOpen, setIsTourOpen] = useState(() => {
+    return localStorage.getItem("isManualSegmentTourOpen") === "false" ? false : true;
+  });
+
+  return (
+    <Fragment>
+      <EuiTourStep
+        content={
+          <div>
+            <EuiText>
+              <p>
+                Upload a CSV file with the following columns like: email, phone, first_name,
+                last_name, and any other custom fields you want to include. The first row should be
+                the header row with the column names.
+              </p>
+            </EuiText>
+          </div>
+        }
+        isStepOpen={isTourOpen}
+        minWidth={300}
+        onFinish={() => {
+          setIsTourOpen(false);
+          localStorage.setItem("isManualSegmentTourOpen", "false");
+        }}
+        step={1}
+        stepsTotal={1}
+        title="File Upload"
+        anchorPosition="rightUp"
+        css={styles.tourStep}
+      >
+        <Controller
+          control={control}
+          name="file"
+          render={({
+            field: { onChange, onBlur },
+            formState: {
+              errors: { file: errors },
+            },
+          }) => {
+            return (
+              <EuiFilePicker
+                multiple={false}
+                onBlur={onBlur}
+                onChange={(files) => {
+                  onChange(files[0]);
+                }}
+                isInvalid={!!errors}
+                display="large"
+                initialPromptText="Select or drag and drop file"
+                aria-label="Select or drag and drop file"
+                accept=".csv"
+              />
+            );
+          }}
+        />
+      </EuiTourStep>
+    </Fragment>
+  );
+};
+
+const TextContent = ({ control }: { control: Control<FieldValues, any> }) => {
+  const styles = commonStyles();
+  const [isTourOpen, setIsTourOpen] = useState(() => {
+    return localStorage.getItem("isSegmentTextTourOpen") === "false" ? false : true;
+  });
+
+  return (
+    <Fragment>
+      <Controller
+        control={control}
+        name="text"
+        render={({
+          field: { onChange, onBlur, value },
+          formState: {
+            errors: { file: errors },
+          },
+        }) => {
+          return (
+            <EuiTourStep
+              content={
+                <div>
+                  <EuiText>
+                    <p>
+                      Enter the text you want to use for segmenting your users. You can also choose
+                      the type of data you are entering, such as email or phone number
+                    </p>
+                  </EuiText>
+                  <EuiSpacer />
+                  <EuiCodeBlock>a@gmail.com,a@gmail.com,...</EuiCodeBlock>
+                </div>
+              }
+              isStepOpen={isTourOpen && !value}
+              minWidth={300}
+              onFinish={() => {
+                setIsTourOpen(false);
+                localStorage.setItem("isSegmentTextTourOpen", "false");
+              }}
+              step={1}
+              stepsTotal={2}
+              title="Text Input"
+              anchorPosition="rightUp"
+              css={styles.tourStep}
+            >
+              <EuiTextArea
+                onChange={onChange}
+                value={value}
+                onBlur={onBlur}
+                isInvalid={!!errors}
+                placeholder="Placeholder text"
+                name="text"
+                aria-label="Use aria labels when no actual label is in use"
+              />
+            </EuiTourStep>
+          );
+        }}
+      />
+    </Fragment>
+  );
+};
 
 const tabs = [
   {
     id: "file",
     name: "Files",
-    content: (control: Control<FieldValues, any>) => {
-      return (
-        <Fragment>
-          <Controller
-            control={control}
-            name="file"
-            render={({
-              field: { onChange, onBlur },
-              formState: {
-                errors: { file: errors },
-              },
-            }) => {
-              return (
-                <EuiFilePicker
-                  multiple={false}
-                  onBlur={onBlur}
-                  onChange={(files) => {
-                    onChange(files[0]);
-                  }}
-                  isInvalid={!!errors}
-                  display="large"
-                  initialPromptText="Select or drag and drop file"
-                  aria-label="Select or drag and drop file"
-                  accept=".csv"
-                />
-              );
-            }}
-          />
-        </Fragment>
-      );
-    },
+    content: (control: Control<FieldValues, any>) => <FileContent control={control} />,
   },
   {
     id: "text",
     name: "Text",
-    content: (control: Control<FieldValues, any>) => {
-      return (
-        <Fragment>
-          <Controller
-            control={control}
-            name="text"
-            render={({
-              field: { onChange, onBlur, value },
-              formState: {
-                errors: { file: errors },
-              },
-            }) => {
-              return (
-                <EuiTextArea
-                  onChange={onChange}
-                  value={value}
-                  onBlur={onBlur}
-                  isInvalid={!!errors}
-                  placeholder="Placeholder text"
-                  name="text"
-                  aria-label="Use aria labels when no actual label is in use"
-                />
-              );
-            }}
-          />
-        </Fragment>
-      );
-    },
+    content: (control: Control<FieldValues, any>) => <TextContent control={control} />,
   },
 ];
 
@@ -115,6 +185,11 @@ const Manual = ({
   createSegment: (data: any) => void;
   isCreateSegmentMutating: boolean;
 }) => {
+  const styles = commonStyles();
+  const [isTourOpen, setIsTourOpen] = useState(() => {
+    return localStorage.getItem("isManualSegmentTourOptionsOpen") === "false" ? false : true;
+  });
+
   const {
     handleSubmit,
     control,
@@ -122,6 +197,7 @@ const Manual = ({
     clearErrors,
     setValue,
     resetField,
+    watch,
     formState: { errors },
   } = useForm({
     mode: "onBlur",
@@ -212,21 +288,45 @@ const Manual = ({
                 isInvalid={!!errors.text_type?.message}
                 error={[errors.text_type?.message]}
               >
-                <Controller
-                  control={control}
-                  name="text_type"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiSelect
-                      onChange={onChange}
-                      value={value}
-                      options={dataTypeOptions}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.text_type?.message}
-                      aria-label="channel type"
-                      hasNoInitialSelection
-                    />
-                  )}
-                />
+                <EuiTourStep
+                  content={
+                    <div>
+                      <EuiText>
+                        <p>
+                          Choose the type of data you are entering, such as email or phone number
+                        </p>
+                      </EuiText>
+                    </div>
+                  }
+                  isStepOpen={isTourOpen && !!watch("text")}
+                  minWidth={300}
+                  onFinish={() => {
+                    setIsTourOpen(false);
+                    localStorage.setItem("isManualSegmentTourOptionsOpen", "false");
+                    localStorage.setItem("isSegmentTextTourOpen", "false");
+                  }}
+                  step={2}
+                  stepsTotal={2}
+                  title="Choose Text Type"
+                  anchorPosition="rightUp"
+                  css={styles.tourStep}
+                >
+                  <Controller
+                    control={control}
+                    name="text_type"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <EuiSelect
+                        onChange={onChange}
+                        value={value}
+                        options={dataTypeOptions}
+                        onBlur={onBlur}
+                        isInvalid={!!errors.text_type?.message}
+                        aria-label="channel type"
+                        hasNoInitialSelection
+                      />
+                    )}
+                  />
+                </EuiTourStep>
               </EuiFormRow>
             )}
             <EuiButton type="submit" isLoading={isCreateSegmentMutating}>
