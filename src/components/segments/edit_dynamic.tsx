@@ -13,6 +13,7 @@ import useUpdateSegment from "../../hooks/useUpdateSegment";
 import { additionalOperator } from "../../utils/additional_operator";
 import { CustomValueEditor } from "../../utils/custom_value_editor";
 import { globalMutate } from "../../utils/globalMutate";
+import { removeDeletedCustomFields } from "../../utils/helper";
 import { processDynamicFieldData } from "../../utils/process_data";
 import { customRuleProcessor } from "../../utils/rule_processer";
 import { addToast } from "../toast";
@@ -24,24 +25,6 @@ const schema = yup.object({
 });
 
 type FormData = yup.InferType<typeof schema>;
-
-const removeDeletedCustomFields = (data: Fields[], query: RuleGroupType) => {
-  const fields = [...(data ? data?.map((item) => `cf_${item.name}`) : []), "email", "phone", "rid"];
-
-  // Recursive function to filter rules
-  const filterRules = (rules: any) => {
-    return rules.filter((rule: any) => {
-      const isFieldValid = fields.includes(rule?.field);
-      if (rule?.rules) {
-        rule.rules = filterRules(rule.rules); // Recursively filter nested rules
-      }
-      return isFieldValid || (rule?.rules && rule.rules.length > 0);
-    });
-  };
-
-  const filteredRules = filterRules(query.rules);
-  return { ...query, rules: filteredRules };
-};
 
 const EditDynamic = ({
   name,

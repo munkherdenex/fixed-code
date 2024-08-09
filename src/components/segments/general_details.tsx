@@ -4,6 +4,7 @@ import {
   EuiCallOut,
   EuiCodeBlock,
   EuiConfirmModal,
+  EuiExpression,
   EuiFieldText,
   EuiFlexGrid,
   EuiFlexGroup,
@@ -21,11 +22,83 @@ import { jsonrepair } from "jsonrepair";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
+import { parseMongoDB } from "react-querybuilder/parseMongoDB";
 import useDeleteSegment from "../../hooks/useDeleteSegment";
+import useGetFields, { Fields } from "../../hooks/useGetFields";
 import useGetSegments, { Segment } from "../../hooks/useGetSegments";
+import { additionalOperator } from "../../utils/additional_operator";
 import { badgeColor } from "../../utils/badge_color";
+import { removeDeletedCustomFields } from "../../utils/helper";
 import EditDynamic from "./edit_dynamic";
+import { generalDetailsStyles } from "./general_details.styles";
 import Manual from "./manual";
+
+const DisplayDataConditionExpression = ({ query }) => {
+  if (query?.rules?.length === 0) {
+    return <p>No condition</p>;
+  }
+
+  return (
+    <div>
+      <EuiExpression description={query.combinator} />
+      {query?.rules?.map((rule) => (
+        <>
+          {!rule.rules && (
+            <>
+              <EuiExpression
+                description=""
+                value={`${rule.field} ${rule.operator} ${rule.value}`}
+              />
+            </>
+          )}
+          {rule.rules && rule.rules.length > 0 && (
+            <>
+              <DisplayDataConditionExpression query={rule} />
+            </>
+          )}
+        </>
+      ))}
+    </div>
+  );
+};
+
+const DisplayDataCondition = ({ query }) => {
+  const styles = generalDetailsStyles();
+  if (query?.rules?.length === 0) {
+    return <p>No condition</p>;
+  }
+
+  return (
+    <>
+      <EuiFlexGroup direction="column" gutterSize="s">
+        {query?.combinator && <EuiFlexItem grow={false}>{query?.combinator}</EuiFlexItem>}
+        <hr />
+        <EuiFlexItem>
+          {query?.rules?.map((rule, index) => (
+            <EuiFlexGroup gutterSize="none" responsive={false} key={index}>
+              {!rule.rules && (
+                <>
+                  <EuiFlexItem grow={false}>
+                    {rule.field} {rule.operator} {rule.value}
+                  </EuiFlexItem>
+                  <EuiSpacer />
+                </>
+              )}
+              {rule.rules && rule.rules.length > 0 && (
+                <>
+                  <EuiFlexItem css={styles.conditionGroup}>
+                    <DisplayDataCondition query={rule} />
+                  </EuiFlexItem>
+                  <EuiSpacer />
+                </>
+              )}
+            </EuiFlexGroup>
+          ))}
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </>
+  );
+};
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -86,7 +159,11 @@ const DeleteConfirmModal = ({
 
 const GeneralDetails = () => {
   const router = useRouter();
+  const styles = generalDetailsStyles();
   const { data, isLoading } = useGetSegments<Segment>(router.query.id);
+  const { data: cfData } = useGetFields<Fields[]>(undefined, {
+    all: `${true}`,
+  });
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [openFlyout, setOpenFlyout] = useState(false);
 
@@ -157,10 +234,31 @@ const GeneralDetails = () => {
                   <EuiBadge color={badgeColor(data?.type)}>{data?.type}</EuiBadge>
                 </div>
               </EuiFlexItem>
-              {(data.type === "dynamic" || data.type === "static") && (
-                <>
-                  <EuiFlexItem>Condition:</EuiFlexItem>
-                  <EuiFlexItem>
+              <EuiFlexItem>Condition:</EuiFlexItem>
+              <>
+                <EuiFlexItem css={styles.conditionContainer}>
+                  {data.type === "dynamic" && (
+                    <>
+                      <DisplayDataConditionExpression
+                        query={removeDeletedCustomFields(
+                          cfData,
+                          parseMongoDB(data?.condition, {
+                            additionalOperators: additionalOperator,
+                          }),
+                        )}
+                      />
+                      <EuiSpacer />
+                      <DisplayDataCondition
+                        query={removeDeletedCustomFields(
+                          cfData,
+                          parseMongoDB(data?.condition, {
+                            additionalOperators: additionalOperator,
+                          }),
+                        )}
+                      />
+                    </>
+                  )}
+                  {data.type === "static" && (
                     <EuiCodeBlock
                       language="json"
                       fontSize="s"
@@ -170,9 +268,9 @@ const GeneralDetails = () => {
                     >
                       <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.condition)), null, 2)}</pre>
                     </EuiCodeBlock>
-                  </EuiFlexItem>
-                </>
-              )}
+                  )}
+                </EuiFlexItem>
+              </>
               <EuiFlexItem>Created by :</EuiFlexItem>
               <EuiFlexItem>{data?.created_by}</EuiFlexItem>
               <EuiFlexItem>Created date :</EuiFlexItem>
