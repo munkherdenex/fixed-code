@@ -17,6 +17,7 @@ export const convertToTree = (
       icon: el.id === currentTeam?.id ? <EuiIcon type="check" /> : null,
       label: el.name,
       callback: () => changeCurrentTeam(el.id),
+      useEmptyIcon: true,
       children: [],
     };
     delete acc[el.id].name;

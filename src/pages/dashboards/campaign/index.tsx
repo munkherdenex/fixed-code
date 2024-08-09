@@ -19,6 +19,12 @@ const SendsDashboard = () => {
     setDataType("");
   };
 
+  const openFlyout = (dataType: string) => {
+    if (dataType === "") return;
+    setDataType(dataType);
+    setIsFlyoutVisible(true);
+  };
+
   return (
     <>
       <Head>
@@ -31,10 +37,7 @@ const SendsDashboard = () => {
           rightSideItems: [
             <EuiSuperSelect
               key="create-campaign"
-              onChange={(value) => {
-                setDataType(value);
-                setIsFlyoutVisible(true);
-              }}
+              onChange={openFlyout}
               valueOfSelected={dataType}
               options={TEMPLATE_DATA_TYPE_OPTIONS}
               aria-label="data type"
@@ -62,10 +65,7 @@ const SendsDashboard = () => {
             createCampaignAction={
               <EuiSuperSelect
                 key="create-campaign"
-                onChange={(value) => {
-                  setDataType(value);
-                  setIsFlyoutVisible(true);
-                }}
+                onChange={openFlyout}
                 valueOfSelected={dataType}
                 options={TEMPLATE_DATA_TYPE_OPTIONS}
                 aria-label="data type"

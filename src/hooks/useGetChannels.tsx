@@ -37,8 +37,7 @@ export default function useGetChannels<Type>(
   isLoading: boolean;
   mutate: () => Promise<Type>;
 } {
-  const path =
-    typeof id === null ? null : id ? `/api/v1/dj/channels/${id}/` : `/api/v1/dj/channels/`;
+  const path = id === "" ? null : id ? `/api/v1/dj/channels/${id}/` : `/api/v1/dj/channels/`;
 
   const preparedQueryParam = createParam(queryParam);
 
