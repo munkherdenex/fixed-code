@@ -61,6 +61,32 @@ const dataTypeOptions = [
 
 type FormData = yup.InferType<typeof schema>;
 
+export const dataTypeSwitch = (dataType: FormData["kind"]): FormData["kind"] => {
+  switch (dataType) {
+    case "sms":
+      return "api";
+    case "email":
+      return "api";
+    case "push":
+      return "api";
+    default:
+      return dataType;
+  }
+};
+
+export const dataTypeToSwitch = (dataType: string) => {
+  switch (dataType) {
+    case "sms":
+      return "phone";
+    case "email":
+      return "email";
+    case "push":
+      return "device_id";
+    default:
+      return dataType;
+  }
+};
+
 const CreateTemplateFlyot = ({
   closeFlyout,
   dataType,
@@ -96,7 +122,7 @@ const CreateTemplateFlyot = ({
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-        .filter((channel) => channel.channel_type === watch("kind"))
+        .filter((channel) => channel.channel_type === dataTypeSwitch(dataType))
         .map((channel) => ({
           value: channel.id,
           text: channel.name,
@@ -120,7 +146,20 @@ const CreateTemplateFlyot = ({
       return;
     }
     try {
-      const response = await trigger(data);
+      const preparedData = {
+        ...data,
+      };
+      if (dataType === "email" || dataType === "sms" || dataType === "push") {
+        preparedData.kind = "api";
+        preparedData.body = JSON.stringify({
+          type: "email",
+          to: `{{${dataTypeToSwitch(data.kind)}}}`,
+          title: data.title,
+          body: data.body,
+        });
+      }
+
+      const response = await trigger(preparedData);
       if (response) {
         globalMutate("/api/v1/dj/templates/");
         closeFlyout();
@@ -134,7 +173,7 @@ const CreateTemplateFlyot = ({
     <EuiFlyout onClose={closeFlyout}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2>Create campaign</h2>
+          <h2>Create {dataType} campaign</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>

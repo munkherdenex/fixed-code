@@ -14,4 +14,8 @@ export const commonStyles = () => ({
   tourStep: css`
     width: 100%;
   `,
+
+  width130: css`
+    width: 120px;
+  `,
 });

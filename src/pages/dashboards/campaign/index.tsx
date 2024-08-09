@@ -1,18 +1,29 @@
-import { EuiBreadcrumbs, EuiSuperSelect } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiButton, EuiContextMenu, EuiPopover } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import CreateTemplateFlyot from "../../../components/campaign/create_template_flyot";
 import SendsTable from "../../../components/campaign/table";
 import { TEMPLATE_DATA_TYPE_OPTIONS } from "../../../constants";
 import DashboardLayout from "../../../layouts/dashboard";
+import { commonStyles } from "../../../styles/global.styles";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const SendsDashboard = () => {
   const router = useRouter();
+  const cStyles = commonStyles();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
   const [dataType, setDataType] = useState<any>("");
+  const [isPopoverOpen, setPopover] = useState(false);
+
+  const onButtonClick = useCallback(() => {
+    setPopover(!isPopoverOpen);
+  }, [isPopoverOpen]);
+
+  const closePopover = () => {
+    setPopover(false);
+  };
 
   const closeFlyout = () => {
     setIsFlyoutVisible(false);
@@ -25,6 +36,50 @@ const SendsDashboard = () => {
     setIsFlyoutVisible(true);
   };
 
+  const panels = useMemo(
+    () => [
+      {
+        id: 0,
+        items: TEMPLATE_DATA_TYPE_OPTIONS.map((options) => {
+          return {
+            name: options.inputDisplay,
+            disabled: options.disabled,
+            onClick: () => {
+              openFlyout(options.value);
+              closePopover();
+            },
+          };
+        }),
+      },
+    ],
+    [],
+  );
+
+  const button = useMemo(
+    () => (
+      <EuiButton iconType="arrowDown" iconSide="right" onClick={onButtonClick}>
+        Create new
+      </EuiButton>
+    ),
+    [onButtonClick],
+  );
+
+  const rightSideItem = useMemo(
+    () => (
+      <EuiPopover
+        key="create-campaign"
+        button={button}
+        isOpen={isPopoverOpen}
+        closePopover={closePopover}
+        panelPaddingSize="none"
+        anchorPosition="downLeft"
+      >
+        <EuiContextMenu css={cStyles.width130} initialPanelId={0} panels={panels} size="s" />
+      </EuiPopover>
+    ),
+    [button, isPopoverOpen, panels, cStyles.width130],
+  );
+
   return (
     <>
       <Head>
@@ -34,16 +89,7 @@ const SendsDashboard = () => {
         pageHeader={{
           pageTitle: "Campaign",
           iconType: "spacesApp",
-          rightSideItems: [
-            <EuiSuperSelect
-              key="create-campaign"
-              onChange={openFlyout}
-              valueOfSelected={dataType}
-              options={TEMPLATE_DATA_TYPE_OPTIONS}
-              aria-label="data type"
-              aria-placeholder="Create new campaign"
-            />,
-          ],
+          rightSideItems: [rightSideItem],
         }}
         breadCrumb={
           <EuiBreadcrumbs
@@ -61,18 +107,7 @@ const SendsDashboard = () => {
         }
       >
         <div>
-          <SendsTable
-            createCampaignAction={
-              <EuiSuperSelect
-                key="create-campaign"
-                onChange={openFlyout}
-                valueOfSelected={dataType}
-                options={TEMPLATE_DATA_TYPE_OPTIONS}
-                aria-label="data type"
-                aria-placeholder="Create new campaign"
-              />
-            }
-          />
+          <SendsTable createCampaignAction={rightSideItem} />
           {isFlyoutVisible && <CreateTemplateFlyot closeFlyout={closeFlyout} dataType={dataType} />}
         </div>
       </DashboardLayout>

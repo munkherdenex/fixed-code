@@ -19,10 +19,9 @@ export const QUERY_BUILDER_DEFAULT_FIELD: Field[] = [
 ];
 
 export const TEMPLATE_DATA_TYPE_OPTIONS = [
-  { value: "", inputDisplay: "Create new" },
   { value: "email", inputDisplay: "Email" },
   { value: "sms", inputDisplay: "Sms" },
   { value: "push", inputDisplay: "Push" },
-  { value: "inapp", inputDisplay: "Inapp" },
+  { value: "inapp", inputDisplay: "Inapp", disabled: true },
   { value: "api", inputDisplay: "Api" },
 ];
