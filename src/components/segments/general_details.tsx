@@ -46,9 +46,10 @@ const DisplayDataConditionExpression = ({ query }) => {
             <>
               <EuiExpression
                 description={index !== 0 && query.combinator}
-                value={`${rule.field}${rule.operator}${rule.value}`}
+                value={rule.field}
                 onClick={() => {}}
               />
+              <EuiExpression description={rule.operator} value={rule.value} onClick={() => {}} />
             </>
           )}
           {rule.rules && rule.rules.length > 0 && (
@@ -60,44 +61,6 @@ const DisplayDataConditionExpression = ({ query }) => {
         </>
       ))}
     </span>
-  );
-};
-
-const DisplayDataCondition = ({ query }) => {
-  const styles = generalDetailsStyles();
-  if (query?.rules?.length === 0) {
-    return <p>No condition</p>;
-  }
-
-  return (
-    <>
-      <EuiFlexGroup direction="column" gutterSize="s">
-        {query?.combinator && <EuiFlexItem grow={false}>{query?.combinator}</EuiFlexItem>}
-        <hr />
-        <EuiFlexItem>
-          {query?.rules?.map((rule, index) => (
-            <EuiFlexGroup gutterSize="none" responsive={false} key={index}>
-              {!rule.rules && (
-                <>
-                  <EuiFlexItem grow={false}>
-                    {rule.field} {rule.operator} {rule.value}
-                  </EuiFlexItem>
-                  <EuiSpacer />
-                </>
-              )}
-              {rule.rules && rule.rules.length > 0 && (
-                <>
-                  <EuiFlexItem css={styles.conditionGroup}>
-                    <DisplayDataCondition query={rule} />
-                  </EuiFlexItem>
-                  <EuiSpacer />
-                </>
-              )}
-            </EuiFlexGroup>
-          ))}
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </>
   );
 };
 

@@ -26,6 +26,7 @@ import { SetStateAction, useState } from "react";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
+import { commonStyles } from "../../styles/global.styles";
 import { badgeColor } from "../../utils/badge_color";
 import EditTemplateFlyout from "./edit_template_flyout";
 import { quillEditorStyles } from "./quill_editor.styles";
@@ -97,6 +98,7 @@ const GeneralDetails = ({
 }) => {
   const router = useRouter();
   const modalTitleId = useGeneratedHtmlId();
+  const cStyles = commonStyles();
 
   const { data, isLoading } = useGetTemplates<Template>(
     router.query.id,
@@ -176,7 +178,7 @@ const GeneralDetails = ({
                 </div>
               </EuiFlexItem>
               <EuiFlexItem>Body:</EuiFlexItem>
-              <EuiFlexItem>
+              <EuiFlexItem css={cStyles.width200}>
                 {data?.kind === "email" && (
                   <>
                     <EuiButton onClick={showEmailModal} size="s">

@@ -18,4 +18,10 @@ export const commonStyles = () => ({
   width130: css`
     width: 120px;
   `,
+  width150: css`
+    width: 150px;
+  `,
+  width200: css`
+    width: 200px;
+  `,
 });

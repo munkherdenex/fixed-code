@@ -21,7 +21,7 @@ const schema = yup
     name: yup.string().required().label("Name"),
     attribute_name: yup
       .string()
-      .matches(/^[a-zA-Z0-9]+$/, "Only alphanumeric characters are allowed.")
+      .matches(/^[a-zA-Z0-9_]+$/, "Only alphanumeric characters are allowed.")
       .required()
       .label("Attribute name"),
     data_type: yup
