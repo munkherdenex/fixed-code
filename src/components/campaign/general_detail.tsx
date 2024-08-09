@@ -105,7 +105,7 @@ const GeneralDetails = ({
       refreshInterval: templateStatus !== "DRAFT" ? 1000 : 0,
     },
   );
-  const { data: channelData } = useGetChannels<Channels>(`${data?.channel}`);
+  const { data: channelData } = useGetChannels<Channels>(`${data?.channel || ""}`);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
   const [isEmailModalVisible, setIsEmailModalVisible] = useState(false);

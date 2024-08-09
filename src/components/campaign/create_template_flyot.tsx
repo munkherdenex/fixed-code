@@ -28,6 +28,7 @@ import AceEditorComponent from "./ace_editor";
 import { createTemplateFlyoutStyles } from "./create_teamplate_flyout.styles";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 import QuillEditorComponent from "./quill_editor";
+import { quillEditorStyles } from "./quill_editor.styles";
 
 const bodyHelpText = "Use custom attributes to make data dynamic. {{cf_*}}";
 
@@ -62,6 +63,7 @@ const dataTypeOptions = [
 type FormData = yup.InferType<typeof schema>;
 
 export const dataTypeSwitch = (dataType: FormData["kind"]): FormData["kind"] => {
+  //TODO: If team is not pocket return just kind
   switch (dataType) {
     case "sms":
       return "api";
@@ -75,6 +77,7 @@ export const dataTypeSwitch = (dataType: FormData["kind"]): FormData["kind"] => 
 };
 
 export const dataTypeToSwitch = (dataType: string) => {
+  //TODO: If team is not pocket return just kind
   switch (dataType) {
     case "sms":
       return "phone";
@@ -94,7 +97,7 @@ const CreateTemplateFlyot = ({
   closeFlyout: () => void;
   dataType: FormData["kind"];
 }) => {
-  const styles = createTemplateFlyoutStyles();
+  const styles = quillEditorStyles();
   const router = useRouter();
   const { isMutating, trigger } = useCreateTemplate();
   const { data: channelsData } = useGetChannels<Channels[]>(undefined, {
@@ -150,9 +153,10 @@ const CreateTemplateFlyot = ({
         ...data,
       };
       if (dataType === "email" || dataType === "sms" || dataType === "push") {
+        //TODO: If team is not pocket dont edit data
         preparedData.kind = "api";
         preparedData.body = JSON.stringify({
-          type: "email",
+          type: dataType,
           to: `{{${dataTypeToSwitch(data.kind)}}}`,
           title: data.title,
           body: data.body,
@@ -248,7 +252,7 @@ const CreateTemplateFlyot = ({
               <AceEditorComponent control={control} onChange={setAceEditorValue} />
             </EuiFormRow>
           )}
-          {watch("kind") === "sms" && (
+          {(watch("kind") === "sms" || watch("kind") === "push") && (
             <EuiFormRow
               label="Data"
               labelAppend={<BodyInfoToolTip />}

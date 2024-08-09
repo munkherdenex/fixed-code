@@ -23,6 +23,7 @@ import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
+import { dataTypeSwitch } from "./create_template_flyot";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 import QuillEditorComponent from "./quill_editor";
 import { quillEditorStyles } from "./quill_editor.styles";
@@ -46,6 +47,39 @@ const dataTypeOptions = [
 
 type FormData = yup.InferType<typeof schema>;
 
+const processKind = (body: string, kind: FormData["kind"]): FormData["kind"] => {
+  //TODO: If team is not pocket return just kind
+  const parsedBody = JSON.parse(body);
+  if (parsedBody.type === "sms") {
+    return "sms";
+  }
+  if (parsedBody.type === "email") {
+    return "email";
+  }
+  if (parsedBody.type === "push") {
+    return "push";
+  }
+
+  return kind;
+};
+
+const processBody = (body: string, kind: string) => {
+  //TODO: If team is not pocket return just body
+  const parsedBody = JSON.parse(body);
+  if (kind === "api") {
+    return JSON.stringify(JSON.parse(body), null, 2);
+  }
+  if (kind === "sms") {
+    return parsedBody.body;
+  }
+  if (kind === "email") {
+    return parsedBody.body;
+  }
+  if (kind === "push") {
+    return parsedBody.body;
+  }
+};
+
 const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; data: Template }) => {
   const router = useRouter();
   const { isMutating, trigger } = useUpdateTemplate(router.query.id);
@@ -68,17 +102,20 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
     mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      kind: data.kind,
-      body: data.body,
+      kind: processKind(data.body, data.kind),
+      body: processBody(data.body, processKind(data.body, data.kind)),
       title: data.title,
       channel: data.channel,
     },
   });
+
   const styles = quillEditorStyles();
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-        .filter((channel) => channel.channel_type === watch("kind"))
+        .filter(
+          (channel) => channel.channel_type === dataTypeSwitch(processKind(data.body, data.kind)),
+        )
         .map((channel) => ({
           value: channel.id,
           text: channel.name,
@@ -171,7 +208,7 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
               <AceEditorComponent control={control} onChange={setAceEditorValue} />
             </EuiFormRow>
           )}
-          {watch("kind") === "sms" && (
+          {(watch("kind") === "sms" || watch("kind") === "push") && (
             <EuiFormRow
               label="Data"
               helpText="Use custom attributes to make data dynamic. {{custom_attribute}}"
@@ -199,7 +236,7 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
               label="Data"
               isInvalid={!!errors?.body?.message}
               error={[errors?.body?.message]}
-              css={styles.quill_edit}
+              css={styles.quillEditorContainer}
             >
               <QuillEditorComponent control={control} onChange={setReactQuill} />
             </EuiFormRow>
