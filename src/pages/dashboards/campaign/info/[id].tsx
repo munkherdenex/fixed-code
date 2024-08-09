@@ -13,7 +13,6 @@ import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import GeneralDetails from "../../../../components/campaign/general_detail";
 import Menu from "../../../../components/campaign/menu";
-import ChannelGeneralDetails from "../../../../components/channels/general_details";
 import useGetTemplates, { Template } from "../../../../hooks/useGetTemplates";
 import useUpdateApproveTemplate from "../../../../hooks/useUpdateApproveTemplate";
 import useUpdateDoneTemplate from "../../../../hooks/useUpdateDoneTemplate";
@@ -139,18 +138,10 @@ const CampaignInfo = () => {
       >
         <>
           <EuiFlexGroup>
-            <EuiFlexItem>
+            <EuiFlexItem grow={4}>
               <GeneralDetails templateStatus={data?.status} />
             </EuiFlexItem>
-            {data?.channel && (
-              <EuiFlexItem>
-                <ChannelGeneralDetails id={`${data?.channel}`} />
-              </EuiFlexItem>
-            )}
-          </EuiFlexGroup>
-          <EuiSpacer />
-          <EuiFlexGroup>
-            <EuiFlexItem>
+            <EuiFlexItem grow={7}>
               <Menu />
             </EuiFlexItem>
           </EuiFlexGroup>

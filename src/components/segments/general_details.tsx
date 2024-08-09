@@ -39,26 +39,27 @@ const DisplayDataConditionExpression = ({ query }) => {
   }
 
   return (
-    <div>
-      <EuiExpression description={query.combinator} />
-      {query?.rules?.map((rule) => (
+    <span>
+      {query?.rules?.map((rule, index) => (
         <>
           {!rule.rules && (
             <>
               <EuiExpression
-                description=""
-                value={`${rule.field} ${rule.operator} ${rule.value}`}
+                description={index !== 0 && query.combinator}
+                value={`${rule.field}${rule.operator}${rule.value}`}
+                onClick={() => {}}
               />
             </>
           )}
           {rule.rules && rule.rules.length > 0 && (
             <>
-              <DisplayDataConditionExpression query={rule} />
+              <EuiExpression description={query.combinator} onClick={() => {}} /> ({" "}
+              <DisplayDataConditionExpression query={rule} /> ){" "}
             </>
           )}
         </>
       ))}
-    </div>
+    </span>
   );
 };
 
@@ -234,21 +235,15 @@ const GeneralDetails = () => {
                   <EuiBadge color={badgeColor(data?.type)}>{data?.type}</EuiBadge>
                 </div>
               </EuiFlexItem>
+            </EuiFlexGrid>
+            <EuiSpacer />
+            <EuiFlexGroup direction="column">
               <EuiFlexItem>Condition:</EuiFlexItem>
               <>
                 <EuiFlexItem css={styles.conditionContainer}>
                   {data.type === "dynamic" && (
                     <>
                       <DisplayDataConditionExpression
-                        query={removeDeletedCustomFields(
-                          cfData,
-                          parseMongoDB(data?.condition, {
-                            additionalOperators: additionalOperator,
-                          }),
-                        )}
-                      />
-                      <EuiSpacer />
-                      <DisplayDataCondition
                         query={removeDeletedCustomFields(
                           cfData,
                           parseMongoDB(data?.condition, {
@@ -271,6 +266,9 @@ const GeneralDetails = () => {
                   )}
                 </EuiFlexItem>
               </>
+            </EuiFlexGroup>
+            <EuiSpacer />
+            <EuiFlexGrid columns={2} responsive={false}>
               <EuiFlexItem>Created by :</EuiFlexItem>
               <EuiFlexItem>{data?.created_by}</EuiFlexItem>
               <EuiFlexItem>Created date :</EuiFlexItem>

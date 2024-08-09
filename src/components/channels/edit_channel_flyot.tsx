@@ -36,11 +36,9 @@ const dataTypeOptions = [
 ];
 
 const EditChannelFlyot = ({
-  channelId,
   setIsFlyoutVisible,
   data,
 }: {
-  channelId?: string | string[];
   setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
   data: Channels;
 }) => {
@@ -57,7 +55,7 @@ const EditChannelFlyot = ({
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
   });
-  const { trigger } = useUpdateChannel(channelId || router.query.id);
+  const { trigger } = useUpdateChannel(router.query.id);
 
   const {
     handleSubmit,

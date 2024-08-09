@@ -23,15 +23,13 @@ import { badgeColor } from "../../utils/badge_color";
 import EditChannelFlyot from "./edit_channel_flyot";
 
 const DeleteConfirmModal = ({
-  channelId,
   setIsModalVisible,
 }: {
-  channelId?: string | string[];
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const router = useRouter();
   const modalTitleId = useGeneratedHtmlId();
-  const { trigger, isMutating } = useDeleteChannel(channelId || router.query.id);
+  const { trigger, isMutating } = useDeleteChannel(router.query.id);
   const [deleteConfirmValue, setDeleteConfirmValue] = useState("");
 
   const closeModal = async () => {
@@ -84,10 +82,9 @@ const DeleteConfirmModal = ({
   );
 };
 
-const GeneralDetails = ({ id }: { id?: string }) => {
+const GeneralDetails = () => {
   const router = useRouter();
-  const channelId = id || router.query.id;
-  const { data, isLoading } = useGetChannels<Channels>(channelId);
+  const { data, isLoading } = useGetChannels<Channels>(router.query.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
 
@@ -165,15 +162,9 @@ const GeneralDetails = ({ id }: { id?: string }) => {
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiPanel>
-      {isModalVisible && (
-        <DeleteConfirmModal channelId={channelId} setIsModalVisible={setIsModalVisible} />
-      )}
+      {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
       {isEditFlyoutVisible && (
-        <EditChannelFlyot
-          channelId={channelId}
-          setIsFlyoutVisible={setIsEditFlyoutVisible}
-          data={data}
-        />
+        <EditChannelFlyot setIsFlyoutVisible={setIsEditFlyoutVisible} data={data} />
       )}
     </div>
   );

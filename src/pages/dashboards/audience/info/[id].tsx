@@ -38,11 +38,11 @@ const Info = () => {
         }
       >
         <>
-          <EuiFlexGroup direction="column">
-            <EuiFlexItem>
+          <EuiFlexGroup>
+            <EuiFlexItem grow={4}>
               <GeneralDetails />
             </EuiFlexItem>
-            <EuiFlexItem>
+            <EuiFlexItem grow={7}>
               <Overview />
             </EuiFlexItem>
           </EuiFlexGroup>

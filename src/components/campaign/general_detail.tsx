@@ -24,6 +24,7 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
+import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
 import EditTemplateFlyout from "./edit_template_flyout";
@@ -104,6 +105,7 @@ const GeneralDetails = ({
       refreshInterval: templateStatus !== "DRAFT" ? 1000 : 0,
     },
   );
+  const { data: channelData } = useGetChannels<Channels>(`${data?.channel}`);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
   const [isEmailModalVisible, setIsEmailModalVisible] = useState(false);
@@ -225,6 +227,30 @@ const GeneralDetails = ({
               <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>
           </EuiFlexItem>
+          {channelData && (
+            <EuiFlexItem>
+              <EuiPanel paddingSize="s" color="subdued">
+                <EuiFlexGroup responsive={false} alignItems="center" justifyContent="spaceBetween">
+                  <EuiFlexItem grow={false}>
+                    <strong>{channelData?.name} (channel)</strong>
+                  </EuiFlexItem>
+                  <EuiFlexItem grow={false}>
+                    <EuiFlexGroup responsive={false} gutterSize="s">
+                      <EuiFlexItem grow={false}>
+                        <EuiButtonIcon
+                          display="base"
+                          iconType="arrowRight"
+                          aria-label="Update"
+                          color="primary"
+                          onClick={() => router.push(`/dashboards/channels/info/${data?.channel}`)}
+                        />
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiPanel>
+            </EuiFlexItem>
+          )}
         </EuiFlexGroup>
       </EuiPanel>
       {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
