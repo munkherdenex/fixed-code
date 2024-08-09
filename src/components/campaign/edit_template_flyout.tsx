@@ -17,6 +17,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { IS_POCKET } from "../../constants";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { Template } from "../../hooks/useGetTemplates";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
@@ -48,6 +49,7 @@ const dataTypeOptions = [
 type FormData = yup.InferType<typeof schema>;
 
 const processKind = (body: string, kind: FormData["kind"]): FormData["kind"] => {
+  if (!IS_POCKET) return kind;
   //TODO: If team is not pocket return just kind
   const parsedBody = JSON.parse(body);
   if (parsedBody.type === "sms") {
@@ -64,6 +66,7 @@ const processKind = (body: string, kind: FormData["kind"]): FormData["kind"] => 
 };
 
 const processBody = (body: string, kind: string) => {
+  if (!IS_POCKET) return body;
   //TODO: If team is not pocket return just body
   const parsedBody = JSON.parse(body);
   if (kind === "api") {

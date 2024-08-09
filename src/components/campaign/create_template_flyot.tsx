@@ -20,6 +20,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { IS_POCKET } from "../../constants";
 import useCreateTemplate from "../../hooks/useCreateTemplate";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { globalMutate } from "../../utils/globalMutate";
@@ -63,6 +64,7 @@ const dataTypeOptions = [
 type FormData = yup.InferType<typeof schema>;
 
 export const dataTypeSwitch = (dataType: FormData["kind"]): FormData["kind"] => {
+  if (!IS_POCKET) return dataType;
   //TODO: If team is not pocket return just kind
   switch (dataType) {
     case "sms":
@@ -77,6 +79,7 @@ export const dataTypeSwitch = (dataType: FormData["kind"]): FormData["kind"] => 
 };
 
 export const dataTypeToSwitch = (dataType: string) => {
+  if (!IS_POCKET) return dataType;
   //TODO: If team is not pocket return just kind
   switch (dataType) {
     case "sms":
@@ -152,7 +155,7 @@ const CreateTemplateFlyot = ({
       const preparedData = {
         ...data,
       };
-      if (dataType === "email" || dataType === "sms" || dataType === "push") {
+      if ((dataType === "email" || dataType === "sms" || dataType === "push") && IS_POCKET) {
         //TODO: If team is not pocket dont edit data
         preparedData.kind = "api";
         preparedData.body = JSON.stringify({

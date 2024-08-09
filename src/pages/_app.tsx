@@ -20,6 +20,7 @@ declare global {
   interface Window {
     env: {
       BACKEND_URL: string;
+      IS_POCKET: string;
     };
   }
   interface Error {

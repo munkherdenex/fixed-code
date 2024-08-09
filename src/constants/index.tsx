@@ -1,6 +1,8 @@
 import { Field, Operator } from "react-querybuilder";
 
 export const BASE_URL = `${(global?.window && window?.env?.BACKEND_URL) || ""}`;
+export const IS_POCKET =
+  (global?.window && window?.env?.IS_POCKET === "true" ? true : false) || false;
 
 export const PAGINATION_CHOOSES = [5, 10, 20, 50];
 
