@@ -151,7 +151,7 @@ const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: 
     return <div>Loading...</div>;
   }
 
-  if (data?.results?.length === 0) {
+  if (data?.results?.length === 0 && searchValue === "") {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
