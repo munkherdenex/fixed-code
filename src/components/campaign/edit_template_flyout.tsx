@@ -24,7 +24,7 @@ import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
-import { dataTypeSwitch } from "./create_template_flyot";
+import { dataTypeSwitch, dataTypeToSwitch } from "./create_template_flyot";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 import QuillEditorComponent from "./quill_editor";
 import { quillEditorStyles } from "./quill_editor.styles";
@@ -33,7 +33,14 @@ const schema = yup
   .object({
     title: yup.string().required().label("Title"),
     kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api"]).required().label("Data"),
-    body: yup.string().required().label("Body"),
+    body: yup
+      .string()
+      .required()
+      .label("Body")
+      .when(["kind"], ([kind], schema) => {
+        if (kind === "sms" || kind === "push") return schema.max(160, "Max 160 characters");
+        return schema;
+      }),
     channel: yup.number().required().label("Channel"),
   })
   .required();
@@ -50,16 +57,20 @@ type FormData = yup.InferType<typeof schema>;
 
 const processKind = (body: string, kind: FormData["kind"]): FormData["kind"] => {
   if (!IS_POCKET) return kind;
-  //TODO: If team is not pocket return just kind
-  const parsedBody = JSON.parse(body);
-  if (parsedBody.type === "sms") {
-    return "sms";
-  }
-  if (parsedBody.type === "email") {
-    return "email";
-  }
-  if (parsedBody.type === "push") {
-    return "push";
+  try {
+    //TODO: If team is not pocket return just kind
+    const parsedBody = JSON.parse(body);
+    if (parsedBody.type === "sms") {
+      return "sms";
+    }
+    if (parsedBody.type === "email") {
+      return "email";
+    }
+    if (parsedBody.type === "push") {
+      return "push";
+    }
+  } catch (error) {
+    return kind;
   }
 
   return kind;
@@ -67,19 +78,23 @@ const processKind = (body: string, kind: FormData["kind"]): FormData["kind"] => 
 
 const processBody = (body: string, kind: string) => {
   if (!IS_POCKET) return body;
-  //TODO: If team is not pocket return just body
-  const parsedBody = JSON.parse(body);
-  if (kind === "api") {
-    return JSON.stringify(JSON.parse(body), null, 2);
-  }
-  if (kind === "sms") {
-    return parsedBody.body;
-  }
-  if (kind === "email") {
-    return parsedBody.body;
-  }
-  if (kind === "push") {
-    return parsedBody.body;
+  try {
+    //TODO: If team is not pocket return just body
+    const parsedBody = JSON.parse(body);
+    if (kind === "api") {
+      return JSON.stringify(JSON.parse(body), null, 2);
+    }
+    if (kind === "sms") {
+      return parsedBody.body;
+    }
+    if (kind === "email") {
+      return parsedBody.body;
+    }
+    if (kind === "push") {
+      return parsedBody.body;
+    }
+  } catch (error) {
+    return body;
   }
 };
 
@@ -142,7 +157,22 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
       return;
     }
     try {
-      const response = await trigger(data);
+      const preparedData = {
+        ...data,
+      };
+      const dataType = processKind(data.body, data.kind);
+      if ((dataType === "email" || dataType === "sms" || dataType === "push") && IS_POCKET) {
+        //TODO: If team is not pocket dont edit data
+        preparedData.kind = "api";
+        preparedData.body = JSON.stringify({
+          type: dataType,
+          to: `{{${dataTypeToSwitch(data.kind)}}}`,
+          title: data.title,
+          body: data.body,
+        });
+      }
+
+      const response = await trigger(preparedData);
       if (response) {
         globalMutate("/api/v1/dj/templates/");
         closeFlyout();

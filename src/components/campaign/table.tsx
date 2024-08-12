@@ -13,12 +13,13 @@ import {
   EuiTableFieldDataColumnType,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { jsonrepair } from "jsonrepair";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { PAGINATION_CHOOSES } from "../../constants";
+import { IS_POCKET, PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
 
@@ -59,9 +60,19 @@ const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactEleme
       "data-test-subj": "titleCell",
     },
     {
-      field: "kind",
       name: "Kind",
       "data-test-subj": "kindCell",
+      render: (template: Template) => {
+        //INFO: This is a workaround to get the kind of the template becaouse of POCKET
+        const dataKind =
+          IS_POCKET && template?.kind === "api"
+            ? JSON.parse(jsonrepair(template?.body) || "{}").type
+              ? JSON.parse(jsonrepair(template?.body) || "{}").type
+              : template?.kind
+            : template?.kind;
+
+        return <span>{dataKind}</span>;
+      },
     },
     {
       name: "Status",

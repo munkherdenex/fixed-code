@@ -26,7 +26,6 @@ import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
-import { createTemplateFlyoutStyles } from "./create_teamplate_flyout.styles";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 import QuillEditorComponent from "./quill_editor";
 import { quillEditorStyles } from "./quill_editor.styles";
@@ -48,7 +47,14 @@ const schema = yup
   .object({
     title: yup.string().required().label("Title"),
     kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api", ""]).required().label("Data"),
-    body: yup.string().required().label("Body"),
+    body: yup
+      .string()
+      .required()
+      .label("Body")
+      .when(["kind"], ([kind], schema) => {
+        if (kind === "sms" || kind === "push") return schema.max(160, "Max 160 characters");
+        return schema;
+      }),
     channel: yup.number().required().label("Channel"),
   })
   .required();

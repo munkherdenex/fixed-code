@@ -23,6 +23,7 @@ import { jsonrepair } from "jsonrepair";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
+import { IS_POCKET } from "../../constants";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
@@ -116,6 +117,16 @@ const GeneralDetails = ({
   const showEmailModal = () => setIsEmailModalVisible(true);
   const styles = quillEditorStyles();
 
+  //INFO: This is a workaround to get the kind of the template becaouse of POCKET
+  const dataKind =
+    IS_POCKET && data?.kind === "api"
+      ? JSON.parse(jsonrepair(data?.body) || "{}").type
+        ? JSON.parse(jsonrepair(data?.body) || "{}").type
+        : data?.kind
+      : data?.kind;
+
+  const dataBody = IS_POCKET ? JSON.parse(jsonrepair(data?.body || "{}")).body : data?.body;
+
   const closeFlyout = () => {
     setIsEditFlyoutVisible(false);
   };
@@ -174,12 +185,12 @@ const GeneralDetails = ({
               <EuiFlexItem>Kind:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
-                  <EuiBadge color={badgeColor(data.kind)}>{data.kind}</EuiBadge>
+                  <EuiBadge color={badgeColor(dataKind)}>{dataKind}</EuiBadge>
                 </div>
               </EuiFlexItem>
               <EuiFlexItem>Body:</EuiFlexItem>
               <EuiFlexItem css={cStyles.width200}>
-                {data?.kind === "email" && (
+                {dataKind === "email" && (
                   <>
                     <EuiButton onClick={showEmailModal} size="s">
                       Preview
@@ -194,7 +205,7 @@ const GeneralDetails = ({
                           <EuiModalHeaderTitle id={modalTitleId}></EuiModalHeaderTitle>
                         </EuiModalHeader>
                         <EuiModalBody>
-                          <iframe srcDoc={data?.body} css={styles.iframe} />
+                          <iframe srcDoc={dataBody} css={styles.iframe} />
                         </EuiModalBody>
                         <EuiModalFooter>
                           <EuiButton onClick={closeEmailModal} fill>
@@ -205,7 +216,7 @@ const GeneralDetails = ({
                     )}
                   </>
                 )}
-                {data?.kind === "api" && (
+                {dataKind === "api" && (
                   <EuiCodeBlock
                     language="json"
                     fontSize="s"
@@ -214,6 +225,17 @@ const GeneralDetails = ({
                     overflowHeight={300}
                   >
                     <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.body)), null, 2)}</pre>
+                  </EuiCodeBlock>
+                )}
+                {(dataKind === "sms" || dataKind === "push") && (
+                  <EuiCodeBlock
+                    language="json"
+                    fontSize="s"
+                    paddingSize="s"
+                    isCopyable
+                    overflowHeight={300}
+                  >
+                    {dataBody}
                   </EuiCodeBlock>
                 )}
               </EuiFlexItem>
