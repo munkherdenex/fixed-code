@@ -9,7 +9,6 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { css } from "@emotion/react";
-import find from "lodash/find";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -141,7 +140,7 @@ const CollapsibleNav = () => {
   });
 
   const addPin = (item: EuiPinnableListGroupItemProps) => {
-    if (!item || find(pinnedItems, { label: item.label })) {
+    if (!item || pinnedItems.filter((pinnedItem) => pinnedItem.label === item.label)) {
       return;
     }
     item.pinned = true;
