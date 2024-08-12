@@ -10,6 +10,7 @@ import {
   EuiForm,
   EuiFormRow,
   EuiSelect,
+  EuiSpacer,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -26,17 +27,24 @@ import { globalMutate } from "../../utils/globalMutate";
 const schema = yup
   .object({
     type: yup.string().oneOf(["customer", "segment"]).required(),
-    search: yup.string().notRequired(),
     id: yup.string().required(),
   })
   .required();
+
+type FormData = yup.InferType<typeof schema>;
+
+const searchSchema = yup
+  .object({
+    search: yup.string().notRequired(),
+  })
+  .required();
+
+type SearchFormData = yup.InferType<typeof searchSchema>;
 
 const dataTypeOptions = [
   { value: "customer", text: "Customer" },
   { value: "segment", text: "Segment" },
 ];
-
-type FormData = yup.InferType<typeof schema>;
 
 const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const router = useRouter();
@@ -44,14 +52,18 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const { isMutating, trigger } = useCreateTemplateAudience(id);
 
   const [searchValue, setSearchValue] = useState<any>();
-  const { data: customerData } = useGetCustomers<CustomersResponse>(undefined, {
-    query: searchValue,
-    limit: `${10}`,
-  });
-  const { data: segmentsData } = useGetSegments<SegmentResponse>(undefined, {
-    query: searchValue,
-    limit: `${10}`,
-  });
+  const { data: customerData, isLoading: isGetCustomersLoading } =
+    useGetCustomers<CustomersResponse>(undefined, {
+      query: searchValue,
+      limit: `${10}`,
+    });
+  const { data: segmentsData, isLoading: isGetSegmentsLoading } = useGetSegments<SegmentResponse>(
+    undefined,
+    {
+      query: searchValue,
+      limit: `${10}`,
+    },
+  );
 
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
@@ -72,6 +84,15 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     }));
 
   const {
+    handleSubmit: searchHandleSubmit,
+    control: searchControl,
+    formState: { errors: searchControlErrors },
+  } = useForm({
+    mode: "onBlur",
+    resolver: yupResolver(searchSchema),
+  });
+
+  const {
     handleSubmit,
     control,
     watch,
@@ -86,13 +107,12 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
 
   const preparedData = watch("type") === "customer" ? preparedCustomerData : preparedSegmentData;
 
-  const onSearch = async () => {
-    setSearchValue(watch("search"));
+  const onSearch = async (data: SearchFormData) => {
+    setSearchValue(data.search);
   };
 
   const onSubmit = async (data: FormData) => {
     try {
-      delete data.search;
       const response = await trigger(data);
       if (response) {
         globalMutate(`/api/v1/dj/templates/${id}`);
@@ -111,6 +131,45 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
+        <EuiForm component="form" onSubmit={searchHandleSubmit(onSearch)}>
+          <EuiFormRow
+            label={`Search ${watch("type") === "customer" ? "customer" : "segment"}`}
+            isInvalid={!!searchControlErrors.search?.message}
+            error={[searchControlErrors.search?.message]}
+          >
+            <EuiFlexGroup alignItems="center">
+              <EuiFlexItem>
+                <Controller
+                  control={searchControl}
+                  name="search"
+                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                    <EuiFieldSearch
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!error?.message}
+                      aria-label="Search"
+                      placeholder={`Search ${
+                        watch("type") === "customer" ? "customer" : "segment"
+                      }`}
+                      isClearable
+                    />
+                  )}
+                />
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiButtonIcon
+                  isLoading={isGetSegmentsLoading || isGetCustomersLoading}
+                  display="base"
+                  iconType="search"
+                  size="s"
+                  type="submit"
+                />
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </EuiFormRow>
+        </EuiForm>
+        <EuiSpacer size="m" />
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
             label="Data type"
@@ -131,41 +190,6 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 />
               )}
             />
-          </EuiFormRow>
-          <EuiFormRow
-            label={`Search ${watch("type") === "customer" ? "customer" : "segment"}`}
-            isInvalid={!!errors.search?.message}
-            error={[errors.search?.message]}
-          >
-            <EuiFlexGroup alignItems="center">
-              <EuiFlexItem>
-                <Controller
-                  control={control}
-                  name="search"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiFieldSearch
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.search?.message}
-                      aria-label="Search"
-                      placeholder={`Search ${
-                        watch("type") === "customer" ? "customer" : "segment"
-                      }`}
-                      isClearable
-                    />
-                  )}
-                />
-              </EuiFlexItem>
-              <EuiFlexItem grow={false}>
-                <EuiButtonIcon
-                  display="base"
-                  iconType="search"
-                  size="s"
-                  onClick={() => onSearch()}
-                />
-              </EuiFlexItem>
-            </EuiFlexGroup>
           </EuiFormRow>
           <EuiFormRow label="Ids" isInvalid={!!errors.id?.message} error={[errors.id?.message]}>
             <Controller
