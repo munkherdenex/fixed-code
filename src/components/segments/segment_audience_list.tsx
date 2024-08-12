@@ -127,7 +127,6 @@ const SegmentAudienceList = () => {
     },
     {
       name: "Actions",
-      field: "",
       footer: () => {
         return <strong>Total: {data?.total_count || 0}</strong>;
       },
