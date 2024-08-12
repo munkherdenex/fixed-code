@@ -7,10 +7,10 @@ import {
   EuiForm,
   EuiFormRow,
   EuiButton,
-  EuiComboBox,
-  EuiComboBoxOptionOption,
+  EuiSelect,
+  EuiSelectOption,
 } from "@elastic/eui";
-import { SetStateAction, useState } from "react";
+import { SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -36,19 +36,17 @@ const AddSegmentsToAudience = ({
   const flyoutHeadingId = useGeneratedHtmlId();
   const router = useRouter();
   const { id } = router.query;
+
   const { trigger } = useCreateSegmentsAudience(id);
   const { data: customerSegments } = useGetSegments<SegmentResponse>();
-  const dataTypeOptions: EuiComboBoxOptionOption[] = customerSegments?.results?.map((segment) => {
-    return {
-      label: String(segment?.id),
-    };
-  }) || [{ label: "" }];
 
-  const [selectedOptions, setSelected] = useState([
-    {
-      label: "",
-    },
-  ]);
+  const dataTypeOptions: EuiSelectOption[] =
+    customerSegments?.results?.map((segment) => {
+      return {
+        text: segment?.name,
+        value: segment?.id.toString(),
+      };
+    }) || [];
 
   const {
     handleSubmit,
@@ -101,16 +99,13 @@ const AddSegmentsToAudience = ({
             <Controller
               control={control}
               name="segment"
-              render={({ field: { onBlur, onChange } }) => (
-                <EuiComboBox
-                  placeholder="Segment Ids"
-                  singleSelection={{ asPlainText: true }}
+              render={({ field: { onBlur, onChange, value } }) => (
+                <EuiSelect
                   options={dataTypeOptions}
                   onChange={(selected) => {
-                    setSelected(selected);
-                    onChange(selected[0]?.label);
+                    onChange(selected);
                   }}
-                  selectedOptions={selectedOptions}
+                  value={value}
                   onBlur={onBlur}
                 />
               )}
