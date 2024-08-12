@@ -71,31 +71,36 @@ const SegmentAudienceList = () => {
 
   const columns: Array<EuiBasicTableColumn<SegmentAudience>> = [
     {
-      field: "ids",
-      name: "Ids",
-      width: "37%",
-      render: (email: SegmentAudience["email"], SegmentAudience: SegmentAudience) => (
+      name: "Profile",
+      render: (segmentAudience: SegmentAudience) => (
         <>
           <EuiLink
             onClick={() => {
-              router.push(`${pathPrefix}/dashboards/audience/info/${SegmentAudience?.id}`);
+              router.push(`${pathPrefix}/dashboards/audience/info/${segmentAudience?.id}`);
             }}
           >
-            <EuiFlexGroup>
+            <EuiAvatar size="m" name={segmentAudience.email || segmentAudience.phone || ""} />
+          </EuiLink>
+        </>
+      ),
+    },
+    {
+      name: "Email",
+      render: (segmentAudience: SegmentAudience) => (
+        <>
+          <EuiLink
+            onClick={() => {
+              router.push(`${pathPrefix}/dashboards/audience/info/${segmentAudience?.id}`);
+            }}
+          >
+            <EuiFlexGroup direction="column" gutterSize="none">
               <EuiFlexItem grow={false}>
-                <EuiAvatar size="m" name={SegmentAudience.email || SegmentAudience.phone || ""} />
+                <EuiText size="s">
+                  <strong>{segmentAudience.email}</strong>
+                </EuiText>
               </EuiFlexItem>
-              <EuiFlexItem>
-                <EuiFlexGroup direction="column" gutterSize="none">
-                  <EuiFlexItem grow={false}>
-                    <EuiText size="s">
-                      <strong>{SegmentAudience.email}</strong>{" "}
-                    </EuiText>
-                  </EuiFlexItem>
-                  <EuiFlexItem grow={false}>
-                    <EuiText size="xs">{SegmentAudience.phone}</EuiText>
-                  </EuiFlexItem>
-                </EuiFlexGroup>
+              <EuiFlexItem grow={false}>
+                <EuiText size="xs">{segmentAudience.phone}</EuiText>
               </EuiFlexItem>
             </EuiFlexGroup>
           </EuiLink>
@@ -117,17 +122,12 @@ const SegmentAudienceList = () => {
       ),
     },
     {
-      field: "created_at",
       name: "Created at",
-      mobileOptions: {
-        render: (customer: SegmentAudience) => moment(customer.created_at).format("YYYY-MM-DD LT"),
-        enlarge: true,
-      },
+      render: (customer: SegmentAudience) => moment(customer.created_at).format("YYYY-MM-DD LT"),
     },
     {
       name: "Actions",
       field: "",
-      width: "10%",
       footer: () => {
         return <strong>Total: {data?.total_count || 0}</strong>;
       },
