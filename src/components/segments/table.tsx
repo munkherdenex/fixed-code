@@ -38,7 +38,7 @@ const SegmentsTable = () => {
     pageSizeOptions: PAGINATION_CHOOSES,
   };
   const { data, isLoading, mutate } = useGetSegments<SegmentResponse>(undefined, {
-    search: searchValue,
+    query: searchValue,
     offset: `${pageIndex * pageSize}`,
     limit: `${pageSize}`,
   });

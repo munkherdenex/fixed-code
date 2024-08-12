@@ -39,7 +39,7 @@ const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactEleme
   };
 
   const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, {
-    search: searchValue,
+    query: searchValue,
     offset: `${pageIndex * pageSize}`,
     limit: `${pageSize}`,
   });

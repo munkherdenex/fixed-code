@@ -39,7 +39,7 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
   };
 
   const { data, isLoading, mutate } = useGetChannels<ChannelsResponse>(undefined, {
-    search: searchValue,
+    query: searchValue,
     offset: `${pageIndex * pageSize}`,
     limit: `${pageSize}`,
   });
