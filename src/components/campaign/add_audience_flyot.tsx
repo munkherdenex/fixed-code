@@ -46,7 +46,13 @@ const dataTypeOptions = [
   { value: "segment", text: "Segment" },
 ];
 
-const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
+const AddAudienceFlyout = ({
+  closeFlyout,
+  dataType,
+}: {
+  closeFlyout: () => void;
+  dataType: FormData["type"];
+}) => {
   const router = useRouter();
   const { id } = router.query;
   const { isMutating, trigger } = useCreateTemplateAudience(id);
@@ -101,7 +107,7 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      type: "customer",
+      type: dataType,
     },
   });
 
@@ -169,12 +175,12 @@ const AddAudienceFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
             </EuiFlexGroup>
           </EuiFormRow>
         </EuiForm>
-        <EuiSpacer size="m" />
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
             label="Data type"
             isInvalid={!!errors.type?.message}
             error={[errors.type?.message]}
+            style={{ display: "none" }}
           >
             <Controller
               control={control}

@@ -2,7 +2,6 @@ import {
   Criteria,
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiButton,
   EuiConfirmModal,
   EuiFlexGroup,
   EuiFlexItem,
@@ -19,13 +18,13 @@ import useGetTemplatesCustomer, {
   TemplateCustomerResponse,
 } from "../../hooks/useGetTemplatesCustomer";
 import { globalMutate } from "../../utils/globalMutate";
-import AddAudienceFlyout from "./add_audience_flyot";
+import AddAudience from "./add_audience";
 
 const Audience = () => {
   const router = useRouter();
+
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [isAddAudienceFlyoutVisible, setIsAddAudienceFlyoutVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedAudience, setSelectedAudience] = useState<TemplateCustomer>();
 
@@ -50,7 +49,7 @@ const Audience = () => {
   const closeModal = () => setIsModalVisible(false);
   const showModal = () => setIsModalVisible(true);
 
-  const actionEnabled = template?.status === "DRAFT" || template?.status === "ERROR";
+  const actionEnabled = template?.status === "DRAFT";
 
   const columns: Array<EuiBasicTableColumn<TemplateCustomer>> = [
     {
@@ -158,15 +157,7 @@ const Audience = () => {
     <EuiFlexGroup direction="column">
       {actionEnabled && (
         <EuiFlexItem grow={false}>
-          <div>
-            <EuiButton
-              size="s"
-              iconType="plusInCircle"
-              onClick={() => setIsAddAudienceFlyoutVisible(true)}
-            >
-              Add audience
-            </EuiButton>
-          </div>
+          <AddAudience />
         </EuiFlexItem>
       )}
       <EuiFlexItem>
@@ -190,9 +181,6 @@ const Audience = () => {
           onChange={onTableChange}
         />
       </EuiFlexItem>
-      {isAddAudienceFlyoutVisible && (
-        <AddAudienceFlyout closeFlyout={() => setIsAddAudienceFlyoutVisible(false)} />
-      )}
       {isModalVisible && (
         <EuiConfirmModal
           aria-labelledby={modalTitleId}
