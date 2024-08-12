@@ -9,7 +9,7 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useDeleteTemplateCustomer from "../../hooks/useDeleteTemplateCustomer";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";

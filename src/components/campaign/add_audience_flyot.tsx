@@ -15,7 +15,7 @@ import {
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useCreateTemplateAudience from "../../hooks/useCreateTemplateAudience";
@@ -222,4 +222,4 @@ const AddAudienceFlyout = ({
   );
 };
 
-export default AddAudienceFlyout;
+export default memo(AddAudienceFlyout);

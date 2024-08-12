@@ -1,5 +1,5 @@
 import { EuiButton, EuiPopover, EuiContextMenu } from "@elastic/eui";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import { commonStyles } from "../../styles/global.styles";
 import AddAudienceFlyout from "./add_audience_flyot";
 
@@ -70,4 +70,4 @@ const AddAudience = () => {
   );
 };
 
-export default AddAudience;
+export default memo(AddAudience);
