@@ -1,3 +1,5 @@
+import "@elastic/charts/dist/theme_only_light.css";
+import "@elastic/charts/dist/theme_only_dark.css";
 import { EuiErrorBoundary } from "@elastic/eui";
 import { Global } from "@emotion/react";
 import "core-js/stable";

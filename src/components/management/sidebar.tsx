@@ -26,10 +26,10 @@ const notificationPaths = [
     path: "/dashboards/channels",
     name: "Channels",
   },
-  // {
-  //   path: "/dashboards/analytics",
-  //   name: "Analytics",
-  // },
+  {
+    path: "/dashboards/analytics",
+    name: "Analytics",
+  },
 ];
 
 const managementPaths = [

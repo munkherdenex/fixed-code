@@ -32,13 +32,13 @@ const CollapsibleNav = () => {
       },
       pinnable: false,
     },
-    // {
-    //   label: "Analytics",
-    //   onClick: () => {
-    //     router.push(`${pathPrefix}/dashboards/analytics`);
-    //   },
-    //   pinnable: false,
-    // },
+    {
+      label: "Analytics",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/analytics`);
+      },
+      pinnable: false,
+    },
   ];
 
   const CustomersLinks: EuiPinnableListGroupItemProps[] = [
