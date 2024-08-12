@@ -37,7 +37,6 @@ const AddSegmentsToAudience = ({
   const router = useRouter();
   const { id } = router.query;
 
-  const { trigger } = useCreateSegmentsAudience(id);
   const { data: customerSegments } = useGetSegments<SegmentResponse>();
 
   const dataTypeOptions: EuiSelectOption[] =
@@ -52,6 +51,7 @@ const AddSegmentsToAudience = ({
     handleSubmit,
     control,
     formState: { errors },
+    watch,
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
@@ -60,11 +60,13 @@ const AddSegmentsToAudience = ({
     },
   });
 
+  const { trigger } = useCreateSegmentsAudience(watch("segment"));
+
   const onSubmit = async (data: FormData) => {
     try {
       const prepareData = {
         ...data,
-        customer: id,
+        customer: +id,
       };
       const response = await trigger(prepareData);
       if (response) {
@@ -107,6 +109,7 @@ const AddSegmentsToAudience = ({
                   }}
                   value={value}
                   onBlur={onBlur}
+                  hasNoInitialSelection
                 />
               )}
             />
