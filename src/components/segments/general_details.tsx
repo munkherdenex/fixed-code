@@ -15,6 +15,7 @@ import {
   EuiFormRow,
   EuiPanel,
   EuiSpacer,
+  EuiTextColor,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -185,7 +186,13 @@ const GeneralDetails = () => {
               <EuiFlexItem>Name:</EuiFlexItem>
               <EuiFlexItem>{data?.name}</EuiFlexItem>
               <EuiFlexItem>Description:</EuiFlexItem>
-              <EuiFlexItem>{data?.description}</EuiFlexItem>
+              <EuiFlexItem>
+                {data?.description ? (
+                  data?.description
+                ) : (
+                  <EuiTextColor color="subdued">None</EuiTextColor>
+                )}
+              </EuiFlexItem>
               <EuiFlexItem>Status:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
@@ -200,37 +207,43 @@ const GeneralDetails = () => {
               </EuiFlexItem>
             </EuiFlexGrid>
             <EuiSpacer />
-            <EuiFlexGroup direction="column">
-              <EuiFlexItem>Condition:</EuiFlexItem>
+            {data.type !== "manual" && (
               <>
-                <EuiFlexItem css={styles.conditionContainer}>
-                  {data.type === "dynamic" && (
-                    <>
-                      <DisplayDataConditionExpression
-                        query={removeDeletedCustomFields(
-                          cfData,
-                          parseMongoDB(data?.condition, {
-                            additionalOperators: additionalOperator,
-                          }),
-                        )}
-                      />
-                    </>
-                  )}
-                  {data.type === "static" && (
-                    <EuiCodeBlock
-                      language="json"
-                      fontSize="s"
-                      paddingSize="s"
-                      isCopyable
-                      overflowHeight={300}
-                    >
-                      <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.condition)), null, 2)}</pre>
-                    </EuiCodeBlock>
-                  )}
-                </EuiFlexItem>
+                <EuiFlexGroup direction="column">
+                  <EuiFlexItem>Condition:</EuiFlexItem>
+                  <>
+                    <EuiFlexItem css={styles.conditionContainer}>
+                      {data.type === "dynamic" && (
+                        <>
+                          <DisplayDataConditionExpression
+                            query={removeDeletedCustomFields(
+                              cfData,
+                              parseMongoDB(data?.condition, {
+                                additionalOperators: additionalOperator,
+                              }),
+                            )}
+                          />
+                        </>
+                      )}
+                      {data.type === "static" && (
+                        <EuiCodeBlock
+                          language="json"
+                          fontSize="s"
+                          paddingSize="s"
+                          isCopyable
+                          overflowHeight={300}
+                        >
+                          <pre>
+                            {JSON.stringify(JSON.parse(jsonrepair(data?.condition)), null, 2)}
+                          </pre>
+                        </EuiCodeBlock>
+                      )}
+                    </EuiFlexItem>
+                  </>
+                </EuiFlexGroup>
+                <EuiSpacer />
               </>
-            </EuiFlexGroup>
-            <EuiSpacer />
+            )}
             <EuiFlexGrid columns={2} responsive={false}>
               <EuiFlexItem>Created by :</EuiFlexItem>
               <EuiFlexItem>{data?.created_by}</EuiFlexItem>
