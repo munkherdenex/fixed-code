@@ -10,7 +10,6 @@ import {
   EuiForm,
   EuiFormRow,
   EuiSelect,
-  EuiSpacer,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
