@@ -1,5 +1,4 @@
 import Cookies from "js-cookie";
-import { useRouter } from "next/router";
 import { createContext, useEffect, useState } from "react";
 import { mutate } from "swr";
 import useLogout from "../hooks/useLogout";
@@ -28,7 +27,6 @@ export const authContext = createContext(initial_Auth_State);
 const pathPrefix = process.env.PATH_PREFIX;
 
 export const AuthProvider = ({ children }) => {
-  const router = useRouter();
   const { trigger } = useLogout();
   const { data: user, isLoading } = useProfile();
   const [userData, setUserData] = useState();
