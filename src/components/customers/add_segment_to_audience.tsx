@@ -1,24 +1,29 @@
 import {
-  useGeneratedHtmlId,
+  EuiButton,
+  EuiButtonIcon,
+  EuiFieldSearch,
+  EuiFlexGroup,
+  EuiFlexItem,
   EuiFlyout,
-  EuiFlyoutHeader,
-  EuiTitle,
   EuiFlyoutBody,
+  EuiFlyoutHeader,
   EuiForm,
   EuiFormRow,
-  EuiButton,
   EuiSelect,
   EuiSelectOption,
+  EuiSpacer,
+  EuiTitle,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
-import { SetStateAction } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { addToast } from "../toast";
-import { globalMutate } from "../../utils/globalMutate";
-import useCreateSegmentsAudience from "../../hooks/useCreateSegmentsAudience";
 import { useRouter } from "next/router";
+import { SetStateAction, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
+import useCreateSegmentsAudience from "../../hooks/useCreateSegmentsAudience";
 import useGetSegments, { SegmentResponse } from "../../hooks/useGetSegments";
+import { globalMutate } from "../../utils/globalMutate";
+import { addToast } from "../toast";
 
 const schema = yup
   .object({
@@ -28,6 +33,14 @@ const schema = yup
 
 type FormData = yup.InferType<typeof schema>;
 
+const searchSchema = yup
+  .object({
+    search: yup.string().notRequired(),
+  })
+  .required();
+
+type SearchFormData = yup.InferType<typeof searchSchema>;
+
 const AddSegmentsToAudience = ({
   setIsFlyoutVisible,
 }: {
@@ -36,8 +49,12 @@ const AddSegmentsToAudience = ({
   const flyoutHeadingId = useGeneratedHtmlId();
   const router = useRouter();
   const { id } = router.query;
+  const [searchValue, setSearchValue] = useState<any>();
 
-  const { data: customerSegments } = useGetSegments<SegmentResponse>();
+  const { data: customerSegments, isLoading } = useGetSegments<SegmentResponse>(undefined, {
+    query: searchValue,
+    limit: `${10}`,
+  });
 
   const dataTypeOptions: EuiSelectOption[] =
     customerSegments?.results?.map((segment) => {
@@ -46,6 +63,15 @@ const AddSegmentsToAudience = ({
         value: segment?.id.toString(),
       };
     }) || [];
+
+  const {
+    handleSubmit: searchHandleSubmit,
+    control: searchControl,
+    formState: { errors: searchControlErrors },
+  } = useForm({
+    mode: "onBlur",
+    resolver: yupResolver(searchSchema),
+  });
 
   const {
     handleSubmit,
@@ -61,6 +87,10 @@ const AddSegmentsToAudience = ({
   });
 
   const { trigger } = useCreateSegmentsAudience(watch("segment"));
+
+  const onSearch = async (data: SearchFormData) => {
+    setSearchValue(data.search);
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -88,13 +118,50 @@ const AddSegmentsToAudience = ({
     <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2 id={flyoutHeadingId}>Add segment</h2>
+          <h2 id={flyoutHeadingId}>Add to segment</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
+        <EuiForm component="form" onSubmit={searchHandleSubmit(onSearch)}>
+          <EuiFormRow
+            label={`Search segment`}
+            isInvalid={!!searchControlErrors.search?.message}
+            error={[searchControlErrors.search?.message]}
+          >
+            <EuiFlexGroup alignItems="center">
+              <EuiFlexItem>
+                <Controller
+                  control={searchControl}
+                  name="search"
+                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                    <EuiFieldSearch
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!error?.message}
+                      aria-label="Search"
+                      placeholder={`Search segment`}
+                      isClearable
+                    />
+                  )}
+                />
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiButtonIcon
+                  isLoading={isLoading}
+                  display="base"
+                  iconType="search"
+                  size="s"
+                  type="submit"
+                />
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </EuiFormRow>
+        </EuiForm>
+        <EuiSpacer size="m" />
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Segment Ids"
+            label="Segment"
             isInvalid={!!errors.segment?.message}
             error={[errors.segment?.message]}
           >
@@ -115,7 +182,7 @@ const AddSegmentsToAudience = ({
             />
           </EuiFormRow>
           <EuiFormRow hasEmptyLabelSpace>
-            <EuiButton type="submit">Add segment</EuiButton>
+            <EuiButton type="submit">Add to segment</EuiButton>
           </EuiFormRow>
         </EuiForm>
       </EuiFlyoutBody>
