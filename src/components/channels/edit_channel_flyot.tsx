@@ -44,7 +44,7 @@ const EditChannelFlyot = ({
 }) => {
   const parsedData = JSON.parse(jsonrepair(data?.data));
   const preparedHeaders =
-    Object.keys(parsedData?.headers).length > 0 && parsedData.headers
+    parsedData?.headers && Object.keys(parsedData?.headers).length > 0 && parsedData.headers
       ? Object.entries(parsedData.headers).map(([key, value]: [string, any]) => ({
           key,
           value,
