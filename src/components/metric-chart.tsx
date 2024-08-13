@@ -2,6 +2,7 @@ import { Chart, Settings, Metric, DARK_THEME, LIGHT_THEME } from "@elastic/chart
 import {
   EuiFlexGroup,
   EuiFlexItem,
+  EuiIcon,
   EuiPanel,
   EuiSuperDatePicker,
   OnRefreshProps,
@@ -44,8 +45,6 @@ const MetricChart = () => {
   };
 
   const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
     notation: "compact",
     maximumFractionDigits: 3,
   });
@@ -73,14 +72,40 @@ const MetricChart = () => {
                     [
                       {
                         color: colorMode === "DARK" ? "#1D1E24" : "white",
-                        title: "Current Year Revenue",
-                        subtitle: "Rigid.co",
+                        title: "Audience",
+                        icon: () => <EuiIcon type="sortDown" />,
                         extra: (
                           <span>
-                            Last year <strong>{formatter.format(1250000)}</strong>
+                            Total audience <strong>{formatter.format(1250000)}</strong>
                           </span>
                         ),
-                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 1000000,
+                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 10000,
+                        valueFormatter: (v) => formatter.format(v),
+                      },
+                    ],
+                  ]}
+                />
+              </Chart>
+            </EuiPanel>
+          </EuiFlexItem>
+          <EuiFlexItem grow={0}>
+            <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
+              <Chart size={[200, 200]}>
+                <Settings baseTheme={chartBaseTheme} />
+                <Metric
+                  id="1"
+                  data={[
+                    [
+                      {
+                        color: colorMode === "DARK" ? "#1D1E24" : "white",
+                        title: "Notifications",
+                        icon: () => <EuiIcon type="sortUp" />,
+                        extra: (
+                          <span>
+                            Total notifications <strong>{formatter.format(232323)}</strong>
+                          </span>
+                        ),
+                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 4000,
                         valueFormatter: (v) => formatter.format(v),
                       },
                     ],
