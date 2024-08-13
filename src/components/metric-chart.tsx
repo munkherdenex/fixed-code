@@ -1,5 +1,6 @@
 import { Chart, Settings, Metric, DARK_THEME, LIGHT_THEME } from "@elastic/charts";
 import {
+  EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
   EuiIcon,
@@ -8,6 +9,7 @@ import {
   OnRefreshProps,
   OnTimeChangeProps,
   useEuiTheme,
+  useIsWithinMaxBreakpoint,
 } from "@elastic/eui";
 import { useState } from "react";
 import { commonStyles } from "../styles/global.styles";
@@ -16,6 +18,7 @@ const MetricChart = () => {
   const { colorMode } = useEuiTheme();
   const cStyles = commonStyles();
   const chartBaseTheme = colorMode === "DARK" ? DARK_THEME : LIGHT_THEME;
+  const mediumBreakpoint = useIsWithinMaxBreakpoint("m");
 
   const [isLoading, setIsLoading] = useState(false);
   const [start, setStart] = useState("now-30m");
@@ -61,10 +64,10 @@ const MetricChart = () => {
         />
       </EuiFlexItem>
       <EuiFlexItem>
-        <EuiFlexGroup>
-          <EuiFlexItem grow={0}>
+        <EuiFlexGrid responsive={false} columns={mediumBreakpoint ? 2 : 4}>
+          <EuiFlexItem>
             <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
-              <Chart size={[200, 200]}>
+              <Chart size={{ height: 150 }}>
                 <Settings baseTheme={chartBaseTheme} />
                 <Metric
                   id="1"
@@ -79,7 +82,7 @@ const MetricChart = () => {
                             Total audience <strong>{formatter.format(1250000)}</strong>
                           </span>
                         ),
-                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 10000,
+                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 15000,
                         valueFormatter: (v) => formatter.format(v),
                       },
                     ],
@@ -88,9 +91,61 @@ const MetricChart = () => {
               </Chart>
             </EuiPanel>
           </EuiFlexItem>
-          <EuiFlexItem grow={0}>
+          <EuiFlexItem>
             <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
-              <Chart size={[200, 200]}>
+              <Chart size={{ height: 150 }}>
+                <Settings baseTheme={chartBaseTheme} />
+                <Metric
+                  id="1"
+                  data={[
+                    [
+                      {
+                        color: colorMode === "DARK" ? "#1D1E24" : "white",
+                        title: "Audience",
+                        icon: () => <EuiIcon type="sortDown" />,
+                        extra: (
+                          <span>
+                            Total audience <strong>{formatter.format(1250000)}</strong>
+                          </span>
+                        ),
+                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 15000,
+                        valueFormatter: (v) => formatter.format(v),
+                      },
+                    ],
+                  ]}
+                />
+              </Chart>
+            </EuiPanel>
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
+              <Chart size={{ height: 150 }}>
+                <Settings baseTheme={chartBaseTheme} />
+                <Metric
+                  id="1"
+                  data={[
+                    [
+                      {
+                        color: colorMode === "DARK" ? "#1D1E24" : "white",
+                        title: "Notifications",
+                        icon: () => <EuiIcon type="sortDown" />,
+                        extra: (
+                          <span>
+                            Total notifications <strong>{formatter.format(32344)}</strong>
+                          </span>
+                        ),
+                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 320,
+                        valueFormatter: (v) => formatter.format(v),
+                      },
+                    ],
+                  ]}
+                />
+              </Chart>
+            </EuiPanel>
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
+              <Chart size={{ height: 150 }}>
                 <Settings baseTheme={chartBaseTheme} />
                 <Metric
                   id="1"
@@ -114,7 +169,7 @@ const MetricChart = () => {
               </Chart>
             </EuiPanel>
           </EuiFlexItem>
-        </EuiFlexGroup>
+        </EuiFlexGrid>
       </EuiFlexItem>
     </EuiFlexGroup>
   );

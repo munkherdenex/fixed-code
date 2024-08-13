@@ -14,6 +14,9 @@ export const commonStyles = () => ({
   overflowHidden: css`
     overflow: hidden;
   `,
+  overflowAuto: css`
+    overflow: auto;
+  `,
   tourStep: css`
     width: 100%;
   `,
