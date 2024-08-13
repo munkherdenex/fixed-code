@@ -1,9 +1,18 @@
 import { FunctionComponent } from "react";
 import Head from "next/head";
-import { EuiButton, EuiCard, EuiFlexGrid, EuiFlexItem, EuiIcon, useEuiTheme } from "@elastic/eui";
+import {
+  EuiButton,
+  EuiCard,
+  EuiFlexGrid,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiIcon,
+  useEuiTheme,
+} from "@elastic/eui";
 import DashboardLayout from "../../layouts/dashboard";
 import { dashboardsStyles } from "../../styles/dashboards.styles";
 import { useRouter } from "next/router";
+import MetricChart from "../../components/metric-chart";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -45,24 +54,31 @@ const Dashboard: FunctionComponent = () => {
         <title>Home</title>
       </Head>
       <DashboardLayout>
-        <EuiFlexGrid columns={3} gutterSize="l" css={styles.container}>
-          {cardList.map((card, index) => (
-            <EuiFlexItem key={index}>
-              <EuiCard
-                icon={<EuiIcon size="xxl" type={card.icon} />}
-                title={card.title}
-                description={card.description}
-                footer={
-                  <div>
-                    <EuiButton onClick={() => router.push(card.link)} aria-label={card.footer}>
-                      Go for it
-                    </EuiButton>
-                  </div>
-                }
-              />
-            </EuiFlexItem>
-          ))}
-        </EuiFlexGrid>
+        <EuiFlexGroup direction="column">
+          <EuiFlexItem>
+            <MetricChart />
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiFlexGrid columns={3} gutterSize="l" css={styles.container}>
+              {cardList.map((card, index) => (
+                <EuiFlexItem key={index}>
+                  <EuiCard
+                    icon={<EuiIcon size="xxl" type={card.icon} />}
+                    title={card.title}
+                    description={card.description}
+                    footer={
+                      <div>
+                        <EuiButton onClick={() => router.push(card.link)} aria-label={card.footer}>
+                          Go for it
+                        </EuiButton>
+                      </div>
+                    }
+                  />
+                </EuiFlexItem>
+              ))}
+            </EuiFlexGrid>
+          </EuiFlexItem>
+        </EuiFlexGroup>
       </DashboardLayout>
     </>
   );

@@ -11,6 +11,9 @@ export const globalStyes = css`
 `;
 
 export const commonStyles = () => ({
+  overflowHidden: css`
+    overflow: hidden;
+  `,
   tourStep: css`
     width: 100%;
   `,
