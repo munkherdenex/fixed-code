@@ -6,10 +6,12 @@ import {
   EuiButtonIcon,
   EuiEmptyPrompt,
   EuiFieldSearch,
+  EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
   EuiImage,
+  EuiSelect,
   EuiTableFieldDataColumnType,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -24,8 +26,15 @@ import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetT
 import { badgeColor } from "../../utils/badge_color";
 
 const schema = yup.object({
-  search: yup.string().notRequired(),
+  search: yup.string().notRequired().label("Search"),
+  filter: yup.string().notRequired().label("Filter"),
 });
+
+const options = [
+  { value: "option_one", text: "Option one" },
+  { value: "option_two", text: "Option two" },
+  { value: "option_three", text: "Option three" },
+];
 
 const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactElement }) => {
   const router = useRouter();
@@ -161,26 +170,50 @@ const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactEleme
       <EuiFlexItem>
         <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="flexEnd">
           <EuiFlexItem grow={false}>
-            <EuiFormRow
-              label="Search"
-              isInvalid={!!errors.search?.message}
-              error={[errors.search?.message]}
-            >
-              <Controller
-                control={control}
-                name="search"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <EuiFieldSearch
-                    onChange={onChange}
-                    value={value}
-                    onBlur={onBlur}
-                    onSearch={onSearch}
-                    placeholder="Search Campaign"
-                    isInvalid={!!errors.search?.message}
+            <EuiFlexGrid columns={2}>
+              <EuiFlexItem grow={false}>
+                <EuiFormRow
+                  label="Search"
+                  isInvalid={!!errors.search?.message}
+                  error={[errors.search?.message]}
+                >
+                  <Controller
+                    control={control}
+                    name="search"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <EuiFieldSearch
+                        onChange={onChange}
+                        value={value}
+                        onBlur={onBlur}
+                        onSearch={onSearch}
+                        placeholder="Search Campaign"
+                        isInvalid={!!errors.search?.message}
+                      />
+                    )}
                   />
-                )}
-              />
-            </EuiFormRow>
+                </EuiFormRow>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiFormRow
+                  label="Filter"
+                  isInvalid={!!errors.search?.message}
+                  error={[errors.search?.message]}
+                >
+                  <Controller
+                    control={control}
+                    name="filter"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <EuiSelect
+                        onBlur={onBlur}
+                        options={options}
+                        value={value}
+                        onChange={(e) => onChange(e)}
+                      />
+                    )}
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+            </EuiFlexGrid>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             <EuiButtonIcon

@@ -186,30 +186,32 @@ const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: 
           alignItems="flexEnd"
           gutterSize="s"
         >
-          <EuiFlexGrid columns={2}>
-            <EuiFlexItem grow={false}>
-              <EuiFormRow
-                label="Search"
-                isInvalid={!!errors.search?.message}
-                error={[errors.search?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="search"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiFieldSearch
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      onSearch={onSearchEmailAddress}
-                      placeholder="Search email or phone"
-                      isInvalid={!!errors.search?.message}
-                    />
-                  )}
-                />
-              </EuiFormRow>
-            </EuiFlexItem>
-          </EuiFlexGrid>
+          <EuiFlexItem grow={false}>
+            <EuiFlexGrid columns={2}>
+              <EuiFlexItem grow={false}>
+                <EuiFormRow
+                  label="Search"
+                  isInvalid={!!errors.search?.message}
+                  error={[errors.search?.message]}
+                >
+                  <Controller
+                    control={control}
+                    name="search"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <EuiFieldSearch
+                        onChange={onChange}
+                        value={value}
+                        onBlur={onBlur}
+                        onSearch={onSearchEmailAddress}
+                        placeholder="Search email or phone"
+                        isInvalid={!!errors.search?.message}
+                      />
+                    )}
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+            </EuiFlexGrid>
+          </EuiFlexItem>
           <EuiFlexItem grow={false}>
             <EuiButtonIcon
               iconType="refresh"
