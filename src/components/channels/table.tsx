@@ -11,6 +11,8 @@ import {
   EuiButton,
   EuiEmptyPrompt,
   EuiImage,
+  EuiFlexGrid,
+  EuiSelect,
 } from "@elastic/eui";
 import * as yup from "yup";
 import router from "next/router";
@@ -25,7 +27,17 @@ const pathPrefix = process.env.PATH_PREFIX;
 
 const schema = yup.object({
   search: yup.string().notRequired(),
+  filter: yup.string().notRequired(),
 });
+
+const options = [
+  { value: "", text: "All" },
+  { value: "email", text: "email" },
+  { value: "push", text: "push" },
+  { value: "sms", text: "sms" },
+  { value: "inapp", text: "inapp" },
+  { value: "api", text: "api" },
+];
 
 const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () => void }) => {
   const [searchValue, setSearchValue] = useState("");
@@ -38,18 +50,20 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
     pageSizeOptions: PAGINATION_CHOOSES,
   };
 
-  const { data, isLoading, mutate } = useGetChannels<ChannelsResponse>(undefined, {
-    query: searchValue,
-    offset: `${pageIndex * pageSize}`,
-    limit: `${pageSize}`,
-  });
-
   const {
     control,
+    watch,
     formState: { errors },
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
+  });
+
+  const { data, isLoading, mutate } = useGetChannels<ChannelsResponse>(undefined, {
+    filter: watch("filter"),
+    query: searchValue,
+    offset: `${pageIndex * pageSize}`,
+    limit: `${pageSize}`,
   });
 
   const columns: Array<EuiBasicTableColumn<Channels>> = [
@@ -123,7 +137,7 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
     return <div>Loading...</div>;
   }
 
-  if (data?.results?.length === 0 && searchValue === "") {
+  if (data?.results?.length === 0 && searchValue === "" && watch("filter") === "") {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
@@ -155,26 +169,50 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
       <EuiFlexItem>
         <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="flexEnd">
           <EuiFlexItem grow={false}>
-            <EuiFormRow
-              label="Search"
-              isInvalid={!!errors.search?.message}
-              error={[errors.search?.message]}
-            >
-              <Controller
-                control={control}
-                name="search"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <EuiFieldSearch
-                    onChange={onChange}
-                    value={value}
-                    onBlur={onBlur}
-                    onSearch={onSearch}
-                    placeholder="Search channel"
-                    isInvalid={!!errors.search?.message}
+            <EuiFlexGrid columns={2}>
+              <EuiFlexItem grow={false}>
+                <EuiFormRow
+                  label="Search"
+                  isInvalid={!!errors.search?.message}
+                  error={[errors.search?.message]}
+                >
+                  <Controller
+                    control={control}
+                    name="search"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <EuiFieldSearch
+                        onChange={onChange}
+                        value={value}
+                        onBlur={onBlur}
+                        onSearch={onSearch}
+                        placeholder="Search Campaign"
+                        isInvalid={!!errors.search?.message}
+                      />
+                    )}
                   />
-                )}
-              />
-            </EuiFormRow>
+                </EuiFormRow>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiFormRow
+                  label="Filter"
+                  isInvalid={!!errors.search?.message}
+                  error={[errors.search?.message]}
+                >
+                  <Controller
+                    control={control}
+                    name="filter"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <EuiSelect
+                        onBlur={onBlur}
+                        options={options}
+                        value={value}
+                        onChange={(e) => onChange(e)}
+                      />
+                    )}
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+            </EuiFlexGrid>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             <EuiButtonIcon
