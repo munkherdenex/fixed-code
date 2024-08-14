@@ -8,7 +8,6 @@ import {
   OnRefreshProps,
   OnTimeChangeProps,
   useEuiTheme,
-  useIsWithinMaxBreakpoint,
 } from "@elastic/eui";
 import { useState } from "react";
 import { commonStyles } from "../styles/global.styles";
@@ -17,7 +16,6 @@ const MetricChart = () => {
   const { colorMode } = useEuiTheme();
   const cStyles = commonStyles();
   const chartBaseTheme = colorMode === "DARK" ? DARK_THEME : LIGHT_THEME;
-  const mediumBreakpoint = useIsWithinMaxBreakpoint("m");
 
   const [isLoading, setIsLoading] = useState(false);
   const [start, setStart] = useState("now-30m");
@@ -130,7 +128,7 @@ const MetricChart = () => {
                     [
                       {
                         color: "#3c3c3c",
-                        title: "Notifications (DRAFT)",
+                        title: "Campaigns (DRAFT)",
                         domainMax: 2030,
                         progressBarDirection: LayoutDirection.Vertical,
                         icon: () => <EuiIcon type="sortDown" />,
@@ -144,7 +142,7 @@ const MetricChart = () => {
                       },
                       {
                         color: "#FFBDAF",
-                        title: "Notifications (DONE)",
+                        title: "Campaigns (DONE)",
                         domainMax: 2030,
                         progressBarDirection: LayoutDirection.Vertical,
                         icon: () => <EuiIcon type="sortDown" />,
@@ -158,7 +156,7 @@ const MetricChart = () => {
                       },
                       {
                         color: "#6DCCB1",
-                        title: "Notifications (APPROVED)",
+                        title: "Campaigns (APPROVED)",
                         domainMax: 2030,
                         progressBarDirection: LayoutDirection.Vertical,
                         icon: () => <EuiIcon type="sortDown" />,
@@ -172,7 +170,7 @@ const MetricChart = () => {
                       },
                       {
                         color: "#a1cbea",
-                        title: "Notifications (SENT)",
+                        title: "Campaigns (SENT)",
                         domainMax: 2030,
                         progressBarDirection: LayoutDirection.Vertical,
                         icon: () => <EuiIcon type="sortDown" />,
