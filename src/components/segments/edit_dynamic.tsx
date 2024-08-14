@@ -13,7 +13,7 @@ import useUpdateSegment from "../../hooks/useUpdateSegment";
 import { additionalOperator } from "../../utils/additional_operator";
 import { CustomValueEditor } from "../../utils/custom_value_editor";
 import { globalMutate } from "../../utils/globalMutate";
-import { removeDeletedCustomFields } from "../../utils/helper";
+import { isNotValid, removeDeletedCustomFields } from "../../utils/helper";
 import { processDynamicFieldData } from "../../utils/process_data";
 import { customRuleProcessor } from "../../utils/rule_processer";
 import { addToast } from "../toast";
@@ -159,7 +159,7 @@ const EditDynamic = ({
           />
         </EuiFormRow>
         <EuiFormRow>
-          <EuiButton type="submit" isLoading={isMutating}>
+          <EuiButton disabled={isNotValid(query)} type="submit" isLoading={isMutating}>
             Update segment
           </EuiButton>
         </EuiFormRow>

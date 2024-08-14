@@ -28,3 +28,14 @@ export const validator: RuleValidator = (q): ValidationResult => {
     reasons: ["this field is always invalid"],
   };
 };
+
+export const isNotValid = (query: any) => {
+  if (query.rules.length === 0) return true;
+
+  return query.rules.find((rule: any) => {
+    if (rule.rules) {
+      return isNotValid(rule);
+    }
+    return rule.value ? false : true;
+  });
+};

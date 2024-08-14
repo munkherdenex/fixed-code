@@ -5,20 +5,10 @@ import { ActionElement, formatQuery, QueryBuilder, RuleGroupType } from "react-q
 import { QUERY_BUILDER_DEFAULT_FIELD, REACT_QUERY_BUILDER_OPERATORS } from "../../constants";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
 import { CustomValueEditor } from "../../utils/custom_value_editor";
+import { isNotValid } from "../../utils/helper";
 import { processDynamicFieldData } from "../../utils/process_data";
 import { customRuleProcessor } from "../../utils/rule_processer";
 import { dynamicStyles } from "./dynamic.styles";
-
-const isNotValid = (query: any) => {
-  if (query.rules.length === 0) return true;
-
-  return query.rules.find((rule: any) => {
-    if (rule.rules) {
-      return isNotValid(rule);
-    }
-    return rule.value ? false : true;
-  });
-};
 
 const Dynamic = ({
   createSegment,
