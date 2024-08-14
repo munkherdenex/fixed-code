@@ -1,4 +1,4 @@
-import { Chart, Settings, Metric, DARK_THEME, LIGHT_THEME } from "@elastic/charts";
+import { Chart, Settings, Metric, DARK_THEME, LIGHT_THEME, LayoutDirection } from "@elastic/charts";
 import {
   EuiFlexGrid,
   EuiFlexGroup,
@@ -64,8 +64,64 @@ const MetricChart = () => {
         />
       </EuiFlexItem>
       <EuiFlexItem>
-        <EuiFlexGrid responsive={false} columns={mediumBreakpoint ? 2 : 4}>
-          <EuiFlexItem>
+        <EuiFlexGroup>
+          <EuiFlexItem grow={1}>
+            <EuiFlexGroup responsive={false}>
+              <EuiFlexItem grow={1}>
+                <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
+                  <Chart size={{ height: 150 }}>
+                    <Settings baseTheme={chartBaseTheme} />
+                    <Metric
+                      id="1"
+                      data={[
+                        [
+                          {
+                            color: colorMode === "DARK" ? "#1D1E24" : "white",
+                            title: "Audience (API)",
+                            icon: () => <EuiIcon type="sortDown" />,
+                            extra: (
+                              <span>
+                                Total audience <strong>{formatter.format(1250000)}</strong>
+                              </span>
+                            ),
+                            value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 15000,
+                            valueFormatter: (v) => formatter.format(v),
+                          },
+                        ],
+                      ]}
+                    />
+                  </Chart>
+                </EuiPanel>
+              </EuiFlexItem>
+              <EuiFlexItem grow={1}>
+                <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
+                  <Chart size={{ height: 150 }}>
+                    <Settings baseTheme={chartBaseTheme} />
+                    <Metric
+                      id="1"
+                      data={[
+                        [
+                          {
+                            color: colorMode === "DARK" ? "#1D1E24" : "white",
+                            title: "Audience (WEB)",
+                            icon: () => <EuiIcon type="sortDown" />,
+                            extra: (
+                              <span>
+                                Total audience <strong>{formatter.format(1250000)}</strong>
+                              </span>
+                            ),
+                            value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 15000,
+                            valueFormatter: (v) => formatter.format(v),
+                          },
+                        ],
+                      ]}
+                    />
+                  </Chart>
+                </EuiPanel>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </EuiFlexItem>
+          <EuiFlexItem grow={2}>
             <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
               <Chart size={{ height: 150 }}>
                 <Settings baseTheme={chartBaseTheme} />
@@ -74,60 +130,52 @@ const MetricChart = () => {
                   data={[
                     [
                       {
-                        color: colorMode === "DARK" ? "#1D1E24" : "white",
-                        title: "Audience",
+                        color: "#3c3c3c",
+                        title: "Notifications (DRAFT)",
+                        domainMax: 2030,
+                        progressBarDirection: LayoutDirection.Vertical,
                         icon: () => <EuiIcon type="sortDown" />,
                         extra: (
                           <span>
-                            Total audience <strong>{formatter.format(1250000)}</strong>
+                            Total notifications <strong>{formatter.format(32344)}</strong>
                           </span>
                         ),
-                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 15000,
+                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 320,
                         valueFormatter: (v) => formatter.format(v),
                       },
-                    ],
-                  ]}
-                />
-              </Chart>
-            </EuiPanel>
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
-              <Chart size={{ height: 150 }}>
-                <Settings baseTheme={chartBaseTheme} />
-                <Metric
-                  id="1"
-                  data={[
-                    [
                       {
-                        color: colorMode === "DARK" ? "#1D1E24" : "white",
-                        title: "Audience",
+                        color: "#FFBDAF",
+                        title: "Notifications (DONE)",
+                        domainMax: 2030,
+                        progressBarDirection: LayoutDirection.Vertical,
                         icon: () => <EuiIcon type="sortDown" />,
                         extra: (
                           <span>
-                            Total audience <strong>{formatter.format(1250000)}</strong>
+                            Total notifications <strong>{formatter.format(32344)}</strong>
                           </span>
                         ),
-                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 15000,
+                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 320,
                         valueFormatter: (v) => formatter.format(v),
                       },
-                    ],
-                  ]}
-                />
-              </Chart>
-            </EuiPanel>
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
-              <Chart size={{ height: 150 }}>
-                <Settings baseTheme={chartBaseTheme} />
-                <Metric
-                  id="1"
-                  data={[
-                    [
                       {
-                        color: colorMode === "DARK" ? "#1D1E24" : "white",
-                        title: "Notifications",
+                        color: "#6DCCB1",
+                        title: "Notifications (APPROVED)",
+                        domainMax: 2030,
+                        progressBarDirection: LayoutDirection.Vertical,
+                        icon: () => <EuiIcon type="sortDown" />,
+                        extra: (
+                          <span>
+                            Total notifications <strong>{formatter.format(32344)}</strong>
+                          </span>
+                        ),
+                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 320,
+                        valueFormatter: (v) => formatter.format(v),
+                      },
+                      {
+                        color: "#a1cbea",
+                        title: "Notifications (SENT)",
+                        domainMax: 2030,
+                        progressBarDirection: LayoutDirection.Vertical,
                         icon: () => <EuiIcon type="sortDown" />,
                         extra: (
                           <span>
@@ -143,33 +191,7 @@ const MetricChart = () => {
               </Chart>
             </EuiPanel>
           </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
-              <Chart size={{ height: 150 }}>
-                <Settings baseTheme={chartBaseTheme} />
-                <Metric
-                  id="1"
-                  data={[
-                    [
-                      {
-                        color: colorMode === "DARK" ? "#1D1E24" : "white",
-                        title: "Notifications",
-                        icon: () => <EuiIcon type="sortUp" />,
-                        extra: (
-                          <span>
-                            Total notifications <strong>{formatter.format(232323)}</strong>
-                          </span>
-                        ),
-                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 4000,
-                        valueFormatter: (v) => formatter.format(v),
-                      },
-                    ],
-                  ]}
-                />
-              </Chart>
-            </EuiPanel>
-          </EuiFlexItem>
-        </EuiFlexGrid>
+        </EuiFlexGroup>
       </EuiFlexItem>
     </EuiFlexGroup>
   );
