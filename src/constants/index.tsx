@@ -1,4 +1,5 @@
 import { Field, Operator } from "react-querybuilder";
+import { validator } from "../utils/helper";
 
 export const BASE_URL = `${(global?.window && window?.env?.BACKEND_URL) || ""}`;
 export const IS_POCKET = (global?.window && window?.env?.IS_POCKET) || false;
@@ -14,9 +15,9 @@ export const REACT_QUERY_BUILDER_OPERATORS: Operator[] = [
 ];
 
 export const QUERY_BUILDER_DEFAULT_FIELD: Field[] = [
-  { name: "email", label: "Email", datatype: "str" },
-  { name: "phone", label: "Phone", datatype: "int" },
-  { name: "rid", label: "Reference id", datatype: "str" },
+  { name: "email", label: "Email", datatype: "str", inputType: "str", validator },
+  { name: "phone", label: "Phone", datatype: "int", inputType: "int", validator },
+  { name: "rid", label: "Reference id", datatype: "str", inputType: "str", validator },
 ];
 
 export const TEMPLATE_DATA_TYPE_OPTIONS = [

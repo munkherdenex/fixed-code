@@ -9,6 +9,17 @@ import { processDynamicFieldData } from "../../utils/process_data";
 import { customRuleProcessor } from "../../utils/rule_processer";
 import { dynamicStyles } from "./dynamic.styles";
 
+const isValid = (query: any) => {
+  if (query.rules.length === 0) return true;
+
+  return query.rules.find((rule: any) => {
+    if (rule.rules) {
+      return isValid(rule);
+    }
+    return rule.value ? false : true;
+  });
+};
+
 const Dynamic = ({
   createSegment,
   isCreateSegmentMutating,
@@ -59,7 +70,7 @@ const Dynamic = ({
           />
         </EuiFormRow>
         <EuiFormRow>
-          <EuiButton type="submit" isLoading={isCreateSegmentMutating}>
+          <EuiButton disabled={isValid(query)} type="submit" isLoading={isCreateSegmentMutating}>
             Create Segment
           </EuiButton>
         </EuiFormRow>

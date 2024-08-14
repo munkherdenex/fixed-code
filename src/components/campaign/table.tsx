@@ -31,9 +31,13 @@ const schema = yup.object({
 });
 
 const options = [
-  { value: "option_one", text: "Option one" },
-  { value: "option_two", text: "Option two" },
-  { value: "option_three", text: "Option three" },
+  { value: "", text: "All" },
+  { value: "DRAFT", text: "DRAFT" },
+  { value: "APPROVED", text: "APPROVED" },
+  { value: "DONE", text: "DONE" },
+  { value: "SENDING", text: "SENDING" },
+  { value: "SENT", text: "SENT" },
+  { value: "ERROR", text: "ERROR" },
 ];
 
 const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactElement }) => {
@@ -48,18 +52,20 @@ const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactEleme
     pageSizeOptions: PAGINATION_CHOOSES,
   };
 
-  const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, {
-    query: searchValue,
-    offset: `${pageIndex * pageSize}`,
-    limit: `${pageSize}`,
-  });
-
   const {
     control,
+    watch,
     formState: { errors },
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
+  });
+
+  const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, {
+    query: searchValue,
+    offset: `${pageIndex * pageSize}`,
+    limit: `${pageSize}`,
+    filter: watch("filter"),
   });
 
   const columns: Array<EuiBasicTableColumn<Template>> = [

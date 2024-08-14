@@ -2,12 +2,21 @@ import { EuiDatePicker, EuiFieldNumber, EuiFieldText, EuiSwitch } from "@elastic
 import moment from "moment";
 import { ValueEditorProps, ValueEditor } from "react-querybuilder";
 
-export const CustomValueEditor = (props: ValueEditorProps) => {
+interface CustomValueEditorProps extends ValueEditorProps {
+  validation: {
+    valid: boolean;
+    error: string;
+  };
+}
+
+export const CustomValueEditor = (props: CustomValueEditorProps) => {
   if (props.fieldData.datatype === "date") {
     return (
       <div>
         <EuiDatePicker
           compressed
+          isInvalid={!props.validation?.valid}
+          disabled={props.disabled}
           selected={!props.value ? null : moment(props.value)}
           onChange={(d) => {
             props.handleOnChange(d ? moment(d).startOf("day") : null);
@@ -22,6 +31,8 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
         <EuiDatePicker
           showTimeSelect
           compressed
+          isInvalid={!props.validation?.valid}
+          disabled={props.disabled}
           selected={!props.value ? null : moment(props.value)}
           onChange={(d) => {
             props.handleOnChange(d ? moment(d) : null);
@@ -35,6 +46,8 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
       <div>
         <EuiFieldNumber
           compressed
+          isInvalid={!props.validation?.valid}
+          disabled={props.disabled}
           value={!props?.value ? "" : props.value}
           onChange={(e) => props.handleOnChange(e.target.value)}
           aria-label="Use aria labels when no actual label is in use"
@@ -47,6 +60,8 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
       <div>
         <EuiFieldText
           compressed
+          isInvalid={!props.validation?.valid}
+          disabled={props.disabled}
           value={!props?.value ? "" : props.value}
           onChange={(e) => props.handleOnChange(e.target.value)}
           aria-label="Use aria labels when no actual label is in use"
@@ -59,6 +74,7 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
       <div>
         <EuiSwitch
           compressed
+          disabled={props.disabled}
           checked={!props?.value ? "" : props.value}
           onChange={(e) => props.handleOnChange(e.target.checked)}
           label=""

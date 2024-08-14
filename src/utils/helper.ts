@@ -1,4 +1,4 @@
-import { RuleGroupType } from "react-querybuilder";
+import { RuleGroupType, RuleValidator, ValidationResult } from "react-querybuilder";
 import { Fields } from "../hooks/useGetFields";
 
 export const removeDeletedCustomFields = (data: Fields[], query: RuleGroupType) => {
@@ -17,4 +17,14 @@ export const removeDeletedCustomFields = (data: Fields[], query: RuleGroupType) 
 
   const filteredRules = filterRules(query.rules);
   return { ...query, rules: filteredRules };
+};
+
+/**
+ * This function returns a validation result.
+ */
+export const validator: RuleValidator = (q): ValidationResult => {
+  return {
+    valid: q.value ? true : false,
+    reasons: ["this field is always invalid"],
+  };
 };
