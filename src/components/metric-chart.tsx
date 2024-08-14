@@ -1,6 +1,5 @@
 import { Chart, Settings, Metric, DARK_THEME, LIGHT_THEME, LayoutDirection } from "@elastic/charts";
 import {
-  EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
   EuiIcon,
