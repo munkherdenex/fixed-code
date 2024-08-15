@@ -129,7 +129,7 @@ const MetricChart = () => {
                       {
                         color: "#3c3c3c",
                         title: "Campaigns (DRAFT)",
-                        domainMax: 2030,
+                        domainMax: 9030,
                         progressBarDirection: LayoutDirection.Vertical,
                         icon: () => <EuiIcon type="sortDown" />,
                         extra: (
@@ -143,7 +143,7 @@ const MetricChart = () => {
                       {
                         color: "#FFBDAF",
                         title: "Campaigns (DONE)",
-                        domainMax: 2030,
+                        domainMax: 8030,
                         progressBarDirection: LayoutDirection.Vertical,
                         icon: () => <EuiIcon type="sortDown" />,
                         extra: (
@@ -171,7 +171,7 @@ const MetricChart = () => {
                       {
                         color: "#a1cbea",
                         title: "Campaigns (SENT)",
-                        domainMax: 2030,
+                        domainMax: 4030,
                         progressBarDirection: LayoutDirection.Vertical,
                         icon: () => <EuiIcon type="sortDown" />,
                         extra: (
