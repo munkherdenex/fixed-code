@@ -24,7 +24,6 @@ const MetricChart = () => {
   const cStyles = commonStyles();
   const { data } = useGetMetrics<MetricResponse>();
 
-  const [customColorsValue] = useState(5 - 3.364726);
   const [metricDay, setMetricDay] = useState(options[1].value);
 
   const chartBaseTheme = colorMode === "DARK" ? DARK_THEME : LIGHT_THEME;
@@ -108,6 +107,7 @@ const MetricChart = () => {
                       {
                         color: "#3c3c3c",
                         title: "Campaigns (api)",
+                        // domainMax: customColorsValue,
                         progressBarDirection: LayoutDirection.Vertical,
                         value: currentData?.notifications_sent_api,
                         valueFormatter: (v) => formatter.format(v),
@@ -115,6 +115,7 @@ const MetricChart = () => {
                       {
                         color: "#FFBDAF",
                         title: "Campaigns (email)",
+                        // domainMax: customColorsValue,
                         progressBarDirection: LayoutDirection.Vertical,
                         value: currentData?.notifications_sent_email,
                         valueFormatter: (v) => formatter.format(v),
@@ -122,6 +123,7 @@ const MetricChart = () => {
                       {
                         color: "#6DCCB1",
                         title: "Campaigns (push)",
+                        // domainMax: customColorsValue,
                         progressBarDirection: LayoutDirection.Vertical,
                         value: currentData?.notifications_sent_push,
                         valueFormatter: (v) => formatter.format(v),
@@ -129,6 +131,7 @@ const MetricChart = () => {
                       {
                         color: "#a1cbea",
                         title: "Campaigns (In app)",
+                        // domainMax: customColorsValue,
                         progressBarDirection: LayoutDirection.Vertical,
                         value: currentData?.notifications_sent_inapp,
                         valueFormatter: (v) => formatter.format(v),
@@ -136,6 +139,7 @@ const MetricChart = () => {
                       {
                         color: "#FFD700",
                         title: "Campaigns (sms)",
+                        // domainMax: customColorsValue,
                         progressBarDirection: LayoutDirection.Vertical,
                         value: currentData?.notifications_sent_sms,
                         valueFormatter: (v) => formatter.format(v),
