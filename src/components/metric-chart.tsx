@@ -1,63 +1,54 @@
-import { Chart, Settings, Metric, DARK_THEME, LIGHT_THEME, LayoutDirection } from "@elastic/charts";
+import { Chart, DARK_THEME, LayoutDirection, LIGHT_THEME, Metric, Settings } from "@elastic/charts";
 import {
   EuiFlexGroup,
   EuiFlexItem,
-  EuiIcon,
   EuiPanel,
-  EuiSuperDatePicker,
-  OnRefreshProps,
-  OnTimeChangeProps,
+  EuiSelect,
   useEuiTheme,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
 import { useState } from "react";
+import useGetMetrics, { MetricResponse, MetricType } from "../hooks/useGetMetrics";
 import { commonStyles } from "../styles/global.styles";
 
+const options = [
+  { value: "1d", text: "1 day" },
+  { value: "7d", text: "7 day" },
+  { value: "30d", text: "30 day" },
+  { value: "90d", text: "90 day" },
+];
+
 const MetricChart = () => {
+  const basicSelectId = useGeneratedHtmlId({ prefix: "basicSelect" });
   const { colorMode } = useEuiTheme();
   const cStyles = commonStyles();
-  const chartBaseTheme = colorMode === "DARK" ? DARK_THEME : LIGHT_THEME;
+  const { data } = useGetMetrics<MetricResponse>();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [start, setStart] = useState("now-30m");
-  const [end, setEnd] = useState("now");
   const [customColorsValue] = useState(5 - 3.364726);
+  const [metricDay, setMetricDay] = useState(options[1].value);
 
-  const onTimeChange = ({ start, end }: OnTimeChangeProps) => {
-    setStart(start);
-    setEnd(end);
-    setIsLoading(true);
-    startLoading();
-  };
-
-  const onRefresh = async ({ start, end, refreshInterval }: OnRefreshProps) => {
-    await new Promise((resolve) => {
-      setTimeout(resolve, 100);
-    });
-    console.log(start, end, refreshInterval);
-  };
-
-  const startLoading = () => {
-    setTimeout(stopLoading, 1000);
-  };
-
-  const stopLoading = () => {
-    setIsLoading(false);
-  };
+  const chartBaseTheme = colorMode === "DARK" ? DARK_THEME : LIGHT_THEME;
 
   const formatter = new Intl.NumberFormat("en-US", {
     notation: "compact",
     maximumFractionDigits: 3,
   });
 
+  const onChange = (e) => {
+    setMetricDay(e.target.value);
+  };
+
+  const currentData = data[metricDay] as MetricType;
+
   return (
     <EuiFlexGroup direction="column">
       <EuiFlexItem>
-        <EuiSuperDatePicker
-          isLoading={isLoading}
-          start={start}
-          end={end}
-          onTimeChange={onTimeChange}
-          onRefresh={onRefresh}
+        <EuiSelect
+          id={basicSelectId}
+          options={options}
+          value={metricDay}
+          onChange={(e) => onChange(e)}
+          aria-label="Use aria labels when no actual label is in use"
         />
       </EuiFlexItem>
       <EuiFlexItem>
@@ -75,13 +66,7 @@ const MetricChart = () => {
                           {
                             color: colorMode === "DARK" ? "#1D1E24" : "white",
                             title: "Audience (API)",
-                            icon: () => <EuiIcon type="sortDown" />,
-                            extra: (
-                              <span>
-                                Total audience <strong>{formatter.format(1250000)}</strong>
-                              </span>
-                            ),
-                            value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 15000,
+                            value: currentData?.customers_created_api,
                             valueFormatter: (v) => formatter.format(v),
                           },
                         ],
@@ -101,13 +86,7 @@ const MetricChart = () => {
                           {
                             color: colorMode === "DARK" ? "#1D1E24" : "white",
                             title: "Audience (WEB)",
-                            icon: () => <EuiIcon type="sortDown" />,
-                            extra: (
-                              <span>
-                                Total audience <strong>{formatter.format(1250000)}</strong>
-                              </span>
-                            ),
-                            value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 15000,
+                            value: currentData?.customers_created_web,
                             valueFormatter: (v) => formatter.format(v),
                           },
                         ],
@@ -128,58 +107,37 @@ const MetricChart = () => {
                     [
                       {
                         color: "#3c3c3c",
-                        title: "Campaigns (DRAFT)",
-                        domainMax: 9030,
+                        title: "Campaigns (api)",
                         progressBarDirection: LayoutDirection.Vertical,
-                        icon: () => <EuiIcon type="sortDown" />,
-                        extra: (
-                          <span>
-                            Total notifications <strong>{formatter.format(32344)}</strong>
-                          </span>
-                        ),
-                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 320,
+                        value: currentData?.notifications_sent_api,
                         valueFormatter: (v) => formatter.format(v),
                       },
                       {
                         color: "#FFBDAF",
-                        title: "Campaigns (DONE)",
-                        domainMax: 8030,
+                        title: "Campaigns (email)",
                         progressBarDirection: LayoutDirection.Vertical,
-                        icon: () => <EuiIcon type="sortDown" />,
-                        extra: (
-                          <span>
-                            Total notifications <strong>{formatter.format(32344)}</strong>
-                          </span>
-                        ),
-                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 320,
+                        value: currentData?.notifications_sent_email,
                         valueFormatter: (v) => formatter.format(v),
                       },
                       {
                         color: "#6DCCB1",
-                        title: "Campaigns (APPROVED)",
-                        domainMax: 2030,
+                        title: "Campaigns (push)",
                         progressBarDirection: LayoutDirection.Vertical,
-                        icon: () => <EuiIcon type="sortDown" />,
-                        extra: (
-                          <span>
-                            Total notifications <strong>{formatter.format(32344)}</strong>
-                          </span>
-                        ),
-                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 320,
+                        value: currentData?.notifications_sent_push,
                         valueFormatter: (v) => formatter.format(v),
                       },
                       {
                         color: "#a1cbea",
-                        title: "Campaigns (SENT)",
-                        domainMax: 4030,
+                        title: "Campaigns (In app)",
                         progressBarDirection: LayoutDirection.Vertical,
-                        icon: () => <EuiIcon type="sortDown" />,
-                        extra: (
-                          <span>
-                            Total notifications <strong>{formatter.format(32344)}</strong>
-                          </span>
-                        ),
-                        value: (customColorsValue === 5 ? NaN : 5 - customColorsValue) * 320,
+                        value: currentData?.notifications_sent_inapp,
+                        valueFormatter: (v) => formatter.format(v),
+                      },
+                      {
+                        color: "#FFD700",
+                        title: "Campaigns (sms)",
+                        progressBarDirection: LayoutDirection.Vertical,
+                        value: currentData?.notifications_sent_sms,
                         valueFormatter: (v) => formatter.format(v),
                       },
                     ],
