@@ -38,7 +38,7 @@ const ImportAudienceComponent = ({
   setIsImportFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
-  const { trigger } = useImportAudience();
+  const { trigger, isMutating } = useImportAudience();
 
   const styles = commonStyles();
   const [isTourOpen, setIsTourOpen] = useState(false);
@@ -144,7 +144,7 @@ const ImportAudienceComponent = ({
                   </Fragment>
                 </EuiFormRow>
                 <EuiFormRow hasEmptyLabelSpace>
-                  <EuiButton type="submit">Import</EuiButton>
+                  <EuiButton type="submit" isLoading={isMutating}>Import</EuiButton>
                 </EuiFormRow>
               </EuiForm>
             </>
