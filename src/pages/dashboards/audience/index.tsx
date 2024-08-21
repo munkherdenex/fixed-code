@@ -5,12 +5,14 @@ import { useState } from "react";
 import CreateCustomerComponent from "../../../components/customers/create_customer";
 import CustomersTable from "../../../components/customers/table";
 import DashboardLayout from "../../../layouts/dashboard";
+import ImportAudienceComponent from "../../../components/customers/import_audience";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersDashboard = () => {
   const router = useRouter();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
+  const [isImportFlyoutVisible, setIsImportFlyoutVisible] = useState(false);
 
   return (
     <>
@@ -29,6 +31,13 @@ const CustomersDashboard = () => {
               key="audience-customer"
             >
               Create audience
+            </EuiButton>,
+            <EuiButton
+              onClick={() => setIsImportFlyoutVisible(true)}
+              fill
+              key="audience-customer"
+            >
+              Import
             </EuiButton>,
           ],
         }}
@@ -51,6 +60,7 @@ const CustomersDashboard = () => {
         <div>
           <CustomersTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
           {isFlyoutVisible && <CreateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
+          {isImportFlyoutVisible && <ImportAudienceComponent setIsImportFlyoutVisible={setIsImportFlyoutVisible} />}
         </div>
       </DashboardLayout>
     </>
