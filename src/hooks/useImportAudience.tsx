@@ -9,8 +9,6 @@ export default function useImportAudience<Type>() {
       const upData = new FormData()
       upData.set("file", arg.file[0])
 
-      console.log(arg.file, upData.get('file'))
-
       const options = {
         method: "POST",
         body: upData,
@@ -18,10 +16,7 @@ export default function useImportAudience<Type>() {
       }
 
       delete options?.headers['Content-Type'];
-
-
       const res = await fetch(`${BASE_URL}${path}`, options);
-
       return handleResponseNotOk(res);
     },
   );

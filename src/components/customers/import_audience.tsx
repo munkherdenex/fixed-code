@@ -55,7 +55,6 @@ const ImportAudienceComponent = ({
 
   const onSubmit = async (data: MyFormData) => {
     try {
-      console.log("aa", data)
       const response = await trigger(data);
       if (response) {
         setIsImportFlyoutVisible(false);

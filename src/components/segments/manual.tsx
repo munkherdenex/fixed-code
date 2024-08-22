@@ -177,7 +177,7 @@ const schema = yup.object({
   input_type: yup.string().oneOf(["file", "text"]),
 });
 
-type FormData = yup.InferType<typeof schema>;
+type MyFormData = yup.InferType<typeof schema>;
 
 const Manual = ({
   createSegment,
@@ -232,7 +232,7 @@ const Manual = ({
     ));
   };
 
-  const testHandle = (data: FormData) => {
+  const testHandle = (data: MyFormData) => {
     if (!data.file && selectedTabId === "file") {
       return setError("file", {
         type: "manual",
