@@ -92,7 +92,7 @@ const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: 
       render: (source: CustomersType["source"]) => (
         <>
           <EuiBadge
-            iconType={source === "web" ? "logoWebhook" : "apps"}
+            iconType={source === "web" ? "logoWebhook" : (source === 'import' ? "importAction" : "apps")}
             color={source === "web" ? "hollow" : ""}
           >
             {source}
@@ -232,14 +232,14 @@ const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: 
           pagination={
             data?.total_count > pageSize
               ? {
-                  ...pagination,
-                  totalItemCount: data?.total_count || 0,
-                }
+                ...pagination,
+                totalItemCount: data?.total_count || 0,
+              }
               : {
-                  totalItemCount: 0,
-                  pageSize: 0,
-                  pageIndex: 0,
-                }
+                totalItemCount: 0,
+                pageSize: 0,
+                pageIndex: 0,
+              }
           }
           onChange={onTableChange}
         />
