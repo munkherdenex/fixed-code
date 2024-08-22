@@ -35,7 +35,7 @@ const CustomersDashboard = () => {
             <EuiButton
               onClick={() => setIsImportFlyoutVisible(true)}
               fill
-              color="primary"
+              color={"success"}
               iconType={'importAction'}
               key="audience-customer"
             >
