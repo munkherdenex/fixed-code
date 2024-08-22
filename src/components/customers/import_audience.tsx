@@ -42,7 +42,6 @@ const ImportAudienceComponent = ({
 
   const styles = commonStyles();
   const [isTourOpen, setIsTourOpen] = useState(false);
-  const [isResult, setIsResult] = useState(false);
 
   const {
     handleSubmit,
@@ -66,7 +65,7 @@ const ImportAudienceComponent = ({
           title: "Success",
           text: "Successfully imported",
         });
-
+        globalMutate(`/api/v1/dj/customers/`);
       }
     } catch (e) {
       console.error(e);
@@ -81,75 +80,67 @@ const ImportAudienceComponent = ({
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
-        {
-          isResult ?
-            <>
-
-
-            </> : <>
-              <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-                <EuiFormRow
-                  label="Upload file"
-                  isInvalid={!!errors.file?.message}
-                  error={[errors.file?.message]}
-                >
-                  <Fragment>
-                    <EuiTourStep
-                      content={
-                        <div>
-                          <EuiText>
-                            <p>
-                              Upload a CSV file
-                            </p>
-                          </EuiText>
-                        </div>
-                      }
-                      isStepOpen={isTourOpen}
-                      minWidth={300}
-                      onFinish={() => {
-                        setIsTourOpen(true);
-                      }}
-                      step={1}
-                      stepsTotal={1}
-                      title="File Upload"
-                      anchorPosition="rightUp"
-                      css={styles.tourStep}
-                    >
-                      <Controller
-                        control={control}
-                        name="file"
-                        render={({
-                          field: { onChange, onBlur },
-                          formState: {
-                            errors: { file: errors },
-                          },
-                        }) => {
-                          return (
-                            <EuiFilePicker
-                              multiple={false}
-                              onBlur={onBlur}
-                              onChange={(files) => {
-                                onChange(files);
-                              }}
-                              isInvalid={!!errors}
-                              display="large"
-                              initialPromptText="Select or drag and drop file"
-                              aria-label="Select or drag and drop file"
-                              accept=".csv"
-                            />
-                          );
+        <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+          <EuiFormRow
+            label="Upload file"
+            isInvalid={!!errors.file?.message}
+            error={[errors.file?.message]}
+          >
+            <Fragment>
+              <EuiTourStep
+                content={
+                  <div>
+                    <EuiText>
+                      <p>
+                        Upload a CSV file
+                      </p>
+                    </EuiText>
+                  </div>
+                }
+                isStepOpen={isTourOpen}
+                minWidth={300}
+                onFinish={() => {
+                  setIsTourOpen(true);
+                }}
+                step={1}
+                stepsTotal={1}
+                title="File Upload"
+                anchorPosition="rightUp"
+                css={styles.tourStep}
+              >
+                <Controller
+                  control={control}
+                  name="file"
+                  render={({
+                    field: { onChange, onBlur },
+                    formState: {
+                      errors: { file: errors },
+                    },
+                  }) => {
+                    return (
+                      <EuiFilePicker
+                        multiple={false}
+                        onBlur={onBlur}
+                        onChange={(files) => {
+                          onChange(files);
                         }}
+                        isInvalid={!!errors}
+                        display="large"
+                        disabled={isMutating}
+                        initialPromptText="Select or drag and drop file"
+                        aria-label="Select or drag and drop file"
+                        accept=".csv"
                       />
-                    </EuiTourStep>
-                  </Fragment>
-                </EuiFormRow>
-                <EuiFormRow hasEmptyLabelSpace>
-                  <EuiButton type="submit" isLoading={isMutating}>Import</EuiButton>
-                </EuiFormRow>
-              </EuiForm>
-            </>
-        }
-
+                    );
+                  }}
+                />
+              </EuiTourStep>
+            </Fragment>
+          </EuiFormRow>
+          <EuiFormRow hasEmptyLabelSpace>
+            <EuiButton type="submit" isLoading={isMutating}>Import</EuiButton>
+          </EuiFormRow>
+        </EuiForm>
       </EuiFlyoutBody>
     </EuiFlyout>
   );
