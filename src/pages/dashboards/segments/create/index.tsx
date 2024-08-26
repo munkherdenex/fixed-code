@@ -34,12 +34,12 @@ const schema = yup.object({
   description: yup.string().label("Description"),
 });
 
-type FormData = yup.InferType<typeof schema>;
+type MyFormData = yup.InferType<typeof schema>;
 
 const Dashboard: FunctionComponent = () => {
   const router = useRouter();
   const { trigger, isMutating: isCreateSegmentMutating } = useCreateSegment();
-  const [firstFormData, setFirstFormData] = useState<FormData | null>(null);
+  const [firstFormData, setFirstFormData] = useState<MyFormData | null>(null);
   const [selectedCard, setCard] = useState(2);
   const [openFlyout, setOpenFlyout] = useState(false);
 
@@ -60,7 +60,7 @@ const Dashboard: FunctionComponent = () => {
     setCard(number);
   };
 
-  const addSubscriber = (data: FormData) => {
+  const addSubscriber = (data: MyFormData) => {
     setFirstFormData(data);
     setOpenFlyout(true);
   };
