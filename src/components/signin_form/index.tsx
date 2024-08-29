@@ -114,7 +114,9 @@ const SigninForm: FunctionComponent = () => {
               </EuiFlexItem>
               <EuiFlexItem>
                 <EuiText textAlign="right" size="relative" grow={false}>
-                  <EuiLink href={"/forgot_password"}>Forgot password?</EuiLink>
+                  <EuiLink onClick={() => router.push("/forgot_password")}>
+                    Forgot password?
+                  </EuiLink>
                 </EuiText>
               </EuiFlexItem>
             </EuiFlexGroup>
