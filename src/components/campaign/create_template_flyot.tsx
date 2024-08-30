@@ -27,8 +27,7 @@ import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
-import QuillEditorComponent from "./quill_editor";
-import { quillEditorStyles } from "./quill_editor.styles";
+import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 
 const bodyHelpText = "Use custom attributes to make data dynamic. {{cf_*}}";
 
@@ -134,18 +133,14 @@ const CreateTemplateFlyot = ({
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-        .filter((channel) => channel.channel_type === dataTypeSwitch(dataType))
-        .map((channel) => ({
-          value: channel.id,
-          text: channel.name,
-        }))
+      .filter((channel) => channel.channel_type === dataTypeSwitch(dataType))
+      .map((channel) => ({
+        value: channel.id,
+        text: channel.name,
+      }))
     : [];
 
   const setAceEditorValue = (value: string) => {
-    setValue("body", value);
-  };
-
-  const setReactQuill = (value: string) => {
     setValue("body", value);
   };
 
@@ -285,18 +280,6 @@ const CreateTemplateFlyot = ({
               />
             </EuiFormRow>
           )}
-          {watch("kind") === "email" && (
-            <EuiFormRow
-              label="Data"
-              labelAppend={<BodyInfoToolTip />}
-              helpText={bodyHelpText}
-              isInvalid={!!errors?.body?.message}
-              error={[errors?.body?.message]}
-              css={styles.quillEditorContainer}
-            >
-              <QuillEditorComponent control={control} onChange={setReactQuill} />
-            </EuiFormRow>
-          )}
           <EuiFormRow
             label="Channel"
             isInvalid={!!errors.channel?.message}
@@ -307,8 +290,8 @@ const CreateTemplateFlyot = ({
                 style={
                   channelDataOptions.length === 0
                     ? {
-                        display: "none",
-                      }
+                      display: "none",
+                    }
                     : {}
                 }
               >

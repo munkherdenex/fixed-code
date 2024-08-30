@@ -26,8 +26,8 @@ import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import { dataTypeSwitch, dataTypeToSwitch } from "./create_template_flyot";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
-import QuillEditorComponent from "./quill_editor";
-import { quillEditorStyles } from "./quill_editor.styles";
+import QuillEditorComponent from "../email_editor/quill_editor";
+import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 
 const schema = yup
   .object({
@@ -58,7 +58,6 @@ type FormData = yup.InferType<typeof schema>;
 const processKind = (body: string, kind: FormData["kind"]): FormData["kind"] => {
   if (!IS_POCKET) return kind;
   try {
-    //TODO: If team is not pocket return just kind
     const parsedBody = JSON.parse(body);
     if (parsedBody.type === "sms") {
       return "sms";
@@ -79,7 +78,6 @@ const processKind = (body: string, kind: FormData["kind"]): FormData["kind"] => 
 const processBody = (body: string, kind: string) => {
   if (!IS_POCKET) return body;
   try {
-    //TODO: If team is not pocket return just body
     const parsedBody = JSON.parse(body);
     if (kind === "api") {
       return JSON.stringify(JSON.parse(body), null, 2);
@@ -131,13 +129,13 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-        .filter(
-          (channel) => channel.channel_type === dataTypeSwitch(processKind(data.body, data.kind)),
-        )
-        .map((channel) => ({
-          value: channel.id,
-          text: channel.name,
-        }))
+      .filter(
+        (channel) => channel.channel_type === dataTypeSwitch(processKind(data.body, data.kind)),
+      )
+      .map((channel) => ({
+        value: channel.id,
+        text: channel.name,
+      }))
     : [];
 
   const setAceEditorValue = (value: string) => {
@@ -162,7 +160,6 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
       };
       const dataType = processKind(data.body, data.kind);
       if ((dataType === "email" || dataType === "sms" || dataType === "push") && IS_POCKET) {
-        //TODO: If team is not pocket dont edit data
         preparedData.kind = "api";
         preparedData.body = JSON.stringify({
           type: dataType,
@@ -284,8 +281,8 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
                 style={
                   channelDataOptions.length === 0
                     ? {
-                        display: "none",
-                      }
+                      display: "none",
+                    }
                     : {}
                 }
               >
