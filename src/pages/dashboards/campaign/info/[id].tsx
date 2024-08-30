@@ -138,28 +138,28 @@ const CampaignInfo = () => {
         }
       >
         <>
-          {
-            data?.kind === 'email' ?
+          {data?.kind === "email" ? (
+            <>
               <>
-                <>
-                  <EuiFlexItem grow={4}>
-                    <EmailGeneralDetails templateStatus={data?.status} />
-                  </EuiFlexItem>
-                  <EuiSpacer size="l" />
-                  <EuiFlexItem grow={7}>
-                    <Menu isEmail={true} />
-                  </EuiFlexItem>
-                </>
-              </> :
-              <EuiFlexGroup>
                 <EuiFlexItem grow={4}>
-                  <GeneralDetails templateStatus={data?.status} />
+                  <EmailGeneralDetails templateStatus={data?.status} />
                 </EuiFlexItem>
+                <EuiSpacer size="l" />
                 <EuiFlexItem grow={7}>
-                  <Menu isEmail={false} />
+                  <Menu isEmail={true} />
                 </EuiFlexItem>
-              </EuiFlexGroup>
-          }
+              </>
+            </>
+          ) : (
+            <EuiFlexGroup>
+              <EuiFlexItem grow={4}>
+                <GeneralDetails templateStatus={data?.status} />
+              </EuiFlexItem>
+              <EuiFlexItem grow={7}>
+                <Menu isEmail={false} />
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          )}
           {isModalVisible && data.status === "DRAFT" && (
             <EuiConfirmModal
               aria-labelledby={modalTitleId}

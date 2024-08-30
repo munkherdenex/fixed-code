@@ -158,7 +158,7 @@ const GeneralDetails = ({
                           aria-label="Update"
                           color="primary"
                           onClick={() => {
-                            setIsEditFlyoutVisible(true)
+                            setIsEditFlyoutVisible(true);
                           }}
                         />
                       </EuiFlexItem>
@@ -193,9 +193,7 @@ const GeneralDetails = ({
               <EuiFlexItem css={cStyles.width200}>
                 {dataKind === "email" && (
                   <>
-                    <EuiButton size="s">
-                      Preview
-                    </EuiButton>
+                    <EuiButton size="s">Preview</EuiButton>
                     {isEmailModalVisible && (
                       <EuiModal
                         style={{ width: 800, height: 600 }}

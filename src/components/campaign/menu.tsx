@@ -26,7 +26,6 @@ const email_tabs = [
     name: "Logs",
     content: <Logs />,
   },
-
 ];
 
 const tabs = [
@@ -42,16 +41,13 @@ const tabs = [
   },
 ];
 
-const Menu = ({
-  isEmail,
-}: {
-  isEmail?: boolean;
-}
-) => {
+const Menu = ({ isEmail }: { isEmail?: boolean }) => {
   const [selectedTabId, setSelectedTabId] = useState(isEmail ? "preview--id" : "audience--id");
 
   const selectedTabContent = useMemo(() => {
-    return isEmail ? email_tabs.find((obj) => obj.id === selectedTabId)?.content : tabs.find((obj) => obj.id === selectedTabId)?.content;
+    return isEmail
+      ? email_tabs.find((obj) => obj.id === selectedTabId)?.content
+      : tabs.find((obj) => obj.id === selectedTabId)?.content;
   }, [selectedTabId]);
 
   const onSelectedTabChanged = (id: string) => {

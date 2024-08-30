@@ -36,7 +36,7 @@ const CustomersDashboard = () => {
               onClick={() => setIsImportFlyoutVisible(true)}
               fill
               color={"success"}
-              iconType={'importAction'}
+              iconType={"importAction"}
               key="audience-customer"
             >
               Import
@@ -62,7 +62,9 @@ const CustomersDashboard = () => {
         <div>
           <CustomersTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
           {isFlyoutVisible && <CreateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
-          {isImportFlyoutVisible && <ImportAudienceComponent setIsImportFlyoutVisible={setIsImportFlyoutVisible} />}
+          {isImportFlyoutVisible && (
+            <ImportAudienceComponent setIsImportFlyoutVisible={setIsImportFlyoutVisible} />
+          )}
         </div>
       </DashboardLayout>
     </>

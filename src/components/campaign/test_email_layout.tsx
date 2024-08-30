@@ -19,7 +19,7 @@ import { Template } from "../../hooks/useGetTemplates";
 import { globalMutate } from "../../utils/globalMutate";
 import useTestSend from "../../hooks/useTestSend";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
-import { useState } from 'react';
+import { useState } from "react";
 import { addToast } from "../toast";
 
 const schema = yup
@@ -31,7 +31,13 @@ const schema = yup
 
 type TestFormData = yup.InferType<typeof schema>;
 
-const TestEmailLayout = ({ closeFlyout, template_data }: { closeFlyout: () => void; template_data: Template }) => {
+const TestEmailLayout = ({
+  closeFlyout,
+  template_data,
+}: {
+  closeFlyout: () => void;
+  template_data: Template;
+}) => {
   const { isMutating, trigger } = useTestSend();
   const { data: customers } = useGetCustomers<CustomersResponse>();
 
@@ -41,7 +47,6 @@ const TestEmailLayout = ({ closeFlyout, template_data }: { closeFlyout: () => vo
       value: String(customer?.id),
     };
   }) || [{ label: "", value: "" }];
-
 
   const [selectedOptions, setSelected] = useState([
     {
@@ -61,7 +66,6 @@ const TestEmailLayout = ({ closeFlyout, template_data }: { closeFlyout: () => vo
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
-
 
   const onSubmit = async (data: TestFormData) => {
     try {
@@ -99,8 +103,6 @@ const TestEmailLayout = ({ closeFlyout, template_data }: { closeFlyout: () => vo
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-
-
           <EuiFormRow
             label="Customers"
             isInvalid={!!errors.customer_id?.message}

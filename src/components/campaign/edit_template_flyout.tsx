@@ -129,13 +129,13 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-      .filter(
-        (channel) => channel.channel_type === dataTypeSwitch(processKind(data.body, data.kind)),
-      )
-      .map((channel) => ({
-        value: channel.id,
-        text: channel.name,
-      }))
+        .filter(
+          (channel) => channel.channel_type === dataTypeSwitch(processKind(data.body, data.kind)),
+        )
+        .map((channel) => ({
+          value: channel.id,
+          text: channel.name,
+        }))
     : [];
 
   const setAceEditorValue = (value: string) => {
@@ -281,8 +281,8 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
                 style={
                   channelDataOptions.length === 0
                     ? {
-                      display: "none",
-                    }
+                        display: "none",
+                      }
                     : {}
                 }
               >

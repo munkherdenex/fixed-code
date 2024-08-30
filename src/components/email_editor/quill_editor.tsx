@@ -3,12 +3,12 @@ import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { quillEditorStyles } from "./quill_editor.styles";
-import { Quill } from 'react-quill';
-import ImageResize from 'quill-image-resize-module-react';
-import { ImageDrop } from 'quill-image-drop-module';
+import { Quill } from "react-quill";
+import ImageResize from "quill-image-resize-module-react";
+import { ImageDrop } from "quill-image-drop-module";
 
-Quill.register('modules/imageResize', ImageResize);
-Quill.register('modules/imageDrop', ImageDrop);
+Quill.register("modules/imageResize", ImageResize);
+Quill.register("modules/imageDrop", ImageDrop);
 
 const QuillEditorComponent = ({
   control,
@@ -40,41 +40,40 @@ const QuillEditorComponent = ({
   const module = {
     toolbar: toolbarOptions,
     clipboard: {
-      matchVisual: false
+      matchVisual: false,
     },
     imageResize: {
-      parchment: Quill.import('parchment'),
-      modules: ['Resize', 'DisplaySize',]
+      parchment: Quill.import("parchment"),
+      modules: ["Resize", "DisplaySize"],
     },
-    imageDrop: true
+    imageDrop: true,
   };
 
   return (
     <div>
-      {
-        control ?
-          <Controller
-            control={control}
-            name="body"
-            render={({ field: { onBlur, value } }) => (
-              <ReactQuill
-                modules={module}
-                theme="snow"
-                value={value}
-                onBlur={onBlur}
-                onChange={onChange}
-                css={!value && styles.quill_container}
-              />
-            )}
-          />
-          :
-          <ReactQuill
-            modules={module}
-            theme="snow"
-            onChange={onChange}
-            css={styles.quill_container}
-          />
-      }
+      {control ? (
+        <Controller
+          control={control}
+          name="body"
+          render={({ field: { onBlur, value } }) => (
+            <ReactQuill
+              modules={module}
+              theme="snow"
+              value={value}
+              onBlur={onBlur}
+              onChange={onChange}
+              css={!value && styles.quill_container}
+            />
+          )}
+        />
+      ) : (
+        <ReactQuill
+          modules={module}
+          theme="snow"
+          onChange={onChange}
+          css={styles.quill_container}
+        />
+      )}
     </div>
   );
 };

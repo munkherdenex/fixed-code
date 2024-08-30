@@ -11,7 +11,7 @@ import {
   EuiSelect,
   EuiToolTip,
   EuiButtonIcon,
-  EuiSpacer
+  EuiSpacer,
 } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -96,7 +96,6 @@ export const dataTypeToSwitch = (dataType: string) => {
   }
 };
 
-
 const pathPrefix = process.env.PATH_PREFIX;
 
 const Dashboard: FunctionComponent = () => {
@@ -117,17 +116,17 @@ const Dashboard: FunctionComponent = () => {
     mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      kind: 'email',
+      kind: "email",
     },
   });
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-      .filter((channel) => channel.channel_type === dataTypeSwitch('email'))
-      .map((channel) => ({
-        value: channel.id,
-        text: channel.name,
-      }))
+        .filter((channel) => channel.channel_type === dataTypeSwitch("email"))
+        .map((channel) => ({
+          value: channel.id,
+          text: channel.name,
+        }))
     : [];
 
   const setReactQuill = (value: string) => {
@@ -142,7 +141,7 @@ const Dashboard: FunctionComponent = () => {
       if (IS_POCKET) {
         preparedData.kind = "api";
         preparedData.body = JSON.stringify({
-          type: 'email',
+          type: "email",
           to: `{{${dataTypeToSwitch(data.kind)}}}`,
           title: data.title,
           body: data.body,
@@ -151,7 +150,7 @@ const Dashboard: FunctionComponent = () => {
       const response = await trigger(preparedData);
       if (response) {
         globalMutate("/api/v1/dj/templates/");
-        router.push('/dashboards/campaign');
+        router.push("/dashboards/campaign");
         addToast({
           id: "success",
           title: "Successfully created",
@@ -185,8 +184,8 @@ const Dashboard: FunctionComponent = () => {
                     aria-label="back"
                     color="text"
                     size="s"
-                    onClick={() =>
-                      router.replace(`${pathPrefix}/dashboards/campaign`)} />
+                    onClick={() => router.replace(`${pathPrefix}/dashboards/campaign`)}
+                  />
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiButton isLoading={isMutating} type="submit">
@@ -194,7 +193,7 @@ const Dashboard: FunctionComponent = () => {
                   </EuiButton>
                 </EuiFlexItem>
               </EuiFlexGroup>
-              <EuiSpacer size='xl' />
+              <EuiSpacer size="xl" />
               {channelDataOptions.length === 0 && (
                 <EuiFormRow>
                   <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
@@ -213,8 +212,8 @@ const Dashboard: FunctionComponent = () => {
                   </EuiCallOut>
                 </EuiFormRow>
               )}
-              <EuiSpacer size='s' />
-              <EuiFlexGroup >
+              <EuiSpacer size="s" />
+              <EuiFlexGroup>
                 <EuiFlexItem grow={false}>
                   <EuiFormRow
                     label="Title"
@@ -237,7 +236,7 @@ const Dashboard: FunctionComponent = () => {
                     />
                   </EuiFormRow>
                 </EuiFlexItem>
-                <EuiFlexItem >
+                <EuiFlexItem>
                   <EuiFormRow
                     label="Channel"
                     isInvalid={!!errors.channel?.message}
@@ -248,15 +247,18 @@ const Dashboard: FunctionComponent = () => {
                         style={
                           channelDataOptions.length === 0
                             ? {
-                              display: "none",
-                            }
+                                display: "none",
+                              }
                             : {}
                         }
                       >
                         <Controller
                           control={control}
                           name="channel"
-                          render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
+                          render={({
+                            field: { onChange, onBlur, value },
+                            formState: { errors },
+                          }) => (
                             <EuiSelect
                               onChange={onChange}
                               value={value}
@@ -297,7 +299,7 @@ const Dashboard: FunctionComponent = () => {
                   </EuiFormRow>
                 </EuiFlexItem>
               </EuiFlexGroup>
-              <EuiSpacer size='s' />
+              <EuiSpacer size="s" />
               <EuiFormRow
                 label="Data"
                 labelAppend={<BodyInfoToolTip />}
@@ -305,8 +307,10 @@ const Dashboard: FunctionComponent = () => {
                 isInvalid={!!errors?.body?.message}
                 error={[errors?.body?.message]}
                 css={styles.quillEditorContainer}
-              ><>
-                  <QuillEditorComponent control={control} onChange={setReactQuill} /></>
+              >
+                <>
+                  <QuillEditorComponent control={control} onChange={setReactQuill} />
+                </>
               </EuiFormRow>
             </EuiForm>
           </EuiPanel>

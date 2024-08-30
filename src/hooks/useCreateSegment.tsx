@@ -8,14 +8,14 @@ export interface MyFormData {
   type: "manual" | "dynamic" | "static";
   team_id: string;
   input_type: string;
-  file: File,
+  file: File;
 }
 
 export default function useCreateSegment() {
   const { data, error, isMutating, trigger } = useSWRMutation(
     `/api/v1/dj/segments/`,
     async (path, { arg }: { arg: MyFormData }) => {
-      const upData = new FormData()
+      const upData = new FormData();
       upData.set("file", arg.file);
       upData.set("type", arg.type);
       upData.set("name", arg.name);
@@ -25,9 +25,9 @@ export default function useCreateSegment() {
       const options = {
         method: "POST",
         body: upData,
-        headers: {}
-      }
-      delete options?.headers['Content-Type'];
+        headers: {},
+      };
+      delete options?.headers["Content-Type"];
       const res = await fetch(`${BASE_URL}${path}`, options);
 
       return handleResponseNotOk(res);

@@ -11,7 +11,7 @@ import {
   EuiTourStep,
   useGeneratedHtmlId,
 } from "@elastic/eui";
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -23,10 +23,7 @@ import useImportAudience from "../../hooks/useImportAudience";
 
 const ImportAudienceSchema = yup
   .object({
-    file: yup
-      .mixed()
-      .required('File is required')
-
+    file: yup.mixed().required("File is required"),
   })
   .required();
 
@@ -50,7 +47,6 @@ const ImportAudienceComponent = ({
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(ImportAudienceSchema),
-
   });
 
   const onSubmit = async (data: MyFormData) => {
@@ -90,9 +86,7 @@ const ImportAudienceComponent = ({
                 content={
                   <div>
                     <EuiText>
-                      <p>
-                        Upload a CSV file
-                      </p>
+                      <p>Upload a CSV file</p>
                     </EuiText>
                   </div>
                 }
@@ -137,7 +131,9 @@ const ImportAudienceComponent = ({
             </Fragment>
           </EuiFormRow>
           <EuiFormRow hasEmptyLabelSpace>
-            <EuiButton type="submit" isLoading={isMutating}>Import</EuiButton>
+            <EuiButton type="submit" isLoading={isMutating}>
+              Import
+            </EuiButton>
           </EuiFormRow>
         </EuiForm>
       </EuiFlyoutBody>

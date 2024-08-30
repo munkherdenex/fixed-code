@@ -133,11 +133,11 @@ const CreateTemplateFlyot = ({
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-      .filter((channel) => channel.channel_type === dataTypeSwitch(dataType))
-      .map((channel) => ({
-        value: channel.id,
-        text: channel.name,
-      }))
+        .filter((channel) => channel.channel_type === dataTypeSwitch(dataType))
+        .map((channel) => ({
+          value: channel.id,
+          text: channel.name,
+        }))
     : [];
 
   const setAceEditorValue = (value: string) => {
@@ -290,8 +290,8 @@ const CreateTemplateFlyot = ({
                 style={
                   channelDataOptions.length === 0
                     ? {
-                      display: "none",
-                    }
+                        display: "none",
+                      }
                     : {}
                 }
               >

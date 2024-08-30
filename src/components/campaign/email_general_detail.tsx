@@ -90,7 +90,6 @@ const EmailGeneralDetails = ({
 }) => {
   const router = useRouter();
 
-
   const { data, isLoading } = useGetTemplates<Template>(
     router.query.id,
     {},
@@ -134,17 +133,15 @@ const EmailGeneralDetails = ({
                   <EuiFlexGroup responsive={false} gutterSize="s">
                     {data.status !== "APPROVED" && data.status !== "PUBLISHED" && (
                       <EuiFlexItem grow={false}>
-                        <EuiToolTip
-                          position="top"
-                          content="Delete"
-                        >
+                        <EuiToolTip position="top" content="Delete">
                           <EuiButtonIcon
                             display="base"
                             iconType="trash"
                             aria-label="Delete"
                             color="danger"
                             onClick={() => setIsModalVisible(true)}
-                          /></EuiToolTip>
+                          />
+                        </EuiToolTip>
                       </EuiFlexItem>
                     )}
                   </EuiFlexGroup>
@@ -153,18 +150,18 @@ const EmailGeneralDetails = ({
             </EuiPanel>
           </EuiFlexItem>
           <EuiFlexItem>
-            <EuiFlexGroup >
+            <EuiFlexGroup>
               <EuiPanel hasBorder={true}>
                 <EuiFlexItem>
-                  <EuiStat title={data.title}
+                  <EuiStat
+                    title={data.title}
                     description={
                       <EuiTextColor color="default">
-                        <span>
-                          Subject
-                        </span>
+                        <span>Subject</span>
                       </EuiTextColor>
                     }
-                    titleSize="xs" />
+                    titleSize="xs"
+                  />
                 </EuiFlexItem>
               </EuiPanel>
               <EuiPanel hasBorder={true}>
@@ -177,7 +174,10 @@ const EmailGeneralDetails = ({
                         </span>
                       </EuiTextColor>
                     }
-                    description="Kind" titleSize="xs" titleColor="subdued" />
+                    description="Kind"
+                    titleSize="xs"
+                    titleColor="subdued"
+                  />
                 </EuiFlexItem>
               </EuiPanel>
               <EuiPanel hasBorder={true}>
@@ -185,18 +185,17 @@ const EmailGeneralDetails = ({
                   <EuiStat
                     title={
                       <EuiTextColor color="primary">
-                        <span>
-                          {data?.status}
-                        </span>
+                        <span>{data?.status}</span>
                       </EuiTextColor>
                     }
                     description={
                       <EuiTextColor color="default">
-                        <span>
-                          Status
-                        </span>
+                        <span>Status</span>
                       </EuiTextColor>
-                    } titleSize="xs" titleColor="primary" />
+                    }
+                    titleSize="xs"
+                    titleColor="primary"
+                  />
                 </EuiFlexItem>
               </EuiPanel>
               <EuiPanel hasBorder={true}>
