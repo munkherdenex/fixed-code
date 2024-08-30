@@ -5,6 +5,7 @@ import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiTitle } from "@elas
 import SigninForm from "../../components/signin_form";
 import { authContext } from "../../store/auth_store";
 import { useRouter } from "next/router";
+import { IS_POCKET } from "../../constants";
 
 const Index = () => {
   const router = useRouter();
@@ -39,11 +40,13 @@ const Index = () => {
               <EuiSpacer size="xl" />
               <SigninForm />
             </EuiFlexItem>
-            <EuiFlexItem grow={false}>
-              <EuiButton size="s" href="/api/v1/login">
-                Login with keycloak
-              </EuiButton>
-            </EuiFlexItem>
+            {IS_POCKET && (
+              <EuiFlexItem grow={false}>
+                <EuiButton size="s" href="/api/v1/login">
+                  Login with keycloak
+                </EuiButton>
+              </EuiFlexItem>
+            )}
           </EuiFlexGroup>
         </div>
       </Wrapper>

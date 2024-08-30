@@ -5,6 +5,7 @@ import SignupForm from "../../components/signup_form";
 import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiTitle } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { authContext } from "../../store/auth_store";
+import { IS_POCKET } from "../../constants";
 
 const Index: FunctionComponent = () => {
   const router = useRouter();
@@ -38,11 +39,13 @@ const Index: FunctionComponent = () => {
             <EuiSpacer size="xl" />
             <SignupForm />
           </EuiFlexItem>
-          <EuiFlexItem grow={false}>
-            <EuiButton size="s" href="/api/v1/login">
-              Login with keycloak
-            </EuiButton>
-          </EuiFlexItem>
+          {IS_POCKET && (
+            <EuiFlexItem grow={false}>
+              <EuiButton size="s" href="/api/v1/login">
+                Login with keycloak
+              </EuiButton>
+            </EuiFlexItem>
+          )}
         </EuiFlexGroup>
       </Wrapper>
     </>
