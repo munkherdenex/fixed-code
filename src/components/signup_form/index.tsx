@@ -9,6 +9,7 @@ import {
   EuiPanel,
   EuiFieldPassword,
   EuiEmptyPrompt,
+  EuiSpacer,
 } from "@elastic/eui";
 import { useEuiTheme } from "@elastic/eui";
 import { signupFormStyles } from "./signup_form.styles";
@@ -173,9 +174,14 @@ const SignupForm: FunctionComponent = () => {
                   )}
                 />
               </EuiFormRow>
-              <EuiButton type="submit" isLoading={isMutating} fill>
-                Register
-              </EuiButton>
+              <EuiSpacer size="m" />
+              <EuiFlexGroup>
+                <EuiFlexItem>
+                  <EuiButton type="submit" isLoading={isMutating} fill>
+                    Register
+                  </EuiButton>
+                </EuiFlexItem>
+              </EuiFlexGroup>
             </EuiForm>
           )}
         </EuiPanel>

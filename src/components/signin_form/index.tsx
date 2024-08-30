@@ -104,16 +104,14 @@ const SigninForm: FunctionComponent = () => {
               />
             </EuiFormRow>
             <EuiSpacer size="m" />
-            <EuiFlexGroup justifyContent="spaceBetween">
+            <EuiFlexGroup direction="column" justifyContent="spaceBetween" gutterSize="s">
               <EuiFlexItem>
-                <div>
-                  <EuiButton isLoading={isMutating} type="submit">
-                    Sign in
-                  </EuiButton>
-                </div>
+                <EuiButton isLoading={isMutating} type="submit" fill>
+                  Sign in
+                </EuiButton>
               </EuiFlexItem>
               <EuiFlexItem>
-                <EuiText textAlign="right" size="relative" grow={false}>
+                <EuiText size="relative" grow={false}>
                   <EuiLink onClick={() => router.push("/forgot_password")}>
                     Forgot password?
                   </EuiLink>
