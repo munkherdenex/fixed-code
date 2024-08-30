@@ -1,7 +1,9 @@
+import { useContext } from "react";
 import useSWR from "swr";
 import { BASE_URL } from "../constants";
-import { handleResponseNotOk } from "../utils/error_handler";
+import { teamsContext } from "../store/teams_store";
 import { createParam } from "../utils/createParam";
+import { handleResponseNotOk } from "../utils/error_handler";
 
 export interface MetricType {
   customers_created_api: number;
@@ -73,7 +75,8 @@ export default function useGetMetrics<Type>(queryParam?: {
   isLoading: boolean;
   mutate: () => Promise<Type>;
 } {
-  const path = `/api/v1/dj/analytics/`;
+  const { currentTeam } = useContext(teamsContext);
+  const path = currentTeam ? `/api/v1/dj/analytics/` : null;
   const preparedQueryParam = createParam(queryParam);
 
   const { data, error, isLoading, mutate } = useSWR(
