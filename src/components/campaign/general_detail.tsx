@@ -30,7 +30,7 @@ import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 import { commonStyles } from "../../styles/global.styles";
 import { badgeColor } from "../../utils/badge_color";
 import EditTemplateFlyout from "./edit_template_flyout";
-import { quillEditorStyles } from "./quill_editor.styles";
+import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -114,7 +114,6 @@ const GeneralDetails = ({
   const [isEmailModalVisible, setIsEmailModalVisible] = useState(false);
 
   const closeEmailModal = () => setIsEmailModalVisible(false);
-  const showEmailModal = () => setIsEmailModalVisible(true);
   const styles = quillEditorStyles();
 
   //INFO: This is a workaround to get the kind of the template becaouse of POCKET
@@ -158,7 +157,9 @@ const GeneralDetails = ({
                           iconType="pencil"
                           aria-label="Update"
                           color="primary"
-                          onClick={() => setIsEditFlyoutVisible(true)}
+                          onClick={() => {
+                            setIsEditFlyoutVisible(true)
+                          }}
                         />
                       </EuiFlexItem>
                     )}
@@ -192,7 +193,7 @@ const GeneralDetails = ({
               <EuiFlexItem css={cStyles.width200}>
                 {dataKind === "email" && (
                   <>
-                    <EuiButton onClick={showEmailModal} size="s">
+                    <EuiButton size="s">
                       Preview
                     </EuiButton>
                     {isEmailModalVisible && (

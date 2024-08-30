@@ -19,6 +19,7 @@ import useUpdateDoneTemplate from "../../../../hooks/useUpdateDoneTemplate";
 import DashboardLayout from "../../../../layouts/dashboard";
 import { teamsContext } from "../../../../store/teams_store";
 import { globalMutate } from "../../../../utils/globalMutate";
+import EmailGeneralDetails from "../../../../components/campaign/email_general_detail";
 
 const getRightSideButton = (
   status: string,
@@ -137,14 +138,28 @@ const CampaignInfo = () => {
         }
       >
         <>
-          <EuiFlexGroup>
-            <EuiFlexItem grow={4}>
-              <GeneralDetails templateStatus={data?.status} />
-            </EuiFlexItem>
-            <EuiFlexItem grow={7}>
-              <Menu />
-            </EuiFlexItem>
-          </EuiFlexGroup>
+          {
+            data?.kind === 'email' ?
+              <>
+                <>
+                  <EuiFlexItem grow={4}>
+                    <EmailGeneralDetails templateStatus={data?.status} />
+                  </EuiFlexItem>
+                  <EuiSpacer size="l" />
+                  <EuiFlexItem grow={7}>
+                    <Menu isEmail={true} />
+                  </EuiFlexItem>
+                </>
+              </> :
+              <EuiFlexGroup>
+                <EuiFlexItem grow={4}>
+                  <GeneralDetails templateStatus={data?.status} />
+                </EuiFlexItem>
+                <EuiFlexItem grow={7}>
+                  <Menu isEmail={false} />
+                </EuiFlexItem>
+              </EuiFlexGroup>
+          }
           {isModalVisible && data.status === "DRAFT" && (
             <EuiConfirmModal
               aria-labelledby={modalTitleId}

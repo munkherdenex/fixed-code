@@ -2,6 +2,32 @@ import { EuiPanel, EuiTab, EuiTabs } from "@elastic/eui";
 import { useMemo, useState } from "react";
 import Audience from "./audience";
 import Logs from "./logs";
+import TestChannelDetails from "./test_channel";
+import EmailLayouts from "./email_edit_view_container";
+
+const email_tabs = [
+  {
+    id: "preview--id",
+    name: "Preview",
+    content: <EmailLayouts />,
+  },
+  {
+    id: "audience--id",
+    name: "Audience",
+    content: <Audience />,
+  },
+  {
+    id: "channel--id",
+    name: "Channel",
+    content: <TestChannelDetails />,
+  },
+  {
+    id: "logs--id",
+    name: "Logs",
+    content: <Logs />,
+  },
+
+];
 
 const tabs = [
   {
@@ -16,11 +42,16 @@ const tabs = [
   },
 ];
 
-const Menu = () => {
-  const [selectedTabId, setSelectedTabId] = useState("audience--id");
+const Menu = ({
+  isEmail,
+}: {
+  isEmail?: boolean;
+}
+) => {
+  const [selectedTabId, setSelectedTabId] = useState(isEmail ? "preview--id" : "audience--id");
 
   const selectedTabContent = useMemo(() => {
-    return tabs.find((obj) => obj.id === selectedTabId)?.content;
+    return isEmail ? email_tabs.find((obj) => obj.id === selectedTabId)?.content : tabs.find((obj) => obj.id === selectedTabId)?.content;
   }, [selectedTabId]);
 
   const onSelectedTabChanged = (id: string) => {
@@ -28,7 +59,8 @@ const Menu = () => {
   };
 
   const renderTabs = () => {
-    return tabs.map((tab, index) => (
+    const render_tabs = isEmail ? email_tabs : tabs;
+    return render_tabs.map((tab, index) => (
       <EuiTab
         key={index}
         onClick={() => onSelectedTabChanged(tab.id)}

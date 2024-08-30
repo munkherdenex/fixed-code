@@ -32,6 +32,10 @@ const SendsDashboard = () => {
 
   const openFlyout = (dataType: string) => {
     if (dataType === "") return;
+    if (dataType === TEMPLATE_DATA_TYPE_OPTIONS[0].value) {
+      router.push(`${pathPrefix}/dashboards/campaign/email`);
+      return;
+    }
     setDataType(dataType);
     setIsFlyoutVisible(true);
   };
