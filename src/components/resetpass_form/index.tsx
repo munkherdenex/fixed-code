@@ -6,6 +6,7 @@ import {
   EuiForm,
   EuiFormRow,
   EuiPanel,
+  EuiSpacer,
   useEuiTheme,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -122,9 +123,14 @@ const ResetPassword = () => {
                 )}
               />
             </EuiFormRow>
-            <EuiButton isLoading={isMutating} type="submit" fill>
-              Sent
-            </EuiButton>
+            <EuiSpacer size="m" />
+            <EuiFlexGroup direction="column" justifyContent="spaceBetween" gutterSize="s">
+              <EuiFlexItem>
+                <EuiButton isLoading={isMutating} type="submit" fill>
+                  Sent
+                </EuiButton>
+              </EuiFlexItem>
+            </EuiFlexGroup>
           </EuiForm>
         </EuiPanel>
       </EuiFlexItem>

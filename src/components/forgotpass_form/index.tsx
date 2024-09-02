@@ -7,6 +7,7 @@ import {
   EuiButton,
   EuiPanel,
   EuiEmptyPrompt,
+  EuiSpacer,
 } from "@elastic/eui";
 import { useEuiTheme } from "@elastic/eui";
 import { forgotFormStyles } from "./forgotpass_form.styles";
@@ -88,9 +89,14 @@ function ForgotPasswordForm() {
                   )}
                 />
               </EuiFormRow>
-              <EuiButton isLoading={isMutating} type="submit">
-                Get reset info
-              </EuiButton>
+              <EuiSpacer size="m" />
+              <EuiFlexGroup direction="column" justifyContent="spaceBetween" gutterSize="s">
+                <EuiFlexItem>
+                  <EuiButton isLoading={isMutating} type="submit" fill>
+                    Get reset info
+                  </EuiButton>
+                </EuiFlexItem>
+              </EuiFlexGroup>
             </EuiForm>
           )}
         </EuiPanel>

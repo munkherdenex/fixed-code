@@ -72,6 +72,7 @@ const SigninForm: FunctionComponent = () => {
       });
       if (response) {
         addToast({
+          id: "verification-email",
           title: "Verification email sent",
           color: "success",
           text: "Please check your email for the verification link",
