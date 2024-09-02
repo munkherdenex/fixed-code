@@ -9,30 +9,32 @@ import { addToast } from "../components/toast";
 export async function handleResponseNotOk(res: Response, showError: boolean = true) {
   if (!res.ok) {
     let data: any;
+    let message: string;
     const error = new Error();
 
-    try {
+    if (res.headers.get("content-type")?.includes("application/json")) {
       data = await res.json();
+      error.message = JSON.stringify(data);
 
       if (Array.isArray(data?.kind)) {
-        error.message = data?.kind[0];
+        message = data?.kind[0];
       }
       if (data.error) {
-        error.message = data.error;
+        message = data.error;
       }
       if (data.message) {
-        error.message = data.message;
+        message = data.message;
       }
       if (data.errors) {
-        error.message = data.errors;
+        message = data.errors;
       }
       if (data.non_field_errors) {
-        error.message = data.non_field_errors;
+        message = data.non_field_errors;
       }
       if (data.detail) {
-        error.message = data.detail;
+        message = data.detail;
       }
-    } catch (error) {}
+    }
 
     error.status = res.status;
 
@@ -41,7 +43,7 @@ export async function handleResponseNotOk(res: Response, showError: boolean = tr
         id: "fields-list-error",
         color: "danger",
         title: `${error.status} An error occurred`,
-        text: error?.message,
+        text: message,
       });
     }
 

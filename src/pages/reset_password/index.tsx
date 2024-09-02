@@ -31,7 +31,7 @@ export default ResetPassword;
 
 export async function getServerSideProps(context) {
   const query = context.query;
-  if (query?.p3 && query?.p4) {
+  if (query?.token) {
     return {
       props: {},
     };
