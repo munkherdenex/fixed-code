@@ -1,5 +1,6 @@
 import {
   EuiButton,
+  EuiButtonIcon,
   EuiCallOut,
   EuiFieldText,
   EuiFlexGroup,
@@ -9,25 +10,31 @@ import {
   EuiIcon,
   EuiPanel,
   EuiSelect,
-  EuiToolTip,
-  EuiButtonIcon,
   EuiSpacer,
+  EuiToolTip,
 } from "@elastic/eui";
+import { yupResolver } from "@hookform/resolvers/yup";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect } from "react";
-import DashboardLayout from "../../../../layouts/dashboard";
+import { FunctionComponent } from "react";
+import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { IS_POCKET } from "../../../../constants";
+import JumpToCreateChannelButton from "../../../../components/campaign/jump_to_create_channel_button";
 import { quillEditorStyles } from "../../../../components/email_editor/quill_editor.styles";
+import { addToast } from "../../../../components/toast";
+import { IS_POCKET } from "../../../../constants";
 import useCreateTemplate from "../../../../hooks/useCreateTemplate";
 import useGetChannels, { Channels } from "../../../../hooks/useGetChannels";
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import DashboardLayout from "../../../../layouts/dashboard";
 import { globalMutate } from "../../../../utils/globalMutate";
-import QuillEditorComponent from "../../../../components/email_editor/quill_editor";
-import JumpToCreateChannelButton from "../../../../components/campaign/jump_to_create_channel_button";
-import { addToast } from "../../../../components/toast";
+import { dataTypeSwitch, dataTypeToSwitch } from "../../../../utils/helper";
+
+const QuillEditorComponent = dynamic(
+  () => import("../../../../components/email_editor/quill_editor"),
+  { ssr: false },
+);
+
 const bodyHelpText = "Use custom attributes to make data dynamic. {{cf_*}}";
 
 const BodyInfoToolTip = () => {
@@ -67,35 +74,6 @@ const dataTypeOptions = [
 
 type FormData = yup.InferType<typeof schema>;
 
-export const dataTypeSwitch = (dataType: FormData["kind"]): FormData["kind"] => {
-  if (!IS_POCKET) return dataType;
-  //TODO: If team is not pocket return just kind
-  switch (dataType) {
-    case "sms":
-      return "api";
-    case "email":
-      return "api";
-    case "push":
-      return "api";
-    default:
-      return dataType;
-  }
-};
-
-export const dataTypeToSwitch = (dataType: string) => {
-  if (!IS_POCKET) return dataType;
-  switch (dataType) {
-    case "sms":
-      return "phone";
-    case "email":
-      return "email";
-    case "push":
-      return "device_id";
-    default:
-      return dataType;
-  }
-};
-
 const pathPrefix = process.env.PATH_PREFIX;
 
 const Dashboard: FunctionComponent = () => {
@@ -103,7 +81,7 @@ const Dashboard: FunctionComponent = () => {
   const router = useRouter();
   const { isMutating, trigger } = useCreateTemplate();
 
-  const { data: channelsData } = useGetChannels<Channels[]>(undefined, {
+  const { data: channelsData, isLoading } = useGetChannels<Channels[]>(undefined, {
     all: `${true}`,
   });
 
@@ -122,7 +100,7 @@ const Dashboard: FunctionComponent = () => {
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-        .filter((channel) => channel.channel_type === dataTypeSwitch("email"))
+        .filter((channel) => channel.channel_type === dataTypeSwitch<FormData["kind"]>("email"))
         .map((channel) => ({
           value: channel.id,
           text: channel.name,
@@ -161,6 +139,8 @@ const Dashboard: FunctionComponent = () => {
       console.error(error);
     }
   };
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <>

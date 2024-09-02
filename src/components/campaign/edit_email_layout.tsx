@@ -1,27 +1,29 @@
 import {
+  EuiButton,
+  EuiButtonIcon,
   EuiFieldText,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiButtonIcon,
   EuiForm,
   EuiFormRow,
   EuiSpacer,
-  EuiButton,
   EuiToolTip,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { IS_POCKET } from "../../constants";
-import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
-import { quillEditorStyles } from "../email_editor/quill_editor.styles";
-import { isJson } from "../../utils/is_json";
-import { dataTypeToSwitch } from "./create_template_flyot";
+import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { globalMutate } from "../../utils/globalMutate";
+import { isJson } from "../../utils/is_json";
+import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 import { addToast } from "../toast";
-import QuillEditorComponent from "../email_editor/quill_editor";
+import { dataTypeToSwitch } from "./create_template_flyot";
+
+const QuillEditorComponent = dynamic(() => import("../email_editor/quill_editor"), { ssr: false });
 
 const schema = yup
   .object({

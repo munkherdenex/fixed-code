@@ -14,6 +14,7 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -23,11 +24,11 @@ import { Template } from "../../hooks/useGetTemplates";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { globalMutate } from "../../utils/globalMutate";
 import { isJson } from "../../utils/is_json";
+import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 import AceEditorComponent from "./ace_editor";
 import { dataTypeSwitch, dataTypeToSwitch } from "./create_template_flyot";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
-import QuillEditorComponent from "../email_editor/quill_editor";
-import { quillEditorStyles } from "../email_editor/quill_editor.styles";
+const QuillEditorComponent = dynamic(() => import("../email_editor/quill_editor"), { ssr: false });
 
 const schema = yup
   .object({
