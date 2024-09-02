@@ -19,15 +19,20 @@ import { useRouter } from "next/router";
 
 const schema = yup
   .object({
-    password: yup
+    new_password: yup
       .string()
       .min(8)
       .matches(/[0-9]/, "Password requires a number")
       .matches(/[a-z]/, "Password requires a lowercase letter")
       .matches(/[A-Z]/, "Password requires an uppercase letter")
       .matches(/[^\w]/, "Password requires a symbol")
-      .required("please enter your password"),
-    confirm_password: yup.string().required("please enter old password"),
+      .required("")
+      .label("Password"),
+    new_password_repeat: yup
+      .string()
+      .oneOf([yup.ref("new_password"), null], "Passwords must match")
+      .required()
+      .label("Confirm password"),
   })
   .required();
 
@@ -49,14 +54,12 @@ const ResetPassword = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    const token = router.query?.p3 || "";
-    const email = router.query?.p4 || "";
-    if (token && email) {
+    const token = router.query?.token || "";
+    if (token) {
       try {
         const request_data = {
           ...data,
           token: token,
-          email: email,
         };
         const response = await trigger(request_data);
         if (response) {
@@ -64,9 +67,9 @@ const ResetPassword = () => {
             id: "reset-password",
             color: "success",
             title: "Success",
-            text: "Successfully reset",
+            text: "Successfully reset password. Redirecting to sign in page.",
           });
-          router.push("/signin");
+          router.replace("/signin");
         }
       } catch (e) {
         console.log(e);
@@ -83,18 +86,18 @@ const ResetPassword = () => {
           <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit(onSubmit)}>
             <EuiFormRow
               label="Password"
-              isInvalid={!!errors.password?.message}
-              error={[errors.password?.message]}
+              isInvalid={!!errors.new_password?.message}
+              error={[errors.new_password?.message]}
             >
               <Controller
                 control={control}
-                name="password"
+                name="new_password"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <EuiFieldPassword
                     onChange={onChange}
                     value={value}
                     onBlur={onBlur}
-                    isInvalid={!!errors.password?.message}
+                    isInvalid={!!errors.new_password?.message}
                     type={"dual"}
                     placeholder="password"
                     aria-label="password"
@@ -104,18 +107,18 @@ const ResetPassword = () => {
             </EuiFormRow>
             <EuiFormRow
               label="Confirm password"
-              isInvalid={!!errors.confirm_password?.message}
-              error={[errors.confirm_password?.message]}
+              isInvalid={!!errors.new_password_repeat?.message}
+              error={[errors.new_password_repeat?.message]}
             >
               <Controller
                 control={control}
-                name="confirm_password"
+                name="new_password_repeat"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <EuiFieldPassword
                     onChange={onChange}
                     value={value}
                     onBlur={onBlur}
-                    isInvalid={!!errors.confirm_password?.message}
+                    isInvalid={!!errors.new_password_repeat?.message}
                     type={"dual"}
                     placeholder="Confirm password"
                     aria-label="confirm_password"
@@ -127,7 +130,7 @@ const ResetPassword = () => {
             <EuiFlexGroup direction="column" justifyContent="spaceBetween" gutterSize="s">
               <EuiFlexItem>
                 <EuiButton isLoading={isMutating} type="submit" fill>
-                  Sent
+                  Reset password
                 </EuiButton>
               </EuiFlexItem>
             </EuiFlexGroup>
