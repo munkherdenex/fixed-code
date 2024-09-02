@@ -28,6 +28,7 @@ import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 import { quillEditorStyles } from "../email_editor/quill_editor.styles";
+import { dataTypeSwitch, dataTypeToSwitch } from "../../utils/helper";
 
 const bodyHelpText = "Use custom attributes to make data dynamic. {{cf_*}}";
 
@@ -68,36 +69,6 @@ const dataTypeOptions = [
 
 type FormData = yup.InferType<typeof schema>;
 
-export const dataTypeSwitch = (dataType: FormData["kind"]): FormData["kind"] => {
-  if (!IS_POCKET) return dataType;
-  //TODO: If team is not pocket return just kind
-  switch (dataType) {
-    case "sms":
-      return "api";
-    case "email":
-      return "api";
-    case "push":
-      return "api";
-    default:
-      return dataType;
-  }
-};
-
-export const dataTypeToSwitch = (dataType: string) => {
-  if (!IS_POCKET) return dataType;
-  //TODO: If team is not pocket return just kind
-  switch (dataType) {
-    case "sms":
-      return "phone";
-    case "email":
-      return "email";
-    case "push":
-      return "device_id";
-    default:
-      return dataType;
-  }
-};
-
 const CreateTemplateFlyot = ({
   closeFlyout,
   dataType,
@@ -133,7 +104,7 @@ const CreateTemplateFlyot = ({
 
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
-        .filter((channel) => channel.channel_type === dataTypeSwitch(dataType))
+        .filter((channel) => channel.channel_type === dataTypeSwitch<FormData["kind"]>(dataType))
         .map((channel) => ({
           value: channel.id,
           text: channel.name,

@@ -23,10 +23,10 @@ import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { Template } from "../../hooks/useGetTemplates";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { globalMutate } from "../../utils/globalMutate";
+import { dataTypeSwitch, dataTypeToSwitch } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
 import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 import AceEditorComponent from "./ace_editor";
-import { dataTypeSwitch, dataTypeToSwitch } from "./create_template_flyot";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 const QuillEditorComponent = dynamic(() => import("../email_editor/quill_editor"), { ssr: false });
 

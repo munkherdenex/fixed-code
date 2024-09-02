@@ -18,10 +18,10 @@ import { IS_POCKET } from "../../constants";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { globalMutate } from "../../utils/globalMutate";
+import { dataTypeToSwitch } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
 import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 import { addToast } from "../toast";
-import { dataTypeToSwitch } from "./create_template_flyot";
 
 const QuillEditorComponent = dynamic(() => import("../email_editor/quill_editor"), { ssr: false });
 
