@@ -24,7 +24,9 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import Dynamic from "../../../../components/segments/dynamic";
 import Manual from "../../../../components/segments/manual";
-import useCreateSegment from "../../../../hooks/useCreateSegment";
+import useCreateSegmentDynamic from "../../../../hooks/useCreateSegmentDynamic";
+import useCreateSegmentManualFile from "../../../../hooks/useCreateSegmentManualFile";
+import useCreateSegmentManualText from "../../../../hooks/useCreateSegmentManualText";
 import DashboardLayout from "../../../../layouts/dashboard";
 
 const pathPrefix = process.env.PATH_PREFIX;
@@ -38,7 +40,13 @@ type MyFormData = yup.InferType<typeof schema>;
 
 const Dashboard: FunctionComponent = () => {
   const router = useRouter();
-  const { trigger, isMutating: isCreateSegmentMutating } = useCreateSegment();
+  const { trigger: createSegmentDynamic, isMutating: isCreateSegmentDynamicMutating } =
+    useCreateSegmentDynamic();
+  const { trigger: createSegmentFile, isMutating: isCreateSegmentFileMutating } =
+    useCreateSegmentManualFile();
+  const { trigger: createSegmentText, isMutating: isCreateSegmentMutating } =
+    useCreateSegmentManualText();
+
   const [firstFormData, setFirstFormData] = useState<MyFormData | null>(null);
   const [selectedCard, setCard] = useState(2);
   const [openFlyout, setOpenFlyout] = useState(false);
@@ -68,15 +76,44 @@ const Dashboard: FunctionComponent = () => {
   const createSegment = async (data) => {
     const type = selectedCard === 1 ? "static" : selectedCard === 2 ? "dynamic" : "manual";
     try {
-      const response = await trigger({
-        name: firstFormData.name,
-        description: firstFormData.description,
-        type: type,
-        ...data,
-      });
+      if (type === "dynamic") {
+        const dynamicResponse = await createSegmentDynamic({
+          name: firstFormData.name,
+          description: firstFormData.description,
+          type: type,
+          ...data,
+        });
 
-      if (response) {
-        router.push("/dashboards/segments");
+        if (dynamicResponse) {
+          router.push("/dashboards/segments");
+        }
+      }
+      if (type === "manual") {
+        if (data.input_type === "file") {
+          const formData = new FormData();
+          formData.append("name", firstFormData.name);
+          formData.append("description", firstFormData.description);
+          formData.append("type", type);
+          formData.append("file", data.file[0]);
+
+          const fileResponse = await createSegmentFile(formData);
+
+          if (fileResponse) {
+            router.push("/dashboards/segments");
+          }
+        }
+        if (data.input_type === "text") {
+          const textResponse = await createSegmentText({
+            name: firstFormData.name,
+            description: firstFormData.description,
+            type: type,
+            ...data,
+          });
+
+          if (textResponse) {
+            router.push("/dashboards/segments");
+          }
+        }
       }
     } catch (e) {
       console.error(e);
@@ -200,13 +237,21 @@ const Dashboard: FunctionComponent = () => {
                 {selectedCard === 2 && (
                   <Dynamic
                     createSegment={createSegment}
-                    isCreateSegmentMutating={isCreateSegmentMutating}
+                    isCreateSegmentMutating={
+                      isCreateSegmentDynamicMutating ||
+                      isCreateSegmentFileMutating ||
+                      isCreateSegmentMutating
+                    }
                   />
                 )}
                 {selectedCard === 3 && (
                   <Manual
                     createSegment={createSegment}
-                    isCreateSegmentMutating={isCreateSegmentMutating}
+                    isCreateSegmentMutating={
+                      isCreateSegmentDynamicMutating ||
+                      isCreateSegmentFileMutating ||
+                      isCreateSegmentMutating
+                    }
                   />
                 )}
               </EuiFlyoutBody>
