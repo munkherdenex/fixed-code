@@ -89,7 +89,7 @@ const Dashboard: FunctionComponent = () => {
         }
       }
       if (type === "manual") {
-        if (data.input_type === "file") {
+        if (data?.input_type === "file") {
           const formData = new FormData();
           formData.append("name", firstFormData.name);
           formData.append("description", firstFormData.description);
@@ -102,7 +102,7 @@ const Dashboard: FunctionComponent = () => {
             router.push("/dashboards/segments");
           }
         }
-        if (data.input_type === "text") {
+        if (data?.input_type === "text") {
           const textResponse = await createSegmentText({
             name: firstFormData.name,
             description: firstFormData.description,
