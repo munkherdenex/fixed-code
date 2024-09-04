@@ -15,9 +15,12 @@ import {
   EuiTourStep,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
 import { Fragment, useMemo, useState } from "react";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import * as yup from "yup";
+import useCreateSegmentManualFile from "../../hooks/useCreateSegmentManualFile";
+import useCreateSegmentManualText from "../../hooks/useCreateSegmentManualText";
 import { commonStyles } from "../../styles/global.styles";
 
 const FileContent = ({ control }: { control: Control<FieldValues, any> }) => {
@@ -179,14 +182,14 @@ const schema = yup.object({
 
 type MyFormData = yup.InferType<typeof schema>;
 
-const Manual = ({
-  createSegment,
-  isCreateSegmentMutating,
-}: {
-  createSegment: (data: any) => void;
-  isCreateSegmentMutating: boolean;
-}) => {
+const Manual = ({ name, description }: { name: string; description: string }) => {
   const styles = commonStyles();
+  const router = useRouter();
+  const { trigger: createSegmentFile, isMutating: isCreateSegmentFileMutating } =
+    useCreateSegmentManualFile();
+  const { trigger: createSegmentText, isMutating: isCreateSegmentMutating } =
+    useCreateSegmentManualText();
+
   const [isTourOpen, setIsTourOpen] = useState(() => {
     return localStorage.getItem("isManualSegmentTourOptionsOpen") === "false" ? false : true;
   });
@@ -232,7 +235,7 @@ const Manual = ({
     ));
   };
 
-  const testHandle = (data: MyFormData) => {
+  const testHandle = async (data: MyFormData) => {
     if (!data.file && selectedTabId === "file") {
       return setError("file", {
         type: "manual",
@@ -255,17 +258,30 @@ const Manual = ({
     }
 
     if (selectedTabId === "file") {
-      return createSegment({
-        file: data.file,
-        ...data,
-      });
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("type", "manual");
+      formData.append("file", data.file[0]);
+
+      const fileResponse = await createSegmentFile(formData);
+
+      if (fileResponse) {
+        router.push("/dashboards/segments");
+      }
     }
 
     if (selectedTabId === "text") {
-      return createSegment({
+      const textResponse = await createSegmentText({
+        name,
+        description,
+        type: "manual",
         text: data.text,
-        ...data,
       });
+
+      if (textResponse) {
+        router.push("/dashboards/segments");
+      }
     }
   };
 

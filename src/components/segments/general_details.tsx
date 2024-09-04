@@ -272,9 +272,7 @@ const GeneralDetails = () => {
                 closeFlyout={() => setOpenFlyout(false)}
               />
             )}
-            {data.type === "manual" && (
-              <Manual createSegment={() => {}} isCreateSegmentMutating={true} />
-            )}
+            {data.type === "manual" && <Manual name="" description="" />}
           </EuiFlyoutBody>
         </EuiFlyout>
       )}
