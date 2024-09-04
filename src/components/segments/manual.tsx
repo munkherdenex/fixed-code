@@ -346,7 +346,10 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
                 </EuiTourStep>
               </EuiFormRow>
             )}
-            <EuiButton type="submit" isLoading={isCreateSegmentMutating}>
+            <EuiButton
+              type="submit"
+              isLoading={isCreateSegmentMutating || isCreateSegmentFileMutating}
+            >
               Create
             </EuiButton>
           </EuiForm>
