@@ -33,7 +33,8 @@ const Dynamic = ({ name, description }: { name: string; description: string }) =
 
   const output = processDynamicFieldData(data);
 
-  const createSegment = async () => {
+  const createSegment = async (e) => {
+    e.preventDefault();
     const dynamicResponse = await createSegmentDynamic({
       name,
       description,

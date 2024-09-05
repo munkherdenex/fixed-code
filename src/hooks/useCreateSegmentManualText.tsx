@@ -7,7 +7,8 @@ export interface FormData {
   description: string;
   type: "manual";
   team_id?: string;
-  text: string;
+  text?: string;
+  input_type?: string;
 }
 
 export default function useCreateSegmentManualText() {

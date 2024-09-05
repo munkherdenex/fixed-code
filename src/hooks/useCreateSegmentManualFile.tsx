@@ -8,8 +8,7 @@ export default function useCreateSegmentManualFile() {
     async (path, { arg }: { arg: FormData }) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "POST",
-        headers: { "content-type": "multipart/form-data" },
-        body: JSON.stringify(arg),
+        body: arg,
         credentials: "include",
       });
 

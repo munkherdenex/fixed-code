@@ -166,14 +166,13 @@ const dataTypeOptions = [
 
 const schema = yup.object({
   file: yup
-    .mixed<FileList>() // Pass in the type of `fileUpload`
+    .mixed<File>() // Pass in the type of `fileUpload`
     .test(
       "fileSize",
       "Only documents up to 20MB are permitted.",
-      (files) =>
-        !files || // Check if `files` is defined
-        files.length === 0 || // Check if `files` is not an empty list
-        Array.from(files).every((file) => file.size <= 20_00_000),
+      (file) =>
+        !file || // Check if `files` is defined
+        file.size <= 20 * 1024 * 1024, // Check if the file size is less than 20MB
     ),
   text: yup.string(),
   text_type: yup.string().oneOf(["email", "phone"]).notRequired(),
@@ -259,10 +258,11 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
 
     if (selectedTabId === "file") {
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("description", description);
-      formData.append("type", "manual");
-      formData.append("file", data.file[0]);
+      formData.set("name", name);
+      formData.set("description", description);
+      formData.set("type", "manual");
+      formData.set("file", data.file);
+      formData.set("input_type", data?.input_type);
 
       const fileResponse = await createSegmentFile(formData);
 
@@ -276,7 +276,7 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
         name,
         description,
         type: "manual",
-        text: data.text,
+        ...data,
       });
 
       if (textResponse) {
