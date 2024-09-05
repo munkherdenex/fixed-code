@@ -20,18 +20,18 @@ import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import JumpToCreateChannelButton from "../../../../components/campaign/jump_to_create_channel_button";
-import { quillEditorStyles } from "../../../../components/email_editor/quill_editor.styles";
-import { addToast } from "../../../../components/toast";
-import { IS_POCKET } from "../../../../constants";
-import useCreateTemplate from "../../../../hooks/useCreateTemplate";
-import useGetChannels, { Channels } from "../../../../hooks/useGetChannels";
-import DashboardLayout from "../../../../layouts/dashboard";
-import { globalMutate } from "../../../../utils/globalMutate";
-import { dataTypeSwitch, dataTypeToSwitch } from "../../../../utils/helper";
+import JumpToCreateChannelButton from "../../../../../components/campaign/jump_to_create_channel_button";
+import { quillEditorStyles } from "../../../../../components/email_editor/quill_editor.styles";
+import { addToast } from "../../../../../components/toast";
+import { IS_POCKET } from "../../../../../constants";
+import useCreateTemplate from "../../../../../hooks/useCreateTemplate";
+import useGetChannels, { Channels } from "../../../../../hooks/useGetChannels";
+import DashboardLayout from "../../../../../layouts/dashboard";
+import { globalMutate } from "../../../../../utils/globalMutate";
+import { dataTypeSwitch, dataTypeToSwitch } from "../../../../../utils/helper";
 
 const QuillEditorComponent = dynamic(
-  () => import("../../../../components/email_editor/quill_editor"),
+  () => import("../../../../../components/email_editor/quill_editor"),
   { ssr: false },
 );
 
