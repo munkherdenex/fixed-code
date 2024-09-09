@@ -7,7 +7,7 @@ export default function useUnsubscribe<Type>() {
     `/api/v1/dj/unsubscribe/`,
     async (path, { arg }: { arg: Type }) => {
       const res = await fetch(`${BASE_URL}${path}`, {
-        method: "PUT",
+        method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(arg),
         credentials: "include",

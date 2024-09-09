@@ -23,7 +23,7 @@ const schema = yup.object({
 
 type FormData = yup.InferType<typeof schema>;
 
-const Unsubscribe = () => {
+const Unsubscribe = ({ token }) => {
   const { isMutating, trigger } = useUnsubscribe();
   const {
     handleSubmit,
@@ -86,20 +86,21 @@ const Unsubscribe = () => {
     },
   ];
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
-    console.log(radios.find((radio) => radio.id === data.reason).label);
-    // const response = trigger({
-    //   reason: radios.find((radio) => radio.id === data.reason).label,
-    // });
-    // if (response) {
-    //   addToast({
-    //     id: "unsubscribe",
-    //     title: "Unsubscribe",
-    //     color: "danger",
-    //     message: "Failed to unsubscribe.",
-    //   });
-    // }
+  const onSubmit = async (data: FormData) => {
+    try {
+      const response = await trigger({
+        reason: radios.find((radio) => radio.id === data.reason).label,
+        token,
+      });
+      if (response) {
+        addToast({
+          id: "unsubscribe",
+          title: "Unsubscribe",
+          color: "success",
+          text: "You have been unsubscribed successfully",
+        });
+      }
+    } catch (error) {}
   };
 
   return (
@@ -145,3 +146,21 @@ const Unsubscribe = () => {
 };
 
 export default Unsubscribe;
+
+export async function getServerSideProps(context) {
+  const query = context.query;
+  if (query?.token) {
+    return {
+      props: {
+        token: query.token,
+      },
+    };
+  }
+  return {
+    redirect: {
+      permanent: false,
+      destination: "/",
+    },
+    props: {},
+  };
+}
