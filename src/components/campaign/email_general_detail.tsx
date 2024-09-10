@@ -100,6 +100,7 @@ const EmailGeneralDetails = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
 
+  //INFO: This is a workaround to get the kind of the template becaouse of POCKET
   const dataKind =
     IS_POCKET && data?.kind === "api"
       ? JSON.parse(jsonrepair(data?.body) || "{}").type

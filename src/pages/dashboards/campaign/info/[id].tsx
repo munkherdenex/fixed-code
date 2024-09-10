@@ -20,6 +20,8 @@ import DashboardLayout from "../../../../layouts/dashboard";
 import { teamsContext } from "../../../../store/teams_store";
 import { globalMutate } from "../../../../utils/globalMutate";
 import EmailGeneralDetails from "../../../../components/campaign/email_general_detail";
+import { jsonrepair } from "jsonrepair";
+import { IS_POCKET } from "../../../../constants";
 
 const getRightSideButton = (
   status: string,
@@ -104,6 +106,14 @@ const CampaignInfo = () => {
 
   if (isLoading) return <div>Loading...</div>;
 
+  //INFO: This is a workaround to get the kind of the template becaouse of POCKET
+  const dataKind =
+    IS_POCKET && data?.kind === "api"
+      ? JSON.parse(jsonrepair(data?.body) || "{}").type
+        ? JSON.parse(jsonrepair(data?.body) || "{}").type
+        : data?.kind
+      : data?.kind;
+
   return (
     <>
       <Head>
@@ -138,7 +148,7 @@ const CampaignInfo = () => {
         }
       >
         <>
-          {data?.kind === "email" ? (
+          {dataKind === "email" ? (
             <>
               <>
                 <EuiFlexItem grow={4}>

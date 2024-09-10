@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
@@ -14,6 +13,8 @@ import {
 } from "@elastic/eui";
 import Button from "../next_eui/button";
 import TestEmailLayout from "./test_email_layout";
+import { IS_POCKET } from "../../constants";
+import { jsonrepair } from "jsonrepair";
 
 const ViewEmailLayout = ({
   templateStatus,
@@ -31,6 +32,7 @@ const ViewEmailLayout = ({
     },
   );
   const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
+
   var toolbarOptions = "";
   const [isTestLayout, setIsTestLayout] = useState(false);
   const module = {
@@ -39,6 +41,8 @@ const ViewEmailLayout = ({
   const closeFlyout = () => {
     setIsTestLayout(false);
   };
+
+  const dataBody = IS_POCKET ? JSON.parse(jsonrepair(data?.body || "{}")).body : data?.body;
 
   return (
     <>
@@ -81,8 +85,7 @@ const ViewEmailLayout = ({
         </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="s" />
-      <ReactQuill modules={module} theme="snow" value={data?.body} readOnly />
-
+      <ReactQuill modules={module} theme="snow" value={dataBody} readOnly />
       {isTestLayout && <TestEmailLayout closeFlyout={closeFlyout} template_data={data} />}
     </>
   );
