@@ -122,8 +122,12 @@ const SegmentAudienceList = () => {
       ),
     },
     {
+      field: "created_at",
       name: "Created at",
-      render: (customer: SegmentAudience) => moment(customer.created_at).format("YYYY-MM-DD LT"),
+      align: "right",
+      render: (date: string) => {
+        return moment(date).format("YYYY-MM-DD LT");
+      },
     },
     {
       name: "Actions",

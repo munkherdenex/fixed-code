@@ -75,7 +75,7 @@ const SecurityComponent = () => {
         <EuiPanel>
           <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit(onSubmit)}>
             <EuiFormRow
-              label="Password"
+              label="Old password"
               isInvalid={!!errors.current_password?.message}
               error={[errors.current_password?.message]}
             >
@@ -96,7 +96,7 @@ const SecurityComponent = () => {
               />
             </EuiFormRow>
             <EuiFormRow
-              label="Password"
+              label="New password"
               isInvalid={!!errors.new_password?.message}
               error={[errors.new_password?.message]}
             >
@@ -117,7 +117,7 @@ const SecurityComponent = () => {
               />
             </EuiFormRow>
             <EuiFormRow
-              label="Password"
+              label="Repeat password"
               isInvalid={!!errors.new_password_repeat?.message}
               error={[errors.new_password_repeat?.message]}
             >
