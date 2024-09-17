@@ -11,7 +11,6 @@ const SWRConfigLayout = ({ children }) => {
     <SWRConfig
       value={{
         onError: async (error) => {
-          console.error(error);
           if (error?.status === 401 && router.pathname.includes("dashboards")) {
             await trigger();
             await mutate(() => true, undefined, { revalidate: false });
@@ -20,10 +19,12 @@ const SWRConfigLayout = ({ children }) => {
             window.location.href = "/";
           }
         },
-        onErrorRetry: (error) => {
+        onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
           if (error?.status === 401) {
             return;
           }
+          if (retryCount >= 10) return;
+          setTimeout(() => revalidate({ retryCount }), 5000);
         },
       }}
     >
