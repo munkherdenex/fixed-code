@@ -19,14 +19,20 @@ import { globalMutate } from "../../utils/globalMutate";
 import useCreateSegmentsAudience from "../../hooks/useCreateSegmentsAudience";
 import { useRouter } from "next/router";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
+import { PAGINATION_CHOOSES } from "../../constants";
 
 const schema = yup
   .object({
-    customer: yup.string().required("please enter audience"),
+    customer: yup.array().of(
+      yup.object({
+        label: yup.string().notRequired(),
+        value: yup.string().required('please enter audience'),
+      }).required('please enter audience')
+    ).required('please enter audience'),
   })
   .required();
 
-type FormData = yup.InferType<typeof schema>;
+type AudienceFormData = yup.InferType<typeof schema>;
 
 const CreateAudienceSegment = ({
   setIsFlyoutVisible,
@@ -39,25 +45,18 @@ const CreateAudienceSegment = ({
   const { trigger } = useCreateSegmentsAudience(id);
 
   const [searchValue, setSearchValue] = useState("");
-  const [pageSize, setPageSize] = useState(3);
 
   const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
     query: searchValue,
-    limit: `${pageSize}`,
+    limit: `${PAGINATION_CHOOSES[1]}`,
   });
 
   const dataTypeOptions: EuiComboBoxOptionOption[] = segmentCustomers?.results?.map((customer) => {
     return {
-      label: String(customer?.email),
+      label: customer?.email || customer?.phone || customer?.rid,
       value: String(customer?.id),
     };
-  }) || [{ label: "", value: "" }];
-
-  const [selectedOptions, setSelected] = useState([
-    {
-      label: "",
-    },
-  ]);
+  }) || [{ label: "", value: '' }];
 
   const {
     handleSubmit,
@@ -66,37 +65,30 @@ const CreateAudienceSegment = ({
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
-    defaultValues: {
-      customer: segmentCustomers?.results[0]?.id.toString() || "",
-    },
   });
 
-  const onSearchChange = (value) => {
-    // const total_count = segmentCustomers?.total_count || 50;
-    const total_count = 1000000000;
-    setPageSize(total_count);
+  const onSearchChange = (value: string) => {
     setSearchValue(value);
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: AudienceFormData) => {
     try {
-      const customer_data = segmentCustomers?.results?.find(
-        (value) => value.email === data?.customer,
-      )?.id;
-      const prepareData = {
-        customer: customer_data,
-        segment: id,
-      };
-      const response = await trigger(prepareData);
-      if (response) {
-        setIsFlyoutVisible(false);
-        addToast({
-          id: "segment-audience-success",
-          color: "success",
-          title: "Success",
-          text: "Audience added to the segment.",
-        });
-        globalMutate(`/api/v1/dj/segments/${id}/customers/`);
+      if (data?.customer[0]?.value) {
+        const prepareData = {
+          customer: data?.customer[0]?.value,
+          segment: id,
+        };
+        const response = await trigger(prepareData);
+        if (response) {
+          setIsFlyoutVisible(false);
+          addToast({
+            id: "segment-audience-success",
+            color: "success",
+            title: "Success",
+            text: "Audience added to the segment.",
+          });
+          globalMutate(`/api/v1/dj/segments/${id}/customers/`);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -113,25 +105,28 @@ const CreateAudienceSegment = ({
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Email address"
-            isInvalid={!!errors.customer?.message}
-            error={[errors.customer?.message]}
+            label="Search email address, phone and rid"
+            isInvalid={!!errors.customer?.message ||
+              !!errors.customer?.[0]?.value?.message}
+            error={[errors.customer?.message || errors.customer?.[0]?.value?.message]}
           >
             <Controller
               control={control}
               name="customer"
-              render={({ field: { onBlur, onChange } }) => (
+              render={({ field: { value, onBlur, onChange } }) => (
                 <EuiComboBox
-                  placeholder="Email address"
+                  placeholder="Search"
                   singleSelection={{ asPlainText: true }}
                   options={dataTypeOptions}
                   onChange={(selected) => {
-                    setSelected(selected);
-                    onChange(selected[0]?.label);
+                    onChange(selected);
                   }}
-                  selectedOptions={selectedOptions}
+                  selectedOptions={[
+                    { label: value && value[0]?.label || '', }
+                  ]}
                   onSearchChange={onSearchChange}
                   onBlur={onBlur}
+                  isClearable={false}
                 />
               )}
             />
