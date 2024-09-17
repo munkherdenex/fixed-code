@@ -19,7 +19,7 @@ const SWRConfigLayout = ({ children }) => {
             window.location.href = "/";
           }
         },
-        onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+        onErrorRetry: (error, _key, _config, revalidate, { retryCount }) => {
           if (error?.status === 401) {
             return;
           }
