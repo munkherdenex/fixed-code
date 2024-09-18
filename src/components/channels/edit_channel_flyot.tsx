@@ -20,20 +20,13 @@ import { useRouter } from "next/router";
 import { SetStateAction, useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS } from "../../constants";
 import { Channels } from "../../hooks/useGetChannels";
 import useUpdateChannel from "../../hooks/useUpdateChannel";
 import { globalMutate } from "../../utils/globalMutate";
 import { createChannelSchema } from "./schema";
 
 type FormData = yup.InferType<typeof createChannelSchema>;
-
-const dataTypeOptions = [
-  { value: "email", text: "Email" },
-  { value: "sms", text: "Sms" },
-  { value: "push", text: "Push" },
-  { value: "inapp", text: "Inapp" },
-  { value: "api", text: "Api" },
-];
 
 const EditChannelFlyot = ({
   setIsFlyoutVisible,
@@ -155,7 +148,7 @@ const EditChannelFlyot = ({
                 <EuiSelect
                   onChange={onChange}
                   value={value}
-                  options={dataTypeOptions}
+                  options={CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS}
                   onBlur={onBlur}
                   isInvalid={!!errors.channel_type?.message}
                   aria-label="channel type"

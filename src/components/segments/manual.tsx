@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import { Fragment, useMemo, useState } from "react";
 import { Control, Controller, FieldValues, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { EMAIL_PHONE_DATA_TYPE_OPTIONS } from "../../constants";
 import useCreateSegmentManualFile from "../../hooks/useCreateSegmentManualFile";
 import useCreateSegmentManualText from "../../hooks/useCreateSegmentManualText";
 import { commonStyles } from "../../styles/global.styles";
@@ -157,11 +158,6 @@ const tabs = [
     name: "Text",
     content: (control: Control<FieldValues, any>) => <TextContent control={control} />,
   },
-];
-
-const dataTypeOptions = [
-  { value: "email", text: "Email" },
-  { value: "phone", text: "Phone" },
 ];
 
 const schema = yup.object({
@@ -335,7 +331,7 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
                       <EuiSelect
                         onChange={onChange}
                         value={value}
-                        options={dataTypeOptions}
+                        options={EMAIL_PHONE_DATA_TYPE_OPTIONS}
                         onBlur={onBlur}
                         isInvalid={!!errors.text_type?.message}
                         aria-label="channel type"

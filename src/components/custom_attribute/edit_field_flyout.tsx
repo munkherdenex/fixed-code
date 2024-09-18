@@ -16,6 +16,7 @@ import { SetStateAction } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { mutate } from "swr";
 import * as yup from "yup";
+import { CUSTOM_DATA_TYPE_OPTIONS } from "../../constants";
 import { Fields } from "../../hooks/useGetFields";
 import useUpdateField from "../../hooks/useUpdateField";
 
@@ -28,14 +29,6 @@ const schema = yup
   .required();
 
 type FormData = yup.InferType<typeof schema>;
-
-const dataTypeOptions = [
-  { value: "int", text: "Int" },
-  { value: "str", text: "String" },
-  { value: "datetime", text: "Date time" },
-  { value: "bool", text: "Boolean" },
-  { value: "date", text: "Date" },
-];
 
 const UpdateFieldFlyout = ({
   setIsFlyoutVisible,
@@ -137,7 +130,7 @@ const UpdateFieldFlyout = ({
                 <EuiSelect
                   onChange={onChange}
                   value={value}
-                  options={dataTypeOptions}
+                  options={CUSTOM_DATA_TYPE_OPTIONS}
                   onBlur={onBlur}
                   isInvalid={!!errors.data_type?.message}
                   aria-label="data type"

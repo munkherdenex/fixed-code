@@ -6,21 +6,20 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
-  EuiStat,
+  EuiIcon,
   EuiPanel,
   EuiSpacer,
-  useGeneratedHtmlId,
+  EuiStat,
   EuiTextColor,
-  EuiIcon,
   EuiToolTip,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
-import { jsonrepair } from "jsonrepair";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
-import { IS_POCKET } from "../../constants";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
+import { getDataKind } from "../../utils/helper";
 import EditTemplateFlyout from "./edit_template_flyout";
 
 const DeleteConfirmModal = ({
@@ -83,30 +82,17 @@ const DeleteConfirmModal = ({
   );
 };
 
-const EmailGeneralDetails = ({
-  templateStatus,
-}: {
+const EmailGeneralDetails = ({}: {
   templateStatus?: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
 }) => {
   const router = useRouter();
 
-  const { data, isLoading } = useGetTemplates<Template>(
-    router.query.id,
-    {},
-    {
-      refreshInterval: templateStatus !== "DRAFT" ? 1000 : 0,
-    },
-  );
+  const { data, isLoading } = useGetTemplates<Template>(router.query.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
 
   //INFO: This is a workaround to get the kind of the template becaouse of POCKET
-  const dataKind =
-    IS_POCKET && data?.kind === "api"
-      ? JSON.parse(jsonrepair(data?.body) || "{}").type
-        ? JSON.parse(jsonrepair(data?.body) || "{}").type
-        : data?.kind
-      : data?.kind;
+  const dataKind = getDataKind(data);
 
   const closeFlyout = () => {
     setIsEditFlyoutVisible(false);

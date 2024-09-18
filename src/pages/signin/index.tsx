@@ -9,7 +9,7 @@ import { IS_POCKET } from "../../constants";
 
 const Index = () => {
   const router = useRouter();
-  const { user } = useContext(authContext);
+  const { user, isLoading } = useContext(authContext);
 
   useEffect(() => {
     if (user) {
@@ -17,6 +17,10 @@ const Index = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  if (isLoading) {
+    return <div>...loading</div>;
+  }
 
   if (user) {
     return null;
@@ -30,14 +34,14 @@ const Index = () => {
       <Wrapper>
         <div>
           <EuiFlexGroup direction="column" alignItems="center" gutterSize="xs">
+            <EuiSpacer size="xl" />
             <EuiFlexItem grow={false}>
-              <EuiSpacer size="xl" />
               <EuiTitle>
                 <h1>Sign in</h1>
               </EuiTitle>
             </EuiFlexItem>
+            <EuiSpacer size="xl" />
             <EuiFlexItem grow={false}>
-              <EuiSpacer size="xl" />
               <SigninForm />
             </EuiFlexItem>
             {IS_POCKET && (

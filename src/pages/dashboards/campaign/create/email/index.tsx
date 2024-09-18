@@ -23,12 +23,12 @@ import * as yup from "yup";
 import JumpToCreateChannelButton from "../../../../../components/campaign/jump_to_create_channel_button";
 import { quillEditorStyles } from "../../../../../components/email_editor/quill_editor.styles";
 import { addToast } from "../../../../../components/toast";
-import { IS_POCKET } from "../../../../../constants";
+import { CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS } from "../../../../../constants";
 import useCreateTemplate from "../../../../../hooks/useCreateTemplate";
 import useGetChannels, { Channels } from "../../../../../hooks/useGetChannels";
 import DashboardLayout from "../../../../../layouts/dashboard";
 import { globalMutate } from "../../../../../utils/globalMutate";
-import { dataTypeSwitch, dataTypeToSwitch } from "../../../../../utils/helper";
+import { dataTypeSwitch } from "../../../../../utils/helper";
 
 const QuillEditorComponent = dynamic(
   () => import("../../../../../components/email_editor/quill_editor"),
@@ -63,14 +63,6 @@ const schema = yup
     channel: yup.number().required().label("Channel"),
   })
   .required();
-
-const dataTypeOptions = [
-  { value: "email", text: "Email" },
-  { value: "sms", text: "Sms" },
-  { value: "push", text: "Push" },
-  { value: "inapp", text: "Inapp" },
-  { value: "api", text: "Api" },
-];
 
 type FormData = yup.InferType<typeof schema>;
 
@@ -116,15 +108,6 @@ const Dashboard: FunctionComponent = () => {
       const preparedData = {
         ...data,
       };
-      if (IS_POCKET) {
-        preparedData.kind = "api";
-        preparedData.body = JSON.stringify({
-          type: "email",
-          to: `{{${dataTypeToSwitch(data.kind)}}}`,
-          title: data.title,
-          body: data.body,
-        });
-      }
       const response = await trigger(preparedData);
       if (response) {
         globalMutate("/api/v1/dj/templates/");
@@ -269,7 +252,7 @@ const Dashboard: FunctionComponent = () => {
                         <EuiSelect
                           onChange={onChange}
                           value={value}
-                          options={dataTypeOptions}
+                          options={CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS}
                           onBlur={onBlur}
                           isInvalid={!!errors.kind?.message}
                           aria-label="data type"

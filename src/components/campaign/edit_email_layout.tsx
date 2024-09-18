@@ -18,7 +18,7 @@ import { IS_POCKET } from "../../constants";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { globalMutate } from "../../utils/globalMutate";
-import { dataTypeToSwitch } from "../../utils/helper";
+import { dataTypeToSwitch, processBody, processKind } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
 import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 import { addToast } from "../toast";
@@ -43,46 +43,6 @@ const schema = yup
 
 type EmailFormData = yup.InferType<typeof schema>;
 
-const processKind = (body: string, kind: EmailFormData["kind"]): EmailFormData["kind"] => {
-  if (!IS_POCKET) return kind;
-  try {
-    const parsedBody = JSON.parse(body);
-    if (parsedBody.type === "sms") {
-      return "sms";
-    }
-    if (parsedBody.type === "email") {
-      return "email";
-    }
-    if (parsedBody.type === "push") {
-      return "push";
-    }
-  } catch (error) {
-    return kind;
-  }
-
-  return kind;
-};
-
-const processBody = (body: string, kind: string) => {
-  if (!IS_POCKET) return body;
-  try {
-    const parsedBody = JSON.parse(body);
-    if (kind === "api") {
-      return JSON.stringify(JSON.parse(body), null, 2);
-    }
-    if (kind === "sms") {
-      return parsedBody.body;
-    }
-    if (kind === "email") {
-      return parsedBody.body;
-    }
-    if (kind === "push") {
-      return parsedBody.body;
-    }
-  } catch (error) {
-    return body;
-  }
-};
 const pathPrefix = process.env.PATH_PREFIX;
 
 const EditEmailLayout = ({
@@ -139,7 +99,8 @@ const EditEmailLayout = ({
         ...data,
       };
       const dataType = processKind(data.body, data.kind);
-      if ((dataType === "email" || dataType === "sms" || dataType === "push") && IS_POCKET) {
+
+      if ((dataType === "sms" || dataType === "push") && IS_POCKET) {
         preparedData.kind = "api";
         preparedData.body = JSON.stringify({
           type: dataType,

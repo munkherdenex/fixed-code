@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { memo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { CUSTOM_DATA_TYPE_OPTIONS } from "../../constants";
 import useCreateTemplateAudience from "../../hooks/useCreateTemplateAudience";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
 import useGetSegments, { SegmentResponse } from "../../hooks/useGetSegments";
@@ -39,11 +40,6 @@ const searchSchema = yup
   .required();
 
 type SearchFormData = yup.InferType<typeof searchSchema>;
-
-const dataTypeOptions = [
-  { value: "customer", text: "Customer" },
-  { value: "segment", text: "Segment" },
-];
 
 const AddAudienceFlyout = ({
   closeFlyout,
@@ -188,7 +184,7 @@ const AddAudienceFlyout = ({
                 <EuiSelect
                   onChange={onChange}
                   value={value}
-                  options={dataTypeOptions}
+                  options={CUSTOM_DATA_TYPE_OPTIONS}
                   onBlur={onBlur}
                   isInvalid={!!errors.type?.message}
                   aria-label="data type"

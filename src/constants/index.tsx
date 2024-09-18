@@ -27,3 +27,29 @@ export const TEMPLATE_DATA_TYPE_OPTIONS = [
   { value: "inapp", inputDisplay: "Inapp", disabled: true },
   { value: "api", inputDisplay: "Api" },
 ];
+
+export const CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS = [
+  { value: "email", text: "Email" },
+  { value: "sms", text: "Sms" },
+  { value: "push", text: "Push" },
+  { value: "inapp", text: "Inapp" },
+  { value: "api", text: "Api" },
+];
+
+export const CUSTOM_DATA_TYPE_OPTIONS = [
+  { value: "int", text: "Int" },
+  { value: "str", text: "String" },
+  { value: "datetime", text: "Date time" },
+  { value: "bool", text: "Boolean" },
+  { value: "date", text: "Date" },
+];
+
+export const CUSTOMER_SEGMENT_DATA_TYPE_OPTIONS = [
+  { value: "customer", text: "Customer" },
+  { value: "segment", text: "Segment" },
+];
+
+export const EMAIL_PHONE_DATA_TYPE_OPTIONS = [
+  { value: "email", text: "Email" },
+  { value: "phone", text: "Phone" },
+];

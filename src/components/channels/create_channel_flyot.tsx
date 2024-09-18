@@ -18,19 +18,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS } from "../../constants";
 import useCreateChannel from "../../hooks/useCreateChannel";
 import { globalMutate } from "../../utils/globalMutate";
 import { createChannelSchema } from "./schema";
 
 type FormData = yup.InferType<typeof createChannelSchema>;
-
-const dataTypeOptions = [
-  { value: "email", text: "Email" },
-  { value: "sms", text: "Sms" },
-  { value: "push", text: "Push" },
-  { value: "inapp", text: "Inapp" },
-  { value: "api", text: "Api" },
-];
 
 const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const flyoutHeadingId = useGeneratedHtmlId({
@@ -48,7 +41,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     mode: "onBlur",
     resolver: yupResolver(createChannelSchema),
     defaultValues: {
-      channel_type: dataTypeOptions[4].value,
+      channel_type: CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS?.[4].value,
     },
   });
 
@@ -126,7 +119,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 <EuiSelect
                   onChange={onChange}
                   value={value}
-                  options={dataTypeOptions}
+                  options={CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS}
                   onBlur={onBlur}
                   isInvalid={!!errors.channel_type?.message}
                   aria-label="channel type"
