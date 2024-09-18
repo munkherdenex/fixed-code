@@ -9,7 +9,7 @@ import { IS_POCKET } from "../../constants";
 
 const Index: FunctionComponent = () => {
   const router = useRouter();
-  const { user } = useContext(authContext);
+  const { user, isLoading } = useContext(authContext);
 
   useEffect(() => {
     if (user) {
@@ -17,6 +17,10 @@ const Index: FunctionComponent = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  if (isLoading) {
+    return <div>...loading</div>;
+  }
 
   if (user) {
     return null;

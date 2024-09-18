@@ -45,9 +45,12 @@ const Menu = ({ isEmail }: { isEmail?: boolean }) => {
   const [selectedTabId, setSelectedTabId] = useState(isEmail ? "preview--id" : "audience--id");
 
   const selectedTabContent = useMemo(() => {
-    return isEmail
-      ? email_tabs.find((obj) => obj.id === selectedTabId)?.content
-      : tabs.find((obj) => obj.id === selectedTabId)?.content;
+    if (isEmail) {
+      return email_tabs.find((obj) => obj.id === selectedTabId)?.content;
+    }
+
+    return tabs.find((obj) => obj.id === selectedTabId)?.content;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTabId]);
 
   const onSelectedTabChanged = (id: string) => {

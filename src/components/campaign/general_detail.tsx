@@ -23,14 +23,14 @@ import { jsonrepair } from "jsonrepair";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
-import { IS_POCKET } from "../../constants";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 import { commonStyles } from "../../styles/global.styles";
 import { badgeColor } from "../../utils/badge_color";
-import EditTemplateFlyout from "./edit_template_flyout";
+import { getBodyContent, getDataKind } from "../../utils/helper";
 import { quillEditorStyles } from "../email_editor/quill_editor.styles";
+import EditTemplateFlyout from "./edit_template_flyout";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -92,22 +92,14 @@ const DeleteConfirmModal = ({
   );
 };
 
-const GeneralDetails = ({
-  templateStatus,
-}: {
+const GeneralDetails = ({}: {
   templateStatus?: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
 }) => {
   const router = useRouter();
   const modalTitleId = useGeneratedHtmlId();
   const cStyles = commonStyles();
 
-  const { data, isLoading } = useGetTemplates<Template>(
-    router.query.id,
-    {},
-    {
-      refreshInterval: templateStatus !== "DRAFT" ? 1000 : 0,
-    },
-  );
+  const { data, isLoading } = useGetTemplates<Template>(router.query.id);
   const { data: channelData } = useGetChannels<Channels>(`${data?.channel || ""}`);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
@@ -117,14 +109,8 @@ const GeneralDetails = ({
   const styles = quillEditorStyles();
 
   //INFO: This is a workaround to get the kind of the template becaouse of POCKET
-  const dataKind =
-    IS_POCKET && data?.kind === "api"
-      ? JSON.parse(jsonrepair(data?.body) || "{}").type
-        ? JSON.parse(jsonrepair(data?.body) || "{}").type
-        : data?.kind
-      : data?.kind;
-
-  const dataBody = IS_POCKET ? JSON.parse(jsonrepair(data?.body || "{}")).body : data?.body;
+  const dataKind = getDataKind(data);
+  const dataBody = getBodyContent(data, dataKind);
 
   const closeFlyout = () => {
     setIsEditFlyoutVisible(false);

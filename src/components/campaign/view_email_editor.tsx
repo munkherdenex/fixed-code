@@ -13,8 +13,7 @@ import {
 } from "@elastic/eui";
 import Button from "../next_eui/button";
 import TestEmailLayout from "./test_email_layout";
-import { IS_POCKET } from "../../constants";
-import { jsonrepair } from "jsonrepair";
+import { getBodyContent } from "../../utils/helper";
 
 const ViewEmailLayout = ({
   templateStatus,
@@ -33,7 +32,7 @@ const ViewEmailLayout = ({
   );
   const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
 
-  var toolbarOptions = "";
+  const toolbarOptions = "";
   const [isTestLayout, setIsTestLayout] = useState(false);
   const module = {
     toolbar: toolbarOptions,
@@ -42,7 +41,8 @@ const ViewEmailLayout = ({
     setIsTestLayout(false);
   };
 
-  const dataBody = IS_POCKET ? JSON.parse(jsonrepair(data?.body || "{}")).body : data?.body;
+  // const dataBody = IS_POCKET ? JSON.parse(jsonrepair(data?.body || "{}")).body : data?.body;
+  const dataBody = getBodyContent(data, "email");
 
   return (
     <>
@@ -85,7 +85,7 @@ const ViewEmailLayout = ({
         </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="s" />
-      <ReactQuill modules={module} theme="snow" value={dataBody} readOnly />
+      {ReactQuill && <ReactQuill modules={module} theme="snow" value={dataBody} readOnly />}
       {isTestLayout && <TestEmailLayout closeFlyout={closeFlyout} template_data={data} />}
     </>
   );

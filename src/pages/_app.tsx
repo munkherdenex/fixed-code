@@ -1,5 +1,5 @@
-import "@elastic/charts/dist/theme_only_light.css";
 import "@elastic/charts/dist/theme_only_dark.css";
+import "@elastic/charts/dist/theme_only_light.css";
 import { EuiErrorBoundary } from "@elastic/eui";
 import { Global } from "@emotion/react";
 import "core-js/stable";
@@ -8,6 +8,7 @@ import Head from "next/head";
 import Script from "next/script";
 import { FunctionComponent } from "react";
 import "react-querybuilder/dist/query-builder.css";
+import "react-quill/dist/quill.snow.css";
 import "regenerator-runtime/runtime";
 import Chrome from "../components/chrome";
 import { Theme } from "../components/theme";

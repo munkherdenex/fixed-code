@@ -20,15 +20,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { IS_POCKET } from "../../constants";
+import { CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS, IS_POCKET } from "../../constants";
 import useCreateTemplate from "../../hooks/useCreateTemplate";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { globalMutate } from "../../utils/globalMutate";
+import { dataTypeSwitch, dataTypeToSwitch } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
-import { quillEditorStyles } from "../email_editor/quill_editor.styles";
-import { dataTypeSwitch, dataTypeToSwitch } from "../../utils/helper";
 
 const bodyHelpText = "Use custom attributes to make data dynamic. {{cf_*}}";
 
@@ -59,14 +58,6 @@ const schema = yup
   })
   .required();
 
-const dataTypeOptions = [
-  { value: "email", text: "Email" },
-  { value: "sms", text: "Sms" },
-  { value: "push", text: "Push" },
-  { value: "inapp", text: "Inapp" },
-  { value: "api", text: "Api" },
-];
-
 type FormData = yup.InferType<typeof schema>;
 
 const CreateTemplateFlyot = ({
@@ -76,7 +67,6 @@ const CreateTemplateFlyot = ({
   closeFlyout: () => void;
   dataType: FormData["kind"];
 }) => {
-  const styles = quillEditorStyles();
   const router = useRouter();
   const { isMutating, trigger } = useCreateTemplate();
   const { data: channelsData } = useGetChannels<Channels[]>(undefined, {
@@ -127,7 +117,7 @@ const CreateTemplateFlyot = ({
       const preparedData = {
         ...data,
       };
-      if ((dataType === "email" || dataType === "sms" || dataType === "push") && IS_POCKET) {
+      if ((dataType === "sms" || dataType === "push") && IS_POCKET) {
         //TODO: If team is not pocket dont edit data
         preparedData.kind = "api";
         preparedData.body = JSON.stringify({
@@ -208,7 +198,7 @@ const CreateTemplateFlyot = ({
                 <EuiSelect
                   onChange={onChange}
                   value={value}
-                  options={dataTypeOptions}
+                  options={CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS}
                   onBlur={onBlur}
                   isInvalid={!!errors.kind?.message}
                   aria-label="data type"

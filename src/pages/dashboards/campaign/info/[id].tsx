@@ -10,7 +10,7 @@ import {
 } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { memo, useContext, useState } from "react";
 import GeneralDetails from "../../../../components/campaign/general_detail";
 import Menu from "../../../../components/campaign/menu";
 import useGetTemplates, { Template } from "../../../../hooks/useGetTemplates";
@@ -20,8 +20,7 @@ import DashboardLayout from "../../../../layouts/dashboard";
 import { teamsContext } from "../../../../store/teams_store";
 import { globalMutate } from "../../../../utils/globalMutate";
 import EmailGeneralDetails from "../../../../components/campaign/email_general_detail";
-import { jsonrepair } from "jsonrepair";
-import { IS_POCKET } from "../../../../constants";
+import { getDataKind } from "../../../../utils/helper";
 
 const getRightSideButton = (
   status: string,
@@ -107,12 +106,9 @@ const CampaignInfo = () => {
   if (isLoading) return <div>Loading...</div>;
 
   //INFO: This is a workaround to get the kind of the template becaouse of POCKET
-  const dataKind =
-    IS_POCKET && data?.kind === "api"
-      ? JSON.parse(jsonrepair(data?.body) || "{}").type
-        ? JSON.parse(jsonrepair(data?.body) || "{}").type
-        : data?.kind
-      : data?.kind;
+  const dataKind = getDataKind(data);
+  const isEmail = dataKind === "email";
+  const DetailsComponent = memo(isEmail ? EmailGeneralDetails : GeneralDetails);
 
   return (
     <>
@@ -148,28 +144,15 @@ const CampaignInfo = () => {
         }
       >
         <>
-          {dataKind === "email" ? (
-            <>
-              <>
-                <EuiFlexItem grow={4}>
-                  <EmailGeneralDetails templateStatus={data?.status} />
-                </EuiFlexItem>
-                <EuiSpacer size="l" />
-                <EuiFlexItem grow={7}>
-                  <Menu isEmail={true} />
-                </EuiFlexItem>
-              </>
-            </>
-          ) : (
-            <EuiFlexGroup>
-              <EuiFlexItem grow={4}>
-                <GeneralDetails templateStatus={data?.status} />
-              </EuiFlexItem>
-              <EuiFlexItem grow={7}>
-                <Menu isEmail={false} />
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          )}
+          <EuiFlexGroup direction={isEmail ? "column" : "row"}>
+            <EuiFlexItem grow={4}>
+              <DetailsComponent templateStatus={data?.status} />
+            </EuiFlexItem>
+            {isEmail && <EuiSpacer size="l" />}
+            <EuiFlexItem grow={7}>
+              <Menu isEmail={isEmail} />
+            </EuiFlexItem>
+          </EuiFlexGroup>
           {isModalVisible && data.status === "DRAFT" && (
             <EuiConfirmModal
               aria-labelledby={modalTitleId}

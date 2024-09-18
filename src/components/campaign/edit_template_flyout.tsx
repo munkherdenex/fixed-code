@@ -18,12 +18,12 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { IS_POCKET } from "../../constants";
+import { CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS, IS_POCKET } from "../../constants";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { Template } from "../../hooks/useGetTemplates";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { globalMutate } from "../../utils/globalMutate";
-import { dataTypeSwitch, dataTypeToSwitch } from "../../utils/helper";
+import { dataTypeSwitch, dataTypeToSwitch, processBody, processKind } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
 import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 import AceEditorComponent from "./ace_editor";
@@ -46,56 +46,7 @@ const schema = yup
   })
   .required();
 
-const dataTypeOptions = [
-  { value: "email", text: "Email" },
-  { value: "sms", text: "Sms" },
-  { value: "push", text: "Push" },
-  { value: "inapp", text: "Inapp" },
-  { value: "api", text: "Api" },
-];
-
 type FormData = yup.InferType<typeof schema>;
-
-const processKind = (body: string, kind: FormData["kind"]): FormData["kind"] => {
-  if (!IS_POCKET) return kind;
-  try {
-    const parsedBody = JSON.parse(body);
-    if (parsedBody.type === "sms") {
-      return "sms";
-    }
-    if (parsedBody.type === "email") {
-      return "email";
-    }
-    if (parsedBody.type === "push") {
-      return "push";
-    }
-  } catch (error) {
-    return kind;
-  }
-
-  return kind;
-};
-
-const processBody = (body: string, kind: string) => {
-  if (!IS_POCKET) return body;
-  try {
-    const parsedBody = JSON.parse(body);
-    if (kind === "api") {
-      return JSON.stringify(JSON.parse(body), null, 2);
-    }
-    if (kind === "sms") {
-      return parsedBody.body;
-    }
-    if (kind === "email") {
-      return parsedBody.body;
-    }
-    if (kind === "push") {
-      return parsedBody.body;
-    }
-  } catch (error) {
-    return body;
-  }
-};
 
 const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; data: Template }) => {
   const router = useRouter();
@@ -159,8 +110,10 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
       const preparedData = {
         ...data,
       };
+
       const dataType = processKind(data.body, data.kind);
-      if ((dataType === "email" || dataType === "sms" || dataType === "push") && IS_POCKET) {
+
+      if ((dataType === "sms" || dataType === "push") && IS_POCKET) {
         preparedData.kind = "api";
         preparedData.body = JSON.stringify({
           type: dataType,
@@ -221,7 +174,7 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
                 <EuiSelect
                   onChange={onChange}
                   value={value}
-                  options={dataTypeOptions}
+                  options={CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS}
                   onBlur={onBlur}
                   isInvalid={!!errors.kind?.message}
                   aria-label="data type"

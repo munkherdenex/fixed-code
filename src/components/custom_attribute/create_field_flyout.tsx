@@ -13,6 +13,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { CUSTOM_DATA_TYPE_OPTIONS } from "../../constants";
 import useCreateField from "../../hooks/useCreateCustomField";
 import { globalMutate } from "../../utils/globalMutate";
 
@@ -33,14 +34,6 @@ const schema = yup
   .required();
 
 type FormData = yup.InferType<typeof schema>;
-
-const dataTypeOptions = [
-  { value: "int", text: "Int" },
-  { value: "str", text: "String" },
-  { value: "datetime", text: "Date time" },
-  { value: "bool", text: "Boolean" },
-  { value: "date", text: "Date" },
-];
 
 const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const { trigger, isMutating } = useCreateField<FormData>();
@@ -133,7 +126,7 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 <EuiSelect
                   onChange={onChange}
                   value={value}
-                  options={dataTypeOptions}
+                  options={CUSTOM_DATA_TYPE_OPTIONS}
                   onBlur={onBlur}
                   isInvalid={!!errors.data_type?.message}
                   aria-label="data type"

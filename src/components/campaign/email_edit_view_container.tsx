@@ -19,7 +19,7 @@ const EmailLayouts = () => {
         <EuiFlexItem>
           <EuiFlexItem>
             {isViewEmail ? (
-              <ViewEmailLayout setView={setView} templateStatus={data.status} />
+              <ViewEmailLayout templateStatus={data.status} setView={setView} />
             ) : (
               <EditEmailLayout templateStatus={data.status} setView={setView} />
             )}
