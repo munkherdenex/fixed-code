@@ -1,18 +1,17 @@
-import { EuiBreadcrumbs, EuiButton } from "@elastic/eui";
+import { EuiBreadcrumbs, useGeneratedHtmlId } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import CreateCustomerComponent from "../../../components/customers/create_customer";
 import CustomersTable from "../../../components/customers/table";
 import DashboardLayout from "../../../layouts/dashboard";
-import ImportAudienceComponent from "../../../components/customers/import_audience";
+import CreateCustomerFlyoutContainer from "../../../components/customers/create_customer_flyout_container";
+import ImportAudienceFlyoutContainer from "../../../components/customers/import_audience_flyout_container";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersDashboard = () => {
   const router = useRouter();
-  const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
-  const [isImportFlyoutVisible, setIsImportFlyoutVisible] = useState(false);
+  const createCustomerFlyoutContainerId = useGeneratedHtmlId();
+  const importAudienceFlyoutContainerId = useGeneratedHtmlId();
 
   return (
     <>
@@ -24,23 +23,8 @@ const CustomersDashboard = () => {
           pageTitle: "Audience",
           iconType: "usersRolesApp",
           rightSideItems: [
-            <EuiButton
-              color="primary"
-              onClick={() => setIsFlyoutVisible(true)}
-              fill
-              key="audience-customer"
-            >
-              Create audience
-            </EuiButton>,
-            <EuiButton
-              onClick={() => setIsImportFlyoutVisible(true)}
-              fill
-              color={"success"}
-              iconType={"importAction"}
-              key="audience-customer"
-            >
-              Import
-            </EuiButton>,
+            <CreateCustomerFlyoutContainer key={createCustomerFlyoutContainerId} />,
+            <ImportAudienceFlyoutContainer key={importAudienceFlyoutContainerId} />,
           ],
         }}
         breadCrumb={
@@ -60,11 +44,7 @@ const CustomersDashboard = () => {
         }
       >
         <div>
-          <CustomersTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
-          {isFlyoutVisible && <CreateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
-          {isImportFlyoutVisible && (
-            <ImportAudienceComponent setIsImportFlyoutVisible={setIsImportFlyoutVisible} />
-          )}
+          <CustomersTable />
         </div>
       </DashboardLayout>
     </>

@@ -2,7 +2,6 @@ import {
   Criteria,
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiButton,
   EuiCallOut,
   EuiConfirmModal,
   EuiEmptyPrompt,
@@ -19,6 +18,7 @@ import { PAGINATION_CHOOSES } from "../../constants";
 import useDeleteField from "../../hooks/useDeleteCustomField";
 import useGetFields, { Fields, FieldsResponse } from "../../hooks/useGetFields";
 import { globalMutate } from "../../utils/globalMutate";
+import CreateFieldFlyoutContainer from "./create_field_flyout_container";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -81,7 +81,7 @@ const DeleteConfirmModal = ({
   );
 };
 
-const FieldsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () => void }) => {
+const FieldsTable = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
@@ -179,17 +179,7 @@ const FieldsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () 
             <p>The custom attribute description</p>
           </>
         }
-        actions={
-          <EuiButton
-            color="primary"
-            fill
-            onClick={() => {
-              openCreateChannelFlyout();
-            }}
-          >
-            Create custom attribute
-          </EuiButton>
-        }
+        actions={<CreateFieldFlyoutContainer />}
       />
     );
   }

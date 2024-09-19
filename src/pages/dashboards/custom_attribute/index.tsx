@@ -1,18 +1,13 @@
-import { EuiBreadcrumbs, EuiButton } from "@elastic/eui";
+import { EuiBreadcrumbs, useGeneratedHtmlId } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import CreateFieldFlyout from "../../../components/custom_attribute/create_field_flyout";
+import CreateFieldFlyoutContainer from "../../../components/custom_attribute/create_field_flyout_container";
 import FieldsTable from "../../../components/custom_attribute/table";
 import DashboardLayout from "../../../layouts/dashboard";
 
 const CustomFields = () => {
   const router = useRouter();
-  const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
-
-  const closeFlyout = () => {
-    setIsFlyoutVisible(false);
-  };
+  const createFieldFlyoutContainerId = useGeneratedHtmlId();
 
   return (
     <>
@@ -23,16 +18,7 @@ const CustomFields = () => {
         pageHeader={{
           pageTitle: "Custom attribute",
           iconType: "usersRolesApp",
-          rightSideItems: [
-            <EuiButton
-              color="primary"
-              onClick={() => setIsFlyoutVisible(true)}
-              fill
-              key="create-customer"
-            >
-              Create custom attribute
-            </EuiButton>,
-          ],
+          rightSideItems: [<CreateFieldFlyoutContainer key={createFieldFlyoutContainerId} />],
         }}
         breadCrumb={
           <EuiBreadcrumbs
@@ -51,8 +37,7 @@ const CustomFields = () => {
         }
       >
         <div>
-          <FieldsTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
-          {isFlyoutVisible && <CreateFieldFlyout closeFlyout={closeFlyout} />}
+          <FieldsTable />
         </div>
       </DashboardLayout>
     </>

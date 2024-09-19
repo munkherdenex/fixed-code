@@ -3,7 +3,6 @@ import {
   EuiBadge,
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiButton,
   EuiButtonIcon,
   EuiEmptyPrompt,
   EuiFieldSearch,
@@ -23,6 +22,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
+import CreateCustomerFlyoutContainer from "./create_customer_flyout_container";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -30,7 +30,7 @@ const schema = yup.object({
   search: yup.string().notRequired().label("Search"),
 });
 
-const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () => void }) => {
+const CustomersTable = () => {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(0);
@@ -165,17 +165,7 @@ const CustomersTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: 
             <p>The audience description</p>
           </>
         }
-        actions={
-          <EuiButton
-            color="primary"
-            fill
-            onClick={() => {
-              openCreateChannelFlyout();
-            }}
-          >
-            Create audience
-          </EuiButton>
-        }
+        actions={<CreateCustomerFlyoutContainer />}
       />
     );
   }
