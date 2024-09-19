@@ -12,8 +12,6 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useRouter } from "next/router";
-import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
@@ -25,7 +23,17 @@ import { addToast } from "../toast";
 const schema = yup
   .object({
     worker_emails: yup.string().required().label("Please enter  emails of worker"),
-    customer_id: yup.string().required("Please enter audience"),
+    customer: yup
+      .array()
+      .of(
+        yup
+          .object({
+            label: yup.string().notRequired(),
+            value: yup.string().required("please enter audience"),
+          })
+          .required("please enter audience"),
+      )
+      .required("please enter audience"),
   })
   .required();
 
@@ -41,18 +49,13 @@ const TestEmailLayout = ({
   const { isMutating, trigger } = useTestSend();
   const { data: customers } = useGetCustomers<CustomersResponse>();
 
-  const dataTypeOptions: EuiComboBoxOptionOption[] = customers?.results?.map((customer) => {
-    return {
-      label: String(customer?.email),
-      value: String(customer?.id),
-    };
-  }) || [{ label: "", value: "" }];
-
-  const [selectedOptions, setSelected] = useState([
-    {
-      label: "",
-    },
-  ]);
+  const dataTypeOptions: EuiComboBoxOptionOption[] =
+    customers?.results?.map((customer) => {
+      return {
+        label: customer?.email || customer?.phone || customer?.rid,
+        value: customer?.id,
+      };
+    }) || [];
 
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
@@ -65,18 +68,18 @@ const TestEmailLayout = ({
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
+    defaultValues: {
+      customer: [],
+      worker_emails: "",
+    },
   });
 
   const onSubmit = async (data: TestFormData) => {
     try {
-      const customer_data = customers?.results?.find(
-        (value) => value.email === data?.customer_id,
-      )?.id;
-
       const preparedData = {
-        ...data,
-        customer_id: customer_data,
+        customer_id: data?.customer?.[0]?.value,
         template_id: template_data?.id,
+        worker_emails: data?.worker_emails,
       };
 
       const response = await trigger(preparedData);
@@ -105,22 +108,26 @@ const TestEmailLayout = ({
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
             label="Customers"
-            isInvalid={!!errors.customer_id?.message}
-            error={[errors.customer_id?.message]}
+            isInvalid={!!errors.customer?.message}
+            error={[errors.customer?.message]}
           >
             <Controller
               control={control}
-              name="customer_id"
-              render={({ field: { onBlur, onChange } }) => (
+              name="customer"
+              render={({ field: { onBlur, onChange, value } }) => (
                 <EuiComboBox
                   placeholder="Email address"
                   singleSelection={{ asPlainText: true }}
                   options={dataTypeOptions}
                   onChange={(selected) => {
-                    setSelected(selected);
-                    onChange(selected[0]?.label);
+                    onChange([
+                      {
+                        label: selected?.[0]?.label,
+                        value: selected?.[0]?.value,
+                      },
+                    ]);
                   }}
-                  selectedOptions={selectedOptions}
+                  selectedOptions={[{ label: (value && value[0]?.label) || "" }]}
                   onBlur={onBlur}
                 />
               )}

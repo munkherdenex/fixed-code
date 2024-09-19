@@ -48,35 +48,12 @@ const schema = yup
 
 type EmailFormData = yup.InferType<typeof schema>;
 
-const TestEmailLayoutContainer = ({ data }) => {
-  const [isTestLayout, setIsTestLayout] = useState(false);
-
-  const closeFlyout = () => {
-    setIsTestLayout(false);
-  };
-
-  return (
-    <>
-      <EuiToolTip position="top" content="send test function on Email campaign">
-        <EuiButton
-          size="s"
-          onClick={() => {
-            setIsTestLayout(true);
-          }}
-        >
-          Test
-        </EuiButton>
-      </EuiToolTip>
-      {isTestLayout && <TestEmailLayout closeFlyout={closeFlyout} template_data={data} />}
-    </>
-  );
-};
-
 const EditEmailLayout = () => {
   const router = useRouter();
   const styles = quillEditorStyles();
 
   const [isViewEmail, setIsViewEmail] = useState(true);
+  const [isTestLayout, setIsTestLayout] = useState(false);
 
   const { data } = useCampaignContext();
   const { isMutating, trigger } = useUpdateTemplate(router.query.id);
@@ -107,6 +84,10 @@ const EditEmailLayout = () => {
 
   const setReactQuill = (value: string) => {
     setValue("body", value);
+  };
+
+  const closeFlyout = () => {
+    setIsTestLayout(false);
   };
 
   const onSubmit = async (data: EmailFormData) => {
@@ -179,7 +160,16 @@ const EditEmailLayout = () => {
             {isViewEmail && (
               <EuiFlexGroup gutterSize="xl" alignItems="flexEnd" justifyContent="flexEnd">
                 <EuiFlexItem grow={false}>
-                  <TestEmailLayoutContainer data={data} />
+                  <EuiToolTip position="top" content="send test function on Email campaign">
+                    <EuiButton
+                      size="s"
+                      onClick={() => {
+                        setIsTestLayout(true);
+                      }}
+                    >
+                      Test
+                    </EuiButton>
+                  </EuiToolTip>
                 </EuiFlexItem>
                 {(data?.status === "DRAFT" || data?.status === "ERROR") && (
                   <EuiFlexItem grow={false}>
@@ -255,6 +245,7 @@ const EditEmailLayout = () => {
           <QuillEditorComponent readonly={isViewEmail} control={control} onChange={setReactQuill} />
         </EuiFormRow>
       </EuiForm>
+      {isTestLayout && <TestEmailLayout closeFlyout={closeFlyout} template_data={data} />}
     </>
   );
 };
