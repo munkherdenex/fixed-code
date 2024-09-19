@@ -18,7 +18,7 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
-import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
+import { useCampaignContext } from "../../store/campaign_store";
 import { getDataKind } from "../../utils/helper";
 import EditTemplateFlyout from "./edit_template_flyout";
 
@@ -85,9 +85,8 @@ const DeleteConfirmModal = ({
 const EmailGeneralDetails = ({}: {
   templateStatus?: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
 }) => {
-  const router = useRouter();
+  const { data, isLoading } = useCampaignContext();
 
-  const { data, isLoading } = useGetTemplates<Template>(router.query.id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
 

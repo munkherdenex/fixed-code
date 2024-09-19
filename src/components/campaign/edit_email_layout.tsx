@@ -19,6 +19,7 @@ import * as yup from "yup";
 import { IS_POCKET } from "../../constants";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
+import { useCampaignContext } from "../../store/campaign_store";
 import { globalMutate } from "../../utils/globalMutate";
 import { dataTypeToSwitch, processBody, processKind } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
@@ -77,8 +78,8 @@ const EditEmailLayout = () => {
 
   const [isViewEmail, setIsViewEmail] = useState(true);
 
+  const { data } = useCampaignContext();
   const { isMutating, trigger } = useUpdateTemplate(router.query.id);
-  const { data } = useGetTemplates<Template>(router.query.id);
 
   const {
     handleSubmit,

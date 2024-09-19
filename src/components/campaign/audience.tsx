@@ -12,11 +12,11 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useDeleteTemplateCustomer from "../../hooks/useDeleteTemplateCustomer";
-import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 import useGetTemplatesCustomer, {
   TemplateCustomer,
   TemplateCustomerResponse,
 } from "../../hooks/useGetTemplatesCustomer";
+import { useCampaignContext } from "../../store/campaign_store";
 import { globalMutate } from "../../utils/globalMutate";
 import AddAudience from "./add_audience";
 
@@ -30,7 +30,7 @@ const Audience = () => {
 
   const modalTitleId = useGeneratedHtmlId({ prefix: "modalTitle" });
 
-  const { data: template } = useGetTemplates<Template>(router.query.id);
+  const { data: template } = useCampaignContext();
   const { data: templateCustomers } = useGetTemplatesCustomer<TemplateCustomerResponse>(
     router.query.id,
     {

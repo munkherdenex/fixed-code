@@ -26,6 +26,7 @@ import { SetStateAction, useState } from "react";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
+import { useCampaignContext } from "../../store/campaign_store";
 import { commonStyles } from "../../styles/global.styles";
 import { badgeColor } from "../../utils/badge_color";
 import { getBodyContent, getDataKind } from "../../utils/helper";
@@ -96,21 +97,21 @@ const GeneralDetails = ({}: {
   templateStatus?: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
 }) => {
   const router = useRouter();
-  const modalTitleId = useGeneratedHtmlId();
+  const styles = quillEditorStyles();
   const cStyles = commonStyles();
+  const modalTitleId = useGeneratedHtmlId();
 
-  const { data, isLoading } = useGetTemplates<Template>(router.query.id);
+  const { data, isLoading } = useCampaignContext();
   const { data: channelData } = useGetChannels<Channels>(`${data?.channel || ""}`);
+
+  const dataKind = getDataKind(data);
+  const dataBody = getBodyContent(data, dataKind);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
   const [isEmailModalVisible, setIsEmailModalVisible] = useState(false);
 
   const closeEmailModal = () => setIsEmailModalVisible(false);
-  const styles = quillEditorStyles();
-
-  //INFO: This is a workaround to get the kind of the template becaouse of POCKET
-  const dataKind = getDataKind(data);
-  const dataBody = getBodyContent(data, dataKind);
 
   const closeFlyout = () => {
     setIsEditFlyoutVisible(false);

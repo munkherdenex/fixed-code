@@ -53,7 +53,7 @@ const SegmentAudienceList = () => {
     pageSizeOptions: PAGINATION_CHOOSES,
   };
 
-  const { data, isLoading } = useGetSegmentAudienceList<SegmentAudienceResponse>(id, {
+  const { data, isLoading, mutate } = useGetSegmentAudienceList<SegmentAudienceResponse>(id, {
     search: searchValue,
     offset: `${pageIndex * pageSize}`,
     limit: `${pageSize}`,
@@ -162,6 +162,7 @@ const SegmentAudienceList = () => {
     try {
       const response = await trigger();
       if (response) {
+        mutate();
         addToast({
           id: "re-run-segment-audience",
           color: "success",
