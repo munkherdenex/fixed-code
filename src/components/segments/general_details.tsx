@@ -17,8 +17,10 @@ import {
   EuiSpacer,
   EuiTextColor,
   EuiTitle,
+  useEuiTheme,
   useGeneratedHtmlId,
 } from "@elastic/eui";
+import { useTheme } from "@emotion/react";
 import { jsonrepair } from "jsonrepair";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -26,7 +28,8 @@ import { SetStateAction, useState } from "react";
 import { parseMongoDB } from "react-querybuilder/parseMongoDB";
 import useDeleteSegment from "../../hooks/useDeleteSegment";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
-import useGetSegments, { Segment } from "../../hooks/useGetSegments";
+import { getTheme } from "../../lib/theme";
+import { useSegmentContext } from "../../store/segment_store";
 import { additionalOperator } from "../../utils/additional_operator";
 import { badgeColor } from "../../utils/badge_color";
 import { removeDeletedCustomFields } from "../../utils/helper";
@@ -123,9 +126,9 @@ const DeleteConfirmModal = ({
 };
 
 const GeneralDetails = () => {
-  const router = useRouter();
-  const styles = generalDetailsStyles();
-  const { data, isLoading } = useGetSegments<Segment>(router.query.id);
+  const theme = getTheme();
+  const styles = generalDetailsStyles(theme);
+  const { data, isLoading } = useSegmentContext();
   const { data: cfData } = useGetFields<Fields[]>(undefined, {
     all: `${true}`,
   });
@@ -187,11 +190,8 @@ const GeneralDetails = () => {
               <EuiFlexItem>{data?.name}</EuiFlexItem>
               <EuiFlexItem>Description:</EuiFlexItem>
               <EuiFlexItem>
-                {data?.description ? (
-                  data?.description
-                ) : (
-                  <EuiTextColor color="subdued">None</EuiTextColor>
-                )}
+                {data?.description && <p>{data?.description}</p>}
+                {!data?.description && <EuiTextColor color="subdued">None</EuiTextColor>}
               </EuiFlexItem>
               <EuiFlexItem>Status:</EuiFlexItem>
               <EuiFlexItem>

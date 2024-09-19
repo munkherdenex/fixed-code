@@ -1,24 +1,27 @@
-import { Control, Controller } from "react-hook-form";
-import { useMemo } from "react";
 import dynamic from "next/dynamic";
+import { ImageDrop } from "quill-image-drop-module";
+import ImageResize from "quill-image-resize-module-react";
+import { memo } from "react";
+import { Control, Controller } from "react-hook-form";
+import { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { quillEditorStyles } from "./quill_editor.styles";
-import { Quill } from "react-quill";
-import ImageResize from "quill-image-resize-module-react";
-import { ImageDrop } from "quill-image-drop-module";
 
 Quill.register("modules/imageResize", ImageResize);
 Quill.register("modules/imageDrop", ImageDrop);
 
+const ReactQuill = memo(dynamic(() => import("react-quill"), { ssr: false }));
+
 const QuillEditorComponent = ({
+  readonly,
   control,
   onChange,
 }: {
+  readonly?: boolean;
   control?: Control;
   onChange?: (value: string) => void;
 }) => {
-  const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
-  var toolbarOptions = [
+  const toolbarOptions = [
     ["bold", "italic", "underline", "strike"],
     ["blockquote"],
     ["link", "image", "video"],
@@ -49,6 +52,29 @@ const QuillEditorComponent = ({
     imageDrop: true,
   };
 
+  if (readonly) {
+    return (
+      <Controller
+        control={control}
+        name="body"
+        render={({ field: { onBlur, value } }) => (
+          <ReactQuill
+            modules={{
+              ...module,
+              toolbar: false,
+            }}
+            theme="snow"
+            value={value}
+            onBlur={onBlur}
+            onChange={onChange}
+            css={!value && styles.quill_container}
+            readOnly={readonly}
+          />
+        )}
+      />
+    );
+  }
+
   return (
     <div>
       {control ? (
@@ -63,6 +89,7 @@ const QuillEditorComponent = ({
               onBlur={onBlur}
               onChange={onChange}
               css={!value && styles.quill_container}
+              readOnly={readonly}
             />
           )}
         />
@@ -72,6 +99,7 @@ const QuillEditorComponent = ({
           theme="snow"
           onChange={onChange}
           css={styles.quill_container}
+          readOnly={readonly}
         />
       )}
     </div>

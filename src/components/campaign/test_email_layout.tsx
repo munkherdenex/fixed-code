@@ -1,5 +1,7 @@
 import {
   EuiButton,
+  EuiComboBox,
+  EuiComboBoxOptionOption,
   EuiFieldText,
   EuiFlyout,
   EuiFlyoutBody,
@@ -8,18 +10,16 @@ import {
   EuiFormRow,
   EuiTitle,
   useGeneratedHtmlId,
-  EuiComboBoxOptionOption,
-  EuiComboBox,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { Template } from "../../hooks/useGetTemplates";
-import { globalMutate } from "../../utils/globalMutate";
-import useTestSend from "../../hooks/useTestSend";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
-import { useState } from "react";
+import { Template } from "../../hooks/useGetTemplates";
+import useTestSend from "../../hooks/useTestSend";
+import { globalMutate } from "../../utils/globalMutate";
 import { addToast } from "../toast";
 
 const schema = yup
@@ -147,7 +147,7 @@ const TestEmailLayout = ({
             />
           </EuiFormRow>
           <EuiButton isLoading={isMutating} type="submit">
-            Sent
+            Send
           </EuiButton>
         </EuiForm>
       </EuiFlyoutBody>
