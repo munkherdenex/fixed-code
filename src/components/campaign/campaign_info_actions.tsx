@@ -2,6 +2,8 @@ import {
   EuiButton,
   EuiCallOut,
   EuiConfirmModal,
+  EuiFlexGroup,
+  EuiFlexItem,
   EuiSpacer,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -9,6 +11,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import useUpdateApproveTemplate from "../../hooks/useUpdateApproveTemplate";
 import useUpdateDoneTemplate from "../../hooks/useUpdateDoneTemplate";
+import useUpdateRejectTemplate from "../../hooks/useUpdateRejectTemplate";
 import { useCampaignContext } from "../../store/campaign_store";
 import { globalMutate } from "../../utils/globalMutate";
 import AdminManagerComponent from "../admin_manager_component";
@@ -20,7 +23,11 @@ const CampaignInfoActions = () => {
   const { data } = useCampaignContext();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
 
+  const { trigger: rejectTrigger, isMutating: rejectIsLoading } = useUpdateRejectTemplate(
+    router.query.id,
+  );
   const { trigger: doneTrigger, isMutating: doneIsMutating } = useUpdateDoneTemplate(
     router.query.id,
   );
@@ -28,10 +35,24 @@ const CampaignInfoActions = () => {
     router.query.id,
   );
 
-  const isMutating = doneIsMutating || approveIsMutating;
+  const isMutating = doneIsMutating || approveIsMutating || rejectIsLoading;
+  const isDraft = data?.status === "DRAFT";
+  const isDone = data?.status === "DONE";
 
   const closeModal = () => setIsModalVisible(false);
   const showModal = () => setIsModalVisible(true);
+
+  const handleRejectTrigger = async () => {
+    try {
+      const response = await rejectTrigger();
+      if (response) {
+        closeModal();
+        globalMutate("/api/v1/dj/templates/");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleDoneTrigger = async () => {
     try {
@@ -58,32 +79,53 @@ const CampaignInfoActions = () => {
   };
 
   return (
-    <div>
-      {data?.status === "DRAFT" && (
-        <EuiButton
-          isLoading={isMutating}
-          color="success"
-          onClick={showModal}
-          fill
-          key="Create-segment"
-        >
-          Done
-        </EuiButton>
-      )}
-      {data?.status === "DONE" && (
-        <AdminManagerComponent>
-          <EuiButton
-            isLoading={isMutating}
-            color="primary"
-            onClick={showModal}
-            fill
-            key="Approve-segment"
-          >
-            Approve
-          </EuiButton>
-        </AdminManagerComponent>
-      )}
-      {isModalVisible && data?.status === "DRAFT" && (
+    <>
+      <EuiFlexGroup>
+        {isDraft && (
+          <EuiFlexItem>
+            <EuiButton
+              isLoading={isMutating}
+              color="success"
+              onClick={showModal}
+              fill
+              key="Create-segment"
+            >
+              Done
+            </EuiButton>
+          </EuiFlexItem>
+        )}
+        {isDone && (
+          <EuiFlexItem>
+            <AdminManagerComponent>
+              <EuiButton
+                isLoading={isMutating}
+                color="danger"
+                onClick={() => setIsRejectModalVisible(true)}
+                fill
+                key="Approve-segment"
+              >
+                Reject
+              </EuiButton>
+            </AdminManagerComponent>
+          </EuiFlexItem>
+        )}
+        {isDone && (
+          <EuiFlexItem>
+            <AdminManagerComponent>
+              <EuiButton
+                isLoading={isMutating}
+                color="primary"
+                onClick={showModal}
+                fill
+                key="Approve-segment"
+              >
+                Approve
+              </EuiButton>
+            </AdminManagerComponent>
+          </EuiFlexItem>
+        )}
+      </EuiFlexGroup>
+      {isModalVisible && isDraft && (
         <EuiConfirmModal
           aria-labelledby={modalTitleId}
           style={{ width: 600 }}
@@ -105,7 +147,26 @@ const CampaignInfoActions = () => {
           </p>
         </EuiConfirmModal>
       )}
-      {isModalVisible && data?.status === "DONE" && (
+      {isRejectModalVisible && isDone && (
+        <EuiConfirmModal
+          aria-labelledby={modalTitleId}
+          style={{ width: 600 }}
+          onCancel={() => setIsRejectModalVisible(false)}
+          onConfirm={handleRejectTrigger}
+          title="Update campaign"
+          buttonColor="danger"
+          cancelButtonText="Cancel"
+          confirmButtonText="Reject"
+          defaultFocusedButton="confirm"
+        >
+          <EuiCallOut title="Warning" color="warning" iconType="warning">
+            <p>This campaign will be rejected</p>
+          </EuiCallOut>
+          <EuiSpacer />
+          <p>The campaign will be marked as DRAFT.</p>
+        </EuiConfirmModal>
+      )}
+      {isModalVisible && isDone && (
         <EuiConfirmModal
           aria-labelledby={modalTitleId}
           style={{ width: 600 }}
@@ -122,7 +183,7 @@ const CampaignInfoActions = () => {
           </p>
         </EuiConfirmModal>
       )}
-    </div>
+    </>
   );
 };
 
