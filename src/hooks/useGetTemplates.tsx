@@ -9,7 +9,7 @@ export interface Template {
   updated_at: string;
   title: string;
   kind: "email" | "sms" | "push" | "inapp" | "api";
-  status: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
+  status: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR" | "SENDING";
   description: string;
   body: string;
   created_by: any;
