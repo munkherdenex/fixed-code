@@ -83,7 +83,7 @@ const CampaignInfoActions = () => {
           </EuiButton>
         </AdminManagerComponent>
       )}
-      {isModalVisible && data.status === "DRAFT" && (
+      {isModalVisible && data?.status === "DRAFT" && (
         <EuiConfirmModal
           aria-labelledby={modalTitleId}
           style={{ width: 600 }}
@@ -105,7 +105,7 @@ const CampaignInfoActions = () => {
           </p>
         </EuiConfirmModal>
       )}
-      {isModalVisible && data.status === "DONE" && (
+      {isModalVisible && data?.status === "DONE" && (
         <EuiConfirmModal
           aria-labelledby={modalTitleId}
           style={{ width: 600 }}

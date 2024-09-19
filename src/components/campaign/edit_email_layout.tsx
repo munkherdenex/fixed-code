@@ -121,16 +121,16 @@ const EditEmailLayout = () => {
       const preparedData = {
         ...data,
       };
-      const dataType = processKind(data.body, data.kind);
+      const dataType = processKind(data?.body, data?.kind);
 
       if ((dataType === "sms" || dataType === "push") && IS_POCKET) {
         preparedData.kind = "api";
         preparedData.body = JSON.stringify({
           type: dataType,
-          to: `{{${dataTypeToSwitch(data.kind)}}}`,
-          description: data.description,
-          title: data.title,
-          body: data.body,
+          to: `{{${dataTypeToSwitch(data?.kind)}}}`,
+          description: data?.description,
+          title: data?.title,
+          body: data?.body,
         });
       }
 
@@ -181,7 +181,7 @@ const EditEmailLayout = () => {
                 <EuiFlexItem grow={false}>
                   <TestEmailLayoutContainer data={data} />
                 </EuiFlexItem>
-                {(data.status === "DRAFT" || data.status === "ERROR") && (
+                {(data?.status === "DRAFT" || data?.status === "ERROR") && (
                   <EuiFlexItem grow={false}>
                     <EuiToolTip position="top" content="move to the update screen">
                       <EuiButtonIcon

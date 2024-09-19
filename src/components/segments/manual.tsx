@@ -231,21 +231,21 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
   };
 
   const testHandle = async (data: MyFormData) => {
-    if (!data.file && selectedTabId === "file") {
+    if (!data?.file && selectedTabId === "file") {
       return setError("file", {
         type: "manual",
         message: "Please select a file",
       });
     }
 
-    if (!data.text && selectedTabId === "text") {
+    if (!data?.text && selectedTabId === "text") {
       return setError("text", {
         type: "manual",
         message: "Please enter some text",
       });
     }
 
-    if (!data.text_type && selectedTabId === "text") {
+    if (!data?.text_type && selectedTabId === "text") {
       return setError("text_type", {
         type: "manual",
         message: "Please choose type",
@@ -257,7 +257,7 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
       formData.set("name", name);
       formData.set("description", description);
       formData.set("type", "manual");
-      formData.set("file", data.file);
+      formData.set("file", data?.file);
       formData.set("input_type", data?.input_type);
 
       const fileResponse = await createSegmentFile(formData);

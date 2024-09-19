@@ -51,9 +51,9 @@ const UpdateFieldFlyout = ({
     mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      data_type: data.data_type,
-      name: data.name,
-      attribute_name: data.attribute_name,
+      data_type: data?.data_type,
+      name: data?.name,
+      attribute_name: data?.attribute_name,
     },
   });
 

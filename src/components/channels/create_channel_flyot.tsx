@@ -53,14 +53,14 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const onSubmit = async (data: FormData) => {
     try {
       const preparedHeaders = data?.data?.headers
-        ? data.data.headers.reduce((a, v) => ({ ...a, [v.key]: v.value }), {})
+        ? data?.data?.headers.reduce((a, v) => ({ ...a, [v.key]: v.value }), {})
         : {};
 
       const response = await trigger({
         ...data,
         data: {
-          ...data.data,
-          ...(data.channel_type === "api" && { headers: preparedHeaders }),
+          ...data?.data,
+          ...(data?.channel_type === "api" && { headers: preparedHeaders }),
         },
       });
 

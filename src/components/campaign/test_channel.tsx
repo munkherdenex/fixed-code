@@ -139,7 +139,7 @@ const TestChannelDetails = () => {
             <EuiFlexItem>Channel type:</EuiFlexItem>
             <EuiFlexItem>
               <div>
-                <EuiBadge color={badgeColor(data.channel_type)}>{data?.channel_type}</EuiBadge>
+                <EuiBadge color={badgeColor(data?.channel_type)}>{data?.channel_type}</EuiBadge>
               </div>
             </EuiFlexItem>
             <EuiFlexItem>Data:</EuiFlexItem>

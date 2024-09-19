@@ -86,8 +86,8 @@ const EditDynamic = ({
   const createSegment = async (data: FormData) => {
     try {
       const response = await trigger({
-        name: data.name,
-        description: data.description,
+        name: data?.name,
+        description: data?.description,
         condition: jsonrepair(
           formatQuery(JSON.parse(JSON.stringify(query)), {
             format: "mongodb",

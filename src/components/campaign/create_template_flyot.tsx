@@ -122,9 +122,9 @@ const CreateTemplateFlyot = ({
         preparedData.kind = "api";
         preparedData.body = JSON.stringify({
           type: dataType,
-          to: `{{${dataTypeToSwitch(data.kind)}}}`,
-          title: data.title,
-          body: data.body,
+          to: `{{${dataTypeToSwitch(data?.kind)}}}`,
+          title: data?.title,
+          body: data?.body,
         });
       }
 

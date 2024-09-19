@@ -89,7 +89,7 @@ const Unsubscribe = ({ token }) => {
   const onSubmit = async (data: FormData) => {
     try {
       const response = await trigger({
-        reason: radios.find((radio) => radio.id === data.reason).label,
+        reason: radios.find((radio) => radio.id === data?.reason).label,
         token,
       });
       if (response) {

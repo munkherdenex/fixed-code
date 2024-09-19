@@ -159,7 +159,7 @@ const GeneralDetails = () => {
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiFlexGroup responsive={false} gutterSize="s">
-                    {(data.type === "dynamic" || data.type === "static") && (
+                    {(data?.type === "dynamic" || data?.type === "static") && (
                       <EuiFlexItem grow={false}>
                         <EuiButtonIcon
                           display="base"
@@ -207,13 +207,13 @@ const GeneralDetails = () => {
               </EuiFlexItem>
             </EuiFlexGrid>
             <EuiSpacer />
-            {data.type !== "manual" && (
+            {data?.type !== "manual" && (
               <>
                 <EuiFlexGroup direction="column">
                   <EuiFlexItem>Condition:</EuiFlexItem>
                   <>
                     <EuiFlexItem css={styles.conditionContainer}>
-                      {data.type === "dynamic" && (
+                      {data?.type === "dynamic" && (
                         <>
                           <DisplayDataConditionExpression
                             query={removeDeletedCustomFields(
@@ -225,7 +225,7 @@ const GeneralDetails = () => {
                           />
                         </>
                       )}
-                      {data.type === "static" && (
+                      {data?.type === "static" && (
                         <EuiCodeBlock
                           language="json"
                           fontSize="s"
@@ -260,11 +260,11 @@ const GeneralDetails = () => {
         <EuiFlyout onClose={() => setOpenFlyout(false)}>
           <EuiFlyoutHeader hasBorder aria-labelledby={flyoutTitleId}>
             <EuiTitle>
-              <h2 id={flyoutTitleId}>{data.type}</h2>
+              <h2 id={flyoutTitleId}>{data?.type}</h2>
             </EuiTitle>
           </EuiFlyoutHeader>
           <EuiFlyoutBody>
-            {data.type === "dynamic" && (
+            {data?.type === "dynamic" && (
               <EditDynamic
                 name={data?.name}
                 description={data?.description}
@@ -272,7 +272,7 @@ const GeneralDetails = () => {
                 closeFlyout={() => setOpenFlyout(false)}
               />
             )}
-            {data.type === "manual" && <Manual name="" description="" />}
+            {data?.type === "manual" && <Manual name="" description="" />}
           </EuiFlyoutBody>
         </EuiFlyout>
       )}

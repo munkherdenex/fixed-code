@@ -104,7 +104,7 @@ const UpdateCustomerComponent = ({
       //TODO: Fix datetime
       const preparedData = {
         ...data,
-        customer_data: data.customer_data.reduce((a, v) => ({ ...a, [v.name]: v.value }), {}),
+        customer_data: data?.customer_data?.reduce((a, v) => ({ ...a, [v.name]: v.value }), {}),
       };
 
       const response = await trigger(preparedData);

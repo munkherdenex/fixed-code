@@ -70,10 +70,10 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
     mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      kind: processKind(data.body, data.kind),
-      body: processBody(data.body, processKind(data.body, data.kind)),
-      title: data.title,
-      channel: data.channel,
+      kind: processKind(data?.body, data?.kind),
+      body: processBody(data?.body, processKind(data?.body, data?.kind)),
+      title: data?.title,
+      channel: data?.channel,
     },
   });
 
@@ -82,7 +82,7 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
   const channelDataOptions = Array.isArray(channelsData)
     ? channelsData
         .filter(
-          (channel) => channel.channel_type === dataTypeSwitch(processKind(data.body, data.kind)),
+          (channel) => channel.channel_type === dataTypeSwitch(processKind(data?.body, data?.kind)),
         )
         .map((channel) => ({
           value: channel.id,
@@ -111,15 +111,15 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
         ...data,
       };
 
-      const dataType = processKind(data.body, data.kind);
+      const dataType = processKind(data?.body, data?.kind);
 
       if ((dataType === "sms" || dataType === "push") && IS_POCKET) {
         preparedData.kind = "api";
         preparedData.body = JSON.stringify({
           type: dataType,
-          to: `{{${dataTypeToSwitch(data.kind)}}}`,
-          title: data.title,
-          body: data.body,
+          to: `{{${dataTypeToSwitch(data?.kind)}}}`,
+          title: data?.title,
+          body: data?.body,
         });
       }
 

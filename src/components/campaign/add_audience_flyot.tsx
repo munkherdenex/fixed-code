@@ -109,7 +109,7 @@ const AddAudienceFlyout = ({
   const preparedData = watch("type") === "customer" ? preparedCustomerData : preparedSegmentData;
 
   const onSearch = async (data: SearchFormData) => {
-    setSearchValue(data.search);
+    setSearchValue(data?.search);
   };
 
   const onSubmit = async (data: FormData) => {

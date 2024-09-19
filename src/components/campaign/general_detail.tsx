@@ -137,7 +137,7 @@ const GeneralDetails = ({}: {
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiFlexGroup responsive={false} gutterSize="s">
-                    {(data.status === "DRAFT" || data.status === "ERROR") && (
+                    {(data?.status === "DRAFT" || data?.status === "ERROR") && (
                       <EuiFlexItem grow={false}>
                         <EuiButtonIcon
                           display="base"
@@ -150,7 +150,7 @@ const GeneralDetails = ({}: {
                         />
                       </EuiFlexItem>
                     )}
-                    {data.status !== "APPROVED" && data.status !== "PUBLISHED" && (
+                    {data?.status !== "APPROVED" && data?.status !== "PUBLISHED" && (
                       <EuiFlexItem grow={false}>
                         <EuiButtonIcon
                           display="base"
@@ -169,7 +169,7 @@ const GeneralDetails = ({}: {
           <EuiFlexItem>
             <EuiFlexGrid columns={2} responsive={false}>
               <EuiFlexItem>Title:</EuiFlexItem>
-              <EuiFlexItem>{data.title}</EuiFlexItem>
+              <EuiFlexItem>{data?.title}</EuiFlexItem>
               <EuiFlexItem>Kind:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
@@ -230,7 +230,7 @@ const GeneralDetails = ({}: {
               <EuiFlexItem>Status:</EuiFlexItem>
               <EuiFlexItem>
                 <div>
-                  <EuiBadge color={badgeColor(data.status)}>{data.status}</EuiBadge>
+                  <EuiBadge color={badgeColor(data?.status)}>{data?.status}</EuiBadge>
                 </div>
               </EuiFlexItem>
               <EuiFlexItem>Created date :</EuiFlexItem>

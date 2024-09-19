@@ -83,13 +83,13 @@ const EditChannelFlyot = ({
   const onSubmit = async (data: FormData) => {
     try {
       const prepared_headers = data?.data?.headers
-        ? data.data.headers.reduce((a, v) => ({ ...a, [v.key]: v.value }), {})
+        ? data?.data?.headers.reduce((a, v) => ({ ...a, [v.key]: v.value }), {})
         : [];
 
       const response = await trigger({
         ...data,
         data: {
-          ...data.data,
+          ...data?.data,
           headers: prepared_headers,
         },
       });

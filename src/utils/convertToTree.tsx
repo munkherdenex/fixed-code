@@ -10,7 +10,7 @@ export const convertToTree = (
     return [];
   }
 
-  const idMapping = data.reduce((acc, el) => {
+  const idMapping = data?.reduce((acc, el) => {
     acc[el.id] = {
       ...el,
       id: `${el.id}`,
@@ -26,7 +26,7 @@ export const convertToTree = (
 
   let root = [];
 
-  data.forEach((el) => {
+  data?.forEach((el) => {
     if (el.parent_id === null) {
       root.push(idMapping[el.id]);
     } else {

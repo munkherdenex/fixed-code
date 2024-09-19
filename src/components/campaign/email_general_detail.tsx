@@ -117,7 +117,7 @@ const EmailGeneralDetails = ({}: {
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiFlexGroup responsive={false} gutterSize="s">
-                    {data.status !== "APPROVED" && data.status !== "PUBLISHED" && (
+                    {data?.status !== "APPROVED" && data?.status !== "PUBLISHED" && (
                       <EuiFlexItem grow={false}>
                         <EuiToolTip position="top" content="Delete">
                           <EuiButtonIcon
@@ -140,7 +140,7 @@ const EmailGeneralDetails = ({}: {
               <EuiPanel hasBorder={true}>
                 <EuiFlexItem>
                   <EuiStat
-                    title={data.title}
+                    title={data?.title}
                     description={
                       <EuiTextColor color="default">
                         <span>Subject</span>

@@ -31,9 +31,9 @@ const GeneralDetails = () => {
   const extendedCustomerData = fields
     ?.map((field) => ({
       ...field,
-      value: data?.customer_data ? data.customer_data[field.attribute_name] : undefined,
+      value: data?.customer_data ? data?.customer_data[field.attribute_name] : undefined,
     }))
-    .filter((data) => data.value !== undefined);
+    .filter((data) => data?.value !== undefined);
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -88,7 +88,7 @@ const GeneralDetails = () => {
             </EuiFlexItem>
             <EuiFlexItem>Phone number :</EuiFlexItem>
             <EuiFlexItem>
-              {data?.phone ? data.phone : <EuiTextColor color="subdued">None</EuiTextColor>}
+              {data?.phone ? data?.phone : <EuiTextColor color="subdued">None</EuiTextColor>}
             </EuiFlexItem>
             <EuiFlexItem>Reference ID :</EuiFlexItem>
             <EuiFlexItem>
@@ -114,18 +114,18 @@ const GeneralDetails = () => {
             <EuiFlexItem>
               <EuiFlexGrid responsive={false} columns={2}>
                 {extendedCustomerData?.map((data) => (
-                  <React.Fragment key={data.id}>
+                  <React.Fragment key={data?.id}>
                     <EuiFlexItem>
-                      {data.name} ({data.attribute_name}) :
+                      {data?.name} ({data?.attribute_name}) :
                     </EuiFlexItem>
-                    {moment(data.value, "YYYY-MM-DD HH:mm", true).isValid() ? (
+                    {moment(data?.value, "YYYY-MM-DD HH:mm", true).isValid() ? (
                       <EuiFlexItem>
-                        {data.data_type === "date" && moment(data.value).format("YYYY-MM-DD")}
-                        {data.data_type === "datetime" &&
-                          moment(data.value).format("YYYY-MM-DD LT")}
+                        {data?.data_type === "date" && moment(data?.value).format("YYYY-MM-DD")}
+                        {data?.data_type === "datetime" &&
+                          moment(data?.value).format("YYYY-MM-DD LT")}
                       </EuiFlexItem>
                     ) : (
-                      <EuiFlexItem>{data.value}</EuiFlexItem>
+                      <EuiFlexItem>{data?.value}</EuiFlexItem>
                     )}
                   </React.Fragment>
                 ))}
