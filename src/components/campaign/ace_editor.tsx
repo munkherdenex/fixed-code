@@ -36,7 +36,7 @@ const AceEditorComponent = ({
 "greeting": "Hello {{name}}!"
 }`}
             mode="json"
-            width="400px"
+            width="100%"
             height="300px"
             theme={getTheme() === "dark" ? "solarized_dark" : "github"}
             name="ace-editor"
