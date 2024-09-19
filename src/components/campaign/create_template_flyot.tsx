@@ -46,6 +46,7 @@ const schema = yup
   .object({
     title: yup.string().required().label("Title"),
     kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api", ""]).required().label("Data"),
+    description: yup.string().label("Description"),
     body: yup
       .string()
       .required()
@@ -202,6 +203,27 @@ const CreateTemplateFlyot = ({
                   onBlur={onBlur}
                   isInvalid={!!errors.kind?.message}
                   aria-label="data type"
+                />
+              )}
+            />
+          </EuiFormRow>
+          <EuiFormRow
+            label="Description"
+            isInvalid={!!errors.title?.message}
+            error={[errors.title?.message]}
+          >
+            <Controller
+              control={control}
+              name="description"
+              render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
+                <EuiTextArea
+                  onChange={onChange}
+                  value={value}
+                  onBlur={onBlur}
+                  isInvalid={!!errors.title?.message}
+                  style={{ height: "100px" }}
+                  placeholder="Title"
+                  aria-label="Title"
                 />
               )}
             />

@@ -2,14 +2,14 @@ import { EuiPanel, EuiTab, EuiTabs } from "@elastic/eui";
 import { useMemo, useState } from "react";
 import Audience from "./audience";
 import Logs from "./logs";
-import TestChannelDetails from "./test_channel";
-import EditEmailLayout from "./edit_email_layout";
+import ChannelDetails from "./channel_details";
+import CampaignPreviewContainer from "./campaign_preview_container";
 
-const emailTabs = [
+const tabs = [
   {
     id: "preview--id",
     name: "Preview",
-    content: <EditEmailLayout />,
+    content: <CampaignPreviewContainer />,
   },
   {
     id: "audience--id",
@@ -19,7 +19,7 @@ const emailTabs = [
   {
     id: "channel--id",
     name: "Channel",
-    content: <TestChannelDetails />,
+    content: <ChannelDetails />,
   },
   {
     id: "logs--id",
@@ -28,26 +28,12 @@ const emailTabs = [
   },
 ];
 
-const otherTabs = [
-  {
-    id: "audience--id",
-    name: "Audience",
-    content: <Audience />,
-  },
-  {
-    id: "logs--id",
-    name: "Logs",
-    content: <Logs />,
-  },
-];
-
-const Menu = ({ isEmail }: { isEmail?: boolean }) => {
-  const [selectedTabId, setSelectedTabId] = useState(isEmail ? "preview--id" : "audience--id");
-  const tabs = useMemo(() => (isEmail ? emailTabs : otherTabs), [isEmail]);
+const Menu = () => {
+  const [selectedTabId, setSelectedTabId] = useState("preview--id");
 
   const selectedTabContent = useMemo(() => {
     return tabs.find((obj) => obj.id === selectedTabId)?.content;
-  }, [selectedTabId, tabs]);
+  }, [selectedTabId]);
 
   const onSelectedTabChanged = (id: string) => {
     setSelectedTabId(id);

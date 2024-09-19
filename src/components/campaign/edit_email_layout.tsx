@@ -213,30 +213,7 @@ const EditEmailLayout = () => {
         </EuiFlexGroup>
         <EuiSpacer size="s" />
         <EuiFormRow
-          fullWidth
-          label="Description"
-          isInvalid={!!errors?.description?.message}
-          error={[errors?.description?.message]}
-        >
-          <Controller
-            control={control}
-            name="description"
-            render={({ field: { onChange, onBlur, value, name } }) => (
-              <EuiTextArea
-                onChange={onChange}
-                value={value}
-                onBlur={onBlur}
-                placeholder={name}
-                readOnly={isViewEmail}
-                isInvalid={!!errors.description?.message}
-                fullWidth
-              />
-            )}
-          />
-        </EuiFormRow>
-        <EuiSpacer size="s" />
-        <EuiFormRow
-          label=""
+          label="Body"
           isInvalid={!!errors?.body?.message}
           error={[errors?.body?.message]}
           css={styles.quillEditorContainer}

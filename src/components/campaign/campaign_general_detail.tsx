@@ -10,6 +10,7 @@ import {
   EuiPanel,
   EuiSpacer,
   EuiStat,
+  EuiTextArea,
   EuiTextColor,
   EuiToolTip,
   useGeneratedHtmlId,
@@ -18,9 +19,11 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
+import useGetCampaignSuccessErrorCount, {
+  CampaignCountSuccessErrorResponse,
+} from "../../hooks/useGetCampaignCount";
 import { useCampaignContext } from "../../store/campaign_store";
 import { getDataKind } from "../../utils/helper";
-import EditTemplateFlyout from "./edit_template_flyout";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -82,20 +85,16 @@ const DeleteConfirmModal = ({
   );
 };
 
-const EmailGeneralDetails = ({}: {
-  templateStatus?: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
-}) => {
+const CampaignGeneralDetails = () => {
   const { data, isLoading } = useCampaignContext();
+  const { data: countData } = useGetCampaignSuccessErrorCount<CampaignCountSuccessErrorResponse>(
+    data?.id.toString(),
+  );
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
 
   //INFO: This is a workaround to get the kind of the template becaouse of POCKET
   const dataKind = getDataKind(data);
-
-  const closeFlyout = () => {
-    setIsEditFlyoutVisible(false);
-  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -187,6 +186,42 @@ const EmailGeneralDetails = ({}: {
               <EuiPanel hasBorder={true}>
                 <EuiFlexItem>
                   <EuiStat
+                    title={
+                      <EuiTextColor color="success">
+                        <span>{countData?.success_count}</span>
+                      </EuiTextColor>
+                    }
+                    description={
+                      <EuiTextColor color="default">
+                        <span>Success</span>
+                      </EuiTextColor>
+                    }
+                    titleSize="xs"
+                    titleColor="primary"
+                  />
+                </EuiFlexItem>
+              </EuiPanel>
+              <EuiPanel hasBorder={true}>
+                <EuiFlexItem>
+                  <EuiStat
+                    title={
+                      <EuiTextColor color="red">
+                        <span>{countData?.error_count}</span>
+                      </EuiTextColor>
+                    }
+                    description={
+                      <EuiTextColor color="default">
+                        <span>Error</span>
+                      </EuiTextColor>
+                    }
+                    titleSize="xs"
+                    titleColor="primary"
+                  />
+                </EuiFlexItem>
+              </EuiPanel>
+              <EuiPanel hasBorder={true}>
+                <EuiFlexItem>
+                  <EuiStat
                     title={moment(data?.created_at).format("YYYY-MM-DD LT")}
                     description={
                       <EuiTextColor color="subdued">
@@ -197,7 +232,6 @@ const EmailGeneralDetails = ({}: {
                     }
                     titleColor=""
                     titleSize="xs"
-                    titleElement="ss"
                   />
                 </EuiFlexItem>
               </EuiPanel>
@@ -219,12 +253,23 @@ const EmailGeneralDetails = ({}: {
               </EuiPanel>
             </EuiFlexGroup>
           </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiFormRow label="Description" fullWidth>
+              <>
+                <EuiTextArea
+                  aria-label="description"
+                  readOnly
+                  fullWidth
+                  value={data?.description || "Empty description"}
+                />
+              </>
+            </EuiFormRow>
+          </EuiFlexItem>
         </EuiFlexGroup>
       </EuiPanel>
       {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
-      {isEditFlyoutVisible && <EditTemplateFlyout closeFlyout={closeFlyout} data={data} />}
     </div>
   );
 };
 
-export default EmailGeneralDetails;
+export default CampaignGeneralDetails;

@@ -1,33 +1,26 @@
 import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem, useGeneratedHtmlId } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { memo } from "react";
 import CampaignInfoActions from "../../../../components/campaign/campaign_info_actions";
-import EmailGeneralDetails from "../../../../components/campaign/email_general_detail";
-import GeneralDetails from "../../../../components/campaign/general_detail";
+import CampaignGeneralDetails from "../../../../components/campaign/campaign_general_detail";
 import Menu from "../../../../components/campaign/menu";
 import DashboardLayout from "../../../../layouts/dashboard";
 import { CampaignProvider, useCampaignContext } from "../../../../store/campaign_store";
-import { getDataKind } from "../../../../utils/helper";
 
 const CampaignInfoContent = () => {
-  const { data, isLoading } = useCampaignContext();
-
-  const dataKind = getDataKind(data);
-  const isEmail = dataKind === "email";
-  const DetailsComponent = memo(isEmail ? EmailGeneralDetails : GeneralDetails);
+  const { isLoading } = useCampaignContext();
 
   if (isLoading) {
     return <div>...loading</div>;
   }
 
   return (
-    <EuiFlexGroup direction={isEmail ? "column" : "row"}>
+    <EuiFlexGroup direction="column">
       <EuiFlexItem grow={4}>
-        <DetailsComponent />
+        <CampaignGeneralDetails />
       </EuiFlexItem>
       <EuiFlexItem grow={7}>
-        <Menu isEmail={isEmail} />
+        <Menu />
       </EuiFlexItem>
     </EuiFlexGroup>
   );

@@ -1,5 +1,6 @@
 import { jsonrepair } from "jsonrepair";
 import { RuleGroupType, RuleValidator, ValidationResult } from "react-querybuilder";
+import { CleanPlugin } from "webpack";
 import { IS_POCKET } from "../constants";
 import { Fields } from "../hooks/useGetFields";
 
@@ -110,31 +111,44 @@ export const processBody = (body: string, kind: string) => {
 };
 
 export function getDataKind(data) {
-  let dataKind = data?.kind;
+  let kind = data?.kind;
+  let body = data?.body;
 
-  if (IS_POCKET && data?.kind === "api") {
-    try {
-      const parsedBody = JSON.parse(jsonrepair(data?.body || "{}"));
-      dataKind = parsedBody?.type || data?.kind;
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      // Optionally, you can handle parsing errors and return a default value
+  if (!IS_POCKET) return kind;
+  if (IS_POCKET && kind === "email") return kind;
+  try {
+    const parsedBody = JSON.parse(body);
+    if (parsedBody.type === "sms") {
+      return "sms";
     }
+    if (parsedBody.type === "push") {
+      return "push";
+    }
+  } catch (error) {
+    return kind;
   }
 
-  return dataKind;
+  return kind;
 }
 
-export function getBodyContent(data, dataKind: string) {
-  if (IS_POCKET && dataKind !== "email") {
-    try {
-      const repairedData = JSON.parse(jsonrepair(data?.body || "{}"));
-      return repairedData?.body || null; // Safeguard in case body is missing
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return null; // Return null or a fallback value in case of parsing error
+export function getBodyContent(data, kind: string) {
+  if (!IS_POCKET) return data?.body;
+  if (IS_POCKET && kind === "email") return data?.body;
+  try {
+    const parsedBody = JSON.parse(data?.body);
+    if (kind === "api") {
+      return JSON.stringify(JSON.parse(data?.body), null, 2);
     }
+    if (kind === "sms") {
+      return parsedBody.body;
+    }
+    if (kind === "email") {
+      return parsedBody.body;
+    }
+    if (kind === "push") {
+      return parsedBody.body;
+    }
+  } catch (error) {
+    return data?.body;
   }
-
-  return data?.body || null; // Default to original body if no conditions met
 }
