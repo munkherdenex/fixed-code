@@ -8,7 +8,6 @@ import {
   EuiFormRow,
   EuiButtonIcon,
   Criteria,
-  EuiButton,
   EuiEmptyPrompt,
   EuiImage,
   EuiFlexGrid,
@@ -22,6 +21,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import moment from "moment";
+import CreateChannelFlyoutContainer from "./create_channel_flyout_container";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -39,7 +39,7 @@ const options = [
   { value: "api", text: "api" },
 ];
 
-const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: () => void }) => {
+const ChannelsTable = () => {
   const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -57,6 +57,10 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
+    defaultValues: {
+      search: "",
+      filter: "",
+    },
   });
 
   const { data, isLoading, mutate } = useGetChannels<ChannelsResponse>(undefined, {
@@ -149,17 +153,7 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
             <p>The channel is a way to communicate with your customers.</p>
           </>
         }
-        actions={
-          <EuiButton
-            color="primary"
-            fill
-            onClick={() => {
-              openCreateChannelFlyout();
-            }}
-          >
-            Create channel
-          </EuiButton>
-        }
+        actions={<CreateChannelFlyoutContainer />}
       />
     );
   }
@@ -206,7 +200,7 @@ const ChannelsTable = ({ openCreateChannelFlyout }: { openCreateChannelFlyout: (
                         onBlur={onBlur}
                         options={options}
                         value={value}
-                        onChange={(e) => onChange(e)}
+                        onChange={onChange}
                       />
                     )}
                   />

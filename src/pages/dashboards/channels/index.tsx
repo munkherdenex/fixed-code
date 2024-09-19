@@ -1,8 +1,7 @@
-import { EuiBreadcrumbs, EuiButton, useEuiTheme } from "@elastic/eui";
+import { EuiBreadcrumbs, useEuiTheme, useGeneratedHtmlId } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import CreateChannelFlyout from "../../../components/channels/create_channel_flyot";
+import CreateChannelFlyoutContainer from "../../../components/channels/create_channel_flyout_container";
 import ChannelsTable from "../../../components/channels/table";
 import DashboardLayout from "../../../layouts/dashboard";
 import { dashboardsStyles } from "../../../styles/dashboards.styles";
@@ -13,11 +12,7 @@ const Channels = () => {
   const { euiTheme } = useEuiTheme();
   const router = useRouter();
   const styles = dashboardsStyles(euiTheme);
-  const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
-
-  const closeFlyout = () => {
-    setIsFlyoutVisible(false);
-  };
+  const rightSideItemOneId = useGeneratedHtmlId();
 
   return (
     <>
@@ -28,16 +23,7 @@ const Channels = () => {
         pageHeader={{
           pageTitle: "Channels",
           iconType: "spacesApp",
-          rightSideItems: [
-            <EuiButton
-              color="primary"
-              onClick={() => setIsFlyoutVisible(true)}
-              fill
-              key="create-channels"
-            >
-              Create channel
-            </EuiButton>,
-          ],
+          rightSideItems: [<CreateChannelFlyoutContainer key={rightSideItemOneId} />],
         }}
         breadCrumb={
           <EuiBreadcrumbs
@@ -55,8 +41,7 @@ const Channels = () => {
         }
       >
         <div css={styles.container}>
-          <ChannelsTable openCreateChannelFlyout={() => setIsFlyoutVisible(true)} />
-          {isFlyoutVisible && <CreateChannelFlyout closeFlyout={closeFlyout} />}
+          <ChannelsTable />
         </div>
       </DashboardLayout>
     </>

@@ -17,13 +17,14 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
 import { getDataKind } from "../../utils/helper";
+import CreateCampaignActionPopover from "./create_campaign_action_popover";
 
 const schema = yup.object({
   search: yup.string().notRequired().label("Search"),
@@ -40,7 +41,7 @@ const options = [
   { value: "ERROR", text: "ERROR" },
 ];
 
-const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactElement }) => {
+const SendsTable = () => {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(0);
@@ -59,6 +60,10 @@ const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactEleme
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
+    defaultValues: {
+      search: "",
+      filter: "",
+    },
   });
 
   const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, {
@@ -161,7 +166,7 @@ const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactEleme
             <p>The campaign description</p>
           </>
         }
-        actions={createCampaignAction}
+        actions={<CreateCampaignActionPopover />}
       />
     );
   }
@@ -208,7 +213,7 @@ const SendsTable = ({ createCampaignAction }: { createCampaignAction: ReactEleme
                         onBlur={onBlur}
                         options={options}
                         value={value}
-                        onChange={(e) => onChange(e)}
+                        onChange={onChange}
                       />
                     )}
                   />
