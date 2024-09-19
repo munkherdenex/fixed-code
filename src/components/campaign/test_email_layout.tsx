@@ -29,11 +29,11 @@ const schema = yup
         yup
           .object({
             label: yup.string().notRequired(),
-            value: yup.string().required("please enter audience"),
+            value: yup.string().required("Please enter audience"),
           })
-          .required("please enter audience"),
+          .required("Please enter audience"),
       )
-      .required("please enter audience"),
+      .required("Please enter audience"),
   })
   .required();
 
