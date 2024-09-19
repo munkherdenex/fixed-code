@@ -1,8 +1,8 @@
 import { css } from "@emotion/react";
 
-export const generalDetailsStyles = () => ({
+export const generalDetailsStyles = (theme) => ({
   conditionContainer: css`
-    background-color: #f7f8fc;
+    background-color: ${theme === "dark" ? "#1d1e24" : "#f7f8fc"};
     padding: 20px;
     border: 1px solid #e4e6f0;
     border-radius: 4px;

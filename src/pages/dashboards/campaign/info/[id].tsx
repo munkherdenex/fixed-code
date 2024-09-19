@@ -148,7 +148,6 @@ const CampaignInfo = () => {
             <EuiFlexItem grow={4}>
               <DetailsComponent templateStatus={data?.status} />
             </EuiFlexItem>
-            {isEmail && <EuiSpacer size="l" />}
             <EuiFlexItem grow={7}>
               <Menu isEmail={isEmail} />
             </EuiFlexItem>

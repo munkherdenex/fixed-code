@@ -26,6 +26,9 @@ import moment from "moment";
 import { PAGINATION_CHOOSES } from "../../constants";
 import CreateAudienceSegment from "./add_segments_audience";
 import DeleteSegmentAudience from "./delete_segment_audience";
+import useRerunSegmentAudience from "../../hooks/useRerunSegmentAudience";
+import { useSegmentContext } from "../../store/segment_store";
+import { addToast } from "../toast";
 
 const schema = yup.object({
   search: yup.string().notRequired(),
@@ -36,8 +39,10 @@ const pathPrefix = process.env.PATH_PREFIX;
 const SegmentAudienceList = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [searchValue, setSearchValue] = useState("");
 
+  const { data: segmentData } = useSegmentContext();
+
+  const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
@@ -47,11 +52,13 @@ const SegmentAudienceList = () => {
     pageSize,
     pageSizeOptions: PAGINATION_CHOOSES,
   };
+
   const { data, isLoading } = useGetSegmentAudienceList<SegmentAudienceResponse>(id, {
     search: searchValue,
     offset: `${pageIndex * pageSize}`,
     limit: `${pageSize}`,
   });
+  const { trigger, isMutating } = useRerunSegmentAudience(id);
 
   const {
     control,
@@ -151,6 +158,22 @@ const SegmentAudienceList = () => {
     setSearchValue(value);
   };
 
+  const reRunSegmentAudience = async () => {
+    try {
+      const response = await trigger();
+      if (response) {
+        addToast({
+          id: "re-run-segment-audience",
+          color: "success",
+          title: "Success",
+          text: "Audience updated successfully",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (isLoading) return <div>loading...</div>;
 
   if (!data) return <div>empty</div>;
@@ -184,15 +207,31 @@ const SegmentAudienceList = () => {
               </EuiFormRow>
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
-              <EuiButton
-                size="m"
-                iconType="plusInCircle"
-                onClick={() => {
-                  setIsFlyoutVisible(true);
-                }}
-              >
-                Add audience
-              </EuiButton>
+              <EuiFlexGroup>
+                {segmentData?.type === "dynamic" && (
+                  <EuiFlexItem>
+                    <EuiButton
+                      size="m"
+                      iconType="refresh"
+                      disabled={isMutating}
+                      onClick={reRunSegmentAudience}
+                    >
+                      Update audience
+                    </EuiButton>
+                  </EuiFlexItem>
+                )}
+                <EuiFlexItem>
+                  <EuiButton
+                    size="m"
+                    iconType="plusInCircle"
+                    onClick={() => {
+                      setIsFlyoutVisible(true);
+                    }}
+                  >
+                    Add audience
+                  </EuiButton>
+                </EuiFlexItem>
+              </EuiFlexGroup>
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFlexItem>

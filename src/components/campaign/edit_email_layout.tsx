@@ -7,11 +7,13 @@ import {
   EuiForm,
   EuiFormRow,
   EuiSpacer,
+  EuiTextArea,
   EuiToolTip,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { IS_POCKET } from "../../constants";
@@ -22,6 +24,7 @@ import { dataTypeToSwitch, processBody, processKind } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
 import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 import { addToast } from "../toast";
+import TestEmailLayout from "./test_email_layout";
 
 const QuillEditorComponent = dynamic(() => import("../email_editor/quill_editor"), { ssr: false });
 
@@ -29,6 +32,7 @@ const schema = yup
   .object({
     title: yup.string().required().label("Title"),
     kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api"]).required().label("Data"),
+    description: yup.string().label("Description"),
     body: yup
       .string()
       .required()
@@ -43,24 +47,38 @@ const schema = yup
 
 type EmailFormData = yup.InferType<typeof schema>;
 
-const pathPrefix = process.env.PATH_PREFIX;
+const TestEmailLayoutContainer = ({ data }) => {
+  const [isTestLayout, setIsTestLayout] = useState(false);
 
-const EditEmailLayout = ({
-  templateStatus,
-  setView,
-}: {
-  templateStatus?: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
-  setView?: (res: boolean) => void;
-}) => {
-  const router = useRouter();
-  const { isMutating, trigger } = useUpdateTemplate(router.query.id);
-  const { data } = useGetTemplates<Template>(
-    router.query.id,
-    {},
-    {
-      refreshInterval: templateStatus !== "DRAFT" ? 1000 : 0,
-    },
+  const closeFlyout = () => {
+    setIsTestLayout(false);
+  };
+
+  return (
+    <>
+      <EuiToolTip position="top" content="send test function on Email campaign">
+        <EuiButton
+          size="s"
+          onClick={() => {
+            setIsTestLayout(true);
+          }}
+        >
+          Test
+        </EuiButton>
+      </EuiToolTip>
+      {isTestLayout && <TestEmailLayout closeFlyout={closeFlyout} template_data={data} />}
+    </>
   );
+};
+
+const EditEmailLayout = () => {
+  const router = useRouter();
+  const styles = quillEditorStyles();
+
+  const [isViewEmail, setIsViewEmail] = useState(true);
+
+  const { isMutating, trigger } = useUpdateTemplate(router.query.id);
+  const { data } = useGetTemplates<Template>(router.query.id);
 
   const {
     handleSubmit,
@@ -76,11 +94,15 @@ const EditEmailLayout = ({
     defaultValues: {
       kind: processKind(data?.body, data?.kind),
       body: processBody(data?.body, processKind(data?.body, data?.kind)),
+      description: data?.description,
       title: data?.title,
       channel: data?.channel,
     },
   });
-  const styles = quillEditorStyles();
+
+  const setView = () => {
+    setIsViewEmail((prev) => !prev);
+  };
 
   const setReactQuill = (value: string) => {
     setValue("body", value);
@@ -105,6 +127,7 @@ const EditEmailLayout = ({
         preparedData.body = JSON.stringify({
           type: dataType,
           to: `{{${dataTypeToSwitch(data.kind)}}}`,
+          description: data.description,
           title: data.title,
           body: data.body,
         });
@@ -113,7 +136,6 @@ const EditEmailLayout = ({
       const response = await trigger(preparedData);
       if (response) {
         globalMutate("/api/v1/dj/templates/");
-        router.push(`${pathPrefix}/dashboards/campaign/info/${router.query.id}`);
         addToast({
           id: "success",
           title: "Successfully updated",
@@ -143,6 +165,7 @@ const EditEmailLayout = ({
                     onChange={onChange}
                     value={value}
                     onBlur={onBlur}
+                    readOnly={isViewEmail}
                     isInvalid={!!errors.title?.message}
                     placeholder="Subject"
                     aria-label="Subject"
@@ -152,29 +175,75 @@ const EditEmailLayout = ({
             </EuiFormRow>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiFlexGroup justifyContent="flexEnd" alignItems="flexEnd">
-              <EuiFlexItem>
-                <EuiToolTip position="top" content="Cancel">
-                  <EuiButtonIcon
-                    display={"base"}
-                    iconType="cross"
-                    size="s"
-                    color="success"
-                    onClick={() => {
-                      setView(true);
-                      reset();
-                    }}
-                  />
-                </EuiToolTip>
-              </EuiFlexItem>
-              <EuiFlexItem>
-                <EuiButton isLoading={isMutating} size="s" type="submit">
-                  Update Campaign
-                </EuiButton>
-              </EuiFlexItem>
-            </EuiFlexGroup>
+            {isViewEmail && (
+              <EuiFlexGroup gutterSize="xl" alignItems="flexEnd" justifyContent="flexEnd">
+                <EuiFlexItem grow={false}>
+                  <TestEmailLayoutContainer data={data} />
+                </EuiFlexItem>
+                {(data.status === "DRAFT" || data.status === "ERROR") && (
+                  <EuiFlexItem grow={false}>
+                    <EuiToolTip position="top" content="move to the update screen">
+                      <EuiButtonIcon
+                        display={"base"}
+                        iconType="documentEdit"
+                        size="s"
+                        onClick={() => {
+                          setView();
+                        }}
+                      />
+                    </EuiToolTip>
+                  </EuiFlexItem>
+                )}
+              </EuiFlexGroup>
+            )}
+            {!isViewEmail && (
+              <EuiFlexGroup justifyContent="flexEnd" alignItems="flexEnd">
+                <EuiFlexItem>
+                  <EuiToolTip position="top" content="Cancel">
+                    <EuiButtonIcon
+                      display={"base"}
+                      iconType="cross"
+                      size="s"
+                      color="success"
+                      onClick={() => {
+                        setView();
+                        reset();
+                      }}
+                    />
+                  </EuiToolTip>
+                </EuiFlexItem>
+                <EuiFlexItem>
+                  <EuiButton isLoading={isMutating} size="s" type="submit">
+                    Update Campaign
+                  </EuiButton>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            )}
           </EuiFlexItem>
         </EuiFlexGroup>
+        <EuiSpacer size="s" />
+        <EuiFormRow
+          fullWidth
+          label="Description"
+          isInvalid={!!errors?.description?.message}
+          error={[errors?.description?.message]}
+        >
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { onChange, onBlur, value, name } }) => (
+              <EuiTextArea
+                onChange={onChange}
+                value={value}
+                onBlur={onBlur}
+                placeholder={name}
+                readOnly={isViewEmail}
+                isInvalid={!!errors.description?.message}
+                fullWidth
+              />
+            )}
+          />
+        </EuiFormRow>
         <EuiSpacer size="s" />
         <EuiFormRow
           label=""
@@ -182,7 +251,7 @@ const EditEmailLayout = ({
           error={[errors?.body?.message]}
           css={styles.quillEditorContainer}
         >
-          <QuillEditorComponent control={control} onChange={setReactQuill} />
+          <QuillEditorComponent readonly={isViewEmail} control={control} onChange={setReactQuill} />
         </EuiFormRow>
       </EuiForm>
     </>

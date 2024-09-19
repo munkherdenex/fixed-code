@@ -11,6 +11,7 @@ import {
   EuiPanel,
   EuiSelect,
   EuiSpacer,
+  EuiTextArea,
   EuiToolTip,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -52,6 +53,7 @@ const schema = yup
   .object({
     title: yup.string().required().label("Title"),
     kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api", ""]).required().label("Data"),
+    description: yup.string().label("Description"),
     body: yup
       .string()
       .required()
@@ -264,6 +266,29 @@ const Dashboard: FunctionComponent = () => {
               </EuiFlexGroup>
               <EuiSpacer size="s" />
               <EuiFormRow
+                fullWidth
+                label="Description"
+                isInvalid={!!errors?.description?.message}
+                error={[errors?.description?.message]}
+              >
+                <Controller
+                  control={control}
+                  name="description"
+                  render={({ field: { onChange, onBlur, value, name } }) => (
+                    <EuiTextArea
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      placeholder={name}
+                      fullWidth
+                      isInvalid={!!errors.description?.message}
+                    />
+                  )}
+                />
+              </EuiFormRow>
+              <EuiSpacer size="s" />
+              <EuiFormRow
+                fullWidth
                 label="Data"
                 labelAppend={<BodyInfoToolTip />}
                 helpText={bodyHelpText}
@@ -271,9 +296,7 @@ const Dashboard: FunctionComponent = () => {
                 error={[errors?.body?.message]}
                 css={styles.quillEditorContainer}
               >
-                <>
-                  <QuillEditorComponent control={control} onChange={setReactQuill} />
-                </>
+                <QuillEditorComponent control={control} onChange={setReactQuill} />
               </EuiFormRow>
             </EuiForm>
           </EuiPanel>

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import GeneralDetails from "../../../../components/segments/general_details";
 import DashboardLayout from "../../../../layouts/dashboard";
 import Menu from "../../../../components/segments/menu";
+import { SegmentProvider } from "../../../../store/segment_store";
 
 const Info = () => {
   const router = useRouter();
@@ -38,7 +39,7 @@ const Info = () => {
           />
         }
       >
-        <>
+        <SegmentProvider>
           <EuiFlexGroup direction="row">
             <EuiFlexItem grow={4}>
               <GeneralDetails />
@@ -47,7 +48,7 @@ const Info = () => {
               <Menu />
             </EuiFlexItem>
           </EuiFlexGroup>
-        </>
+        </SegmentProvider>
       </DashboardLayout>
     </>
   );
