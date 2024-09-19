@@ -2,20 +2,20 @@ import {
   EuiButton,
   EuiComboBox,
   EuiComboBoxOptionOption,
-  EuiFieldText,
   EuiFlyout,
   EuiFlyoutBody,
   EuiFlyoutHeader,
   EuiForm,
   EuiFormRow,
+  EuiTextArea,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
-import { Template } from "../../hooks/useGetTemplates";
 import useTestSend from "../../hooks/useTestSend";
 import { globalMutate } from "../../utils/globalMutate";
 import { addToast } from "../toast";
@@ -39,13 +39,9 @@ const schema = yup
 
 type TestFormData = yup.InferType<typeof schema>;
 
-const TestEmailLayout = ({
-  closeFlyout,
-  template_data,
-}: {
-  closeFlyout: () => void;
-  template_data: Template;
-}) => {
+const TestEmailLayout = ({ closeFlyout }: { closeFlyout: () => void }) => {
+  const router = useRouter();
+  const templateId = router.query?.id;
   const { isMutating, trigger } = useTestSend();
   const { data: customers } = useGetCustomers<CustomersResponse>();
 
@@ -78,7 +74,7 @@ const TestEmailLayout = ({
     try {
       const preparedData = {
         customer_id: data?.customer?.[0]?.value,
-        template_id: template_data?.id,
+        template_id: templateId,
         worker_emails: data?.worker_emails,
       };
 
@@ -142,7 +138,7 @@ const TestEmailLayout = ({
               control={control}
               name="worker_emails"
               render={({ field: { onChange, onBlur, value } }) => (
-                <EuiFieldText
+                <EuiTextArea
                   onChange={onChange}
                   value={value}
                   onBlur={onBlur}

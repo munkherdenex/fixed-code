@@ -17,7 +17,6 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { IS_POCKET } from "../../constants";
-import useGetTemplates, { Template } from "../../hooks/useGetTemplates";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { useCampaignContext } from "../../store/campaign_store";
 import { globalMutate } from "../../utils/globalMutate";
@@ -245,7 +244,7 @@ const EditEmailLayout = () => {
           <QuillEditorComponent readonly={isViewEmail} control={control} onChange={setReactQuill} />
         </EuiFormRow>
       </EuiForm>
-      {isTestLayout && <TestEmailLayout closeFlyout={closeFlyout} template_data={data} />}
+      {isTestLayout && <TestEmailLayout closeFlyout={closeFlyout} />}
     </>
   );
 };
