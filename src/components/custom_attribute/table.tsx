@@ -13,11 +13,13 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import moment from "moment";
-import { SetStateAction, useState } from "react";
+import { useRouter } from "next/router";
+import { SetStateAction, useEffect, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useDeleteField from "../../hooks/useDeleteCustomField";
 import useGetFields, { Fields, FieldsResponse } from "../../hooks/useGetFields";
 import { globalMutate } from "../../utils/globalMutate";
+import { isNumber } from "../../utils/helper";
 import CreateFieldFlyoutContainer from "./create_field_flyout_container";
 
 const DeleteConfirmModal = ({
@@ -28,8 +30,10 @@ const DeleteConfirmModal = ({
   selectedField: Fields | null;
 }) => {
   const modalTitleId = useGeneratedHtmlId();
-  const { trigger, isMutating } = useDeleteField(`${selectedField?.id}`);
+
   const [deleteConfirmValue, setDeleteConfirmValue] = useState("");
+
+  const { trigger, isMutating } = useDeleteField(`${selectedField?.id}`);
 
   const closeModal = async () => {
     setIsModalVisible(false);
@@ -82,8 +86,15 @@ const DeleteConfirmModal = ({
 };
 
 const FieldsTable = () => {
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const router = useRouter();
+  const { query } = router;
+
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0];
+
+  const [pageIndex, setPageIndex] = useState(queryPageIndex);
+  const [pageSize, setPageSize] = useState(queryPageSize);
+
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [selectedField, setSelectedField] = useState<Fields | null>(null);
 
@@ -146,9 +157,10 @@ const FieldsTable = () => {
 
   const onTableChange = ({ page }: Criteria<Fields>) => {
     if (page) {
-      const { index: pageIndex, size: pageSize } = page;
-      setPageIndex(pageIndex);
-      setPageSize(pageSize);
+      const { index: newPageIndex, size: newPageSize } = page;
+      router.push({ query: { pageIndex: newPageIndex, pageSize: newPageSize } });
+      setPageIndex(newPageIndex);
+      setPageSize(newPageSize);
     }
   };
 
@@ -162,6 +174,12 @@ const FieldsTable = () => {
       textOnly: true,
     };
   };
+
+  // Condensed useEffect logic to update states when query parameters change
+  useEffect(() => {
+    setPageIndex(queryPageIndex);
+    setPageSize(queryPageSize);
+  }, [queryPageIndex, queryPageSize]);
 
   if (isLoading) {
     return <div>Loading...</div>;

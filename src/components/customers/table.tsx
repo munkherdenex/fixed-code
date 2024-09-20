@@ -6,30 +6,21 @@ import {
   EuiButtonIcon,
   EuiEmptyPrompt,
   EuiFieldSearch,
-  EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFormRow,
   EuiImage,
   EuiTableFieldDataColumnType,
   EuiTextColor,
 } from "@elastic/eui";
-import { yupResolver } from "@hookform/resolvers/yup";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import * as yup from "yup";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
 import { isNumber } from "../../utils/helper";
 import CreateCustomerFlyoutContainer from "./create_customer_flyout_container";
 
 const pathPrefix = process.env.PATH_PREFIX;
-
-const schema = yup.object({
-  search: yup.string().notRequired().label("Search"),
-});
 
 const CustomersTable = () => {
   const router = useRouter();
@@ -58,14 +49,6 @@ const CustomersTable = () => {
     }),
     [pageIndex, pageSize],
   );
-
-  const {
-    control,
-    formState: { errors },
-  } = useForm({
-    mode: "onBlur",
-    resolver: yupResolver(schema),
-  });
 
   // Memoizing columns to prevent unnecessary re-renders
   const columns = useMemo(
@@ -125,7 +108,9 @@ const CustomersTable = () => {
   const onTableChange = ({ page }: Criteria<CustomersType>) => {
     if (page) {
       const { index: newPageIndex, size: newPageSize } = page;
-      router.push({ query: { pageIndex: newPageIndex, pageSize: newPageSize } });
+      router.push({
+        query: { pageIndex: newPageIndex, pageSize: newPageSize, search: searchValue },
+      });
       setPageIndex(newPageIndex);
       setPageSize(newPageSize);
     }
@@ -151,9 +136,16 @@ const CustomersTable = () => {
 
   // Condensed useEffect logic to update states when query parameters change
   useEffect(() => {
-    setPageIndex(queryPageIndex);
-    setPageSize(queryPageSize);
-    setSearchValue(querySearch);
+    if (querySearch !== searchValue) {
+      setSearchValue(querySearch);
+    }
+    if (queryPageIndex !== pageIndex) {
+      setPageIndex(queryPageIndex);
+    }
+    if (queryPageSize !== pageSize) {
+      setPageSize(queryPageSize);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryPageIndex, queryPageSize, querySearch]);
 
   if (isLoading) {
@@ -183,30 +175,11 @@ const CustomersTable = () => {
           gutterSize="s"
         >
           <EuiFlexItem grow={false}>
-            <EuiFlexGrid columns={2}>
-              <EuiFlexItem grow={false}>
-                <EuiFormRow
-                  label="Search"
-                  isInvalid={!!errors.search?.message}
-                  error={[errors.search?.message]}
-                >
-                  <Controller
-                    control={control}
-                    name="search"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <EuiFieldSearch
-                        onChange={onChange}
-                        value={value}
-                        onBlur={onBlur}
-                        onSearch={onSearchEmailAddress}
-                        placeholder="Search email or phone"
-                        isInvalid={!!errors.search?.message}
-                      />
-                    )}
-                  />
-                </EuiFormRow>
-              </EuiFlexItem>
-            </EuiFlexGrid>
+            <EuiFieldSearch
+              defaultValue={searchValue}
+              onSearch={onSearchEmailAddress}
+              placeholder="Search Campaign"
+            />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             <EuiButtonIcon

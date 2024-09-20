@@ -5,32 +5,32 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFieldSearch,
-  EuiFormRow,
   EuiButtonIcon,
   Criteria,
   EuiEmptyPrompt,
   EuiButton,
   EuiImage,
 } from "@elastic/eui";
-import * as yup from "yup";
-import router from "next/router";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import useGetSegments, { Segment, SegmentResponse } from "../../hooks/useGetSegments";
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { PAGINATION_CHOOSES } from "../../constants";
 import moment from "moment";
+import { isNumber } from "../../utils/helper";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
-const schema = yup.object({
-  search: yup.string().notRequired(),
-});
-
 const SegmentsTable = () => {
-  const [searchValue, setSearchValue] = useState("");
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const router = useRouter();
+  const { query } = router;
+
+  const querySearch = query?.search?.toString() || "";
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0];
+
+  const [searchValue, setSearchValue] = useState(querySearch);
+  const [pageIndex, setPageIndex] = useState(queryPageIndex);
+  const [pageSize, setPageSize] = useState(queryPageSize);
 
   const pagination = {
     pageIndex,
@@ -41,14 +41,6 @@ const SegmentsTable = () => {
     query: searchValue,
     offset: `${pageIndex * pageSize}`,
     limit: `${pageSize}`,
-  });
-
-  const {
-    control,
-    formState: { errors },
-  } = useForm({
-    mode: "onBlur",
-    resolver: yupResolver(schema),
   });
 
   const columns: Array<EuiBasicTableColumn<Segment>> = [
@@ -98,13 +90,17 @@ const SegmentsTable = () => {
 
   const onSearch = (value: string) => {
     setSearchValue(value);
+    router.push({ query: { search: value } });
   };
 
   const onTableChange = ({ page }: Criteria<Segment>) => {
     if (page) {
-      const { index: pageIndex, size: pageSize } = page;
-      setPageIndex(pageIndex);
-      setPageSize(pageSize);
+      const { index: newPageIndex, size: newPageSize } = page;
+      router.push({
+        query: { pageIndex: newPageIndex, pageSize: newPageSize, search: searchValue },
+      });
+      setPageIndex(newPageIndex);
+      setPageSize(newPageSize);
     }
   };
 
@@ -130,11 +126,25 @@ const SegmentsTable = () => {
     };
   };
 
+  // Condensed useEffect logic to update states when query parameters change
+  useEffect(() => {
+    if (querySearch !== searchValue) {
+      setSearchValue(querySearch);
+    }
+    if (queryPageIndex !== pageIndex) {
+      setPageIndex(queryPageIndex);
+    }
+    if (queryPageSize !== pageSize) {
+      setPageSize(queryPageSize);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryPageIndex, queryPageSize, querySearch]);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (data?.results?.length === 0 && searchValue === "") {
+  if (data?.results?.length === 0 && !searchValue && pageIndex === 0) {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
@@ -166,26 +176,11 @@ const SegmentsTable = () => {
       <EuiFlexItem>
         <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="flexEnd">
           <EuiFlexItem grow={false}>
-            <EuiFormRow
-              label="Search"
-              isInvalid={!!errors.search?.message}
-              error={[errors.search?.message]}
-            >
-              <Controller
-                control={control}
-                name="search"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <EuiFieldSearch
-                    onChange={onChange}
-                    value={value}
-                    onBlur={onBlur}
-                    onSearch={onSearch}
-                    placeholder="Search segments"
-                    isInvalid={!!errors.search?.message}
-                  />
-                )}
-              />
-            </EuiFormRow>
+            <EuiFieldSearch
+              defaultValue={searchValue}
+              onSearch={onSearch}
+              placeholder="Search Campaign"
+            />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             <EuiButtonIcon

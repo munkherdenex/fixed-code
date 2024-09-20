@@ -9,27 +9,18 @@ import {
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFormRow,
   EuiImage,
   EuiSelect,
   EuiTableFieldDataColumnType,
 } from "@elastic/eui";
-import { yupResolver } from "@hookform/resolvers/yup";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import * as yup from "yup";
+import { useEffect, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
-import { getDataKind } from "../../utils/helper";
+import { getDataKind, isNumber } from "../../utils/helper";
 import CreateCampaignActionPopover from "./create_campaign_action_popover";
-
-const schema = yup.object({
-  search: yup.string().notRequired().label("Search"),
-  filter: yup.string().notRequired().label("Filter"),
-});
 
 const options = [
   { value: "", text: "All" },
@@ -43,9 +34,17 @@ const options = [
 
 const SendsTable = () => {
   const router = useRouter();
-  const [searchValue, setSearchValue] = useState("");
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const { query } = router;
+
+  const querySearch = query?.search?.toString() || "";
+  const queryFilter = query?.filter?.toString() || "";
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0];
+
+  const [searchValue, setSearchValue] = useState(querySearch);
+  const [pageIndex, setPageIndex] = useState(queryPageIndex);
+  const [pageSize, setPageSize] = useState(queryPageSize);
+  const [filter, setFilter] = useState(queryFilter);
 
   const pagination = {
     pageIndex,
@@ -53,24 +52,11 @@ const SendsTable = () => {
     pageSizeOptions: PAGINATION_CHOOSES,
   };
 
-  const {
-    control,
-    watch,
-    formState: { errors },
-  } = useForm({
-    mode: "onBlur",
-    resolver: yupResolver(schema),
-    defaultValues: {
-      search: "",
-      filter: "",
-    },
-  });
-
   const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, {
     query: searchValue,
+    filter: filter,
     offset: `${pageIndex * pageSize}`,
     limit: `${pageSize}`,
-    filter: watch("filter"),
   });
 
   const columns: Array<EuiBasicTableColumn<Template>> = [
@@ -120,13 +106,27 @@ const SendsTable = () => {
 
   const onSearch = (value: string) => {
     setSearchValue(value);
+    router.push({ query: { search: value } });
+  };
+
+  const onFilter = (value: string) => {
+    setFilter(value);
+    router.push({ query: { filter: value } });
   };
 
   const onTableChange = ({ page }: Criteria<Template>) => {
     if (page) {
-      const { index: pageIndex, size: pageSize } = page;
-      setPageIndex(pageIndex);
-      setPageSize(pageSize);
+      const { index: newPageIndex, size: newPageSize } = page;
+      router.push({
+        query: {
+          pageIndex: newPageIndex,
+          pageSize: newPageSize,
+          filter: filter,
+          search: searchValue,
+        },
+      });
+      setPageIndex(newPageIndex);
+      setPageSize(newPageSize);
     }
   };
 
@@ -150,11 +150,28 @@ const SendsTable = () => {
     };
   };
 
+  // Condensed useEffect logic to update states when query parameters change
+  useEffect(() => {
+    if (querySearch !== searchValue) {
+      setSearchValue(querySearch);
+    }
+    if (queryFilter !== filter) {
+      setFilter(queryFilter);
+    }
+    if (queryPageIndex !== pageIndex) {
+      setPageIndex(queryPageIndex);
+    }
+    if (queryPageSize !== pageSize) {
+      setPageSize(queryPageSize);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryPageIndex, queryPageSize, querySearch, queryFilter]);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (data?.results?.length === 0 && searchValue === "" && watch("filter") === "") {
+  if (data?.results?.length === 0 && !searchValue && !filter) {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
@@ -178,46 +195,20 @@ const SendsTable = () => {
           <EuiFlexItem grow={false}>
             <EuiFlexGrid columns={2}>
               <EuiFlexItem grow={false}>
-                <EuiFormRow
-                  label="Search"
-                  isInvalid={!!errors.search?.message}
-                  error={[errors.search?.message]}
-                >
-                  <Controller
-                    control={control}
-                    name="search"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <EuiFieldSearch
-                        onChange={onChange}
-                        value={value}
-                        onBlur={onBlur}
-                        onSearch={onSearch}
-                        placeholder="Search Campaign"
-                        isInvalid={!!errors.search?.message}
-                      />
-                    )}
-                  />
-                </EuiFormRow>
+                <EuiFieldSearch
+                  defaultValue={searchValue}
+                  onSearch={onSearch}
+                  placeholder="Search Campaign"
+                />
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
-                <EuiFormRow
-                  label="Filter"
-                  isInvalid={!!errors.search?.message}
-                  error={[errors.search?.message]}
-                >
-                  <Controller
-                    control={control}
-                    name="filter"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <EuiSelect
-                        onBlur={onBlur}
-                        options={options}
-                        value={value}
-                        onChange={onChange}
-                      />
-                    )}
-                  />
-                </EuiFormRow>
+                <EuiSelect
+                  options={options}
+                  value={filter}
+                  onChange={(e) => {
+                    onFilter(e.target.value);
+                  }}
+                />
               </EuiFlexItem>
             </EuiFlexGrid>
           </EuiFlexItem>
