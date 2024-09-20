@@ -17,7 +17,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { PAGINATION_CHOOSES } from "../../constants";
@@ -33,12 +33,11 @@ const schema = yup.object({
 
 const CustomersTable = () => {
   const router = useRouter();
+  const { query } = router;
 
-  const querySearch = router?.query?.search ? router?.query?.search?.toString() : "";
-  const queryPageIndex = isNumber(router?.query?.pageIndex) ? +router?.query?.pageIndex : 0;
-  const queryPageSize = isNumber(router?.query?.pageSize)
-    ? +router?.query?.pageSize
-    : PAGINATION_CHOOSES[0];
+  const querySearch = query?.search?.toString() || "";
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0];
 
   const [searchValue, setSearchValue] = useState(querySearch);
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
@@ -50,11 +49,15 @@ const CustomersTable = () => {
     offset: `${pageIndex * pageSize}`,
   });
 
-  const pagination = {
-    pageIndex,
-    pageSize,
-    pageSizeOptions: PAGINATION_CHOOSES,
-  };
+  // Memoizing pagination config
+  const pagination = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+      pageSizeOptions: PAGINATION_CHOOSES,
+    }),
+    [pageIndex, pageSize],
+  );
 
   const {
     control,
@@ -64,33 +67,34 @@ const CustomersTable = () => {
     resolver: yupResolver(schema),
   });
 
-  const columns: Array<EuiBasicTableColumn<CustomersType>> = [
-    {
-      field: "email",
-      name: "Email address",
-      render: (email: CustomersType["email"]) => (
-        <>{email ? email : <EuiTextColor color="subdued">None</EuiTextColor>}</>
-      ),
-    },
-    {
-      field: "phone",
-      name: "Phone number",
-      render: (phone: CustomersType["phone"]) => (
-        <>{phone ? phone : <EuiTextColor color="subdued">None</EuiTextColor>}</>
-      ),
-    },
-    {
-      field: "rid",
-      name: "Reference ID",
-      render: (rid: CustomersType["rid"]) => (
-        <>{rid ? rid : <EuiTextColor color="subdued">None</EuiTextColor>}</>
-      ),
-    },
-    {
-      field: "source",
-      name: "Source",
-      render: (source: CustomersType["source"]) => (
-        <>
+  // Memoizing columns to prevent unnecessary re-renders
+  const columns = useMemo(
+    (): Array<EuiBasicTableColumn<CustomersType>> => [
+      {
+        field: "email",
+        name: "Email address",
+        render: (email: CustomersType["email"]) => (
+          <>{email ? email : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
+        field: "phone",
+        name: "Phone number",
+        render: (phone: CustomersType["phone"]) => (
+          <>{phone ? phone : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
+        field: "rid",
+        name: "Reference ID",
+        render: (rid: CustomersType["rid"]) => (
+          <>{rid ? rid : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
+        field: "source",
+        name: "Source",
+        render: (source: CustomersType["source"]) => (
           <EuiBadge
             iconType={
               source === "web" ? "logoWebhook" : source === "import" ? "importAction" : "apps"
@@ -99,101 +103,71 @@ const CustomersTable = () => {
           >
             {source}
           </EuiBadge>
-        </>
-      ),
-    },
-    {
-      field: "created_by",
-      name: "Created by",
-      mobileOptions: {
-        enlarge: true,
+        ),
       },
-    },
-    {
-      field: "created_at",
-      name: "Created at",
-      align: "right",
-      render: (date: string) => {
-        return moment(date).format("YYYY-MM-DD LT");
+      {
+        field: "created_by",
+        name: "Created by",
+        mobileOptions: { enlarge: true },
       },
-      footer: () => {
-        return <strong>Total: {data?.total_count || 0}</strong>;
+      {
+        field: "created_at",
+        name: "Created at",
+        align: "right",
+        render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
+        footer: () => <strong>Total: {data?.total_count || 0}</strong>,
+        mobileOptions: { enlarge: true },
       },
-      mobileOptions: {
-        enlarge: true,
-      },
-    },
-  ];
+    ],
+    [data?.total_count],
+  );
 
   const onTableChange = ({ page }: Criteria<CustomersType>) => {
     if (page) {
-      const { index: pageIndex, size: pageSize } = page;
-      router.push({
-        query: { pageIndex: pageIndex, pageSize: pageSize },
-      });
-      setPageIndex(pageIndex);
-      setPageSize(pageSize);
+      const { index: newPageIndex, size: newPageSize } = page;
+      router.push({ query: { pageIndex: newPageIndex, pageSize: newPageSize } });
+      setPageIndex(newPageIndex);
+      setPageSize(newPageSize);
     }
   };
 
   const onSearchEmailAddress = (value: string) => {
     setSearchValue(value);
-    router.push({
-      query: { search: value },
-    });
+    router.push({ query: { search: value } });
   };
 
-  const getRowProps = (customer: CustomersType) => {
-    const { id } = customer;
-    return {
-      className: "customRowClass",
-      onClick: () => {
-        router.push(`${pathPrefix}/dashboards/audience/info/${id}`);
-      },
-    };
-  };
+  const getRowProps = (customer: CustomersType) => ({
+    className: "customRowClass",
+    onClick: () => router.push(`${pathPrefix}/dashboards/audience/info/${customer.id}`),
+  });
 
   const getCellProps = (
     _customer: CustomersType,
     _column: EuiTableFieldDataColumnType<CustomersType>,
-  ) => {
-    return {
-      className: "customCellClass",
-      textOnly: true,
-    };
-  };
+  ) => ({
+    className: "customCellClass",
+    textOnly: true,
+  });
 
+  // Condensed useEffect logic to update states when query parameters change
   useEffect(() => {
-    if (pageIndex !== queryPageIndex) {
-      setPageIndex(queryPageIndex);
-    }
-
-    if (pageSize !== queryPageSize) {
-      setPageSize(queryPageSize);
-    }
-
-    if (searchValue !== querySearch) {
-      setSearchValue(querySearch);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setPageIndex(queryPageIndex);
+    setPageSize(queryPageSize);
+    setSearchValue(querySearch);
   }, [queryPageIndex, queryPageSize, querySearch]);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (data?.results?.length === 0 && searchValue === "" && pageIndex === 0) {
+  if (data?.results?.length === 0 && !searchValue && pageIndex === 0) {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
         title={<h2>Create your audience</h2>}
         layout="horizontal"
         color="plain"
-        body={
-          <>
-            <p>The audience description</p>
-          </>
-        }
+        body={<p>The audience description</p>}
         actions={<CreateCustomerFlyoutContainer />}
       />
     );
@@ -253,15 +227,8 @@ const CustomersTable = () => {
           cellProps={getCellProps}
           pagination={
             data?.total_count > pageSize
-              ? {
-                  ...pagination,
-                  totalItemCount: data?.total_count || 0,
-                }
-              : {
-                  totalItemCount: 0,
-                  pageSize: 0,
-                  pageIndex: 0,
-                }
+              ? { ...pagination, totalItemCount: data?.total_count || 0 }
+              : null
           }
           onChange={onTableChange}
         />
