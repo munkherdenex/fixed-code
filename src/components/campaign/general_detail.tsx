@@ -42,9 +42,7 @@ const schema = yup
 
 type FormData = yup.InferType<typeof schema>;
 
-const GeneralDetails = ({}: {
-  templateStatus?: "DRAFT" | "APPROVED" | "PUBLISHED" | "DONE" | "ERROR";
-}) => {
+const GeneralDetails = () => {
   const { data, isLoading } = useCampaignContext();
 
   const { isMutating, trigger } = useUpdateTemplate(data?.id.toString());
@@ -218,7 +216,6 @@ const GeneralDetails = ({}: {
             </>
           </EuiFormRow>
         )}
-
         {(dataKind === "sms" || dataKind === "push") && (
           <EuiFormRow
             fullWidth

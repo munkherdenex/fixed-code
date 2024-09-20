@@ -7,7 +7,6 @@ import {
   EuiForm,
   EuiFormRow,
   EuiSpacer,
-  EuiTextArea,
   EuiToolTip,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";

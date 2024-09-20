@@ -9,11 +9,7 @@ const CampaignPreviewContainer = () => {
   const dataKind = getDataKind(data);
 
   if (dataKind === "email") {
-    return (
-      <>
-        <EditEmailLayout />
-      </>
-    );
+    return <EditEmailLayout />;
   }
 
   return <GeneralDetails />;
