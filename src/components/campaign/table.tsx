@@ -106,12 +106,12 @@ const SendsTable = () => {
 
   const onSearch = (value: string) => {
     setSearchValue(value);
-    router.push({ query: { search: value } });
+    router.push({ query: { search: value, filter } });
   };
 
   const onFilter = (value: string) => {
     setFilter(value);
-    router.push({ query: { filter: value } });
+    router.push({ query: { filter: value, search: searchValue } });
   };
 
   const onTableChange = ({ page }: Criteria<Template>) => {
