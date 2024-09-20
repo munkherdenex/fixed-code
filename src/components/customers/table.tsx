@@ -17,11 +17,12 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
+import { isNumber } from "../../utils/helper";
 import CreateCustomerFlyoutContainer from "./create_customer_flyout_container";
 
 const pathPrefix = process.env.PATH_PREFIX;
@@ -32,9 +33,16 @@ const schema = yup.object({
 
 const CustomersTable = () => {
   const router = useRouter();
-  const [searchValue, setSearchValue] = useState("");
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+
+  const querySearch = router?.query?.search ? router?.query?.search?.toString() : "";
+  const queryPageIndex = isNumber(router?.query?.pageIndex) ? +router?.query?.pageIndex : 0;
+  const queryPageSize = isNumber(router?.query?.pageSize)
+    ? +router?.query?.pageSize
+    : PAGINATION_CHOOSES[0];
+
+  const [searchValue, setSearchValue] = useState(querySearch);
+  const [pageIndex, setPageIndex] = useState(queryPageIndex);
+  const [pageSize, setPageSize] = useState(queryPageSize);
 
   const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, {
     query: searchValue,
@@ -55,14 +63,6 @@ const CustomersTable = () => {
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
-
-  const onTableChange = ({ page }: Criteria<CustomersType>) => {
-    if (page) {
-      const { index: pageIndex, size: pageSize } = page;
-      setPageIndex(pageIndex);
-      setPageSize(pageSize);
-    }
-  };
 
   const columns: Array<EuiBasicTableColumn<CustomersType>> = [
     {
@@ -125,8 +125,22 @@ const CustomersTable = () => {
     },
   ];
 
+  const onTableChange = ({ page }: Criteria<CustomersType>) => {
+    if (page) {
+      const { index: pageIndex, size: pageSize } = page;
+      router.push({
+        query: { pageIndex: pageIndex, pageSize: pageSize },
+      });
+      setPageIndex(pageIndex);
+      setPageSize(pageSize);
+    }
+  };
+
   const onSearchEmailAddress = (value: string) => {
     setSearchValue(value);
+    router.push({
+      query: { search: value },
+    });
   };
 
   const getRowProps = (customer: CustomersType) => {
@@ -149,11 +163,26 @@ const CustomersTable = () => {
     };
   };
 
+  useEffect(() => {
+    if (pageIndex !== queryPageIndex) {
+      setPageIndex(queryPageIndex);
+    }
+
+    if (pageSize !== queryPageSize) {
+      setPageSize(queryPageSize);
+    }
+
+    if (searchValue !== querySearch) {
+      setSearchValue(querySearch);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryPageIndex, queryPageSize, querySearch]);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (data?.results?.length === 0 && searchValue === "") {
+  if (data?.results?.length === 0 && searchValue === "" && pageIndex === 0) {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
@@ -169,6 +198,7 @@ const CustomersTable = () => {
       />
     );
   }
+
   return (
     <EuiFlexGroup direction="column">
       <EuiFlexItem>

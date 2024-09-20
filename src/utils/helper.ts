@@ -1,8 +1,16 @@
-import { jsonrepair } from "jsonrepair";
 import { RuleGroupType, RuleValidator, ValidationResult } from "react-querybuilder";
-import { CleanPlugin } from "webpack";
 import { IS_POCKET } from "../constants";
 import { Fields } from "../hooks/useGetFields";
+
+export function isNumber(num) {
+  if (typeof num === "number") {
+    return num - num === 0;
+  }
+  if (typeof num === "string" && num.trim() !== "") {
+    return Number.isFinite ? Number.isFinite(+num) : isFinite(+num);
+  }
+  return false;
+}
 
 export const removeDeletedCustomFields = (data: Fields[], query: RuleGroupType) => {
   const fields = [...(data ? data?.map((item) => `cf_${item.name}`) : []), "email", "phone", "rid"];
