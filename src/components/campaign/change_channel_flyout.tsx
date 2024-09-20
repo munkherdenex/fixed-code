@@ -5,9 +5,7 @@ import {
   EuiFlyoutBody,
   EuiForm,
   EuiFormRow,
-  EuiFieldText,
   EuiSelect,
-  EuiTextArea,
   EuiFlexGroup,
   EuiFlexItem,
   EuiButton,
@@ -17,14 +15,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS, IS_POCKET } from "../../constants";
+import { IS_POCKET } from "../../constants";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
 import { useCampaignContext } from "../../store/campaign_store";
 import { globalMutate } from "../../utils/globalMutate";
 import { processKind, processBody, dataTypeSwitch, dataTypeToSwitch } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
-import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 
 const schema = yup
@@ -61,7 +58,6 @@ const ChangeChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     handleSubmit,
     control,
     watch,
-    setValue,
     setError,
     formState: { errors },
   } = useForm({
@@ -86,14 +82,6 @@ const ChangeChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
           text: channel?.name,
         }))
     : [];
-
-  const setAceEditorValue = (value: string) => {
-    setValue("body", value);
-  };
-
-  const setReactQuill = (value: string) => {
-    setValue("body", value);
-  };
 
   const onSubmit = async (data: FormData) => {
     if (!isJson(watch("body")) && watch("kind") === "api") {
