@@ -65,7 +65,7 @@ const SecurityComponent = () => {
         clearCurrentTeam();
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 

@@ -72,7 +72,7 @@ const ResetPassword = () => {
           router.replace("/signin");
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else {
       alert("ERROR");

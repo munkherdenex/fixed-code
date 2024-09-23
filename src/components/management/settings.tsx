@@ -59,7 +59,7 @@ const Settings = () => {
         alert(response?.status);
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 

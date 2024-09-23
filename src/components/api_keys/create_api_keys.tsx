@@ -73,7 +73,6 @@ const CreateAPIKeysComponent = ({
     try {
       const response = await trigger(data);
       if (response) {
-        console.log(response);
         setIsFlyoutVisible(false);
         setResponseData(response);
         setIsModalVisible(true);

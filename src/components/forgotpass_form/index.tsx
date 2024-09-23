@@ -54,7 +54,7 @@ function ForgotPasswordForm() {
         setShowMessage(true);
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
