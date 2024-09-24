@@ -102,9 +102,6 @@ const SegmentAudienceList = () => {
                   </strong>
                 </EuiText>
               </EuiFlexItem>
-              <EuiFlexItem grow={false}>
-                <EuiText size="xs"></EuiText>
-              </EuiFlexItem>
             </EuiFlexGroup>
           </EuiLink>
         </>
