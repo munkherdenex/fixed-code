@@ -88,11 +88,18 @@ const SegmentAudienceList = () => {
           >
             <EuiFlexGroup direction="row" alignItems="center">
               <EuiFlexItem grow={false}>
-                <EuiAvatar size="m" name={segmentAudience?.email || segmentAudience?.phone || ""} />
+                <EuiAvatar
+                  size="m"
+                  name={
+                    segmentAudience?.email || segmentAudience?.phone || segmentAudience?.rid || ""
+                  }
+                />
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
                 <EuiText size="s">
-                  <strong>{segmentAudience?.email || segmentAudience?.phone}</strong>
+                  <strong>
+                    {segmentAudience?.email || segmentAudience?.phone || segmentAudience?.rid}
+                  </strong>
                 </EuiText>
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
