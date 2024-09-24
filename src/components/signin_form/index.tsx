@@ -37,6 +37,7 @@ const SigninForm: FunctionComponent = () => {
   const router = useRouter();
   const { euiTheme } = useEuiTheme();
   const styles = signinFormStyles(euiTheme);
+
   const { trigger, isMutating, error } = useLogin<FormData>();
   const { trigger: sendVerificationTrigger } = useSendEmailVerification();
 
@@ -82,6 +83,37 @@ const SigninForm: FunctionComponent = () => {
       console.error(e);
     }
   };
+
+  if (needsVerify) {
+    return (
+      <>
+        <EuiPanel>
+          <EuiFlexGroup direction="column">
+            <EuiFlexItem>
+              <EuiButton
+                iconSide="left"
+                iconType="email"
+                isLoading={isMutating}
+                type="button"
+                onClick={sendVerification}
+              >
+                Sends verification to email
+              </EuiButton>
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiText>
+                <p>
+                  Your email address has not been verified. Please check your email for the
+                  verification link.
+                </p>
+              </EuiText>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiPanel>
+        <EuiSpacer />
+      </>
+    );
+  }
 
   return (
     <EuiFlexGroup gutterSize="xl" css={styles.container} direction="column">
