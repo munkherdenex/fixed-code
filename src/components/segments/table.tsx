@@ -179,7 +179,7 @@ const SegmentsTable = () => {
             <EuiFieldSearch
               defaultValue={searchValue}
               onSearch={onSearch}
-              placeholder="Search Campaign"
+              placeholder="Search Segments"
             />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>

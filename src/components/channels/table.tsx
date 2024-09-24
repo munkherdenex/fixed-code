@@ -188,7 +188,7 @@ const ChannelsTable = () => {
                 <EuiFieldSearch
                   defaultValue={searchValue}
                   onSearch={onSearch}
-                  placeholder="Search Campaign"
+                  placeholder="Search Channels"
                 />
               </EuiFlexItem>
               <EuiFlexItem grow={false}>

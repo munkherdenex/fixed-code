@@ -178,7 +178,7 @@ const CustomersTable = () => {
             <EuiFieldSearch
               defaultValue={searchValue}
               onSearch={onSearchEmailAddress}
-              placeholder="Search Campaign"
+              placeholder="Search Audiences"
             />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
