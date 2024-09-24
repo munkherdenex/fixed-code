@@ -86,28 +86,17 @@ const SegmentAudienceList = () => {
               router.push(`${pathPrefix}/dashboards/audience/info/${segmentAudience?.id}`);
             }}
           >
-            <EuiAvatar size="m" name={segmentAudience.email || segmentAudience.phone || ""} />
-          </EuiLink>
-        </>
-      ),
-    },
-    {
-      name: "Email",
-      render: (segmentAudience: SegmentAudience) => (
-        <>
-          <EuiLink
-            onClick={() => {
-              router.push(`${pathPrefix}/dashboards/audience/info/${segmentAudience?.id}`);
-            }}
-          >
-            <EuiFlexGroup direction="column" gutterSize="none">
+            <EuiFlexGroup direction="row" alignItems="center">
+              <EuiFlexItem grow={false}>
+                <EuiAvatar size="m" name={segmentAudience?.email || segmentAudience?.phone || ""} />
+              </EuiFlexItem>
               <EuiFlexItem grow={false}>
                 <EuiText size="s">
-                  <strong>{segmentAudience.email}</strong>
+                  <strong>{segmentAudience?.email || segmentAudience?.phone}</strong>
                 </EuiText>
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
-                <EuiText size="xs">{segmentAudience.phone}</EuiText>
+                <EuiText size="xs"></EuiText>
               </EuiFlexItem>
             </EuiFlexGroup>
           </EuiLink>
@@ -133,7 +122,7 @@ const SegmentAudienceList = () => {
       name: "Created at",
       align: "right",
       render: (date: string) => {
-        return moment(date).format("YYYY-MM-DD LT");
+        return <div style={{ textWrap: "nowrap" }}>{moment(date).format("YYYY-MM-DD LT")}</div>;
       },
     },
     {
