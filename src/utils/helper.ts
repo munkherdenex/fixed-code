@@ -1,8 +1,10 @@
+import { Moment } from "moment";
 import { RuleGroupType, RuleValidator, ValidationResult } from "react-querybuilder";
+import { RRule } from "rrule";
 import { IS_POCKET } from "../constants";
 import { Fields } from "../hooks/useGetFields";
 
-export function isNumber(num) {
+export function isNumber(num: any) {
   if (typeof num === "number") {
     return num - num === 0;
   }
@@ -13,7 +15,12 @@ export function isNumber(num) {
 }
 
 export const removeDeletedCustomFields = (data: Fields[], query: RuleGroupType) => {
-  const fields = [...(data ? data?.map((item) => `cf_${item.name}`) : []), "email", "phone", "rid"];
+  const fields = [
+    ...(Array.isArray(data) ? data?.map((item) => `cf_${item.name}`) : []),
+    "email",
+    "phone",
+    "rid",
+  ];
 
   // Recursive function to filter rules
   const filterRules = (rules: any) => {
@@ -118,7 +125,7 @@ export const processBody = (body: string, kind: string) => {
   }
 };
 
-export function getDataKind(data) {
+export function getDataKind(data: { kind: string; body: string }) {
   let kind = data?.kind;
   let body = data?.body;
 
@@ -139,7 +146,12 @@ export function getDataKind(data) {
   return kind;
 }
 
-export function getBodyContent(data, kind: string) {
+export function getBodyContent(
+  data: {
+    body: string;
+  },
+  kind: string,
+) {
   if (!IS_POCKET) return data?.body;
   if (IS_POCKET && kind === "email") return data?.body;
   try {
@@ -160,3 +172,60 @@ export function getBodyContent(data, kind: string) {
     return data?.body;
   }
 }
+
+export const rruleFreqSwitch = (freq: string) => {
+  switch (freq) {
+    case "HOURLY":
+      return RRule.HOURLY;
+    case "DAILY":
+      return RRule.DAILY;
+    case "WEEKLY":
+      return RRule.WEEKLY;
+    case "MONTHLY":
+      return RRule.MONTHLY;
+    case "YEARLY":
+      return RRule.YEARLY;
+    default:
+      return RRule.WEEKLY;
+  }
+};
+
+export const rruleWeekDaySwitch = (weekDays: string[]) => {
+  const days = {
+    monday: RRule.MO,
+    tuesday: RRule.TU,
+    wednesday: RRule.WE,
+    thursday: RRule.TH,
+    friday: RRule.FR,
+    saturday: RRule.SA,
+    sunday: RRule.SU,
+  };
+
+  return weekDays.map((day) => days[day]);
+};
+
+export const shorthenWeekDays = (weekDays: string[]) => {
+  return weekDays.map((day) => day.slice(0, 2).toUpperCase());
+};
+
+export const extendWeekDays = (weekDays: string[]) => {
+  const days = {
+    MO: "monday",
+    TU: "tuesday",
+    WE: "wednesday",
+    TH: "thursday",
+    FR: "friday",
+    SA: "saturday",
+    SU: "sunday",
+  };
+
+  if (!weekDays) return [];
+
+  return weekDays?.map((day) => days[day]);
+};
+
+export const getMonthDays = (selectedDays: Moment[]) => {
+  if (!selectedDays) return [];
+
+  return selectedDays.map((d) => d.date());
+};

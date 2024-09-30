@@ -39,13 +39,17 @@ export const TeamsProvider = ({ children }) => {
         localStorage.setItem("currentTeamId", teamId.toString());
 
         try {
-          await trigger({ team_id: teamId });
-          if (window.location.pathname.includes("/info/")) await router.replace("/dashboards");
-          setCurrentTeam(team);
+          const response = await trigger({ team_id: teamId });
+          if (response) {
+            setCurrentTeam(team);
+          }
         } catch {
           alert("Refresh site");
         }
-      } else {
+        return;
+      }
+
+      if (!team) {
         const parentTeam = teams.find((team) => team.parent_id === null);
         localStorage.setItem("currentTeamId", parentTeam?.id.toString());
         setCurrentTeam(parentTeam);

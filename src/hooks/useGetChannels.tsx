@@ -37,13 +37,17 @@ export default function useGetChannels<Type>(
   isLoading: boolean;
   mutate: () => Promise<Type>;
 } {
-  const path = id === "" ? null : id ? `/api/v1/dj/channels/${id}/` : `/api/v1/dj/channels/`;
-
   const preparedQueryParam = createParam(queryParam);
+  const path =
+    id === ""
+      ? null
+      : id
+      ? `/api/v1/dj/channels/${id}/${preparedQueryParam}`
+      : `/api/v1/dj/channels/?${preparedQueryParam}`;
 
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    `${path}?${preparedQueryParam}`,
+    path,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

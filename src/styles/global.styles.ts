@@ -30,4 +30,29 @@ export const commonStyles = () => ({
   width200: css`
     width: 200px;
   `,
+  removeComboBoxCloseButton: css`
+  .euiBadge__iconButton {
+    display: none;
+  `,
+  removeDatePickerTopMargin: css`
+    .react-datepicker {
+      .react-datepicker__day-names {
+        display: none;
+      }
+      .react-datepicker__day--selected {
+        background-color: #f0f0f0;
+        color: #006bb4;
+      }
+      .react-datepicker__day--highlighted {
+        background-color: rgba(0, 191, 179, 0.2) !important;
+        color: #00726b !important;
+      }
+      .react-datepicker__day--outside-month {
+        opacity: 0;
+      }
+      .react-datepicker__month-container {
+        margin-top: 0 !important;
+      }
+    }
+  `,
 });

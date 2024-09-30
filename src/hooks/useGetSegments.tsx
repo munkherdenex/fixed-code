@@ -33,12 +33,14 @@ export default function useGetSegments<Type>(
   isLoading: boolean;
   mutate: () => Promise<Type>;
 } {
-  const path = id ? `/api/v1/dj/segments/${id}/` : `/api/v1/dj/segments/`;
   const preparedQueryParam = createParam(queryParam);
+  const path = id
+    ? `/api/v1/dj/segments/${id}/?${preparedQueryParam}`
+    : `/api/v1/dj/segments/?${preparedQueryParam}`;
 
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    `${path}?${preparedQueryParam}`,
+    path,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

@@ -21,7 +21,7 @@ const ChannelDetails = () => {
   const router = useRouter();
 
   const { data: templateData } = useCampaignContext();
-  const { data, isLoading } = useGetChannels<Channels>(templateData.channel.toString());
+  const { data, isLoading } = useGetChannels<Channels>(templateData?.channel?.toString());
 
   const [isChangeChannelFlyoutVisible, setIsChangeChannelFlyoutVisible] = useState(false);
 
@@ -94,7 +94,7 @@ const ChannelDetails = () => {
                 isCopyable
                 overflowHeight={300}
               >
-                <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.data)), null, 2)}</pre>
+                <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.data || "{}")), null, 2)}</pre>
               </EuiCodeBlock>
             </EuiFlexItem>
             <EuiFlexItem>Created date :</EuiFlexItem>

@@ -24,12 +24,12 @@ export default function useGetTemplatesCustomer<Type>(
   error: any;
   isLoading: boolean;
 } {
-  const path = id ? `/api/v1/dj/templates/${id}/customers/` : null;
   const preparedQueryParam = createParam(queryParam);
+  const path = id ? `/api/v1/dj/templates/${id}/customers/?${preparedQueryParam}` : null;
 
   const { data, error, isLoading } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    `${path}?${preparedQueryParam}`,
+    path,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

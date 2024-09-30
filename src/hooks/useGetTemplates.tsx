@@ -16,6 +16,19 @@ export interface Template {
   updated_by: any;
   channel: number;
   aud_count: number;
+  start_date?: string | null;
+  end_date?: string | null;
+  is_recurring?: boolean;
+  recur_count?: number | null;
+  recur_current_count?: number;
+  recur_rule?: {
+    FREQ: "HOURLY" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+    BYDAY: [];
+    INTERVAL: string;
+    BYMONTHDAY: [];
+    BYHOUR: string[];
+    BYMINUTE: string[];
+  } | null;
 }
 
 export interface TemplateResponse {
@@ -37,12 +50,14 @@ export default function useGetTemplates<Type>(
   isLoading: boolean;
   mutate: () => Promise<Type>;
 } {
-  const path = id ? `/api/v1/dj/templates/${id}/` : `/api/v1/dj/templates/`;
   const preparedQueryParam = createParam(queryParam);
+  const path = id
+    ? `/api/v1/dj/templates/${id}/?${preparedQueryParam}`
+    : `/api/v1/dj/templates/?${preparedQueryParam}`;
 
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    `${path}?${preparedQueryParam}`,
+    path,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",
