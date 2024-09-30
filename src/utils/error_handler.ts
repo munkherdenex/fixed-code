@@ -13,12 +13,12 @@ export async function handleResponseNotOk(res: Response, showError: boolean = tr
     let message: string;
     const error = new Error();
 
-    if ((res.status === 400 || res.status === 404) && router.pathname !== "/dashboards") {
+    if ((res?.status === 400 || res?.status === 404) && router?.pathname !== "/dashboards") {
       router.replace("/dashboards");
       return;
     }
 
-    if (res.headers.get("content-type")?.includes("application/json")) {
+    if (res?.headers?.get("content-type")?.includes("application/json")) {
       data = await res.json();
       error.message = JSON.stringify(data);
 
@@ -48,7 +48,7 @@ export async function handleResponseNotOk(res: Response, showError: boolean = tr
       addToast({
         id: "fields-list-error",
         color: "danger",
-        title: `${error.status} An error occurred`,
+        title: `${error?.status} An error occurred`,
         text: message,
       });
     }
@@ -56,9 +56,5 @@ export async function handleResponseNotOk(res: Response, showError: boolean = tr
     throw error;
   }
 
-  try {
-    return await res.json();
-  } catch {
-    return true;
-  }
+  return await res.json();
 }
