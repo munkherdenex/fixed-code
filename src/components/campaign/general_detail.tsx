@@ -45,7 +45,7 @@ type FormData = yup.InferType<typeof schema>;
 const GeneralDetails = () => {
   const { data, isLoading } = useCampaignContext();
 
-  const { isMutating, trigger } = useUpdateTemplate(data?.id.toString());
+  const { isMutating, trigger } = useUpdateTemplate(data?.id?.toString());
   const [isView, setIsView] = useState(true);
 
   const {

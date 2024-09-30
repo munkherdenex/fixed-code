@@ -89,7 +89,7 @@ const DeleteConfirmModal = ({
 const CampaignGeneralDetails = () => {
   const { data, isLoading } = useCampaignContext();
   const { data: countData } = useGetCampaignSuccessErrorCount<CampaignCountSuccessErrorResponse>(
-    data?.id.toString(),
+    data?.id?.toString(),
   );
 
   const [isModalVisible, setIsModalVisible] = useState(false);
