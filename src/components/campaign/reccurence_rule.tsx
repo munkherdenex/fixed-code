@@ -485,7 +485,11 @@ const ReccurenceRule = ({
         </>
       )}
       <EuiSpacer size="m" />
-      <EuiButton type="submit" isLoading={isMutating}>
+      <EuiButton
+        iconType={data?.start_date ? "timeRefresh" : "plus"}
+        type="submit"
+        isLoading={isMutating}
+      >
         {data?.start_date ? "Update" : "Create"} Recurrence Rule
       </EuiButton>
     </EuiForm>
