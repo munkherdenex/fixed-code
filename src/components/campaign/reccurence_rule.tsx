@@ -13,7 +13,7 @@ import {
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import moment, { Moment } from "moment";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useCreateReccurenceRule from "../../hooks/useUpdateReccurenceRule";
@@ -143,6 +143,41 @@ const ReccurenceRule = ({
   const { trigger, isMutating } = useCreateReccurenceRule(data?.id);
   const cStyles = commonStyles();
 
+  const startDate = useMemo(
+    () =>
+      data?.start_date
+        ? moment(data?.start_date)
+            .hour(+data?.recur_rule?.BYHOUR?.[0] || 0)
+            .minute(+data?.recur_rule?.BYMINUTE?.[0] || 0)
+        : moment(),
+    [data?.recur_rule?.BYHOUR, data?.recur_rule?.BYMINUTE, data?.start_date],
+  );
+  const endDate = useMemo(
+    () => (data?.end_date ? moment(data?.end_date) : startDate),
+    [data?.end_date, startDate],
+  );
+  const end = useMemo(
+    () => (data?.recur_count ? "after" : data?.end_date ? "on" : "never"),
+    [data?.end_date, data?.recur_count],
+  );
+  const repeat = useMemo(
+    () => data?.recur_rule?.FREQ?.toLowerCase() || "daily",
+    [data?.recur_rule],
+  );
+  const interval = useMemo(
+    () => (isNumber(data?.recur_rule?.INTERVAL) ? +data?.recur_rule?.INTERVAL : 1),
+    [data?.recur_rule?.INTERVAL],
+  );
+  const weekDays = useMemo(
+    () => extendWeekDays(data?.recur_rule?.BYDAY) || ["monday"],
+    [data?.recur_rule?.BYDAY],
+  );
+  const recurCount = useMemo(
+    () => (isNumber(data?.recur_count) ? +data?.recur_count : 1),
+    [data?.recur_count],
+  );
+  const isRecurring = useMemo(() => data?.is_recurring || false, [data?.is_recurring]);
+
   const {
     handleSubmit,
     control,
@@ -154,19 +189,15 @@ const ReccurenceRule = ({
     mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      start_date: data?.start_date
-        ? moment(data?.start_date)
-            .hour(+data?.recur_rule?.BYHOUR?.[0] || 0)
-            .minute(+data?.recur_rule?.BYMINUTE?.[0] || 0)
-        : moment(),
-      is_recurring: data?.is_recurring || false,
-      repeat: data?.recur_rule?.FREQ?.toLowerCase() || "daily",
-      interval: isNumber(data?.recur_rule?.INTERVAL) ? +data?.recur_rule?.INTERVAL : 1,
-      end: data?.end_date ? "on" : data?.recur_count ? "after" : "never",
+      start_date: startDate,
+      is_recurring: isRecurring,
+      repeat: repeat,
+      interval: interval,
+      end: end,
+      weekDays: weekDays,
+      recur_count: recurCount,
+      end_date: endDate,
       selectedDays: [],
-      weekDays: extendWeekDays(data?.recur_rule?.BYDAY) || [],
-      recur_count: data?.recur_count ? +data?.recur_count : 1,
-      end_date: moment(data?.end_date) || null,
     },
   });
 
@@ -174,8 +205,8 @@ const ReccurenceRule = ({
     const prependedData = {
       start_date: data?.start_date,
       is_recurring: data?.is_recurring,
-      recur_count: data?.recur_count,
-      end_date: data?.end_date,
+      recur_count: data?.end === "after" ? data?.recur_count : null,
+      end_date: data?.end === "on" ? data?.end_date : null,
       recur_rule: "",
     };
 
