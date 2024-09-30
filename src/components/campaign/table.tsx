@@ -3,6 +3,7 @@ import {
   EuiBadge,
   EuiBasicTable,
   EuiBasicTableColumn,
+  EuiButton,
   EuiButtonIcon,
   EuiEmptyPrompt,
   EuiFieldSearch,
@@ -193,7 +194,7 @@ const SendsTable = () => {
       <EuiFlexItem>
         <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="flexEnd">
           <EuiFlexItem grow={false}>
-            <EuiFlexGrid columns={2}>
+            <EuiFlexGrid columns={3}>
               <EuiFlexItem grow={false}>
                 <EuiFieldSearch
                   defaultValue={searchValue}
@@ -209,6 +210,18 @@ const SendsTable = () => {
                     onFilter(e.target.value);
                   }}
                 />
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <div>
+                  <EuiButton
+                    color="success"
+                    onClick={() => {
+                      onFilter("DONE");
+                    }}
+                  >
+                    Done
+                  </EuiButton>
+                </div>
               </EuiFlexItem>
             </EuiFlexGrid>
           </EuiFlexItem>
