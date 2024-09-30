@@ -144,13 +144,8 @@ const ReccurenceRule = ({
   const cStyles = commonStyles();
 
   const startDate = useMemo(
-    () =>
-      data?.start_date
-        ? moment(data?.start_date)
-            .hour(+data?.recur_rule?.BYHOUR?.[0] || 0)
-            .minute(+data?.recur_rule?.BYMINUTE?.[0] || 0)
-        : moment(),
-    [data?.recur_rule?.BYHOUR, data?.recur_rule?.BYMINUTE, data?.start_date],
+    () => (data?.start_date ? moment(data?.start_date) : moment()),
+    [data?.start_date],
   );
   const endDate = useMemo(
     () => (data?.end_date ? moment(data?.end_date) : startDate),
