@@ -7,7 +7,6 @@ import {
   EuiSpacer,
   useGeneratedHtmlId,
 } from "@elastic/eui";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import useUpdateApproveTemplate from "../../hooks/useUpdateApproveTemplate";
 import useUpdateDoneTemplate from "../../hooks/useUpdateDoneTemplate";
@@ -17,7 +16,6 @@ import { globalMutate } from "../../utils/globalMutate";
 import AdminManagerComponent from "../admin_manager_component";
 
 const CampaignInfoActions = () => {
-  const router = useRouter();
   const modalTitleId = useGeneratedHtmlId();
 
   const { data } = useCampaignContext();
@@ -25,14 +23,10 @@ const CampaignInfoActions = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
 
-  const { trigger: rejectTrigger, isMutating: rejectIsLoading } = useUpdateRejectTemplate(
-    router.query.id,
-  );
-  const { trigger: doneTrigger, isMutating: doneIsMutating } = useUpdateDoneTemplate(
-    router.query.id,
-  );
+  const { trigger: rejectTrigger, isMutating: rejectIsLoading } = useUpdateRejectTemplate(data?.id);
+  const { trigger: doneTrigger, isMutating: doneIsMutating } = useUpdateDoneTemplate(data?.id);
   const { trigger: approveTrigger, isMutating: approveIsMutating } = useUpdateApproveTemplate(
-    router.query.id,
+    data?.id,
   );
 
   const isMutating = doneIsMutating || approveIsMutating || rejectIsLoading;

@@ -175,6 +175,7 @@ const EditEmailLayout = () => {
                       <EuiButtonIcon
                         display={"base"}
                         iconType="documentEdit"
+                        aria-label="Edit"
                         size="s"
                         onClick={() => {
                           setView();

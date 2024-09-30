@@ -76,12 +76,12 @@ export default function useGetMetrics<Type>(queryParam?: {
   mutate: () => Promise<Type>;
 } {
   const { currentTeam } = useContext(teamsContext);
-  const path = currentTeam ? `/api/v1/dj/analytics/` : null;
   const preparedQueryParam = createParam(queryParam);
+  const path = currentTeam ? `/api/v1/dj/analytics/?${preparedQueryParam}` : null;
 
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    `${path}?${preparedQueryParam}`,
+    path,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

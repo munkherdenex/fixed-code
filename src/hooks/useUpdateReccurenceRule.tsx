@@ -2,8 +2,8 @@ import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
 import { handleResponseNotOk } from "../utils/error_handler";
 
-export default function useUpdateDoneTemplate<Type>(id: string | number | undefined) {
-  const path = id ? `/api/v1/dj/templates/${id}/done/` : null;
+export default function useCreateReccurenceRule<Type>(id: string | number | undefined) {
+  const path = id ? `/api/v1/dj/templates/${id}/schedule/` : null;
 
   const { data, error, isMutating, trigger } = useSWRMutation(
     path,

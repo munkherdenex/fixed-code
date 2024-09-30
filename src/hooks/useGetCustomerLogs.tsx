@@ -35,12 +35,12 @@ export default function useGetCustomerLogs<Type>(
   isLoading: boolean;
   mutate: () => Promise<Type>;
 } {
-  const path = id ? `/api/v1/dj//customers/${id}/logs/` : undefined;
   const preparedQueryParam = createParam(queryParam);
+  const path = id ? `/api/v1/dj//customers/${id}/logs/?${preparedQueryParam}` : null;
 
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    `${path}?${preparedQueryParam}`,
+    path,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

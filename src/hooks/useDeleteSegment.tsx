@@ -3,7 +3,7 @@ import useSWRMutation from "swr/mutation";
 import { handleResponseNotOk } from "../utils/error_handler";
 
 export default function useDeleteSegment<Type>(id: string | string[] | undefined) {
-  const path = `/api/v1/dj/segments/${id}/`;
+  const path = id ? `/api/v1/dj/segments/${id}/` : null;
 
   const { data, error, isMutating, trigger } = useSWRMutation(
     path,

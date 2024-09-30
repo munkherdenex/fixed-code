@@ -2,9 +2,11 @@ import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
 import { handleResponseNotOk } from "../utils/error_handler";
 
-export default function useUpdateRejectTemplate<Type>(id: string | string[] | undefined) {
+export default function useUpdateRejectTemplate<Type>(id: string | number | undefined) {
+  const path = id ? `/api/v1/dj/templates/${id}/reject/` : null;
+
   const { data, error, isMutating, trigger } = useSWRMutation(
-    `/api/v1/dj/templates/${id}/reject/`,
+    path,
     async (path, { arg }: { arg: Type }) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "POST",

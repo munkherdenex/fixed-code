@@ -1,9 +1,9 @@
 import { EuiPanel, EuiTab, EuiTabs } from "@elastic/eui";
 import { useMemo, useState } from "react";
 import Audience from "./audience";
-import Logs from "./logs";
-import ChannelDetails from "./channel_details";
 import CampaignPreviewContainer from "./campaign_preview_container";
+import ChannelDetails from "./channel_details";
+import Logs from "./logs";
 
 const tabs = [
   {

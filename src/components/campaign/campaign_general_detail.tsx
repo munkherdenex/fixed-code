@@ -24,6 +24,7 @@ import useGetCampaignSuccessErrorCount, {
 } from "../../hooks/useGetCampaignCount";
 import { useCampaignContext } from "../../store/campaign_store";
 import { getDataKind } from "../../utils/helper";
+import ReccurenceRuleLayout from "./reccurence_rule_layout";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -155,7 +156,7 @@ const CampaignGeneralDetails = () => {
                     title={
                       <EuiTextColor color="accent">
                         <span>
-                          <EuiIcon type="email" color="accent" /> {dataKind}
+                          <EuiIcon aria-label="email" type="email" color="accent" /> {dataKind}
                         </span>
                       </EuiTextColor>
                     }
@@ -218,6 +219,13 @@ const CampaignGeneralDetails = () => {
                     titleColor="primary"
                   />
                 </EuiFlexItem>
+              </EuiPanel>
+            </EuiFlexGroup>
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiFlexGroup>
+              <EuiPanel hasBorder={true}>
+                <ReccurenceRuleLayout />
               </EuiPanel>
               <EuiPanel hasBorder={true}>
                 <EuiFlexItem>

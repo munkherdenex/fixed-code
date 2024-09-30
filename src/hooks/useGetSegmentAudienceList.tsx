@@ -34,11 +34,12 @@ export default function useGetSegmentAudienceList<Type>(
   mutate: any;
 } {
   const router = useRouter();
-  const path = id ? `/api/v1/dj/segments/${id}/customers/` : null;
   const preparedQueryParam = createParam(queryParam);
+  const path = id ? `/api/v1/dj/segments/${id}/customers/?${preparedQueryParam}` : null;
+
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    router.pathname.includes("dashboard") ? `${path}?${preparedQueryParam}` : null,
+    router.pathname.includes("dashboard") ? path : null,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",
