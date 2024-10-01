@@ -35,13 +35,15 @@ const ReccurenceRuleLayout = () => {
   const { data } = useCampaignContext();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
+  const isDraft = data?.status === "DRAFT";
+
   return (
     <>
       <EuiFlexGroup style={{ height: "100%" }} alignItems="center" justifyContent="spaceBetween">
         {data?.start_date && (
           <EuiFlexItem>{moment(data?.start_date).format("YYYY-MM-DD LT")}</EuiFlexItem>
         )}
-        {data?.start_date && (
+        {data?.start_date && isDraft && (
           <EuiFlexItem>
             <EuiButton
               color="primary"
@@ -52,7 +54,7 @@ const ReccurenceRuleLayout = () => {
             </EuiButton>
           </EuiFlexItem>
         )}
-        {!data?.start_date && (
+        {!data?.start_date && isDraft && (
           <EuiFlexItem>
             <EuiButton color="primary" iconType="plus" onClick={() => setIsFlyoutVisible(true)}>
               Add Recurrence Rule
@@ -60,7 +62,7 @@ const ReccurenceRuleLayout = () => {
           </EuiFlexItem>
         )}
       </EuiFlexGroup>
-      {isFlyoutVisible && <Flyout setIsFlyoutVisible={setIsFlyoutVisible} />}
+      {isFlyoutVisible && isDraft && <Flyout setIsFlyoutVisible={setIsFlyoutVisible} />}
     </>
   );
 };
