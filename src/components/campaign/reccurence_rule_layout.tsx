@@ -39,20 +39,30 @@ const ReccurenceRuleLayout = () => {
 
   return (
     <>
-      <EuiFlexGroup direction="column">
-        <EuiFlexItem>
-          <EuiFlexGroup gutterSize="xs" direction="column" justifyContent="spaceBetween">
-            {data?.start_date && (
-              <EuiFlexItem>
-                Start date: {moment(data?.start_date).format("YYYY-MM-DD LT")}
-              </EuiFlexItem>
-            )}
-            {data?.end_date && (
-              <EuiFlexItem>End date: {moment(data?.end_date).format("YYYY-MM-DD LT")}</EuiFlexItem>
-            )}
-            {data?.recur_count && <EuiFlexItem>Recur count: {data?.recur_count}</EuiFlexItem>}
-          </EuiFlexGroup>
-        </EuiFlexItem>
+      <EuiFlexGroup direction="column" gutterSize="s">
+        {data?.start_date || data?.end_date || data?.recur_count ? (
+          <EuiFlexItem>
+            <EuiFlexGroup gutterSize="xs" direction="column" justifyContent="spaceBetween">
+              {data?.start_date && (
+                <EuiFlexItem>
+                  Start date: {moment(data?.start_date).format("YYYY-MM-DD LT")}
+                </EuiFlexItem>
+              )}
+              {data?.end_date && (
+                <EuiFlexItem>
+                  End date: {moment(data?.end_date).format("YYYY-MM-DD LT")}
+                </EuiFlexItem>
+              )}
+              {data?.recur_count ? (
+                <EuiFlexItem>Recur count: {data?.recur_count}</EuiFlexItem>
+              ) : (
+                <></>
+              )}
+            </EuiFlexGroup>
+          </EuiFlexItem>
+        ) : (
+          <EuiFlexItem>No recurrence scheduled</EuiFlexItem>
+        )}
         {data?.start_date && isDraft && (
           <EuiFlexItem>
             <EuiButton
