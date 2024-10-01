@@ -82,14 +82,14 @@ const ReccurenceRuleLayout = () => {
         titleSize="xs"
       />
       <EuiSpacer size="s" />
-      {data?.start_date && isDraft && (
+      {data?.start_date && (
         <EuiFlexItem>
           <EuiButton
             color="primary"
             iconType="timeRefresh"
             onClick={() => setIsFlyoutVisible(true)}
           >
-            Update Recurrence Rule
+            {isDraft ? "Update Recurrence Rule" : "View Recurrence Rule"}
           </EuiButton>
         </EuiFlexItem>
       )}
@@ -100,7 +100,7 @@ const ReccurenceRuleLayout = () => {
           </EuiButton>
         </EuiFlexItem>
       )}
-      {isFlyoutVisible && isDraft && <Flyout setIsFlyoutVisible={setIsFlyoutVisible} />}
+      {isFlyoutVisible && <Flyout setIsFlyoutVisible={setIsFlyoutVisible} />}
     </>
   );
 };

@@ -143,6 +143,8 @@ const ReccurenceRule = ({
   const { trigger, isMutating } = useCreateReccurenceRule(data?.id);
   const cStyles = commonStyles();
 
+  const isDraft = useMemo(() => data?.status === "DRAFT", [data?.status]);
+
   const startDate = useMemo(
     () => (data?.start_date ? moment(data?.start_date) : moment()),
     [data?.start_date],
@@ -305,6 +307,7 @@ const ReccurenceRule = ({
               onChange={onChange}
               onBlur={onBlur}
               placeholder={name}
+              readOnly={!isDraft}
             />
           )}
         />
@@ -318,6 +321,7 @@ const ReccurenceRule = ({
             <EuiSwitch
               label="Enable reccurence"
               checked={value}
+              disabled={!isDraft}
               onChange={(e) => onChange(e.target.checked)}
             />
           )}
@@ -339,6 +343,7 @@ const ReccurenceRule = ({
                       onChange={onChange}
                       onBlur={onBlur}
                       inputRef={ref}
+                      readOnly={!isDraft}
                     />
                   )}
                 />
@@ -349,7 +354,9 @@ const ReccurenceRule = ({
                 <Controller
                   control={control}
                   name="repeat"
-                  render={({ field }) => <EuiSelect {...field} options={repeatOptions} />}
+                  render={({ field }) => (
+                    <EuiSelect {...field} options={repeatOptions} disabled={!isDraft} />
+                  )}
                 />
               </EuiFormRow>
             </EuiFlexItem>
@@ -388,6 +395,7 @@ const ReccurenceRule = ({
                           legend="Week days"
                           color="primary"
                           type="multi"
+                          isDisabled={!isDraft}
                         />
                       );
                     }}
@@ -413,6 +421,7 @@ const ReccurenceRule = ({
                             showYearDropdown={false}
                             highlightDates={value}
                             inputRef={ref}
+                            readOnly={!isDraft}
                             onChange={(date) => {
                               const dateMoment = date.set({
                                 month: 12,
@@ -458,7 +467,9 @@ const ReccurenceRule = ({
                 <Controller
                   control={control}
                   name="end"
-                  render={({ field }) => <EuiSelect {...field} options={endOptions} />}
+                  render={({ field }) => (
+                    <EuiSelect {...field} options={endOptions} disabled={!isDraft} />
+                  )}
                 />
               </EuiFormRow>
             </EuiFlexItem>
@@ -478,6 +489,7 @@ const ReccurenceRule = ({
                         onBlur={onBlur}
                         append="occurrences"
                         inputRef={ref}
+                        readOnly={!isDraft}
                       />
                     )}
                   />
@@ -511,13 +523,15 @@ const ReccurenceRule = ({
         </>
       )}
       <EuiSpacer size="m" />
-      <EuiButton
-        iconType={data?.start_date ? "timeRefresh" : "plus"}
-        type="submit"
-        isLoading={isMutating}
-      >
-        {data?.start_date ? "Update" : "Create"} Recurrence Rule
-      </EuiButton>
+      {isDraft && (
+        <EuiButton
+          iconType={data?.start_date ? "timeRefresh" : "plus"}
+          type="submit"
+          isLoading={isMutating}
+        >
+          {data?.start_date ? "Update" : "Create"} Recurrence Rule
+        </EuiButton>
+      )}
     </EuiForm>
   );
 };
