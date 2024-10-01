@@ -265,9 +265,9 @@ const ReccurenceRule = ({
     if (watch("repeat") === "monthly") {
       setValue(
         "selectedDays",
-        data?.recur_rule?.BYMONTHDAY?.map((d) => moment().year(dateYear).month(12).date(d)) || [
-          moment().year(dateYear).month(12),
-        ],
+        Array.isArray(data?.recur_rule?.BYMONTHDAY)
+          ? data?.recur_rule?.BYMONTHDAY?.map((d) => moment().year(dateYear).month(12).date(d))
+          : [moment().year(dateYear).month(12)],
       );
     }
     if (watch("repeat") === "weekly") {

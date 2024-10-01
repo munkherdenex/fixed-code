@@ -35,7 +35,11 @@ const ReccurenceRuleLayout = () => {
   const { data } = useCampaignContext();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
-  const isDraft = data?.status === "DRAFT";
+  const isDraft =
+    data?.status === "DRAFT" ||
+    data?.status === "DONE" ||
+    data?.status === "APPROVED" ||
+    data?.status === "RECURRING";
 
   return (
     <>
