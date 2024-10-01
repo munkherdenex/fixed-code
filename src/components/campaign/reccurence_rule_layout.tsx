@@ -39,10 +39,20 @@ const ReccurenceRuleLayout = () => {
 
   return (
     <>
-      <EuiFlexGroup style={{ height: "100%" }} alignItems="center" justifyContent="spaceBetween">
-        {data?.start_date && (
-          <EuiFlexItem>{moment(data?.start_date).format("YYYY-MM-DD LT")}</EuiFlexItem>
-        )}
+      <EuiFlexGroup direction="column">
+        <EuiFlexItem>
+          <EuiFlexGroup gutterSize="xs" direction="column" justifyContent="spaceBetween">
+            {data?.start_date && (
+              <EuiFlexItem>
+                Start date: {moment(data?.start_date).format("YYYY-MM-DD LT")}
+              </EuiFlexItem>
+            )}
+            {data?.end_date && (
+              <EuiFlexItem>End date: {moment(data?.end_date).format("YYYY-MM-DD LT")}</EuiFlexItem>
+            )}
+            {data?.recur_count && <EuiFlexItem>Recur count: {data?.recur_count}</EuiFlexItem>}
+          </EuiFlexGroup>
+        </EuiFlexItem>
         {data?.start_date && isDraft && (
           <EuiFlexItem>
             <EuiButton
