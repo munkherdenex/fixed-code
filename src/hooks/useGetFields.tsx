@@ -31,7 +31,9 @@ export default function useGetFields<Type>(
   isLoading: boolean;
 } {
   const preparedQueryParam = createParam(queryParam);
-  const path = id ? `/api/v1/dj/fields/${id}/?${preparedQueryParam}` : `/api/v1/dj/fields/`;
+  const path = id
+    ? `/api/v1/dj/fields/${id}/?${preparedQueryParam}`
+    : `/api/v1/dj/fields/?${preparedQueryParam}`;
 
   const { data, error, isLoading } = useSWR(
     //INFO: slash needs to be added to the end of the path
