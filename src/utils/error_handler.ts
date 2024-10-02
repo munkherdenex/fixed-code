@@ -13,14 +13,17 @@ export async function handleResponseNotOk(res: Response, showError: boolean = tr
     let message: string;
     const error = new Error();
 
-    if ((res?.status === 400 || res?.status === 404) && router?.pathname !== "/dashboards") {
+    if (res?.status === 404 && router?.pathname !== "/dashboards") {
       router.replace("/dashboards");
       return;
     }
-
-    if (res?.headers?.get("content-type")?.includes("application/json")) {
+    if (res?.headers?.get("content-type") === "application/json") {
       data = await res.json();
       error.message = JSON.stringify(data);
+
+      if (Array.isArray(data)) {
+        message = data[0];
+      }
 
       if (Array.isArray(data?.kind)) {
         message = data?.kind[0];
