@@ -43,6 +43,9 @@ const UpdateCustomerComponent = ({
     {
       extended: "true",
     },
+    {
+      isFetch: true,
+    },
   );
   const { data: fieldsData, isLoading: getFieldsIsLoading } = useGetFields<Fields[]>(undefined, {
     all: "true",

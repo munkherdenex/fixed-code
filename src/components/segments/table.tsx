@@ -37,11 +37,17 @@ const SegmentsTable = () => {
     pageSize,
     pageSizeOptions: PAGINATION_CHOOSES,
   };
-  const { data, isLoading, mutate } = useGetSegments<SegmentResponse>(undefined, {
-    query: searchValue,
-    offset: `${pageIndex * pageSize}`,
-    limit: `${pageSize}`,
-  });
+  const { data, isLoading, mutate } = useGetSegments<SegmentResponse>(
+    undefined,
+    {
+      query: searchValue,
+      offset: `${pageIndex * pageSize}`,
+      limit: `${pageSize}`,
+    },
+    {
+      isFetch: true,
+    },
+  );
 
   const columns: Array<EuiBasicTableColumn<Segment>> = [
     {

@@ -18,9 +18,15 @@ import UpdateCustomerComponent from "./update_customer";
 
 const GeneralDetails = () => {
   const router = useRouter();
-  const { data, isLoading } = useGetCustomers<CustomersType>(router.query.id, {
-    extended: "true",
-  });
+  const { data, isLoading } = useGetCustomers<CustomersType>(
+    router.query.id,
+    {
+      extended: "true",
+    },
+    {
+      isFetch: true,
+    },
+  );
   const { data: fields } = useGetFields<Fields[]>(undefined, {
     all: "true",
   });

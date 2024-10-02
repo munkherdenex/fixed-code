@@ -1,15 +1,11 @@
 import {
   EuiButton,
-  EuiButtonIcon,
-  EuiFieldSearch,
-  EuiFlexGroup,
-  EuiFlexItem,
+  EuiComboBox,
   EuiFlyout,
   EuiFlyoutBody,
   EuiFlyoutHeader,
   EuiForm,
   EuiFormRow,
-  EuiSelect,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -18,7 +14,6 @@ import { useRouter } from "next/router";
 import { memo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { CUSTOM_DATA_TYPE_OPTIONS } from "../../constants";
 import useCreateTemplateAudience from "../../hooks/useCreateTemplateAudience";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
 import useGetSegments, { SegmentResponse } from "../../hooks/useGetSegments";
@@ -27,19 +22,21 @@ import { globalMutate } from "../../utils/globalMutate";
 const schema = yup
   .object({
     type: yup.string().oneOf(["customer", "segment"]).required(),
-    id: yup.string().required(),
+    id: yup
+      .array()
+      .of(
+        yup.object({
+          value: yup.string().required(),
+          label: yup.string().required(),
+        }),
+      )
+      .required(),
   })
   .required();
 
 type FormData = yup.InferType<typeof schema>;
 
-const searchSchema = yup
-  .object({
-    search: yup.string().notRequired(),
-  })
-  .required();
-
-type SearchFormData = yup.InferType<typeof searchSchema>;
+const LIMIT = `10`;
 
 const AddAudienceFlyout = ({
   closeFlyout,
@@ -48,50 +45,53 @@ const AddAudienceFlyout = ({
   closeFlyout: () => void;
   dataType: FormData["type"];
 }) => {
+  let searchTimeout: NodeJS.Timeout;
+
   const router = useRouter();
   const { id } = router.query;
   const { isMutating, trigger } = useCreateTemplateAudience(id);
+  const flyoutHeadingId = useGeneratedHtmlId({
+    prefix: "flyoutTitle",
+  });
 
-  const [searchValue, setSearchValue] = useState<any>();
+  const [searchValue, setSearchValue] = useState<string>("");
+
   const { data: customerData, isLoading: isGetCustomersLoading } =
-    useGetCustomers<CustomersResponse>(undefined, {
-      query: searchValue,
-      limit: `${10}`,
-    });
+    useGetCustomers<CustomersResponse>(
+      undefined,
+      {
+        query: searchValue,
+        limit: LIMIT,
+      },
+      {
+        isFetch: dataType === "customer" ? true : false,
+      },
+    );
+
   const { data: segmentsData, isLoading: isGetSegmentsLoading } = useGetSegments<SegmentResponse>(
     undefined,
     {
       query: searchValue,
-      limit: `${10}`,
+      limit: LIMIT,
+    },
+    {
+      isFetch: dataType === "segment" ? true : false,
     },
   );
-
-  const flyoutHeadingId = useGeneratedHtmlId({
-    prefix: "flyoutTitle",
-  });
 
   const preparedCustomerData =
     Array.isArray(customerData?.results) &&
     customerData?.results.map((customer) => ({
       value: customer.id,
-      text: customer.email || customer.phone || customer.rid,
+      label: customer.email || customer.phone || customer.rid,
     }));
 
   const preparedSegmentData =
     Array.isArray(segmentsData?.results) &&
     segmentsData?.results.map((segment) => ({
       value: segment.id,
-      text: segment.name,
+      label: segment.name,
     }));
-
-  const {
-    handleSubmit: searchHandleSubmit,
-    control: searchControl,
-    formState: { errors: searchControlErrors },
-  } = useForm({
-    mode: "onBlur",
-    resolver: yupResolver(searchSchema),
-  });
 
   const {
     handleSubmit,
@@ -108,13 +108,20 @@ const AddAudienceFlyout = ({
 
   const preparedData = watch("type") === "customer" ? preparedCustomerData : preparedSegmentData;
 
-  const onSearch = async (data: SearchFormData) => {
-    setSearchValue(data?.search);
+  const onSearch = async (data: string) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      setSearchValue(data);
+    }, 250);
   };
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await trigger(data);
+      const preparedData = {
+        type: data.type,
+        id: data?.id?.[0]?.value,
+      };
+      const response = await trigger(preparedData);
       if (response) {
         globalMutate(`/api/v1/dj/templates/${id}`);
         closeFlyout();
@@ -132,84 +139,30 @@ const AddAudienceFlyout = ({
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
-        <EuiForm component="form" onSubmit={searchHandleSubmit(onSearch)}>
-          <EuiFormRow
-            label={`Search ${watch("type") === "customer" ? "customer" : "segment"}`}
-            isInvalid={!!searchControlErrors.search?.message}
-            error={[searchControlErrors.search?.message]}
-          >
-            <EuiFlexGroup alignItems="center">
-              <EuiFlexItem>
-                <Controller
-                  control={searchControl}
-                  name="search"
-                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                    <EuiFieldSearch
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!error?.message}
-                      aria-label="Search"
-                      placeholder={`Search ${
-                        watch("type") === "customer" ? "customer" : "segment"
-                      }`}
-                      isClearable
-                    />
-                  )}
-                />
-              </EuiFlexItem>
-              <EuiFlexItem grow={false}>
-                <EuiButtonIcon
-                  isLoading={isGetSegmentsLoading || isGetCustomersLoading}
-                  display="base"
-                  iconType="search"
-                  size="s"
-                  type="submit"
-                />
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </EuiFormRow>
-        </EuiForm>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-          <EuiFormRow
-            label="Data type"
-            isInvalid={!!errors.type?.message}
-            error={[errors.type?.message]}
-            style={{ display: "none" }}
-          >
-            <Controller
-              control={control}
-              name="type"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <EuiSelect
-                  onChange={onChange}
-                  value={value}
-                  options={CUSTOM_DATA_TYPE_OPTIONS}
-                  onBlur={onBlur}
-                  isInvalid={!!errors.type?.message}
-                  aria-label="data type"
-                />
-              )}
-            />
-          </EuiFormRow>
           <EuiFormRow label="Ids" isInvalid={!!errors.id?.message} error={[errors.id?.message]}>
             <Controller
               control={control}
               name="id"
               render={({ field: { onChange, onBlur, value } }) => (
-                <EuiSelect
+                <EuiComboBox
                   onChange={onChange}
-                  value={value}
                   options={preparedData || []}
+                  selectedOptions={value?.[0]?.label ? [{ label: value?.[0]?.label }] : []}
                   onBlur={onBlur}
                   isInvalid={!!errors.type?.message}
+                  onSearchChange={onSearch}
+                  isLoading={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
                   aria-label="data type"
-                  hasNoInitialSelection
+                  singleSelection
                 />
               )}
             />
           </EuiFormRow>
-          <EuiButton isLoading={isMutating} type="submit">
+          <EuiButton
+            isLoading={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
+            type="submit"
+          >
             Add audience
           </EuiButton>
         </EuiForm>

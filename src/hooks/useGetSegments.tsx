@@ -27,12 +27,16 @@ export default function useGetSegments<Type>(
   queryParam?: {
     [key: string]: string;
   },
+  condition?: {
+    isFetch: boolean;
+  },
 ): {
   data: Type;
   error: any;
   isLoading: boolean;
   mutate: () => Promise<Type>;
 } {
+  const isFetch = condition?.isFetch === undefined ? true : condition.isFetch;
   const preparedQueryParam = createParam(queryParam);
   const path = id
     ? `/api/v1/dj/segments/${id}/?${preparedQueryParam}`
@@ -40,7 +44,7 @@ export default function useGetSegments<Type>(
 
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
-    path,
+    isFetch ? path : null,
     async (path) => {
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "GET",

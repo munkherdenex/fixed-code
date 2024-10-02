@@ -23,12 +23,17 @@ import { PAGINATION_CHOOSES } from "../../constants";
 
 const schema = yup
   .object({
-    customer: yup.array().of(
-      yup.object({
-        label: yup.string().notRequired(),
-        value: yup.string().required('please enter audience'),
-      }).required('please enter audience')
-    ).required('please enter audience'),
+    customer: yup
+      .array()
+      .of(
+        yup
+          .object({
+            label: yup.string().notRequired(),
+            value: yup.string().required("please enter audience"),
+          })
+          .required("please enter audience"),
+      )
+      .required("please enter audience"),
   })
   .required();
 
@@ -46,17 +51,23 @@ const CreateAudienceSegment = ({
 
   const [searchValue, setSearchValue] = useState("");
 
-  const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
-    query: searchValue,
-    limit: `${PAGINATION_CHOOSES[1]}`,
-  });
+  const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(
+    null,
+    {
+      query: searchValue,
+      limit: `${PAGINATION_CHOOSES[1]}`,
+    },
+    {
+      isFetch: true,
+    },
+  );
 
   const dataTypeOptions: EuiComboBoxOptionOption[] = segmentCustomers?.results?.map((customer) => {
     return {
       label: customer?.email || customer?.phone || customer?.rid,
       value: String(customer?.id),
     };
-  }) || [{ label: "", value: '' }];
+  }) || [{ label: "", value: "" }];
 
   const {
     handleSubmit,
@@ -106,8 +117,7 @@ const CreateAudienceSegment = ({
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
             label="Search email address, phone and rid"
-            isInvalid={!!errors.customer?.message ||
-              !!errors.customer?.[0]?.value?.message}
+            isInvalid={!!errors.customer?.message || !!errors.customer?.[0]?.value?.message}
             error={[errors.customer?.message || errors.customer?.[0]?.value?.message]}
           >
             <Controller
@@ -121,9 +131,7 @@ const CreateAudienceSegment = ({
                   onChange={(selected) => {
                     onChange(selected);
                   }}
-                  selectedOptions={[
-                    { label: value && value[0]?.label || '', }
-                  ]}
+                  selectedOptions={[{ label: (value && value[0]?.label) || "" }]}
                   onSearchChange={onSearchChange}
                   onBlur={onBlur}
                   isClearable={false}

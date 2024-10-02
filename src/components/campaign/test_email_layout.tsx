@@ -43,7 +43,13 @@ const TestEmailLayout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const router = useRouter();
   const templateId = router.query?.id;
   const { isMutating, trigger } = useTestSend();
-  const { data: customers } = useGetCustomers<CustomersResponse>();
+  const { data: customers } = useGetCustomers<CustomersResponse>(
+    undefined,
+    {},
+    {
+      isFetch: true,
+    },
+  );
 
   const dataTypeOptions: EuiComboBoxOptionOption[] =
     customers?.results?.map((customer) => {

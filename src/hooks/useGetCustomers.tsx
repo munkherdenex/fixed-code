@@ -32,18 +32,22 @@ export default function useGetCustomers<Type>(
   queryParam?: {
     [key: string]: string;
   },
+  condition?: {
+    isFetch: boolean;
+  },
 ): {
   data: Type;
   error: any;
   isLoading: boolean;
   mutate: any;
 } {
+  const isFetch = condition?.isFetch === undefined ? true : condition.isFetch;
   const preparedQueryParam = createParam(queryParam);
   const path = id
     ? `/api/v1/dj/customers/${id}/?${preparedQueryParam}`
     : `/api/v1/dj/customers/?${preparedQueryParam}`;
 
-  const { data, error, isLoading, mutate } = useSWR(path, async (path) => {
+  const { data, error, isLoading, mutate } = useSWR(isFetch ? path : null, async (path) => {
     const res = await fetch(`${BASE_URL}${path}`, {
       method: "GET",
       headers: { "content-type": "application/json" },
