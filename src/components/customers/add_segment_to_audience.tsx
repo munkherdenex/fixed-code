@@ -67,12 +67,9 @@ const AddSegmentsToAudience = ({
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
-    defaultValues: {
-      segment: customerSegments?.results[0]?.id.toString() || "",
-    },
   });
 
-  const { trigger } = useCreateSegmentsAudience(watch("segment"));
+  const { trigger } = useCreateSegmentsAudience(watch("segment")?.[0]?.value);
 
   const onSearchChange = async (data: string) => {
     setSearchValue(data);
