@@ -51,16 +51,10 @@ const AddSegmentsToAudience = ({
   const { id } = router.query;
   const [searchValue, setSearchValue] = useState<any>();
 
-  const { data: customerSegments, isLoading } = useGetSegments<SegmentResponse>(
-    undefined,
-    {
-      query: searchValue,
-      limit: `${10}`,
-    },
-    {
-      isFetch: true,
-    },
-  );
+  const { data: customerSegments, isLoading } = useGetSegments<SegmentResponse>(undefined, {
+    query: searchValue,
+    limit: `${10}`,
+  });
 
   const dataTypeOptions: EuiSelectOption[] =
     customerSegments?.results?.map((segment) => {

@@ -34,17 +34,11 @@ const CustomersTable = () => {
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
   const [pageSize, setPageSize] = useState(queryPageSize);
 
-  const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(
-    null,
-    {
-      query: searchValue,
-      limit: `${pageSize}`,
-      offset: `${pageIndex * pageSize}`,
-    },
-    {
-      isFetch: true,
-    },
-  );
+  const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, {
+    query: searchValue,
+    limit: `${pageSize}`,
+    offset: `${pageIndex * pageSize}`,
+  });
 
   // Memoizing pagination config
   const pagination = useMemo(

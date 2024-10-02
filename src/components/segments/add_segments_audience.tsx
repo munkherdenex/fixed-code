@@ -51,16 +51,10 @@ const CreateAudienceSegment = ({
 
   const [searchValue, setSearchValue] = useState("");
 
-  const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(
-    null,
-    {
-      query: searchValue,
-      limit: `${PAGINATION_CHOOSES[1]}`,
-    },
-    {
-      isFetch: true,
-    },
-  );
+  const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
+    query: searchValue,
+    limit: `${PAGINATION_CHOOSES[1]}`,
+  });
 
   const dataTypeOptions: EuiComboBoxOptionOption[] = segmentCustomers?.results?.map((customer) => {
     return {
