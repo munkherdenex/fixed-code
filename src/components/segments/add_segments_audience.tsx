@@ -51,7 +51,7 @@ const CreateAudienceSegment = ({
 
   const [searchValue, setSearchValue] = useState("");
 
-  const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
+  const { data: segmentCustomers, isLoading } = useGetCustomers<CustomersResponse>(null, {
     query: searchValue,
     limit: `${PAGINATION_CHOOSES[1]}`,
   });
@@ -129,6 +129,7 @@ const CreateAudienceSegment = ({
                   onSearchChange={onSearchChange}
                   onBlur={onBlur}
                   isClearable={false}
+                  isLoading={isLoading}
                 />
               )}
             />
