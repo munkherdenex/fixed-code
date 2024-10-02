@@ -1,17 +1,12 @@
 import {
   EuiButton,
-  EuiButtonIcon,
-  EuiFieldSearch,
-  EuiFlexGroup,
-  EuiFlexItem,
+  EuiComboBox,
+  EuiComboBoxOptionOption,
   EuiFlyout,
   EuiFlyoutBody,
   EuiFlyoutHeader,
   EuiForm,
   EuiFormRow,
-  EuiSelect,
-  EuiSelectOption,
-  EuiSpacer,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -27,19 +22,19 @@ import { addToast } from "../toast";
 
 const schema = yup
   .object({
-    segment: yup.string().required("please enter segment"),
+    segment: yup
+      .array()
+      .of(
+        yup.object({
+          label: yup.string().required(),
+          value: yup.string().required("please enter segment"),
+        }),
+      )
+      .required("please enter segment"),
   })
   .required();
 
 type FormData = yup.InferType<typeof schema>;
-
-const searchSchema = yup
-  .object({
-    search: yup.string().notRequired(),
-  })
-  .required();
-
-type SearchFormData = yup.InferType<typeof searchSchema>;
 
 const AddSegmentsToAudience = ({
   setIsFlyoutVisible,
@@ -56,22 +51,13 @@ const AddSegmentsToAudience = ({
     limit: `${10}`,
   });
 
-  const dataTypeOptions: EuiSelectOption[] =
+  const dataTypeOptions: EuiComboBoxOptionOption[] =
     customerSegments?.results?.map((segment) => {
       return {
-        text: segment?.name,
+        label: segment?.name,
         value: segment?.id.toString(),
       };
     }) || [];
-
-  const {
-    handleSubmit: searchHandleSubmit,
-    control: searchControl,
-    formState: { errors: searchControlErrors },
-  } = useForm({
-    mode: "onBlur",
-    resolver: yupResolver(searchSchema),
-  });
 
   const {
     handleSubmit,
@@ -88,8 +74,8 @@ const AddSegmentsToAudience = ({
 
   const { trigger } = useCreateSegmentsAudience(watch("segment"));
 
-  const onSearch = async (data: SearchFormData) => {
-    setSearchValue(data?.search);
+  const onSearchChange = async (data: string) => {
+    setSearchValue(data);
   };
 
   const onSubmit = async (data: FormData) => {
@@ -122,67 +108,34 @@ const AddSegmentsToAudience = ({
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
-        <EuiForm component="form" onSubmit={searchHandleSubmit(onSearch)}>
-          <EuiFormRow
-            label={`Search segment`}
-            isInvalid={!!searchControlErrors.search?.message}
-            error={[searchControlErrors.search?.message]}
-          >
-            <EuiFlexGroup alignItems="center">
-              <EuiFlexItem>
-                <Controller
-                  control={searchControl}
-                  name="search"
-                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                    <EuiFieldSearch
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!error?.message}
-                      aria-label="Search"
-                      placeholder={`Search segment`}
-                      isClearable
-                    />
-                  )}
-                />
-              </EuiFlexItem>
-              <EuiFlexItem grow={false}>
-                <EuiButtonIcon
-                  isLoading={isLoading}
-                  display="base"
-                  iconType="search"
-                  size="s"
-                  type="submit"
-                />
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </EuiFormRow>
-        </EuiForm>
-        <EuiSpacer size="m" />
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Segment"
-            isInvalid={!!errors.segment?.message}
-            error={[errors.segment?.message]}
+            label="Search email address, phone and rid"
+            isInvalid={!!errors.segment?.message || !!errors.segment?.[0]?.value?.message}
+            error={[errors.segment?.message || errors.segment?.[0]?.value?.message]}
           >
             <Controller
               control={control}
               name="segment"
-              render={({ field: { onBlur, onChange, value } }) => (
-                <EuiSelect
+              render={({ field: { value, onBlur, onChange } }) => (
+                <EuiComboBox
+                  placeholder="Search"
+                  singleSelection={{ asPlainText: true }}
                   options={dataTypeOptions}
-                  onChange={(selected) => {
-                    onChange(selected);
-                  }}
-                  value={value}
+                  onChange={onChange}
+                  selectedOptions={[{ label: (value && value[0]?.label) || "" }]}
+                  onSearchChange={onSearchChange}
                   onBlur={onBlur}
-                  hasNoInitialSelection
+                  isClearable={false}
+                  isLoading={isLoading}
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow hasEmptyLabelSpace>
-            <EuiButton type="submit">Add to segment</EuiButton>
+            <EuiButton isLoading={isLoading} type="submit">
+              Add to segment
+            </EuiButton>
           </EuiFormRow>
         </EuiForm>
       </EuiFlyoutBody>
