@@ -128,6 +128,7 @@ const CampaignInfoActions = () => {
           onConfirm={handleDoneTrigger}
           confirmButtonDisabled={data?.aud_count === 0}
           cancelButtonText="Cancel"
+          isLoading={isMutating}
           confirmButtonText="Confirm"
           defaultFocusedButton={data?.aud_count === 0 ? "cancel" : "confirm"}
         >
@@ -149,6 +150,7 @@ const CampaignInfoActions = () => {
           onConfirm={handleRejectTrigger}
           title="Update campaign"
           buttonColor="danger"
+          isLoading={isMutating}
           cancelButtonText="Cancel"
           confirmButtonText="Reject"
           defaultFocusedButton="confirm"
@@ -167,6 +169,7 @@ const CampaignInfoActions = () => {
           title="Update campaign"
           onCancel={closeModal}
           onConfirm={handleApproveTrigger}
+          isLoading={isMutating}
           cancelButtonText="Cancel"
           confirmButtonText="Confirm"
           defaultFocusedButton="confirm"
