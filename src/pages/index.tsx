@@ -1,6 +1,5 @@
 import { FunctionComponent } from "react";
 import Head from "next/head";
-import Wrapper from "../components/starter/wrapper";
 
 const Index: FunctionComponent = () => {
   return (
@@ -8,12 +7,17 @@ const Index: FunctionComponent = () => {
       <Head>
         <title>Home</title>
       </Head>
-
-      <Wrapper>
-        <h1>Welcome to cdp</h1>
-      </Wrapper>
     </>
   );
+};
+
+export const getServerSideProps = async () => {
+  return {
+    redirect: {
+      destination: "/signin",
+      permanent: true,
+    },
+  };
 };
 
 export default Index;
