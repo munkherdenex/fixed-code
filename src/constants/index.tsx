@@ -3,6 +3,7 @@ import { validator } from "../utils/helper";
 
 export const BASE_URL = `${(global?.window && window?.env?.BACKEND_URL) || ""}`;
 export const IS_POCKET = (global?.window && window?.env?.IS_POCKET) || false;
+export const IS_REGISTER_ENABLED = (global?.window && window?.env?.IS_REGISTER_ENABLED) || false;
 
 export const PAGINATION_CHOOSES = [5, 10, 20, 50];
 

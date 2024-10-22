@@ -24,6 +24,7 @@ declare global {
     env: {
       BACKEND_URL: string;
       IS_POCKET: string;
+      IS_REGISTER_ENABLED: string;
     };
   }
   interface Error {

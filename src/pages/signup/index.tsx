@@ -5,15 +5,20 @@ import SignupForm from "../../components/signup_form";
 import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiTitle } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { authContext } from "../../store/auth_store";
-import { IS_POCKET } from "../../constants";
+import { IS_POCKET, IS_REGISTER_ENABLED } from "../../constants";
 
 const Index: FunctionComponent = () => {
   const router = useRouter();
   const { user, isLoading } = useContext(authContext);
 
   useEffect(() => {
+    if (!IS_REGISTER_ENABLED) {
+      router.replace("/signin");
+      return;
+    }
     if (user) {
       router.replace("/dashboards");
+      return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -22,7 +27,7 @@ const Index: FunctionComponent = () => {
     return <div>...loading</div>;
   }
 
-  if (user) {
+  if (user || !IS_REGISTER_ENABLED) {
     return null;
   }
 

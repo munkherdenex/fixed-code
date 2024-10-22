@@ -7,6 +7,7 @@ import { headerStyles } from "./header.styles";
 import Logo from "../../../public/images/logo-eui.svg";
 import { useContext } from "react";
 import { authContext } from "../../store/auth_store";
+import { IS_REGISTER_ENABLED } from "../../constants";
 
 const Header = () => {
   const { user } = useContext(authContext);
@@ -37,6 +38,7 @@ const Header = () => {
                     Dashboard
                   </EuiButton>
                 </Link>,
+                <ThemeSwitcher key="theme-switcher" />,
               ]
             : [
                 <Link key="signin" href="/signin" passHref>
@@ -44,11 +46,13 @@ const Header = () => {
                     Sign In
                   </EuiButton>
                 </Link>,
-                <Link key="signup" href="/signup" passHref>
-                  <EuiButton style={{ minWidth: 80 }} size="s">
-                    Sign Up
-                  </EuiButton>
-                </Link>,
+                IS_REGISTER_ENABLED && (
+                  <Link key="signup" href="/signup" passHref>
+                    <EuiButton style={{ minWidth: 80 }} size="s">
+                      Sign Up
+                    </EuiButton>
+                  </Link>
+                ),
                 <ThemeSwitcher key="theme-switcher" />,
               ],
         },
