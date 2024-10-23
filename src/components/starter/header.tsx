@@ -24,7 +24,7 @@ const Header = () => {
               <a css={styles.logo}>
                 <Image width={24} height={24} src={Logo} alt="" loader={imageLoader} />
                 <EuiTitle size="xxs" css={styles.title}>
-                  <span>Data UI</span>
+                  <span>CRM</span>
                 </EuiTitle>
               </a>
             </Link>,
@@ -41,11 +41,13 @@ const Header = () => {
                 <ThemeSwitcher key="theme-switcher" />,
               ]
             : [
-                <Link key="signin" href="/signin" passHref>
-                  <EuiButton style={{ minWidth: 80, margin: 10 }} color="success" size="s">
-                    Sign In
-                  </EuiButton>
-                </Link>,
+                IS_REGISTER_ENABLED && (
+                  <Link key="signin" href="/signin" passHref>
+                    <EuiButton style={{ minWidth: 80, margin: 10 }} color="success" size="s">
+                      Sign In
+                    </EuiButton>
+                  </Link>
+                ),
                 IS_REGISTER_ENABLED && (
                   <Link key="signup" href="/signup" passHref>
                     <EuiButton style={{ minWidth: 80 }} size="s">
