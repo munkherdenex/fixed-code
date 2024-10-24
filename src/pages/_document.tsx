@@ -54,12 +54,12 @@ export default class MyDocument extends Document {
         <Head>
           <meta
             name="description"
-            content="The Next.js EUI Starter uses Next.js, EUI library, and Emotion to help you make prototypes. You just need to know a few basic Next.js concepts and how to use EUI and you're ready to ship it!"
+            content="CRM+CDP: A powerful combination that provides a unified view of customer data, enabling businesses to deliver personalized experiences, optimize marketing efforts, and make data-driven decisions. CDPs aggregate data from various sources, while CRMs focus on managing customer interactions. When integrated, they offer a comprehensive solution for understanding and engaging customers effectively."
           />
           <meta property="og:title" content="Elastic UI" />
           <meta
             property="og:description"
-            content="The Next.js EUI Starter uses Next.js, EUI library, and Emotion to help you make prototypes. You just need to know a few basic Next.js concepts and how to use EUI and you're ready to ship it!"
+            content="CRM+CDP: A powerful combination that provides a unified view of customer data, enabling businesses to deliver personalized experiences, optimize marketing efforts, and make data-driven decisions. CDPs aggregate data from various sources, while CRMs focus on managing customer interactions. When integrated, they offer a comprehensive solution for understanding and engaging customers effectively."
           />
           <meta
             property="og:image"
