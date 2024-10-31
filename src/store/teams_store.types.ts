@@ -30,4 +30,8 @@ export interface Initial_Teams_Type {
   setCurrentTeam: React.Dispatch<React.SetStateAction<Teams | null>>;
   changeCurrentTeam: (teamId: number) => void;
   clearCurrentTeam: () => void;
+  isAdmin: boolean;
+  isManager: boolean;
+  isMember: boolean;
+  isAccountActive: boolean;
 }

@@ -23,6 +23,9 @@ const SWRConfigLayout = ({ children }) => {
           if (error?.status === 401) {
             return;
           }
+          if (error?.status === 403) {
+            return;
+          }
           if (retryCount >= 10) return;
           setTimeout(() => revalidate({ retryCount }), 5000);
         },

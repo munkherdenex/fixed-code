@@ -1,16 +1,23 @@
 import { EuiIcon } from "@elastic/eui";
+import { Node } from "@elastic/eui/src/components/tree_view/tree_view";
 import { Teams } from "../store/teams_store.types";
 
 export const convertToTree = (
   data: Teams[],
   changeCurrentTeam: (teamId: number) => void,
   currentTeam: Teams,
-) => {
+): Node[] => {
   if (!Array.isArray(data)) {
     return [];
   }
 
   const idMapping = data?.reduce((acc, el) => {
+    if (!el) {
+      return acc;
+    }
+    if (el.id === null) {
+      return acc;
+    }
     acc[el.id] = {
       ...el,
       id: `${el.id}`,
@@ -33,11 +40,13 @@ export const convertToTree = (
       const parentEl = idMapping[el.parent_id];
       if (parentEl) {
         parentEl.children.push(idMapping[el.id]);
+      } else {
+        root.push(idMapping[el.id]);
       }
     }
   });
 
-  const addParentProperties = (node) => {
+  const addParentProperties = (node: Node) => {
     if (node.children.length > 0) {
       node.isExpanded = true;
       node.children.forEach(addParentProperties);

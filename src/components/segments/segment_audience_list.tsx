@@ -233,6 +233,7 @@ const SegmentAudienceList = () => {
 
         <EuiFlexItem>
           <EuiBasicTable
+            tableLayout="auto"
             items={data?.results || []}
             columns={columns}
             pagination={{

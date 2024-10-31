@@ -12,10 +12,9 @@ import {
   EuiFlexGrid,
   EuiSelect,
 } from "@elastic/eui";
-import * as yup from "yup";
 import { useRouter } from "next/router";
 import useGetChannels, { Channels, ChannelsResponse } from "../../hooks/useGetChannels";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import moment from "moment";
 import CreateChannelFlyoutContainer from "./create_channel_flyout_container";
@@ -141,7 +140,7 @@ const ChannelsTable = () => {
   };
 
   // Condensed useEffect logic to update states when query parameters change
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (querySearch !== searchValue) {
       setSearchValue(querySearch);
     }

@@ -59,5 +59,9 @@ export async function handleResponseNotOk(res: Response, showError: boolean = tr
     throw error;
   }
 
-  return await res.json();
+  if (res?.headers.get("content-type") === "application/json") {
+    return await res.json();
+  }
+
+  return res.text();
 }

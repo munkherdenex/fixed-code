@@ -16,7 +16,7 @@ import {
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
@@ -152,7 +152,7 @@ const SendsTable = () => {
   };
 
   // Condensed useEffect logic to update states when query parameters change
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (querySearch !== searchValue) {
       setSearchValue(querySearch);
     }

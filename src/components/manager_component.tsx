@@ -2,9 +2,9 @@ import { useContext } from "react";
 import { teamsContext } from "../store/teams_store";
 
 const ManagerComponent = ({ children }) => {
-  const { myProfile } = useContext(teamsContext);
+  const { isManager, isAccountActive } = useContext(teamsContext);
 
-  if (myProfile?.role === "manager" && myProfile?.status === "active") {
+  if (isManager && isAccountActive) {
     return children;
   }
 

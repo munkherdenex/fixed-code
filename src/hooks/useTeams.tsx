@@ -3,25 +3,27 @@ import { useRouter } from "next/router";
 import { BASE_URL } from "../constants";
 import { Teams } from "../store/teams_store.types";
 import { handleResponseNotOk } from "../utils/error_handler";
+import { createParam } from "../utils/createParam";
 
-export default function useTeams(): {
+export default function useTeams(queryParam?: { [key: string]: string }): {
   data: Teams[];
   error: any;
   isLoading: boolean;
 } {
   const router = useRouter();
-  const { data, error, isLoading } = useSWRImmutable(
-    router.pathname.includes("dashboard") ? `/api/v1/teams` : null,
-    async (path) => {
-      const res = await fetch(`${BASE_URL}${path}`, {
-        method: "GET",
-        headers: { "content-type": "application/json" },
-        credentials: "include",
-      });
+  const preparedQueryParam = createParam(queryParam);
 
-      return handleResponseNotOk(res);
-    },
-  );
+  const path = router.pathname.includes("dashboard") ? `/api/v1/teams?${preparedQueryParam}` : null;
+
+  const { data, error, isLoading } = useSWRImmutable(path, async (path) => {
+    const res = await fetch(`${BASE_URL}${path}`, {
+      method: "GET",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+    });
+
+    return handleResponseNotOk(res);
+  });
 
   return {
     data,

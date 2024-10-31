@@ -2,7 +2,7 @@ import { EuiButton, EuiFieldText, EuiForm, EuiFormRow, EuiTextArea } from "@elas
 import { yupResolver } from "@hookform/resolvers/yup";
 import { jsonrepair } from "jsonrepair";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ActionElement, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
 import { parseMongoDB } from "react-querybuilder/parseMongoDB";
@@ -42,18 +42,7 @@ const EditDynamic = ({
   const { data } = useGetFields<Fields[]>(undefined, {
     all: `${true}`,
   });
-  const [query, setQuery] = useState<RuleGroupType>(() => {
-    try {
-      return removeDeletedCustomFields(
-        data,
-        parseMongoDB(condition, {
-          additionalOperators: additionalOperator,
-        }),
-      );
-    } catch {
-      return { id: "root", combinator: "and", rules: [] };
-    }
-  });
+  const [query, setQuery] = useState<RuleGroupType>();
 
   const { trigger, isMutating } = useUpdateSegment(router.query.id);
 
@@ -72,7 +61,7 @@ const EditDynamic = ({
 
   const output = useMemo(() => processDynamicFieldData(data), [data]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setQuery(() =>
       removeDeletedCustomFields(
         data,
@@ -146,18 +135,21 @@ const EditDynamic = ({
             )}
           />
         </EuiFormRow>
-        <EuiFormRow css={styles.queryBuilderContainer} label="Dynamic query builder" fullWidth>
-          <QueryBuilder
-            fields={[...QUERY_BUILDER_DEFAULT_FIELD, ...output]}
-            query={query}
-            operators={REACT_QUERY_BUILDER_OPERATORS}
-            onQueryChange={setQuery}
-            controlElements={{
-              addGroupAction: (props) => (props.level === 0 ? <ActionElement {...props} /> : null),
-              valueEditor: CustomValueEditor,
-            }}
-          />
-        </EuiFormRow>
+        {query && (
+          <EuiFormRow css={styles.queryBuilderContainer} label="Dynamic query builder" fullWidth>
+            <QueryBuilder
+              fields={[...QUERY_BUILDER_DEFAULT_FIELD, ...output]}
+              query={query}
+              operators={REACT_QUERY_BUILDER_OPERATORS}
+              onQueryChange={setQuery}
+              controlElements={{
+                addGroupAction: (props) =>
+                  props.level === 0 ? <ActionElement {...props} /> : null,
+                valueEditor: CustomValueEditor,
+              }}
+            />
+          </EuiFormRow>
+        )}
         <EuiFormRow>
           <EuiButton disabled={isNotValid(query)} type="submit" isLoading={isMutating}>
             Update segment

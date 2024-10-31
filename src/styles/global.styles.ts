@@ -30,6 +30,18 @@ export const commonStyles = () => ({
   width200: css`
     width: 200px;
   `,
+  width250: css`
+    width: 250px;
+  `,
+  width300: css`
+    width: 300px;
+  `,
+  width305: css`
+    width: 305px;
+  `,
+  clamp200auto305: css`
+    width: clamp(200px, 100%, 305px);
+  `,
   removeComboBoxCloseButton: css`
   .euiBadge__iconButton {
     display: none;

@@ -5,6 +5,7 @@ import GlobalLoading from "../components/global-loading";
 import useChangeTeam from "../hooks/useChangeTeam";
 import useGetTeamsMyprofile, { TeamsMyProfileResponse } from "../hooks/useGetTeamsMyprofile";
 import useTeams from "../hooks/useTeams";
+import { isNumber } from "../utils/helper";
 import { Initial_Teams_Type, Teams } from "./teams_store.types";
 
 const initial_teams_state: Initial_Teams_Type = {
@@ -14,18 +15,33 @@ const initial_teams_state: Initial_Teams_Type = {
   setCurrentTeam: () => {},
   changeCurrentTeam: () => {},
   clearCurrentTeam: () => {},
+  isAdmin: false,
+  isManager: false,
+  isMember: false,
+  isAccountActive: false,
 };
 
 export const teamsContext = createContext(initial_teams_state);
 
 export const TeamsProvider = ({ children }) => {
   const router = useRouter();
-  const { trigger } = useChangeTeam();
+
   const [currentTeam, setCurrentTeam] = useState<Teams | null>(null);
 
-  const { data: teams, isLoading: teamsIsLoading } = useTeams();
-  const { data: myProfile, isLoading: profileIsLoading } =
-    useGetTeamsMyprofile<TeamsMyProfileResponse | null>(currentTeam?.id?.toString());
+  const { trigger } = useChangeTeam();
+  const { data: teams, isLoading: teamsIsLoading, error: teamError } = useTeams();
+  const {
+    data: myProfile,
+    isLoading: profileIsLoading,
+    error: profileError,
+  } = useGetTeamsMyprofile<TeamsMyProfileResponse | null>(currentTeam?.id?.toString());
+
+  const isGlobalLoading =
+    teamsIsLoading || profileIsLoading || !teams || !myProfile || teamError || profileError;
+  const isAdmin = myProfile?.role === "admin";
+  const isManager = myProfile?.role === "manager";
+  const isMember = myProfile?.role === "member";
+  const isAccountActive = myProfile?.status === "active";
 
   const changeCurrentTeam = useCallback(
     async (teamId: number) => {
@@ -33,29 +49,18 @@ export const TeamsProvider = ({ children }) => {
         return;
       }
 
-      const team = teams.find((team) => team.id === teamId);
+      const team = teams?.find((team) => {
+        if (team) return team.id === teamId;
+      });
 
       if (team) {
         localStorage.setItem("currentTeamId", teamId.toString());
-
-        try {
-          const response = await trigger({ team_id: teamId });
-          if (response) {
-            setCurrentTeam(team);
-          }
-        } catch {
-          alert("Refresh site");
+        const response = await trigger({ team_id: teamId });
+        if (response) {
+          setCurrentTeam(team);
         }
-        return;
-      }
-
-      if (!team) {
-        const parentTeam = teams.find((team) => team.parent_id === null);
-        localStorage.setItem("currentTeamId", parentTeam?.id.toString());
-        setCurrentTeam(parentTeam);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [teams, trigger],
   );
 
@@ -65,6 +70,9 @@ export const TeamsProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    if (teamsIsLoading) {
+      return;
+    }
     if (!router.pathname.includes("dashboards")) {
       return;
     }
@@ -73,24 +81,23 @@ export const TeamsProvider = ({ children }) => {
       return;
     }
 
-    if (teams.length === 0 && !router.pathname.includes("/dashboards/team/create")) {
-      router.replace("/dashboards/team/create");
-      return;
-    }
-
-    const parentTeam = teams.find((team) => team.parent_id === null);
-
-    if (!parentTeam && !router.pathname.includes("/dashboards/team/create")) {
+    if (teams?.length === 0 && !router.pathname.includes("/dashboards/team/create")) {
       router.replace("/dashboards/team/create");
       return;
     }
 
     if (!currentTeam) {
       const teamId = +localStorage.getItem("currentTeamId");
-      if (!isNaN(teamId)) {
-        changeCurrentTeam(teamId);
-      } else {
-        changeCurrentTeam(parentTeam?.id);
+      if (isNumber(teamId)) {
+        const team = teams?.find((team) => {
+          if (team) return team.id === teamId;
+        });
+        if (team) {
+          changeCurrentTeam(team?.id);
+        }
+        if (!team) {
+          changeCurrentTeam(teams?.[0].id);
+        }
       }
     }
 
@@ -104,7 +111,8 @@ export const TeamsProvider = ({ children }) => {
     //INFO: currentTeam uurchlugduh uyed teams profile-aas busdiig n dahij shinechlene
     mutate(
       (key) => {
-        if (key === "/api/v1/teams" || key === "/api/v1/profile") {
+        const stringKey = key?.toString();
+        if (stringKey?.includes("/api/v1/teams") || stringKey?.includes("/api/v1/profile")) {
           return false;
         }
         return true;
@@ -124,13 +132,13 @@ export const TeamsProvider = ({ children }) => {
         setCurrentTeam,
         changeCurrentTeam,
         clearCurrentTeam,
+        isAdmin,
+        isManager,
+        isMember,
+        isAccountActive,
       }}
     >
-      {(teamsIsLoading || profileIsLoading) && !router.pathname.includes("team/create") ? (
-        <GlobalLoading />
-      ) : (
-        children
-      )}
+      {isGlobalLoading && router.pathname.includes("dashboards") ? <GlobalLoading /> : children}
     </teamsContext.Provider>
   );
 };

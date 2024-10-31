@@ -12,7 +12,7 @@ import {
   EuiImage,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import useGetSegments, { Segment, SegmentResponse } from "../../hooks/useGetSegments";
 import { PAGINATION_CHOOSES } from "../../constants";
 import moment from "moment";
@@ -127,7 +127,7 @@ const SegmentsTable = () => {
   };
 
   // Condensed useEffect logic to update states when query parameters change
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (querySearch !== searchValue) {
       setSearchValue(querySearch);
     }

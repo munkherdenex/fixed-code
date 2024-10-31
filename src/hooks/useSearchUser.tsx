@@ -1,17 +1,16 @@
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
 import { handleResponseNotOk } from "../utils/error_handler";
-import { useManagementTeamsContext } from "../store/management_teams_store";
 
-export default function useUpdateMemberRole<Type>(id: string | string[] | undefined) {
-  const { currentTeam } = useManagementTeamsContext();
-  const url = currentTeam?.id && id ? `/api/v1/teams/${currentTeam?.id}/members/${id}` : null;
+export default function useSearchUser<Type>() {
+  const url = `/api/v1/user_info`;
 
   const { data, error, isMutating, trigger } = useSWRMutation(
     url,
     async (path, { arg }: { arg: Type }) => {
+      console.log(arg);
       const res = await fetch(`${BASE_URL}${path}`, {
-        method: "PUT",
+        method: "POST",
         credentials: "include",
         headers: {
           "content-type": "application/json",
