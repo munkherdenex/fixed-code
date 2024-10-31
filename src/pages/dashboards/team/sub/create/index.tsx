@@ -5,15 +5,21 @@ import {
   EuiFlexItem,
   EuiForm,
   EuiFormRow,
+  EuiSelect,
   EuiText,
   EuiTextArea,
 } from "@elastic/eui";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import useCreateTeam from "../../../../hooks/useCreateTeam";
+import useCreateTeam from "../../../../../hooks/useCreateTeam";
 import { useRouter } from "next/router";
-import { globalMutate } from "../../../../utils/globalMutate";
+import { useContext, useMemo } from "react";
+import { teamsContext } from "../../../../../store/teams_store";
+import { globalMutate } from "../../../../../utils/globalMutate";
+import useGetTeamsMyprofile, {
+  TeamsMyProfileResponse,
+} from "../../../../../hooks/useGetTeamsMyprofile";
 
 const schema = yup
   .object({
@@ -25,7 +31,33 @@ const schema = yup
 
 type FormData = yup.InferType<typeof schema>;
 
-const TeamCreate = () => {
+const TeamCreate = ({ id }: { id: string }) => {
+  const router = useRouter();
+  const { teams } = useContext(teamsContext);
+  const { data: myProfile } = useGetTeamsMyprofile<TeamsMyProfileResponse | null>(id);
+  const { isMutating, trigger } = useCreateTeam<FormData>();
+
+  const teamOptions = useMemo(
+    () =>
+      Array.isArray(teams) && teams.length > 0
+        ? [
+            { value: "", text: "Select parent team" },
+            ...teams
+              .filter((team) => !team.parent_id)
+              .map((team) => ({
+                value: team.id,
+                text: team.name,
+              })),
+          ]
+        : [],
+    [teams],
+  );
+
+  const selectedTeam = useMemo(
+    () => teams?.find((team) => team?.id.toString() === id),
+    [teams, id],
+  );
+
   const {
     handleSubmit,
     control,
@@ -33,9 +65,10 @@ const TeamCreate = () => {
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
+    defaultValues: {
+      parent_id: id.toString(),
+    },
   });
-  const router = useRouter();
-  const { isMutating, trigger } = useCreateTeam<FormData>();
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -48,6 +81,14 @@ const TeamCreate = () => {
       console.error(error);
     }
   };
+
+  if (myProfile?.role !== "admin") {
+    return <div>Only admins can create teams</div>;
+  }
+
+  if (!selectedTeam) {
+    return <div>Team not found</div>;
+  }
 
   return (
     <EuiFlexGroup alignItems="center" justifyContent="center" direction="column">
@@ -63,6 +104,30 @@ const TeamCreate = () => {
       </EuiFlexItem>
       <EuiFlexItem grow={false}>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+          <EuiFormRow
+            label="Parent team*"
+            helpText="If you want to create a sub team, select the parent team"
+            isInvalid={!!errors.parent_id?.message}
+            error={[errors.parent_id?.message]}
+          >
+            <Controller
+              name="parent_id"
+              control={control}
+              defaultValue=""
+              render={({ field: { onChange, onBlur, value } }) => (
+                <EuiSelect
+                  disabled
+                  onChange={onChange}
+                  value={value}
+                  options={teamOptions}
+                  onBlur={onBlur}
+                  isInvalid={!!errors.parent_id?.message}
+                  aria-label="channel type"
+                  hasNoInitialSelection
+                />
+              )}
+            />
+          </EuiFormRow>
           <EuiFormRow
             label="Team name"
             isInvalid={!!errors.name?.message}
@@ -110,22 +175,35 @@ const TeamCreate = () => {
               Create Team
             </EuiButton>
           </EuiFormRow>
-          <EuiFormRow>
-            <EuiButton
-              color="danger"
-              onClick={() => router.push("/dashboards")}
-              type="button"
-              size="s"
-              fullWidth
-              fill
-            >
-              Cancel
-            </EuiButton>
-          </EuiFormRow>
+          {teamOptions?.length > 0 ? (
+            <EuiFormRow>
+              <EuiButton
+                color="danger"
+                onClick={() => router.push("/dashboards")}
+                type="button"
+                size="s"
+                fullWidth
+                fill
+              >
+                Cancel
+              </EuiButton>
+            </EuiFormRow>
+          ) : null}
         </EuiForm>
       </EuiFlexItem>
     </EuiFlexGroup>
   );
+};
+
+export const getServerSideProps = async (context: { query: any }) => {
+  const query = context.query;
+  if (query?.id) {
+    return {
+      props: {
+        id: query.id,
+      },
+    };
+  }
 };
 
 export default TeamCreate;

@@ -14,7 +14,7 @@ import {
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
 import { isNumber } from "../../utils/helper";
@@ -135,7 +135,7 @@ const CustomersTable = () => {
   });
 
   // Condensed useEffect logic to update states when query parameters change
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (querySearch !== searchValue) {
       setSearchValue(querySearch);
     }
@@ -194,6 +194,7 @@ const CustomersTable = () => {
       </EuiFlexItem>
       <EuiFlexItem>
         <EuiBasicTable
+          tableLayout="auto"
           items={data?.results || []}
           columns={columns}
           rowProps={getRowProps}

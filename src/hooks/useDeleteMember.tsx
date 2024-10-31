@@ -1,11 +1,10 @@
 import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
-import { useContext } from "react";
 import { handleResponseNotOk } from "../utils/error_handler";
-import { teamsContext } from "../store/teams_store";
+import { useManagementTeamsContext } from "../store/management_teams_store";
 
 export default function useDeleteMember<Type>(id?: string | string[] | undefined) {
-  const { currentTeam } = useContext(teamsContext);
+  const { currentTeam } = useManagementTeamsContext();
   const url = currentTeam?.id ? `/api/v1/teams/${currentTeam?.id}/members/${id}` : null;
 
   const { data, error, isMutating, trigger } = useSWRMutation(

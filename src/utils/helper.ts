@@ -48,9 +48,9 @@ export const validator: RuleValidator = (q): ValidationResult => {
 };
 
 export const isNotValid = (query: any) => {
-  if (query.rules.length === 0) return true;
+  if (query?.rules?.length === 0) return true;
 
-  return query.rules.find((rule: any) => {
+  return query?.rules?.find((rule: any) => {
     if (rule.rules) {
       return isNotValid(rule);
     }

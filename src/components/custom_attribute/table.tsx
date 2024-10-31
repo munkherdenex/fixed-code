@@ -14,7 +14,7 @@ import {
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useLayoutEffect, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useDeleteField from "../../hooks/useDeleteCustomField";
 import useGetFields, { Fields, FieldsResponse } from "../../hooks/useGetFields";
@@ -176,7 +176,7 @@ const FieldsTable = () => {
   };
 
   // Condensed useEffect logic to update states when query parameters change
-  useEffect(() => {
+  useLayoutEffect(() => {
     setPageIndex(queryPageIndex);
     setPageSize(queryPageSize);
   }, [queryPageIndex, queryPageSize]);

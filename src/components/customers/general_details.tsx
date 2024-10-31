@@ -120,15 +120,12 @@ const GeneralDetails = () => {
                     <EuiFlexItem>
                       {data?.name} ({data?.attribute_name}) :
                     </EuiFlexItem>
-                    {moment(data?.value, "YYYY-MM-DD HH:mm", true).isValid() ? (
-                      <EuiFlexItem>
-                        {data?.data_type === "date" && moment(data?.value).format("YYYY-MM-DD")}
-                        {data?.data_type === "datetime" &&
-                          moment(data?.value).format("YYYY-MM-DD LT")}
-                      </EuiFlexItem>
-                    ) : (
-                      <EuiFlexItem>{data?.value}</EuiFlexItem>
-                    )}
+                    <EuiFlexItem>
+                      {data?.data_type === "date" && moment(data?.value).format("YYYY-MM-DD")}
+                      {data?.data_type === "datetime" &&
+                        moment(data?.value).format("YYYY-MM-DD LT")}
+                      {data?.data_type !== "date" && data?.data_type !== "datetime" && data?.value}
+                    </EuiFlexItem>
                   </React.Fragment>
                 ))}
               </EuiFlexGrid>

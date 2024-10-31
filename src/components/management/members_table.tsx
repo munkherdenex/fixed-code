@@ -12,24 +12,25 @@ import {
   EuiToolTip,
 } from "@elastic/eui";
 import moment from "moment";
-import { useContext, useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { MembersType, TeamMembersType } from "../../constants/members.types";
 import useGetCurrentTeamMembers from "../../hooks/useCurrentTeamMembers";
-import { teamsContext } from "../../store/teams_store";
+import { useManagementTeamsContext } from "../../store/management_teams_store";
 import { logColor } from "../../utils/badge_color";
 import { logIcon } from "../../utils/log_icon";
 import DeleteMemberModal from "./delete_member_modal";
 import UpdateMemberModal from "./update_member_modal";
 
 const MembersTable = () => {
+  const { myProfile, currentTeam, isAdmin, isMember, isManager } = useManagementTeamsContext();
   const { data: teamMembers, isLoading: isMembersLoading } =
-    useGetCurrentTeamMembers<TeamMembersType>();
-  const { myProfile } = useContext(teamsContext);
+    useGetCurrentTeamMembers<TeamMembersType>(currentTeam);
 
-  const isAdmin = myProfile?.role === "admin";
+  const isAdminOrManager = isAdmin || isManager;
+  const lastUser = teamMembers?.members?.length === 1;
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectMemberId, setSelectedMemberId] = useState<any>();
+  const [selectMemberId, setSelectedMemberId] = useState<string>();
   const [teamRole, setTeamRole] = useState([]);
 
   const roleTypes = [
@@ -38,7 +39,7 @@ const MembersTable = () => {
     { value: "manager", text: "Manager" },
   ];
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setTeamRole(teamMembers?.members);
   }, [teamMembers]);
 
@@ -81,18 +82,45 @@ const MembersTable = () => {
           />
         )}
         {!isAdmin && (
-          <EuiBadge iconType={logIcon(member.role)} color={logColor(member.role)}>
-            {member.role}
-          </EuiBadge>
+          <div>
+            <EuiBadge iconType={logIcon(member.role)} color={logColor(member.role)}>
+              {member.role}
+            </EuiBadge>
+          </div>
         )}
       </EuiFlexItem>
     );
   };
 
-  const columns: Array<EuiBasicTableColumn<MembersType>> = [
+  const adminColumns: Array<EuiBasicTableColumn<MembersType>> = [
+    {
+      name: "Actions",
+      align: "right",
+      render: (member: MembersType) => (
+        <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
+          {(member.role !== "admin" || isAdmin) && member.user.email !== myProfile.user.email && (
+            <EuiFlexItem grow={false}>
+              <EuiButtonIcon
+                iconType="trash"
+                size="s"
+                color="danger"
+                onClick={() => {
+                  setSelectedMemberId(member?.id.toString());
+                  setIsModalVisible(true);
+                }}
+              />
+            </EuiFlexItem>
+          )}
+        </EuiFlexGroup>
+      ),
+    },
+  ];
+
+  const defaultColumn: Array<EuiBasicTableColumn<MembersType>> = [
     {
       field: "user.email",
       name: "Username & Email",
+      width: "auto",
       render: (role: MembersType["role"], member: MembersType) => (
         <EuiFlexGroup>
           <EuiFlexItem grow={false}>
@@ -103,13 +131,15 @@ const MembersTable = () => {
               <EuiFlexItem grow={false}>
                 <EuiText size="s">
                   <strong>
-                    {member?.user?.lname} {member?.user?.fname}
+                    {member?.user?.fname} {member?.user?.lname}
                   </strong>
                 </EuiText>
               </EuiFlexItem>
-              <EuiFlexItem grow={false}>
-                <EuiText size="xs">{member?.user?.email}</EuiText>
-              </EuiFlexItem>
+              {!isMember && (
+                <EuiFlexItem grow={false}>
+                  <EuiText size="xs">{member?.user?.email}</EuiText>
+                </EuiFlexItem>
+              )}
             </EuiFlexGroup>
           </EuiFlexItem>
         </EuiFlexGroup>
@@ -145,25 +175,10 @@ const MembersTable = () => {
         </EuiFlexItem>
       ),
     },
-    {
-      name: `${isAdmin ? "Actions" : ""}`,
-      hidden: !isAdmin,
-      actions: [
-        {
-          name: "Delete",
-          isPrimary: true,
-          icon: "trash",
-          color: "danger",
-          type: "icon",
-          description: "Delete member",
-          onClick: (member: MembersType) => {
-            setSelectedMemberId(member?.id);
-            setIsModalVisible(true);
-          },
-        },
-      ],
-    },
   ];
+
+  const columns =
+    !lastUser && isAdminOrManager ? [...defaultColumn, ...adminColumns] : defaultColumn;
 
   if (isMembersLoading) return <div>Loading...</div>;
 
@@ -173,7 +188,12 @@ const MembersTable = () => {
         <DeleteMemberModal selectMember={selectMemberId} setIsModalVisible={setIsModalVisible} />
       )}
       <EuiPanel>
-        <EuiBasicTable itemId="id" items={teamMembers?.members || []} columns={columns} />
+        <EuiBasicTable
+          tableLayout="auto"
+          itemId="id"
+          items={teamMembers?.members || []}
+          columns={columns}
+        />
       </EuiPanel>
     </>
   );

@@ -1,6 +1,5 @@
 import {
   EuiAvatar,
-  EuiButton,
   EuiButtonEmpty,
   EuiFlexGroup,
   EuiFlexItem,
@@ -105,7 +104,6 @@ const HeaderUserMenu = () => {
 };
 
 const TeamSwitcher = () => {
-  const router = useRouter();
   const styles = dashboardHeadersStyles();
   const { currentTeam } = useContext(teamsContext);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -137,11 +135,6 @@ const TeamSwitcher = () => {
     >
       <EuiFlexGroup direction="column" gutterSize="s">
         <TeamsTreeView />
-        <EuiFlexItem>
-          <EuiButton fill size="s" onClick={() => router.push("/dashboards/team/create")}>
-            Create a new team
-          </EuiButton>
-        </EuiFlexItem>
       </EuiFlexGroup>
     </EuiPopover>
   );

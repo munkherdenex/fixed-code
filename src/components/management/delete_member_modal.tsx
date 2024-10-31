@@ -1,9 +1,9 @@
-import { EuiConfirmModal, EuiFormRow, EuiFieldText } from "@elastic/eui";
+import { EuiConfirmModal, EuiFieldText, EuiFormRow } from "@elastic/eui";
 import { SetStateAction, useState } from "react";
-import { addToast } from "../toast";
 import useDeleteMember from "../../hooks/useDeleteMember";
-import useGetCurrentTeamMembers from "../../hooks/useCurrentTeamMembers";
+import { useManagementTeamsContext } from "../../store/management_teams_store";
 import { globalMutate } from "../../utils/globalMutate";
+import { addToast } from "../toast";
 
 const DeleteMemberModal = ({
   selectMember,
@@ -12,33 +12,28 @@ const DeleteMemberModal = ({
   selectMember: string;
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
-  const { mutate } = useGetCurrentTeamMembers();
+  const { currentTeam } = useManagementTeamsContext();
   const { trigger } = useDeleteMember(selectMember);
   const [deleteMessage, setDeleteMessage] = useState("");
+
+  const deleteMember = async () => {
+    await trigger();
+    addToast({
+      id: "member-deleted",
+      color: "success",
+      title: "Success",
+      text: "Successfully deleted",
+    });
+    setIsModalVisible(false);
+    globalMutate(`/api/v1/teams/${currentTeam?.id}/?members=true`);
+  };
 
   return (
     <EuiConfirmModal
       title="Warning"
       onCancel={() => setIsModalVisible(false)}
       confirmButtonDisabled={deleteMessage.toLowerCase() !== "delete"}
-      onConfirm={async () => {
-        try {
-          const response = await trigger();
-          if (response) {
-            addToast({
-              id: "member-deleted",
-              color: "success",
-              title: "Success",
-              text: "Successfully deleted",
-            });
-            setIsModalVisible(false);
-            mutate();
-            globalMutate("/api/v1/teams");
-          }
-        } catch (error) {
-          console.error("ERROR:: ", error);
-        }
-      }}
+      onConfirm={deleteMember}
       confirmButtonText="Delete"
       cancelButtonText="Cancel"
       buttonColor="danger"

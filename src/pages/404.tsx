@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 import { EuiButton, EuiEmptyPrompt, EuiPageTemplate, EuiImage } from "@elastic/eui";
 import { useTheme } from "../components/theme";
 import { useRouter } from "next/router";

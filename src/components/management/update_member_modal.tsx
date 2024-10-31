@@ -2,6 +2,7 @@ import { addToast } from "../toast";
 import useGetCurrentTeamMembers from "../../hooks/useCurrentTeamMembers";
 import useUpdateMemberRole from "../../hooks/useUpdateMemberRole";
 import { EuiButtonIcon } from "@elastic/eui";
+import { useManagementTeamsContext } from "../../store/management_teams_store";
 
 const UpdateMemberModal = ({
   selectMemberId,
@@ -10,7 +11,8 @@ const UpdateMemberModal = ({
   selectMemberId: string | any;
   changed_role: string;
 }) => {
-  const { mutate } = useGetCurrentTeamMembers();
+  const { currentTeam } = useManagementTeamsContext();
+  const { mutate } = useGetCurrentTeamMembers(currentTeam);
   const { trigger, isMutating } = useUpdateMemberRole(selectMemberId);
 
   const changeMemberRole = async (role: string) => {

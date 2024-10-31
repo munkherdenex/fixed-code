@@ -6,40 +6,18 @@ import {
   EuiIcon,
   EuiPinnableListGroup,
   EuiPinnableListGroupItemProps,
+  logicalCSSWithFallback,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { css } from "@emotion/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import SideMenu from "./sidebar_menu";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CollapsibleNav = () => {
   const router = useRouter();
-
-  const SendsLinks: EuiPinnableListGroupItemProps[] = [
-    {
-      label: "Campaign",
-      onClick: () => {
-        router.push(`${pathPrefix}/dashboards/campaign`);
-      },
-      pinnable: false,
-    },
-    {
-      label: "Channels",
-      onClick: () => {
-        router.push(`${pathPrefix}/dashboards/channels`);
-      },
-      pinnable: false,
-    },
-    {
-      label: "Analytics",
-      onClick: () => {
-        router.push(`${pathPrefix}/dashboards/analytics`);
-      },
-      pinnable: false,
-    },
-  ];
 
   const CustomersLinks: EuiPinnableListGroupItemProps[] = [
     {
@@ -48,13 +26,7 @@ const CollapsibleNav = () => {
         router.push(`${pathPrefix}/dashboards/audience`);
       },
       pinnable: false,
-    },
-    {
-      label: "Custom attributes",
-      onClick: () => {
-        router.push(`${pathPrefix}/dashboards/custom_attribute`);
-      },
-      pinnable: false,
+      color: router.pathname === "/dashboards/audience" ? "primary" : "subdued",
     },
     {
       label: "Segments",
@@ -62,39 +34,52 @@ const CollapsibleNav = () => {
         router.push(`${pathPrefix}/dashboards/segments`);
       },
       pinnable: false,
+      color: router.pathname === "/dashboards/segments" ? "primary" : "subdued",
+    },
+    {
+      label: "Campaign",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/campaign`);
+      },
+      pinnable: false,
+      color: router.pathname === "/dashboards/campaign" ? "primary" : "subdued",
     },
   ];
 
-  const ManagementLinks: EuiPinnableListGroupItemProps[] = [
-    {
-      label: "Profile",
-      onClick: () => {
-        router.push(`${pathPrefix}/dashboards/management/profile`);
-      },
-      pinnable: false,
-    },
-    {
-      label: "Security",
-      onClick: () => {
-        router.push(`${pathPrefix}/dashboards/management/security`);
-      },
-      pinnable: false,
-    },
-    {
-      label: "Team",
-      onClick: () => {
-        router.push(`${pathPrefix}/dashboards/management`);
-      },
-      pinnable: false,
-    },
-    {
-      label: "API keys",
-      onClick: () => {
-        router.push(`${pathPrefix}/dashboards/management/api-keys`);
-      },
-      pinnable: false,
-    },
-  ];
+  // const ManagementLinks: EuiPinnableListGroupItemProps[] = [
+  //   {
+  //     label: "Custom attributes",
+  //     onClick: () => {
+  //       router.push(`${pathPrefix}/dashboards/custom_attribute`);
+  //     },
+  //     pinnable: false,
+  //     color: router.pathname === "/dashboards/custom_attribute" ? "primary" : "subdued",
+  //   },
+  //   {
+  //     label: "Channels",
+  //     onClick: () => {
+  //       router.push(`${pathPrefix}/dashboards/channels`);
+  //     },
+  //     pinnable: false,
+  //     color: router.pathname === "/dashboards/channels" ? "primary" : "subdued",
+  //   },
+  //   {
+  //     label: "Team",
+  //     onClick: () => {
+  //       router.push(`${pathPrefix}/dashboards/management`);
+  //     },
+  //     pinnable: false,
+  //     color: router.pathname === "/dashboards/management" ? "primary" : "subdued",
+  //   },
+  //   {
+  //     label: "API keys",
+  //     onClick: () => {
+  //       router.push(`${pathPrefix}/dashboards/management/api-keys`);
+  //     },
+  //     pinnable: false,
+  //     color: router.pathname === "/dashboards/management/api-keys" ? "primary" : "subdued",
+  //   },
+  // ];
 
   const [navIsOpen, setNavIsOpen] = useState(false);
 
@@ -166,9 +151,9 @@ const CollapsibleNav = () => {
     return `Pin ${listItem.label} to top`;
   }
 
-  function addLinkNameToUnpinTitle(listItem: EuiPinnableListGroupItemProps) {
-    return `Unpin ${listItem.label}`;
-  }
+  // function addLinkNameToUnpinTitle(listItem: EuiPinnableListGroupItemProps) {
+  //   return `Unpin ${listItem.label}`;
+  // }
 
   const collapsibleNavId = useGeneratedHtmlId({ prefix: "collapsibleNav" });
 
@@ -178,6 +163,9 @@ const CollapsibleNav = () => {
       css={css`
         min-height: calc(100vh - 48px);
         display: flex;
+        @media (max-height: 15em) {
+          ${logicalCSSWithFallback("overflow-y", "auto")}
+        }
       `}
       id={collapsibleNavId}
       aria-label="Main navigation"
@@ -190,14 +178,24 @@ const CollapsibleNav = () => {
           <EuiIcon type={"menu"} size="m" aria-hidden="true" />
         </EuiHeaderSectionItemButton>
       }
+      // Accessibility - Add scroll to nav on very small screens
       onClose={() => setNavIsOpen(false)}
     >
       {/* Shaded pinned section always with a home item */}
-      <EuiFlexItem grow={false}>
+      <EuiFlexItem
+        grow={false}
+        className="eui-yScroll"
+        // Accessibility - Allows nav items to be seen and interacted with on very small screen sizes
+        css={css`
+          @media (max-height: 15em) {
+            flex: 1 0 auto;
+          }
+        `}
+      >
         <EuiCollapsibleNavGroup
           title={
             <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
-              Audience & Segment
+              Main menu
             </a>
           }
           buttonElement="div"
@@ -218,56 +216,11 @@ const CollapsibleNav = () => {
           />
         </EuiCollapsibleNavGroup>
       </EuiFlexItem>
-
       <EuiFlexItem grow={false}>
-        <EuiCollapsibleNavGroup
-          title={
-            <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
-              Notifications
-            </a>
-          }
-          buttonElement="div"
-          iconType="spacesApp"
-          isCollapsible={true}
-          initialIsOpen={openGroups.includes("Campaign")}
-          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Campaign")}
-        >
-          <EuiPinnableListGroup
-            aria-label="Campaign" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
-            listItems={alterLinksWithCurrentState(SendsLinks)}
-            pinTitle={addLinkNameToPinTitle}
-            onPinClick={addPin}
-            maxWidth="none"
-            color="subdued"
-            gutterSize="none"
-            size="s"
-          />
-        </EuiCollapsibleNavGroup>
-      </EuiFlexItem>
-
-      <EuiFlexItem grow={false}>
-        <EuiCollapsibleNavGroup
-          title={
-            <span className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
-              Settings
-            </span>
-          }
-          buttonElement="div"
-          iconType="managementApp"
-          isCollapsible={true}
-          initialIsOpen={openGroups.includes("management")}
-          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "management")}
-        >
-          <EuiPinnableListGroup
-            aria-label="management" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually
-            listItems={alterLinksWithCurrentState(ManagementLinks)}
-            pinTitle={addLinkNameToPinTitle}
-            onPinClick={addPin}
-            maxWidth="none"
-            color="subdued"
-            gutterSize="none"
-            size="s"
-          />
+        {/* Span fakes the nav group into not being the first item and therefore adding a top border */}
+        <span />
+        <EuiCollapsibleNavGroup>
+          <SideMenu />
         </EuiCollapsibleNavGroup>
       </EuiFlexItem>
     </EuiCollapsibleNav>

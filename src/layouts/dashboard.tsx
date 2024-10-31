@@ -2,7 +2,7 @@ import { EuiPageSidebarProps, EuiPageTemplate, useIsWithinMaxBreakpoint } from "
 import { useRouter } from "next/router";
 import { ReactElement, useContext } from "react";
 import { SWRConfig } from "swr";
-import Sidebar from "../components/management/sidebar";
+import Sidebar from "../components/dashboards/sidebar";
 import { authContext } from "../store/auth_store";
 import { teamsContext } from "../store/teams_store";
 import { dashboardsLayoutStyles } from "./dashboard.styles";
@@ -51,7 +51,7 @@ const DashboardLayout = ({
             {...rest}
           >
             {!largeMaxBreakpoint && (
-              <EuiPageTemplate.Sidebar sticky={sidebarSticky}>
+              <EuiPageTemplate.Sidebar sticky={sidebarSticky || true}>
                 <Sidebar />
               </EuiPageTemplate.Sidebar>
             )}

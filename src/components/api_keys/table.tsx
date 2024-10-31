@@ -29,7 +29,7 @@ const ApiKeysTable = () => {
     },
   ];
 
-  return <EuiBasicTable items={data} columns={columns} />;
+  return <EuiBasicTable tableLayout="auto" items={data} columns={columns} />;
 };
 
 export default ApiKeysTable;
