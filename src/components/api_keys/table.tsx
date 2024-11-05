@@ -29,7 +29,9 @@ const ApiKeysTable = () => {
     },
   ];
 
-  return <EuiBasicTable tableLayout="auto" items={data} columns={columns} />;
+  return (
+    <EuiBasicTable tableLayout="auto" items={Array.isArray(data) ? data : []} columns={columns} />
+  );
 };
 
 export default ApiKeysTable;

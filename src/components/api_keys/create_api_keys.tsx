@@ -11,7 +11,7 @@ import {
   EuiDatePicker,
   EuiSelect,
 } from "@elastic/eui";
-import { SetStateAction } from "react";
+import { SetStateAction, useContext } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -20,6 +20,7 @@ import useCreateAPIKeys from "../../hooks/useCreateAPIKeys";
 import AceEditorComponent from "../campaign/ace_editor";
 import moment from "moment";
 import useTeamID from "../../hooks/useTeamID";
+import { teamsContext } from "../../store/teams_store";
 
 const schema = yup
   .object({
@@ -49,8 +50,9 @@ const CreateAPIKeysComponent = ({
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
   const { trigger } = useCreateAPIKeys();
-  const { data } = useTeamID();
-  const dataTypeOptions = data?.map((team) => {
+  const { teams } = useContext(teamsContext);
+
+  const dataTypeOptions = teams?.map((team) => {
     return {
       value: team?.id,
       text: `${team?.name}`,
@@ -65,7 +67,7 @@ const CreateAPIKeysComponent = ({
     mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      team_id: data[0].id.toString() || "",
+      team_id: teams?.[0].id.toString() || "",
     },
   });
 
