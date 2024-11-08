@@ -31,7 +31,7 @@ const schema = yup
   .object({
     title: yup.string().required().label("Title"),
     kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api"]).required().label("Data"),
-    description: yup.string().label("Description"),
+    description: yup.string().notRequired().label("Description"),
     body: yup
       .string()
       .required()
@@ -75,6 +75,8 @@ const EditEmailLayout = () => {
       channel: data?.channel,
     },
   });
+
+  console.log(errors);
 
   const setView = () => {
     setIsViewEmail((prev) => !prev);
