@@ -11,19 +11,18 @@ const DeleteSegmentAudience = ({ audience_id }: { audience_id: string | number |
   const { trigger } = useDeleteSegmentAudience(id, audience_id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState("");
+
   const deleteSegmentAudience = async () => {
     try {
-      const response = await trigger();
-      if (response) {
-        setIsModalVisible(false);
-        addToast({
-          id: "segment-audience-success",
-          color: "success",
-          title: "Success",
-          text: "Successfully deleted",
-        });
-        globalMutate(`/api/v1/dj/segments/${id}/customers/`);
-      }
+      await trigger();
+      setIsModalVisible(false);
+      addToast({
+        id: "segment-audience-success",
+        color: "success",
+        title: "Success",
+        text: "Successfully deleted",
+      });
+      globalMutate(`/api/v1/dj/segments/${id}/customers/`);
     } catch (e) {
       console.error(e);
     }
