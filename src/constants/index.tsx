@@ -31,9 +31,9 @@ export const TEMPLATE_DATA_TYPE_OPTIONS = [
 
 export const CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS = [
   { value: "email", text: "Email" },
-  { value: "sms", text: "Sms" },
-  { value: "push", text: "Push" },
-  { value: "inapp", text: "Inapp" },
+  // { value: "sms", text: "Sms" },
+  // { value: "push", text: "Push" },
+  // { value: "inapp", text: "Inapp" },
   { value: "api", text: "Api" },
 ];
 
