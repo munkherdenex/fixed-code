@@ -34,12 +34,10 @@ const DeleteConfirmModal = ({
   };
 
   const confirmModal = async () => {
-    const response = await trigger();
-    if (response) {
-      await router.replace("/dashboards/custom_attribute");
-      setIsModalVisible(false);
-      setDeleteConfirmValue("");
-    }
+    await trigger();
+    await router.replace("/dashboards/custom_attribute");
+    setIsModalVisible(false);
+    setDeleteConfirmValue("");
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

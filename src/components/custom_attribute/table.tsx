@@ -40,12 +40,10 @@ const DeleteConfirmModal = ({
   };
 
   const confirmModal = async () => {
-    const response = await trigger();
-    if (response) {
-      globalMutate("fields");
-      setIsModalVisible(false);
-      setDeleteConfirmValue("");
-    }
+    await trigger();
+    globalMutate("fields");
+    setIsModalVisible(false);
+    setDeleteConfirmValue("");
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
