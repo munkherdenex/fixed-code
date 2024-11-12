@@ -82,15 +82,15 @@ const AddAudienceFlyout = ({
   const preparedCustomerData =
     Array.isArray(customerData?.results) &&
     customerData?.results.map((customer) => ({
-      value: customer.id,
-      label: customer.email || customer.phone || customer.rid,
+      value: customer?.id,
+      label: customer?.email || customer?.phone || customer?.rid,
     }));
 
   const preparedSegmentData =
     Array.isArray(segmentsData?.results) &&
     segmentsData?.results.map((segment) => ({
-      value: segment.id,
-      label: segment.name,
+      value: segment?.id,
+      label: segment?.name,
     }));
 
   const {

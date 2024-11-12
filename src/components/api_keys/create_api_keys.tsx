@@ -67,7 +67,7 @@ const CreateAPIKeysComponent = ({
     mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
-      team_id: teams?.[0].id.toString() || "",
+      team_id: teams?.[0]?.id.toString() || "",
     },
   });
 

@@ -50,7 +50,7 @@ export const TeamsProvider = ({ children }) => {
       }
 
       const team = teams?.find((team) => {
-        if (team) return team.id === teamId;
+        if (team) return team?.id === teamId;
       });
 
       if (team) {
@@ -81,8 +81,7 @@ export const TeamsProvider = ({ children }) => {
       return;
     }
 
-    if (teams?.length === 0 && !router.pathname.includes("/dashboards/team/create")) {
-      router.replace("/dashboards/team/create");
+    if (teams.length === 0) {
       return;
     }
 
@@ -96,7 +95,7 @@ export const TeamsProvider = ({ children }) => {
           changeCurrentTeam(team?.id);
         }
         if (!team) {
-          changeCurrentTeam(teams?.[0].id);
+          changeCurrentTeam(teams?.[0]?.id);
         }
       }
     }
