@@ -90,7 +90,7 @@ const FieldsTable = () => {
   const { query } = router;
 
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
-  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0];
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
 
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
   const [pageSize, setPageSize] = useState(queryPageSize);

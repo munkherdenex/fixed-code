@@ -28,7 +28,7 @@ const CustomersTable = () => {
 
   const querySearch = query?.search?.toString() || "";
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
-  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0];
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
 
   const [searchValue, setSearchValue] = useState(querySearch);
   const [pageIndex, setPageIndex] = useState(queryPageIndex);

@@ -16,7 +16,7 @@ import {
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
@@ -40,7 +40,7 @@ const SendsTable = () => {
   const querySearch = query?.search?.toString() || "";
   const queryFilter = query?.filter?.toString() || "";
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
-  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0];
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
 
   const [searchValue, setSearchValue] = useState(querySearch);
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
