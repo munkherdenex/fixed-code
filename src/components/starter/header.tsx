@@ -4,7 +4,6 @@ import { EuiHeader, EuiTitle, useEuiTheme, EuiButton } from "@elastic/eui";
 import { imageLoader } from "../../lib/loader";
 import ThemeSwitcher from "./theme_switcher";
 import { headerStyles } from "./header.styles";
-import Logo from "../../../public/images/logo-eui.svg";
 import { useContext } from "react";
 import { authContext } from "../../store/auth_store";
 import { IS_REGISTER_ENABLED } from "../../constants";
@@ -22,7 +21,13 @@ const Header = () => {
           items: [
             <Link key="logo-eui" href="/" passHref>
               <a css={styles.logo}>
-                <Image width={24} height={24} src={Logo} alt="" loader={imageLoader} />
+                <Image
+                  width={24}
+                  height={24}
+                  src="/images/logo-eui.svg"
+                  alt=""
+                  loader={imageLoader}
+                />
                 <EuiTitle size="xxs" css={styles.title}>
                   <span>CRM</span>
                 </EuiTitle>

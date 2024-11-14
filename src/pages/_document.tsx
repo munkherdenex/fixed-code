@@ -1,6 +1,7 @@
 import { ReactElement } from "react";
 import Document, { Head, Html, Main, NextScript } from "next/document";
 import { defaultTheme, Theme, themeConfig } from "../lib/theme";
+import Script from "next/script";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -91,6 +92,7 @@ export default class MyDocument extends Document {
             href={isLocalDev ? favicon96Dev : favicon96Prod}
             sizes="96x96"
           />
+          <Script strategy="beforeInteractive" src="/config/env.js"></Script>
         </Head>
         <body className="guideBody">
           <Main />
