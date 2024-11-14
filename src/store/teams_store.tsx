@@ -34,7 +34,9 @@ export const TeamsProvider = ({ children }) => {
     data: myProfile,
     isLoading: profileIsloading,
     error: profileError,
-  } = useGetTeamsMyprofile<TeamsMyProfileResponse | null>(currentTeam?.id?.toString());
+  } = useGetTeamsMyprofile<TeamsMyProfileResponse | null>(
+    currentTeam?.id ? currentTeam?.id?.toString() : null,
+  );
 
   const isGlobalLoading = teamsIsLoading || profileIsloading || !teams || !myProfile;
   const isAdmin = myProfile?.role === "admin";
@@ -121,9 +123,10 @@ export const TeamsProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTeam]);
 
-  if (teamError || profileError) {
-    return <div>error</div>;
-  }
+  useEffect(() => {
+    console.log(teamError);
+    console.log(profileError);
+  }, [teamError, profileError]);
 
   return (
     <teamsContext.Provider
