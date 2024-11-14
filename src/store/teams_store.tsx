@@ -30,11 +30,13 @@ export const TeamsProvider = ({ children }) => {
 
   const { trigger } = useChangeTeam();
   const { data: teams, isLoading: teamsIsLoading, error: teamError } = useTeams();
-  const { data: myProfile } = useGetTeamsMyprofile<TeamsMyProfileResponse | null>(
-    currentTeam?.id?.toString(),
-  );
+  const {
+    data: myProfile,
+    isLoading: profileIsloading,
+    error: profileError,
+  } = useGetTeamsMyprofile<TeamsMyProfileResponse | null>(currentTeam?.id?.toString());
 
-  const isGlobalLoading = teamsIsLoading || !teams || teamError;
+  const isGlobalLoading = teamsIsLoading || profileIsloading || !teams || !myProfile;
   const isAdmin = myProfile?.role === "admin";
   const isManager = myProfile?.role === "manager";
   const isMember = myProfile?.role === "member";
@@ -118,6 +120,10 @@ export const TeamsProvider = ({ children }) => {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTeam]);
+
+  if (teamError || profileError) {
+    return <div>error</div>;
+  }
 
   return (
     <teamsContext.Provider
