@@ -40,7 +40,7 @@ const QuillEditorComponent = ({
   ];
   const styles = quillEditorStyles();
 
-  const module = {
+  const moduleQuill = {
     toolbar: toolbarOptions,
     clipboard: {
       matchVisual: false,
@@ -60,7 +60,7 @@ const QuillEditorComponent = ({
         render={({ field: { onBlur, value } }) => (
           <ReactQuill
             modules={{
-              ...module,
+              ...moduleQuill,
               toolbar: false,
             }}
             theme="snow"
@@ -83,7 +83,7 @@ const QuillEditorComponent = ({
           name="body"
           render={({ field: { onBlur, value } }) => (
             <ReactQuill
-              modules={module}
+              modules={moduleQuill}
               theme="snow"
               value={value}
               onBlur={onBlur}
@@ -95,7 +95,7 @@ const QuillEditorComponent = ({
         />
       ) : (
         <ReactQuill
-          modules={module}
+          modules={moduleQuill}
           theme="snow"
           onChange={onChange}
           css={styles.quill_container}

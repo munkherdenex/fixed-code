@@ -98,7 +98,7 @@ const MembersTable = () => {
       align: "right",
       render: (member: MembersType) => (
         <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
-          {(member.role !== "admin" || isAdmin) && member.user.email !== myProfile.user.email && (
+          {(member.role !== "admin" || isAdmin) && member.user.email !== myProfile?.user?.email && (
             <EuiFlexItem grow={false}>
               <EuiButtonIcon
                 iconType="trash"

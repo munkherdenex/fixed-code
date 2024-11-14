@@ -4,13 +4,12 @@ import { EuiErrorBoundary } from "@elastic/eui";
 import { Global } from "@emotion/react";
 import "core-js/stable";
 import { AppProps } from "next/app";
+import dynamic from "next/dynamic";
 import Head from "next/head";
-import Script from "next/script";
 import { FunctionComponent } from "react";
 import "react-querybuilder/dist/query-builder.css";
 import "react-quill/dist/quill.snow.css";
 import "regenerator-runtime/runtime";
-import Chrome from "../components/chrome";
 import { Theme } from "../components/theme";
 import GlobalToastList from "../components/toast";
 import "../custom_typings/index.d.ts";
@@ -18,6 +17,8 @@ import SWRConfigLayout from "../layouts/swr_config";
 import { AuthProvider } from "../store/auth_store";
 import { TeamsProvider } from "../store/teams_store";
 import { globalStyes } from "../styles/global.styles";
+
+const Chrome = dynamic(() => import("../components/chrome"), { ssr: false });
 
 declare global {
   interface Window {
@@ -46,7 +47,6 @@ const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => (
       {/* You can override this in other pages - see index.tsx for an example */}
       <title>DATA</title>
     </Head>
-    <Script strategy="beforeInteractive" src="/config/env.js"></Script>
     <Global styles={globalStyes} />
     <Theme>
       <Chrome>

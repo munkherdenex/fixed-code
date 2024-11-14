@@ -13,6 +13,7 @@ import { css } from "@emotion/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import SideMenu from "./sidebar_menu";
+import Link from "next/link";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -194,15 +195,14 @@ const CollapsibleNav = () => {
       >
         <EuiCollapsibleNavGroup
           title={
-            <a className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
+            <Link href="#" className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
               Main menu
-            </a>
+            </Link>
           }
           buttonElement="div"
           iconType="usersRolesApp"
           isCollapsible={true}
           initialIsOpen={openGroups.includes("Customers")}
-          onToggle={(isOpen: boolean) => toggleAccordion(isOpen, "Customers")}
         >
           <EuiPinnableListGroup
             aria-label="customers" // A11y : EuiCollapsibleNavGroup can't correctly pass the `title` as the `aria-label` to the right HTML element, so it must be added manually

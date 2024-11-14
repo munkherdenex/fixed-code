@@ -49,10 +49,10 @@ const SideMenu = () => {
 
   const managementPathsFiltered = useMemo(
     () =>
-      managementPaths.filter((path) => {
-        return path.roles ? path.roles.includes(myProfile.role) : true;
+      managementPaths?.filter((path) => {
+        return path.roles ? path.roles.includes(myProfile?.role) : true;
       }),
-    [myProfile.role],
+    [myProfile?.role],
   );
 
   const onButtonClick = () => {
