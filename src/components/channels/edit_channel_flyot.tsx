@@ -57,7 +57,6 @@ const EditChannelFlyot = ({
     resetField,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(createChannelSchema),
     defaultValues: {
       channel_type: data?.channel_type,

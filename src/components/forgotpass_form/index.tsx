@@ -37,7 +37,6 @@ function ForgotPasswordForm() {
     control,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 

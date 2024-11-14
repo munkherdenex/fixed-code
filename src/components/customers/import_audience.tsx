@@ -45,7 +45,6 @@ const ImportAudienceComponent = ({
     control,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(ImportAudienceSchema),
   });
 

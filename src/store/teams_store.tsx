@@ -81,7 +81,7 @@ export const TeamsProvider = ({ children }) => {
       return;
     }
 
-    if (teams.length === 0) {
+    if (teams?.length === 0) {
       return;
     }
 

@@ -67,7 +67,6 @@ const EditTemplateFlyout = ({ closeFlyout, data }: { closeFlyout: () => void; da
     setError,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
       kind: processKind(data?.body, data?.kind),

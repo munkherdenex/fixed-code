@@ -64,7 +64,6 @@ const SegmentAudienceList = () => {
     control,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 

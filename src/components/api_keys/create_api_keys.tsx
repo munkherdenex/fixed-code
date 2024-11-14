@@ -64,7 +64,7 @@ const CreateAPIKeysComponent = ({
     setValue,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
+     
     resolver: yupResolver(schema),
     defaultValues: {
       team_id: teams?.[0]?.id.toString() || "",

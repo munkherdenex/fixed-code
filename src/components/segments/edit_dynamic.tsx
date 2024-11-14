@@ -51,7 +51,6 @@ const EditDynamic = ({
     control,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
       name,

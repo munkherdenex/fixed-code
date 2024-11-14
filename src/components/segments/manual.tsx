@@ -199,7 +199,6 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
     watch,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 

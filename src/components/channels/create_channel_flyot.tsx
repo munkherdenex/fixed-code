@@ -38,10 +38,9 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     resetField,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(createChannelSchema),
     defaultValues: {
-      channel_type: CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS?.[4].value,
+      channel_type: CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS?.[1]?.value,
     },
   });
 

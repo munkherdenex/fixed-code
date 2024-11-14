@@ -30,7 +30,6 @@ const Unsubscribe = ({ token }) => {
     control,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 

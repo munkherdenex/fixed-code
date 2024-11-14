@@ -52,7 +52,6 @@ const InviteUserFlyout = ({
     getValues: getEmailValues,
     formState: { errors: errorsEmail },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(emailSchema),
   });
 
@@ -63,7 +62,6 @@ const InviteUserFlyout = ({
     setValue,
     getValues,
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
       firstName: "",

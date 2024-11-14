@@ -85,7 +85,6 @@ const UpdateCustomerComponent = ({
     setValue,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(createCustomerSchema),
     defaultValues: {
       email: detailData?.email || undefined,

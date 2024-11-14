@@ -48,7 +48,6 @@ const SigninForm: FunctionComponent = () => {
 
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 

@@ -63,7 +63,6 @@ const TeamCreate = ({ id }: { id: string }) => {
     control,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
       parent_id: id.toString(),

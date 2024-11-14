@@ -65,7 +65,6 @@ const AddSegmentsToAudience = ({
     formState: { errors },
     watch,
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 

@@ -41,7 +41,6 @@ const CreateCustomerComponent = ({
     control,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(createCustomerSchema),
     defaultValues: {
       customer_data: [],

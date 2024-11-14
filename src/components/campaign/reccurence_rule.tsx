@@ -183,7 +183,6 @@ const ReccurenceRule = ({
     setValue,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
     defaultValues: {
       start_date: startDate,

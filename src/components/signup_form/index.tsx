@@ -49,7 +49,6 @@ const SignupForm: FunctionComponent = () => {
     control,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 

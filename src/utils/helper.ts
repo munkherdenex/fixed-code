@@ -79,7 +79,7 @@ export const dataTypeToSwitch = (dataType: string) => {
     case "email":
       return "email";
     case "push":
-      return "device_id";
+      return "rid";
     default:
       return dataType;
   }

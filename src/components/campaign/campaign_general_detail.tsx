@@ -223,9 +223,6 @@ const CampaignGeneralDetails = () => {
           <EuiFlexItem>
             <EuiFlexGroup>
               <EuiPanel hasBorder={true}>
-                <ReccurenceRuleLayout />
-              </EuiPanel>
-              <EuiPanel hasBorder={true}>
                 <EuiFlexItem>
                   <EuiStat
                     title={moment(data?.created_at).format("YYYY-MM-DD LT")}
@@ -258,6 +255,11 @@ const CampaignGeneralDetails = () => {
                 </EuiFlexItem>
               </EuiPanel>
             </EuiFlexGroup>
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiPanel hasBorder={true}>
+              <ReccurenceRuleLayout />
+            </EuiPanel>
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiFormRow label="Description" fullWidth>
