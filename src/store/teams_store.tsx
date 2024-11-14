@@ -38,7 +38,12 @@ export const TeamsProvider = ({ children }) => {
     currentTeam?.id ? currentTeam?.id?.toString() : null,
   );
 
-  const isGlobalLoading = teamsIsLoading || profileIsloading || !teams || !myProfile;
+  const isGlobalLoading =
+    teamsIsLoading ||
+    profileIsloading ||
+    teams === undefined ||
+    (currentTeam?.id && myProfile === undefined);
+
   const isAdmin = myProfile?.role === "admin";
   const isManager = myProfile?.role === "manager";
   const isMember = myProfile?.role === "member";
