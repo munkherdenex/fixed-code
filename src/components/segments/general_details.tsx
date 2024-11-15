@@ -17,10 +17,8 @@ import {
   EuiSpacer,
   EuiTextColor,
   EuiTitle,
-  useEuiTheme,
   useGeneratedHtmlId,
 } from "@elastic/eui";
-import { useTheme } from "@emotion/react";
 import { jsonrepair } from "jsonrepair";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -83,7 +81,11 @@ const DeleteConfirmModal = ({
   };
 
   const confirmModal = async () => {
-    await trigger();
+    try {
+      await trigger();
+    } catch (error) {
+      console.error(error);
+    }
     await router.replace("/dashboards/segments");
     setIsModalVisible(false);
     setDeleteConfirmValue("");

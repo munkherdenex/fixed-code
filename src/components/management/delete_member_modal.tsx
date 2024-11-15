@@ -17,7 +17,11 @@ const DeleteMemberModal = ({
   const [deleteMessage, setDeleteMessage] = useState("");
 
   const deleteMember = async () => {
-    await trigger();
+    try {
+      await trigger();
+    } catch (error) {
+      console.error("ERROR:: ", error);
+    }
     addToast({
       id: "member-deleted",
       color: "success",

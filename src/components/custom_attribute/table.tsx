@@ -40,7 +40,11 @@ const DeleteConfirmModal = ({
   };
 
   const confirmModal = async () => {
-    await trigger();
+    try {
+      await trigger();
+    } catch (error) {
+      console.error(error);
+    }
     globalMutate("fields");
     setIsModalVisible(false);
     setDeleteConfirmValue("");

@@ -22,16 +22,16 @@ const DeleteCustomerModal = ({
       onConfirm={async () => {
         try {
           await customerDeleteTrigger();
-          router.push(`${pathPrefix}/dashboards/audience`);
-          addToast({
-            id: "customer-deleted",
-            color: "success",
-            title: "Success",
-            text: "Successfully deleted",
-          });
         } catch (error) {
           console.error("ERROR:: ", error);
         }
+        router.push(`${pathPrefix}/dashboards/audience`);
+        addToast({
+          id: "customer-deleted",
+          color: "success",
+          title: "Success",
+          text: "Successfully deleted",
+        });
       }}
       confirmButtonText="Delete"
       cancelButtonText="Cancel"

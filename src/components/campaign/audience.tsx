@@ -143,10 +143,14 @@ const Audience = () => {
   };
 
   const handleDeleteModalConfirm = async () => {
-    await trigger({
-      type: selectedAudience.type,
-      id: selectedAudience?.object_id,
-    });
+    try {
+      await trigger({
+        type: selectedAudience.type,
+        id: selectedAudience?.object_id,
+      });
+    } catch (error) {
+      console.error(error);
+    }
     globalMutate(`/api/v1/dj/templates/${router.query.id}/customers/`);
     closeModal();
   };

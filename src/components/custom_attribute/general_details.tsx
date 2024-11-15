@@ -34,7 +34,11 @@ const DeleteConfirmModal = ({
   };
 
   const confirmModal = async () => {
-    await trigger();
+    try {
+      await trigger();
+    } catch (error) {
+      console.error(error);
+    }
     await router.replace("/dashboards/custom_attribute");
     setIsModalVisible(false);
     setDeleteConfirmValue("");

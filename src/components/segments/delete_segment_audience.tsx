@@ -8,24 +8,24 @@ import { useState } from "react";
 const DeleteSegmentAudience = ({ audience_id }: { audience_id: string | number | string[] }) => {
   const router = useRouter();
   const { id } = router.query;
-  const { trigger } = useDeleteSegmentAudience(id, audience_id);
+  const { trigger, isMutating } = useDeleteSegmentAudience(id, audience_id);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState("");
 
   const deleteSegmentAudience = async () => {
     try {
       await trigger();
-      setIsModalVisible(false);
-      addToast({
-        id: "segment-audience-success",
-        color: "success",
-        title: "Success",
-        text: "Successfully deleted",
-      });
-      globalMutate(`/api/v1/dj/segments/${id}/customers/`);
     } catch (e) {
       console.error(e);
     }
+    setIsModalVisible(false);
+    addToast({
+      id: "segment-audience-success",
+      color: "success",
+      title: "Success",
+      text: "Successfully deleted",
+    });
+    globalMutate(`/api/v1/dj/segments/${id}/customers/`);
   };
 
   return (
@@ -42,6 +42,7 @@ const DeleteSegmentAudience = ({ audience_id }: { audience_id: string | number |
         <EuiConfirmModal
           title="Warning"
           onCancel={() => setIsModalVisible(false)}
+          isLoading={isMutating}
           confirmButtonDisabled={deleteMessage.toLowerCase() !== "delete"}
           onConfirm={async () => {
             deleteSegmentAudience();
