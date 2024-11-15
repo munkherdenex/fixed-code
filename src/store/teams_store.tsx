@@ -42,6 +42,7 @@ export const TeamsProvider = ({ children }) => {
     teamsIsLoading ||
     profileIsloading ||
     teams === undefined ||
+    (teams.length > 0 && myProfile === undefined) ||
     (currentTeam?.id && myProfile === undefined);
 
   const isAdmin = myProfile?.role === "admin";
