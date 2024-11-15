@@ -23,6 +23,7 @@ import useSendEmailVerification from "../../hooks/useSendEmailVerification";
 import { globalMutate } from "../../utils/globalMutate";
 import { addToast } from "../toast";
 import { signinFormStyles } from "./signin_form.styles";
+import { IS_POCKET } from "../../constants";
 
 const schema = yup
   .object({
@@ -180,13 +181,15 @@ const SigninForm: FunctionComponent = () => {
                   </EuiButton>
                 </EuiFlexItem>
               )}
-              <EuiFlexItem>
-                <EuiText size="relative" grow={false}>
-                  <EuiLink onClick={() => router.push("/forgot_password")}>
-                    Forgot password?
-                  </EuiLink>
-                </EuiText>
-              </EuiFlexItem>
+              {!IS_POCKET && (
+                <EuiFlexItem>
+                  <EuiText size="relative" grow={false}>
+                    <EuiLink onClick={() => router.push("/forgot_password")}>
+                      Forgot password?
+                    </EuiLink>
+                  </EuiText>
+                </EuiFlexItem>
+              )}
             </EuiFlexGroup>
           </EuiForm>
         </EuiPanel>
