@@ -8,7 +8,6 @@ export default function useSearchUser<Type>() {
   const { data, error, isMutating, trigger } = useSWRMutation(
     url,
     async (path, { arg }: { arg: Type }) => {
-      console.log(arg);
       const res = await fetch(`${BASE_URL}${path}`, {
         method: "POST",
         credentials: "include",

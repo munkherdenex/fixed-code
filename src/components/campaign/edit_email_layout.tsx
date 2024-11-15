@@ -75,8 +75,6 @@ const EditEmailLayout = () => {
     },
   });
 
-  console.log(errors);
-
   const setView = () => {
     setIsViewEmail((prev) => !prev);
   };

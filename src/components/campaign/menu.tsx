@@ -4,39 +4,45 @@ import Audience from "./audience";
 import CampaignPreviewContainer from "./campaign_preview_container";
 import ChannelDetails from "./channel_details";
 import Logs from "./logs";
+import { useRouter } from "next/router";
 
 const tabs = [
   {
-    id: "preview--id",
+    id: "preview",
     name: "Preview",
     content: <CampaignPreviewContainer />,
   },
   {
-    id: "audience--id",
+    id: "audience",
     name: "Audience",
     content: <Audience />,
   },
   {
-    id: "channel--id",
+    id: "channel",
     name: "Channel",
     content: <ChannelDetails />,
   },
   {
-    id: "logs--id",
+    id: "logs",
     name: "Logs",
     content: <Logs />,
   },
 ];
 
 const Menu = () => {
-  const [selectedTabId, setSelectedTabId] = useState("preview--id");
+  const router = useRouter();
+  const { id, tab } = router.query;
+  const [selectedTabId, setSelectedTabId] = useState(tab || "preview");
 
   const selectedTabContent = useMemo(() => {
     return tabs.find((obj) => obj.id === selectedTabId)?.content;
   }, [selectedTabId]);
 
-  const onSelectedTabChanged = (id: string) => {
-    setSelectedTabId(id);
+  const onSelectedTabChanged = (tabId: string) => {
+    setSelectedTabId(tabId);
+    router.push({
+      query: { tab: tabId, id: id },
+    });
   };
 
   const renderTabs = () => {
