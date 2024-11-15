@@ -70,7 +70,7 @@ const CreateTemplateFlyot = ({
 }) => {
   const router = useRouter();
   const { isMutating, trigger } = useCreateTemplate();
-  const { data: channelsData } = useGetChannels<Channels[]>(undefined, {
+  const { data: channelsData, isLoading } = useGetChannels<Channels[]>(undefined, {
     all: `${true}`,
   });
 
@@ -146,160 +146,163 @@ const CreateTemplateFlyot = ({
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
-        <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-          {channelDataOptions.length === 0 && (
-            <EuiFormRow>
-              <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
-                <p>You need to create a channel before you can create a campaign.</p>
-                <EuiButton
-                  onClick={() =>
-                    router.push("/dashboards/channels", {
-                      query: {
-                        create: true,
-                      },
-                    })
-                  }
-                >
-                  Create
-                </EuiButton>
-              </EuiCallOut>
-            </EuiFormRow>
-          )}
-          <EuiFormRow
-            label="Title"
-            isInvalid={!!errors.title?.message}
-            error={[errors.title?.message]}
-          >
-            <Controller
-              control={control}
-              name="title"
-              render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
-                <EuiFieldText
-                  onChange={onChange}
-                  value={value}
-                  onBlur={onBlur}
-                  isInvalid={!!errors.title?.message}
-                  placeholder="Title"
-                  aria-label="Title"
-                />
-              )}
-            />
-          </EuiFormRow>
-          <EuiFormRow
-            label="Data type"
-            isInvalid={!!errors.kind?.message}
-            error={[errors.kind?.message]}
-            style={{ display: "none" }}
-          >
-            <Controller
-              control={control}
-              name="kind"
-              render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
-                <EuiSelect
-                  onChange={onChange}
-                  value={value}
-                  options={CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS}
-                  onBlur={onBlur}
-                  isInvalid={!!errors.kind?.message}
-                  aria-label="data type"
-                />
-              )}
-            />
-          </EuiFormRow>
-          <EuiFormRow
-            label="Description"
-            isInvalid={!!errors.title?.message}
-            error={[errors.title?.message]}
-          >
-            <Controller
-              control={control}
-              name="description"
-              render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
-                <EuiTextArea
-                  onChange={onChange}
-                  value={value}
-                  onBlur={onBlur}
-                  isInvalid={!!errors.title?.message}
-                  style={{ height: "100px" }}
-                  placeholder="Title"
-                  aria-label="Title"
-                />
-              )}
-            />
-          </EuiFormRow>
-          {watch("kind") === "api" && (
+        {isLoading && <div>...loading</div>}
+        {!isLoading && (
+          <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+            {channelDataOptions.length === 0 && (
+              <EuiFormRow>
+                <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
+                  <p>You need to create a channel before you can create a campaign.</p>
+                  <EuiButton
+                    onClick={() =>
+                      router.push("/dashboards/channels", {
+                        query: {
+                          create: true,
+                        },
+                      })
+                    }
+                  >
+                    Create
+                  </EuiButton>
+                </EuiCallOut>
+              </EuiFormRow>
+            )}
             <EuiFormRow
-              label="Data"
-              labelAppend={<BodyInfoToolTip />}
-              helpText={bodyHelpText}
-              isInvalid={!!errors?.body?.message}
-              error={[errors?.body?.message]}
-            >
-              <AceEditorComponent control={control} onChange={setAceEditorValue} />
-            </EuiFormRow>
-          )}
-          {(watch("kind") === "sms" || watch("kind") === "push") && (
-            <EuiFormRow
-              label="Data"
-              labelAppend={<BodyInfoToolTip />}
-              helpText={bodyHelpText}
-              isInvalid={!!errors?.body?.message}
-              error={[errors?.body?.message]}
+              label="Title"
+              isInvalid={!!errors.title?.message}
+              error={[errors.title?.message]}
             >
               <Controller
                 control={control}
-                name="body"
+                name="title"
+                render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
+                  <EuiFieldText
+                    onChange={onChange}
+                    value={value}
+                    onBlur={onBlur}
+                    isInvalid={!!errors.title?.message}
+                    placeholder="Title"
+                    aria-label="Title"
+                  />
+                )}
+              />
+            </EuiFormRow>
+            <EuiFormRow
+              label="Data type"
+              isInvalid={!!errors.kind?.message}
+              error={[errors.kind?.message]}
+              style={{ display: "none" }}
+            >
+              <Controller
+                control={control}
+                name="kind"
+                render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
+                  <EuiSelect
+                    onChange={onChange}
+                    value={value}
+                    options={CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS}
+                    onBlur={onBlur}
+                    isInvalid={!!errors.kind?.message}
+                    aria-label="data type"
+                  />
+                )}
+              />
+            </EuiFormRow>
+            <EuiFormRow
+              label="Description"
+              isInvalid={!!errors.title?.message}
+              error={[errors.title?.message]}
+            >
+              <Controller
+                control={control}
+                name="description"
                 render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
                   <EuiTextArea
                     onChange={onChange}
                     value={value}
                     onBlur={onBlur}
                     isInvalid={!!errors.title?.message}
-                    placeholder="Data"
-                    aria-label="data"
+                    style={{ height: "100px" }}
+                    placeholder="Title"
+                    aria-label="Title"
                   />
                 )}
               />
             </EuiFormRow>
-          )}
-          <EuiFormRow
-            label="Channel"
-            isInvalid={!!errors.channel?.message}
-            error={[errors.channel?.message]}
-          >
-            <EuiFlexGroup alignItems="center">
-              <EuiFlexItem
-                style={
-                  channelDataOptions.length === 0
-                    ? {
-                        display: "none",
-                      }
-                    : {}
-                }
+            {watch("kind") === "api" && (
+              <EuiFormRow
+                label="Data"
+                labelAppend={<BodyInfoToolTip />}
+                helpText={bodyHelpText}
+                isInvalid={!!errors?.body?.message}
+                error={[errors?.body?.message]}
+              >
+                <AceEditorComponent control={control} onChange={setAceEditorValue} />
+              </EuiFormRow>
+            )}
+            {(watch("kind") === "sms" || watch("kind") === "push") && (
+              <EuiFormRow
+                label="Data"
+                labelAppend={<BodyInfoToolTip />}
+                helpText={bodyHelpText}
+                isInvalid={!!errors?.body?.message}
+                error={[errors?.body?.message]}
               >
                 <Controller
                   control={control}
-                  name="channel"
+                  name="body"
                   render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
-                    <EuiSelect
+                    <EuiTextArea
                       onChange={onChange}
                       value={value}
-                      options={channelDataOptions}
                       onBlur={onBlur}
-                      isInvalid={!!errors.channel?.message}
-                      aria-label="data type"
-                      hasNoInitialSelection
+                      isInvalid={!!errors.title?.message}
+                      placeholder="Data"
+                      aria-label="data"
                     />
                   )}
                 />
-              </EuiFlexItem>
-              <JumpToCreateChannelButton show={channelDataOptions.length === 0} />
-            </EuiFlexGroup>
-          </EuiFormRow>
-          <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-            Create campaign
-          </EuiButton>
-        </EuiForm>
+              </EuiFormRow>
+            )}
+            <EuiFormRow
+              label="Channel"
+              isInvalid={!!errors.channel?.message}
+              error={[errors.channel?.message]}
+            >
+              <EuiFlexGroup alignItems="center">
+                <EuiFlexItem
+                  style={
+                    channelDataOptions.length === 0
+                      ? {
+                          display: "none",
+                        }
+                      : {}
+                  }
+                >
+                  <Controller
+                    control={control}
+                    name="channel"
+                    render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
+                      <EuiSelect
+                        onChange={onChange}
+                        value={value}
+                        options={channelDataOptions}
+                        onBlur={onBlur}
+                        isInvalid={!!errors.channel?.message}
+                        aria-label="data type"
+                        hasNoInitialSelection
+                      />
+                    )}
+                  />
+                </EuiFlexItem>
+                <JumpToCreateChannelButton show={channelDataOptions.length === 0} />
+              </EuiFlexGroup>
+            </EuiFormRow>
+            <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
+              Create campaign
+            </EuiButton>
+          </EuiForm>
+        )}
       </EuiFlyoutBody>
     </EuiFlyout>
   );

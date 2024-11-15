@@ -119,20 +119,19 @@ const CampaignGeneralDetails = () => {
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiFlexGroup responsive={false} gutterSize="s">
-                    {data?.status === "DRAFT" ||
-                      (data?.status === "ERROR" && (
-                        <EuiFlexItem grow={false}>
-                          <EuiToolTip position="top" content="Delete">
-                            <EuiButtonIcon
-                              display="base"
-                              iconType="trash"
-                              aria-label="Delete"
-                              color="danger"
-                              onClick={() => setIsModalVisible(true)}
-                            />
-                          </EuiToolTip>
-                        </EuiFlexItem>
-                      ))}
+                    {(data?.status === "DRAFT" || data?.status === "ERROR") && (
+                      <EuiFlexItem grow={false}>
+                        <EuiToolTip position="top" content="Delete">
+                          <EuiButtonIcon
+                            display="base"
+                            iconType="trash"
+                            aria-label="Delete"
+                            color="danger"
+                            onClick={() => setIsModalVisible(true)}
+                          />
+                        </EuiToolTip>
+                      </EuiFlexItem>
+                    )}
                   </EuiFlexGroup>
                 </EuiFlexItem>
               </EuiFlexGroup>
