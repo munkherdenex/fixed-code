@@ -29,7 +29,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
   });
-  const { trigger } = useCreateChannel();
+  const { trigger, isMutating } = useCreateChannel();
 
   const {
     handleSubmit,
@@ -334,7 +334,9 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
           <EuiFormRow>
             <EuiFlexGroup gutterSize="s">
               <EuiFlexItem grow={false}>
-                <EuiButton type="submit">Create channel</EuiButton>
+                <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
+                  Create channel
+                </EuiButton>
               </EuiFlexItem>
               {watch("channel_type") === "api" && (
                 <EuiFlexItem grow={false}>

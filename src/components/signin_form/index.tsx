@@ -163,7 +163,7 @@ const SigninForm: FunctionComponent = () => {
             <EuiSpacer size="m" />
             <EuiFlexGroup direction="column" justifyContent="spaceBetween" gutterSize="s">
               <EuiFlexItem>
-                <EuiButton isLoading={isMutating} type="submit" fill>
+                <EuiButton isLoading={isMutating} disabled={isMutating} type="submit" fill>
                   Sign in
                 </EuiButton>
               </EuiFlexItem>

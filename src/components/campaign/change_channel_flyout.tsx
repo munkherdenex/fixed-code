@@ -160,7 +160,7 @@ const ChangeChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
               <JumpToCreateChannelButton show={channelDataOptions.length === 0} />
             </EuiFlexGroup>
           </EuiFormRow>
-          <EuiButton isLoading={isMutating} type="submit">
+          <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
             Change channel
           </EuiButton>
         </EuiForm>

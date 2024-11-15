@@ -159,6 +159,7 @@ const AddAudienceFlyout = ({
             />
           </EuiFormRow>
           <EuiButton
+            disabled={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
             isLoading={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
             type="submit"
           >

@@ -130,7 +130,7 @@ const ImportAudienceComponent = ({
             </Fragment>
           </EuiFormRow>
           <EuiFormRow hasEmptyLabelSpace>
-            <EuiButton type="submit" isLoading={isMutating}>
+            <EuiButton type="submit" isLoading={isMutating} disabled={isMutating}>
               Import
             </EuiButton>
           </EuiFormRow>

@@ -34,7 +34,7 @@ const CreateCustomerComponent = ({
   setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
-  const { trigger } = useCreateCustomer();
+  const { trigger, isMutating } = useCreateCustomer();
   const { data } = useGetFields<FieldsResponse>();
   const {
     handleSubmit,
@@ -258,7 +258,9 @@ const CreateCustomerComponent = ({
               </>
             ))}
           <EuiFormRow hasEmptyLabelSpace>
-            <EuiButton type="submit">Create audience</EuiButton>
+            <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
+              Create audience
+            </EuiButton>
           </EuiFormRow>
         </EuiForm>
       </EuiFlyoutBody>

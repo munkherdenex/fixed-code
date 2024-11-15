@@ -128,7 +128,7 @@ const ResetPassword = () => {
             <EuiSpacer size="m" />
             <EuiFlexGroup direction="column" justifyContent="spaceBetween" gutterSize="s">
               <EuiFlexItem>
-                <EuiButton isLoading={isMutating} type="submit" fill>
+                <EuiButton isLoading={isMutating} disabled={isMutating} type="submit" fill>
                   Reset password
                 </EuiButton>
               </EuiFlexItem>

@@ -49,7 +49,7 @@ const CreateAPIKeysComponent = ({
   setResponseData: React.Dispatch<SetStateAction<ApiKeyResponseDataType>>;
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
-  const { trigger } = useCreateAPIKeys();
+  const { trigger, isMutating } = useCreateAPIKeys();
   const { teams } = useContext(teamsContext);
 
   const dataTypeOptions = teams?.map((team) => {
@@ -64,7 +64,6 @@ const CreateAPIKeysComponent = ({
     setValue,
     formState: { errors },
   } = useForm({
-     
     resolver: yupResolver(schema),
     defaultValues: {
       team_id: teams?.[0]?.id.toString() || "",
@@ -174,7 +173,9 @@ const CreateAPIKeysComponent = ({
               <AceEditorComponent control={control} onChange={setAceEditorValue} />
             </EuiFormRow>
             <EuiFormRow hasEmptyLabelSpace>
-              <EuiButton type="submit">Create API KEY</EuiButton>
+              <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
+                Create API KEY
+              </EuiButton>
             </EuiFormRow>
           </EuiForm>
         </EuiFlyoutBody>

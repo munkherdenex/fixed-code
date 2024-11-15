@@ -527,6 +527,7 @@ const ReccurenceRule = ({
           iconType={data?.start_date ? "timeRefresh" : "plus"}
           type="submit"
           isLoading={isMutating}
+          disabled={isMutating}
         >
           {data?.start_date ? "Update" : "Create"} Recurrence Rule
         </EuiButton>

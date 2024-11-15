@@ -129,7 +129,7 @@ const AddSegmentsToAudience = ({
             />
           </EuiFormRow>
           <EuiFormRow hasEmptyLabelSpace>
-            <EuiButton isLoading={isLoading} type="submit">
+            <EuiButton isLoading={isLoading} disabled={isLoading} type="submit">
               Add to segment
             </EuiButton>
           </EuiFormRow>

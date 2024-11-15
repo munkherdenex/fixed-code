@@ -343,6 +343,7 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
             )}
             <EuiButton
               type="submit"
+              disabled={isCreateSegmentMutating || isCreateSegmentFileMutating}
               isLoading={isCreateSegmentMutating || isCreateSegmentFileMutating}
             >
               Create

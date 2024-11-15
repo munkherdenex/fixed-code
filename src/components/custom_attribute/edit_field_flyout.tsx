@@ -137,7 +137,7 @@ const UpdateFieldFlyout = ({
               )}
             />
           </EuiFormRow>
-          <EuiButton isLoading={isMutating} type="submit">
+          <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
             Update custom attribute
           </EuiButton>
         </EuiForm>

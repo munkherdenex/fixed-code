@@ -136,7 +136,7 @@ const SecurityComponent = () => {
                 )}
               />
             </EuiFormRow>
-            <EuiButton isLoading={isMutating} type="submit" fill>
+            <EuiButton isLoading={isMutating} disabled={isMutating} type="submit" fill>
               Change password
             </EuiButton>
           </EuiForm>

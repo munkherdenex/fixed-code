@@ -47,7 +47,7 @@ const CreateAudienceSegment = ({
   const flyoutHeadingId = useGeneratedHtmlId();
   const router = useRouter();
   const { id } = router.query;
-  const { trigger } = useCreateSegmentsAudience(id);
+  const { trigger, isMutating } = useCreateSegmentsAudience(id);
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -134,7 +134,9 @@ const CreateAudienceSegment = ({
             />
           </EuiFormRow>
           <EuiFormRow hasEmptyLabelSpace>
-            <EuiButton type="submit">Add audience</EuiButton>
+            <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
+              Add audience
+            </EuiButton>
           </EuiFormRow>
         </EuiForm>
       </EuiFlyoutBody>

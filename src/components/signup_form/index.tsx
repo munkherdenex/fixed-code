@@ -176,7 +176,7 @@ const SignupForm: FunctionComponent = () => {
               <EuiSpacer size="m" />
               <EuiFlexGroup>
                 <EuiFlexItem>
-                  <EuiButton type="submit" isLoading={isMutating} fill>
+                  <EuiButton type="submit" disabled={isMutating} isLoading={isMutating} fill>
                     Register
                   </EuiButton>
                 </EuiFlexItem>

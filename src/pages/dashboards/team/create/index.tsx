@@ -105,7 +105,7 @@ const TeamCreate = () => {
             />
           </EuiFormRow>
           <EuiFormRow>
-            <EuiButton isLoading={isMutating} type="submit" fullWidth fill>
+            <EuiButton isLoading={isMutating} disabled={isMutating} type="submit" fullWidth fill>
               Create Team
             </EuiButton>
           </EuiFormRow>

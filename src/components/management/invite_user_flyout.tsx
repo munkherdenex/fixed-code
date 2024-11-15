@@ -123,7 +123,7 @@ const InviteUserFlyout = ({
                   placeholder="Email"
                   isInvalid={!!errorsEmail.email?.message}
                   append={
-                    <EuiButtonIcon iconType={"search"} type="submit">
+                    <EuiButtonIcon iconType={"search"} type="submit" disabled={isMutating}>
                       Search
                     </EuiButtonIcon>
                   }

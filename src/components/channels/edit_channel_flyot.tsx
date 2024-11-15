@@ -48,7 +48,7 @@ const EditChannelFlyot = ({
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
   });
-  const { trigger } = useUpdateChannel(router.query.id);
+  const { trigger, isMutating } = useUpdateChannel(router.query.id);
 
   const {
     handleSubmit,
@@ -363,7 +363,9 @@ const EditChannelFlyot = ({
           <EuiFormRow>
             <EuiFlexGroup gutterSize="s">
               <EuiFlexItem grow={false}>
-                <EuiButton type="submit">Update channel</EuiButton>
+                <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
+                  Update channel
+                </EuiButton>
               </EuiFlexItem>
               {watch("channel_type") === "api" && (
                 <EuiFlexItem grow={false}>

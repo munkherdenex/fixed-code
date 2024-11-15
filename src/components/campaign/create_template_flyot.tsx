@@ -296,7 +296,7 @@ const CreateTemplateFlyot = ({
               <JumpToCreateChannelButton show={channelDataOptions.length === 0} />
             </EuiFlexGroup>
           </EuiFormRow>
-          <EuiButton isLoading={isMutating} type="submit">
+          <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
             Create campaign
           </EuiButton>
         </EuiForm>

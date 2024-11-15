@@ -91,7 +91,7 @@ function ForgotPasswordForm() {
               <EuiSpacer size="m" />
               <EuiFlexGroup direction="column" justifyContent="spaceBetween" gutterSize="s">
                 <EuiFlexItem>
-                  <EuiButton isLoading={isMutating} type="submit" fill>
+                  <EuiButton isLoading={isMutating} disabled={isMutating} type="submit" fill>
                     Get reset info
                   </EuiButton>
                 </EuiFlexItem>

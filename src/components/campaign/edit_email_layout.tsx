@@ -202,7 +202,7 @@ const EditEmailLayout = () => {
                   </EuiToolTip>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiButton isLoading={isMutating} size="s" type="submit">
+                  <EuiButton isLoading={isMutating} disabled={isMutating} size="s" type="submit">
                     Update Campaign
                   </EuiButton>
                 </EuiFlexItem>

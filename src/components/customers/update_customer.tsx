@@ -307,7 +307,7 @@ const UpdateCustomerComponent = ({
               </React.Fragment>
             ))}
           <EuiFormRow hasEmptyLabelSpace>
-            <EuiButton isLoading={isMutating} type="submit">
+            <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
               Update audience
             </EuiButton>
           </EuiFormRow>
