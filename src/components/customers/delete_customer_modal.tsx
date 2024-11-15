@@ -21,12 +21,12 @@ const DeleteCustomerModal = ({
       onCancel={() => setIsModalVisible(false)}
       confirmButtonDisabled={deleteMessage.toLowerCase() !== "delete"}
       onConfirm={async () => {
+        router.replace(`${pathPrefix}/dashboards/audience`);
         try {
           await customerDeleteTrigger();
         } catch (error) {
           console.error("ERROR:: ", error);
         }
-        router.push(`${pathPrefix}/dashboards/audience`);
         addToast({
           id: "customer-deleted",
           color: "success",

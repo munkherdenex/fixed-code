@@ -41,14 +41,12 @@ const DeleteConfirmModal = ({
   };
 
   const confirmModal = async () => {
+    await router.replace("/dashboards/campaign");
     try {
       await trigger();
     } catch (error) {
       console.error(error);
     }
-    await router.replace("/dashboards/campaign");
-    setIsModalVisible(false);
-    setDeleteConfirmValue("");
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
