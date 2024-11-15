@@ -37,14 +37,12 @@ const DeleteConfirmModal = ({
   };
 
   const confirmModal = async () => {
+    router.replace("/dashboards/channels");
     try {
       await trigger();
     } catch (error) {
       console.error(error);
     }
-    await router.replace("/dashboards/channels");
-    setIsModalVisible(false);
-    setDeleteConfirmValue("");
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,10 +82,27 @@ const DeleteConfirmModal = ({
   );
 };
 
+const DeleteConfirmModalContainer = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  return (
+    <>
+      <EuiFlexItem grow={false}>
+        <EuiButtonIcon
+          display="base"
+          iconType="trash"
+          aria-label="Delete"
+          color="danger"
+          onClick={() => setIsModalVisible(true)}
+        />
+      </EuiFlexItem>
+      {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
+    </>
+  );
+};
+
 const GeneralDetails = () => {
   const router = useRouter();
   const { data, isLoading } = useGetChannels<Channels>(router.query.id);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
 
   if (isLoading) {
@@ -119,15 +134,7 @@ const GeneralDetails = () => {
                         onClick={() => setIsEditFlyoutVisible(true)}
                       />
                     </EuiFlexItem>
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonIcon
-                        display="base"
-                        iconType="trash"
-                        aria-label="Delete"
-                        color="danger"
-                        onClick={() => setIsModalVisible(true)}
-                      />
-                    </EuiFlexItem>
+                    <DeleteConfirmModalContainer />
                   </EuiFlexGroup>
                 </EuiFlexItem>
               </EuiFlexGroup>
@@ -164,7 +171,6 @@ const GeneralDetails = () => {
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiPanel>
-      {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
       {isEditFlyoutVisible && (
         <EditChannelFlyot setIsFlyoutVisible={setIsEditFlyoutVisible} data={data} />
       )}
