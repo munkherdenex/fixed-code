@@ -11,12 +11,13 @@ const DeleteCustomerModal = ({
 }: {
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
-  const { customerDeleteTrigger } = useDeleteCustomer(router.query.id);
+  const { customerDeleteTrigger, isMutating } = useDeleteCustomer(router.query.id);
   const [deleteMessage, setDeleteMessage] = useState("");
 
   return (
     <EuiConfirmModal
       title="Warning"
+      isLoading={isMutating}
       onCancel={() => setIsModalVisible(false)}
       confirmButtonDisabled={deleteMessage.toLowerCase() !== "delete"}
       onConfirm={async () => {

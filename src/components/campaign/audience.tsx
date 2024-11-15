@@ -31,7 +31,7 @@ const Audience = () => {
   const modalTitleId = useGeneratedHtmlId({ prefix: "modalTitle" });
 
   const { data: template } = useCampaignContext();
-  const { data: templateCustomers } = useGetTemplatesCustomer<TemplateCustomerResponse>(
+  const { data: templateCustomers, isLoading } = useGetTemplatesCustomer<TemplateCustomerResponse>(
     router.query.id,
     {
       limit: `${pageSize}`,
@@ -53,9 +53,11 @@ const Audience = () => {
 
   const columns: Array<EuiBasicTableColumn<TemplateCustomer>> = [
     {
-      field: "name",
       name: "Name",
       "data-test-subj": "nameCell",
+      render: (templateCustomer: TemplateCustomer) => {
+        return templateCustomer?.name;
+      },
     },
     {
       field: "type",
@@ -154,6 +156,8 @@ const Audience = () => {
     globalMutate(`/api/v1/dj/templates/${router.query.id}/customers/`);
     closeModal();
   };
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <EuiFlexGroup direction="column">

@@ -13,7 +13,7 @@ const DeleteMemberModal = ({
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const { currentTeam } = useManagementTeamsContext();
-  const { trigger } = useDeleteMember(selectMember);
+  const { trigger, isMutating } = useDeleteMember(selectMember);
   const [deleteMessage, setDeleteMessage] = useState("");
 
   const deleteMember = async () => {
@@ -35,6 +35,7 @@ const DeleteMemberModal = ({
   return (
     <EuiConfirmModal
       title="Warning"
+      isLoading={isMutating}
       onCancel={() => setIsModalVisible(false)}
       confirmButtonDisabled={deleteMessage.toLowerCase() !== "delete"}
       onConfirm={deleteMember}
