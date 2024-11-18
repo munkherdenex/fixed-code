@@ -9,17 +9,21 @@ import {
 import { useRouter } from "next/router";
 import { useState } from "react";
 import useGetLogs, { LogsResponse } from "../../hooks/useGetLogs";
+import { useCampaignContext } from "../../store/campaign_store";
 
 const LIMIT = 10;
 
 const Logs: React.FC = () => {
   const router = useRouter();
+  const { data: campaignData } = useCampaignContext();
   const [activePage, setActivePage] = useState(0);
   const { data, isLoading } = useGetLogs<LogsResponse>({
     template_id: router.query.id as string,
     offset: `${activePage * LIMIT}`,
     limit: `${LIMIT}`,
   });
+
+  console.log(campaignData);
 
   const preparedData = data?.results.map((log) => ({
     icon: "email",
