@@ -7,9 +7,11 @@ import {
   EuiTimeline,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useGetLogs, { LogsResponse } from "../../hooks/useGetLogs";
 import { useCampaignContext } from "../../store/campaign_store";
+import moment from "moment";
+import { getDataKind } from "../../utils/helper";
 
 const LIMIT = 10;
 
@@ -23,22 +25,43 @@ const Logs: React.FC = () => {
     limit: `${LIMIT}`,
   });
 
-  console.log(campaignData);
-
-  const preparedData = data?.results.map((log) => ({
-    icon: "email",
-    iconAriaLabel: log.body,
-    children: (
-      <EuiText size="s">
-        <h4>
-          <strong>{log.title}</strong>
-        </h4>
-        <p>{log.body}</p>
-        <p>{log.response}</p>
-        <p>{log.response_status}</p>
-      </EuiText>
-    ),
-  }));
+  const preparedData = useMemo(() => {
+    if (getDataKind(campaignData) === "email") {
+      return data?.results.map((log) => ({
+        icon: +log?.response_status === 1 ? "check" : "cross",
+        iconAriaLabel: log.body,
+        children: (
+          <EuiText size="s" color={+log?.response_status === 1 ? "default" : "red"}>
+            <p>
+              {log.customer_id} ( {moment(log.created_at).format("YYYY-MM-DD LT")} )
+            </p>
+          </EuiText>
+        ),
+      }));
+    } else {
+      return data?.results.map((log) => ({
+        icon: +log?.response_status < 300 && +log?.response_status >= 200 ? "check" : "cross",
+        iconAriaLabel: log.body,
+        children: (
+          <>
+            <EuiText
+              size="s"
+              color={
+                +log?.response_status < 300 && +log?.response_status >= 200 ? "default" : "red"
+              }
+            >
+              <p>
+                {log.customer_id} ( {moment(log.created_at).format("YYYY-MM-DD LT")} )
+              </p>
+            </EuiText>
+            <EuiText size="xs" color="subdued">
+              <p>{log.response}</p>
+            </EuiText>
+          </>
+        ),
+      }));
+    }
+  }, [campaignData, data?.results]);
 
   if (isLoading) {
     return <div>Loading...</div>;
