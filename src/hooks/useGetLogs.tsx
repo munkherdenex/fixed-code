@@ -50,9 +50,6 @@ export default function useGetLogs<Type>(queryParam?: {
 
       return handleResponseNotOk(res);
     },
-    {
-      refreshInterval: 3000,
-    },
   );
 
   return {
