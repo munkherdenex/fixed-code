@@ -1,7 +1,10 @@
 import {
+  EuiButton,
+  EuiButtonEmpty,
   EuiEmptyPrompt,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiLink,
   EuiPagination,
   EuiText,
   EuiTimeline,
@@ -50,9 +53,10 @@ const Logs: React.FC = () => {
                 +log?.response_status < 300 && +log?.response_status >= 200 ? "default" : "red"
               }
             >
-              <p>
-                {log.customer_id} ( {moment(log.created_at).format("YYYY-MM-DD LT")} )
-              </p>
+              <EuiLink onClick={() => router.push(`/dashboards/audience/info/${log.customer_id}`)}>
+                {log.customer}
+              </EuiLink>{" "}
+              <span>( {moment(log.created_at).format("YYYY-MM-DD LT")} )</span>
             </EuiText>
             <EuiText size="xs" color="subdued">
               <p>{log.response}</p>
@@ -61,7 +65,7 @@ const Logs: React.FC = () => {
         ),
       }));
     }
-  }, [campaignData, data?.results]);
+  }, [campaignData, data?.results, router]);
 
   if (isLoading) {
     return <div>Loading...</div>;

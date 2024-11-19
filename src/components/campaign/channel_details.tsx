@@ -51,8 +51,9 @@ const ChannelDetails = () => {
                       <EuiToolTip position="top" content="Menu">
                         <EuiButtonIcon
                           display="base"
-                          iconType="menu"
-                          aria-label="menu"
+                          color="success"
+                          iconType="indexEdit"
+                          aria-label="indexEdit"
                           onClick={() => setIsChangeChannelFlyoutVisible(true)}
                         />
                       </EuiToolTip>

@@ -8,6 +8,7 @@ export interface Logs {
   updated_at: string;
   template_id: number;
   customer_id: number;
+  customer: string;
   title: string;
   body: string;
   response: string;
