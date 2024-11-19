@@ -31,8 +31,9 @@ const Logs: React.FC = () => {
     iconAriaLabel: log.title,
     children: (
       <EuiText size="s">
-        <h4>{log.title}</h4>
-        <p>{moment(log.created_at).format("YYYY-MM-DD LT")}</p>
+        <p>
+          {log.title} ({moment(log.created_at).format("YYYY-MM-DD LT")})
+        </p>
       </EuiText>
     ),
   }));
