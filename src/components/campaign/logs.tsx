@@ -1,6 +1,4 @@
 import {
-  EuiButton,
-  EuiButtonEmpty,
   EuiEmptyPrompt,
   EuiFlexGroup,
   EuiFlexItem,
@@ -9,11 +7,11 @@ import {
   EuiText,
   EuiTimeline,
 } from "@elastic/eui";
+import moment from "moment";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import useGetLogs, { LogsResponse } from "../../hooks/useGetLogs";
 import { useCampaignContext } from "../../store/campaign_store";
-import moment from "moment";
 import { getDataKind } from "../../utils/helper";
 
 const LIMIT = 10;
@@ -36,7 +34,10 @@ const Logs: React.FC = () => {
         children: (
           <EuiText size="s" color={+log?.response_status === 1 ? "default" : "red"}>
             <p>
-              {log.customer_id} ( {moment(log.created_at).format("YYYY-MM-DD LT")} )
+              <EuiLink onClick={() => router.push(`/dashboards/audience/info/${log.customer_id}`)}>
+                {log.customer}
+              </EuiLink>{" "}
+              ( {moment(log.created_at).format("YYYY-MM-DD LT")} )
             </p>
           </EuiText>
         ),
