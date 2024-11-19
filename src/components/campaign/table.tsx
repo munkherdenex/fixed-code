@@ -31,6 +31,8 @@ const options = [
   { value: "SENDING", text: "SENDING" },
   { value: "SENT", text: "SENT" },
   { value: "ERROR", text: "ERROR" },
+  { value: "SCHEDULED", text: "SCHEDULED" },
+  { value: "RECURRING", text: "RECURRING" },
 ];
 
 const SendsTable = () => {
