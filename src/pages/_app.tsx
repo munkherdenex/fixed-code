@@ -17,6 +17,8 @@ import SWRConfigLayout from "../layouts/swr_config";
 import { AuthProvider } from "../store/auth_store";
 import { TeamsProvider } from "../store/teams_store";
 import { globalStyes } from "../styles/global.styles";
+import { NextIntlClientProvider } from "next-intl";
+import { useRouter } from "next/router";
 
 const Chrome = dynamic(() => import("../components/chrome"), { ssr: false });
 
@@ -41,28 +43,38 @@ declare global {
  *
  * @see https://nextjs.org/docs/advanced-features/custom-app
  */
-const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => (
-  <>
-    <Head>
-      {/* You can override this in other pages - see index.tsx for an example */}
-      <title>DATA</title>
-    </Head>
-    <Global styles={globalStyes} />
-    <Theme>
-      <Chrome>
-        <EuiErrorBoundary>
-          <SWRConfigLayout>
-            <AuthProvider>
-              <TeamsProvider>
-                <Component {...pageProps} />
-                <GlobalToastList />
-              </TeamsProvider>
-            </AuthProvider>
-          </SWRConfigLayout>
-        </EuiErrorBoundary>
-      </Chrome>
-    </Theme>
-  </>
-);
+const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
+  const router = useRouter();
+
+  return (
+    <>
+      <Head>
+        {/* You can override this in other pages - see index.tsx for an example */}
+        <title>DATA</title>
+      </Head>
+      <Global styles={globalStyes} />
+      <Theme>
+        <Chrome>
+          <EuiErrorBoundary>
+            <SWRConfigLayout>
+              <AuthProvider>
+                <TeamsProvider>
+                  <NextIntlClientProvider
+                    locale={router.locale}
+                    timeZone="Mongolia/Ulaanbaatar"
+                    messages={pageProps.messages}
+                  >
+                    <Component {...pageProps} />
+                  </NextIntlClientProvider>
+                  <GlobalToastList />
+                </TeamsProvider>
+              </AuthProvider>
+            </SWRConfigLayout>
+          </EuiErrorBoundary>
+        </Chrome>
+      </Theme>
+    </>
+  );
+};
 
 export default EuiApp;

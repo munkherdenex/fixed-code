@@ -23,6 +23,10 @@ const themeConfig = buildThemeConfig();
 
 const nextConfig = {
   output: "standalone",
+  i18n: {
+    locales: ["en", "mn"],
+    defaultLocale: "en",
+  },
   compiler: {
     emotion: true,
   },

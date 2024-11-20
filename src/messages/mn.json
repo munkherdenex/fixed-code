@@ -1,0 +1,15 @@
+{
+  "sign-in": {
+    "title": "Нэвтрэх",
+    "email": "Имэйл",
+    "password": "Нууц үг",
+    "submit": "Нэвтрэх",
+    "forgot": "Нууц үг мартсан?",
+    "register": "Бүртгүүлэх",
+    "login-with-pocket": "Pocket-тай нэвтрэх",
+    "sent-verification-email": "Бид танд баталгаажуулалтын имэйл илгээсэн байна. Та таны имэйл хайж үзнэ үү."
+  },
+  "About": {
+    "title": "Sain uu"
+  }
+}
