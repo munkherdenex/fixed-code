@@ -105,7 +105,7 @@ const HeaderUserMenu = () => {
 
 const TeamSwitcher = () => {
   const styles = dashboardHeadersStyles();
-  const { currentTeam } = useContext(teamsContext);
+  const { currentTeam, teams } = useContext(teamsContext);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const onButtonClick = () => setIsPopoverOpen((isPopoverOpen) => !isPopoverOpen);
@@ -123,6 +123,10 @@ const TeamSwitcher = () => {
       {currentTeam?.name || "Select team"}
     </EuiButtonEmpty>
   );
+
+  if (teams?.length === 0) {
+    return <></>;
+  }
 
   return (
     <EuiPopover

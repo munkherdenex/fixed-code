@@ -7,6 +7,9 @@ import useGetTeamsMyprofile, { TeamsMyProfileResponse } from "../hooks/useGetTea
 import useTeams from "../hooks/useTeams";
 import { isNumber } from "../utils/helper";
 import { Initial_Teams_Type, Teams } from "./teams_store.types";
+import NoTeam from "../components/no_team";
+import DashboardLayout from "../layouts/dashboard";
+import ManagementProfileTabs from "../components/management/management_profile_tabs";
 
 const initial_teams_state: Initial_Teams_Type = {
   teams: null,
@@ -133,6 +136,35 @@ export const TeamsProvider = ({ children }) => {
     console.log(teamError);
     console.log(profileError);
   }, [teamError, profileError]);
+
+  if (teams?.length === 0) {
+    return (
+      <>
+        <teamsContext.Provider
+          value={{
+            teams,
+            currentTeam,
+            myProfile,
+            setCurrentTeam,
+            changeCurrentTeam,
+            clearCurrentTeam,
+            isAdmin,
+            isManager,
+            isMember,
+            isAccountActive,
+          }}
+        >
+          <DashboardLayout hideSidebar>
+            {router.pathname.includes("/dashboards/management/profile") ? (
+              <ManagementProfileTabs />
+            ) : (
+              <NoTeam />
+            )}
+          </DashboardLayout>
+        </teamsContext.Provider>
+      </>
+    );
+  }
 
   return (
     <teamsContext.Provider

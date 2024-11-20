@@ -14,12 +14,14 @@ const DashboardLayout = ({
   sidebarSticky,
   pageHeader,
   breadCrumb,
+  hideSidebar,
   ...rest
 }: {
   pageHeader?: any;
   children: ReactElement;
   sidebar?: ReactElement;
   breadCrumb?: ReactElement;
+  hideSidebar?: boolean;
   sidebarSticky?: EuiPageSidebarProps["sticky"];
 }) => {
   const router = useRouter();
@@ -50,7 +52,7 @@ const DashboardLayout = ({
             bottomBorder={true}
             {...rest}
           >
-            {!largeMaxBreakpoint && (
+            {!largeMaxBreakpoint && !hideSidebar && (
               <EuiPageTemplate.Sidebar sticky={sidebarSticky || true}>
                 <Sidebar />
               </EuiPageTemplate.Sidebar>
