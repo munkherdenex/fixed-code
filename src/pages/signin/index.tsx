@@ -6,10 +6,12 @@ import SigninForm from "../../components/signin_form";
 import { authContext } from "../../store/auth_store";
 import { useRouter } from "next/router";
 import { IS_POCKET } from "../../constants";
+import { useTranslations } from "next-intl";
 
 const Index = () => {
   const router = useRouter();
   const { user, isLoading } = useContext(authContext);
+  const t = useTranslations("sign-in");
 
   useEffect(() => {
     if (user) {
@@ -29,7 +31,7 @@ const Index = () => {
   return (
     <>
       <Head>
-        <title>Sign in</title>
+        <title>{t("title")}</title>
       </Head>
       <Wrapper>
         <div>
@@ -37,7 +39,7 @@ const Index = () => {
             <EuiSpacer size="xl" />
             <EuiFlexItem grow={false}>
               <EuiTitle>
-                <h1>Sign in</h1>
+                <h1>{t("title")}</h1>
               </EuiTitle>
             </EuiFlexItem>
             <EuiSpacer size="xl" />
@@ -47,7 +49,7 @@ const Index = () => {
             {IS_POCKET && (
               <EuiFlexItem grow={false}>
                 <EuiButton size="s" href="/api/v1/login">
-                  Login with keycloak
+                  {t("login-with-pocket")}
                 </EuiButton>
               </EuiFlexItem>
             )}
@@ -57,5 +59,13 @@ const Index = () => {
     </>
   );
 };
+
+export async function getStaticProps(context) {
+  return {
+    props: {
+      messages: (await import(`../../messages/${context.locale}.json`)).default,
+    },
+  };
+}
 
 export default Index;

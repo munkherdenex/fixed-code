@@ -23,7 +23,7 @@ import useSendEmailVerification from "../../hooks/useSendEmailVerification";
 import { globalMutate } from "../../utils/globalMutate";
 import { addToast } from "../toast";
 import { signinFormStyles } from "./signin_form.styles";
-import { IS_POCKET } from "../../constants";
+import { useTranslations } from "next-intl";
 
 const schema = yup
   .object({
@@ -35,6 +35,7 @@ const schema = yup
 type FormData = yup.InferType<typeof schema>;
 
 const SigninForm: FunctionComponent = () => {
+  const t = useTranslations("sign-in");
   const router = useRouter();
   const { euiTheme } = useEuiTheme();
   const styles = signinFormStyles(euiTheme);
@@ -97,15 +98,12 @@ const SigninForm: FunctionComponent = () => {
                 type="button"
                 onClick={sendVerification}
               >
-                Sends verification to email
+                {t("sent-verification-email-title")}
               </EuiButton>
             </EuiFlexItem>
             <EuiFlexItem>
               <EuiText>
-                <p>
-                  Your email address has not been verified. Please check your email for the
-                  verification link.
-                </p>
+                <p>{t("sent-verification-email")}</p>
               </EuiText>
             </EuiFlexItem>
           </EuiFlexGroup>
@@ -121,7 +119,7 @@ const SigninForm: FunctionComponent = () => {
         <EuiPanel>
           <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit(onSubmit)}>
             <EuiFormRow
-              label="Email"
+              label={t("email")}
               isInvalid={!!errors.email?.message}
               error={[errors.email?.message]}
             >
@@ -134,14 +132,14 @@ const SigninForm: FunctionComponent = () => {
                     value={value}
                     onBlur={onBlur}
                     isInvalid={!!errors.email?.message}
-                    placeholder="Email"
+                    placeholder={t("email")}
                     aria-label="email"
                   />
                 )}
               />
             </EuiFormRow>
             <EuiFormRow
-              label="Password"
+              label={t("password")}
               isInvalid={!!errors.password?.message}
               error={[errors.password?.message]}
             >
@@ -155,7 +153,7 @@ const SigninForm: FunctionComponent = () => {
                     onBlur={onBlur}
                     isInvalid={!!errors.password?.message}
                     type={"dual"}
-                    placeholder="Password"
+                    placeholder={t("password")}
                     aria-label="password"
                   />
                 )}
@@ -165,7 +163,7 @@ const SigninForm: FunctionComponent = () => {
             <EuiFlexGroup direction="column" justifyContent="spaceBetween" gutterSize="s">
               <EuiFlexItem>
                 <EuiButton isLoading={isMutating} disabled={isMutating} type="submit" fill>
-                  Sign in
+                  {t("title")}
                 </EuiButton>
               </EuiFlexItem>
               {needsVerify && (
@@ -177,14 +175,14 @@ const SigninForm: FunctionComponent = () => {
                     type="button"
                     onClick={sendVerification}
                   >
-                    Sends verification to email
+                    {t("sent-verification-email")}
                   </EuiButton>
                 </EuiFlexItem>
               )}
               <EuiFlexItem>
                 <EuiText size="relative" grow={false}>
                   <EuiLink onClick={() => router.push("/forgot_password")}>
-                    Forgot password?
+                    {t("forgot-password")}?
                   </EuiLink>
                 </EuiText>
               </EuiFlexItem>
