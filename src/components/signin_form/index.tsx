@@ -181,15 +181,13 @@ const SigninForm: FunctionComponent = () => {
                   </EuiButton>
                 </EuiFlexItem>
               )}
-              {!IS_POCKET && (
-                <EuiFlexItem>
-                  <EuiText size="relative" grow={false}>
-                    <EuiLink onClick={() => router.push("/forgot_password")}>
-                      Forgot password?
-                    </EuiLink>
-                  </EuiText>
-                </EuiFlexItem>
-              )}
+              <EuiFlexItem>
+                <EuiText size="relative" grow={false}>
+                  <EuiLink onClick={() => router.push("/forgot_password")}>
+                    Forgot password?
+                  </EuiLink>
+                </EuiText>
+              </EuiFlexItem>
             </EuiFlexGroup>
           </EuiForm>
         </EuiPanel>
