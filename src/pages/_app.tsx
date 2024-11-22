@@ -20,7 +20,7 @@ import { TeamsProvider } from "../store/teams_store";
 import { globalStyes } from "../styles/global.styles";
 import { NextIntlClientProvider } from "next-intl";
 import { useRouter } from "next/router";
-import { PagesTopLoader } from "nextjs-toploader/pages";
+import { PagesProgressBar as ProgressBar } from "next-nprogress-bar";
 
 const Chrome = dynamic(() => import("../components/chrome"), { ssr: false });
 
@@ -55,7 +55,7 @@ const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
         <title>DATA</title>
       </Head>
       <Global styles={globalStyes} />
-      <PagesTopLoader showSpinner={false} />
+      <ProgressBar options={{ showSpinner: false }} color="#07C" />
       <Theme>
         <Chrome>
           <EuiErrorBoundary>
