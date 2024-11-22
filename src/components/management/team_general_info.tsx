@@ -13,20 +13,9 @@ import { useContext, useMemo } from "react";
 import { useManagementTeamsContext } from "../../store/management_teams_store";
 import { teamsContext } from "../../store/teams_store";
 import { convertToTree } from "../../utils/convertToTree";
-import useUpdateTeamName from "../../hooks/useUpdateTeamName";
 
 const TeamGeneralInfo = () => {
-  const router = useRouter();
   const { currentTeam } = useManagementTeamsContext();
-  const { trigger } = useUpdateTeamName(router.query.id);
-
-  const update = () => {
-    trigger({
-      name: "Pocket-ийн баг",
-      description: "",
-      admin_id: 9,
-    });
-  };
 
   return (
     <>
@@ -36,9 +25,6 @@ const TeamGeneralInfo = () => {
             <EuiPanel paddingSize="s" color="subdued">
               <EuiFlexGroup justifyContent="spaceBetween">
                 <EuiFlexItem grow={false}>Team info</EuiFlexItem>
-                <EuiFlexItem>
-                  <button onClick={() => update()}>s</button>
-                </EuiFlexItem>
               </EuiFlexGroup>
             </EuiPanel>
           </EuiFlexItem>
@@ -97,20 +83,6 @@ export const TeamGeneralInfoTwo = () => {
       )?.[0]?.children,
     [teams, currentTeam, changeCurrentTeam],
   );
-
-  const parentItems = [
-    {
-      icon: "folderClosed",
-      onClick: () => {
-        router.push(`/dashboards/settings/management/team/${currentTeam?.parent_team?.id}`);
-      },
-      children: (
-        <EuiButtonEmpty color="text" size="s">
-          <p>{currentTeam?.parent_team?.name}</p>
-        </EuiButtonEmpty>
-      ),
-    },
-  ];
 
   const subItems = subTeams?.map((subTeam) => {
     return {
