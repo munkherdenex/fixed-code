@@ -512,6 +512,7 @@ const ReccurenceRule = ({
                         onBlur={onBlur}
                         placeholder="On"
                         inputRef={ref}
+                        readOnly={!isDraft}
                       />
                     )}
                   />
