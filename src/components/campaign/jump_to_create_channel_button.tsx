@@ -10,7 +10,7 @@ const JumpToCreateChannelButton = ({ show }: { show: boolean }) => {
     <EuiFlexItem>
       <EuiButton
         onClick={() =>
-          router.push("/dashboards/channels", {
+          router.push("/dashboards/cdp/channels", {
             query: {
               create: true,
             },

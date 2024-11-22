@@ -41,7 +41,7 @@ const DeleteConfirmModal = ({
   };
 
   const confirmModal = async () => {
-    await router.replace("/dashboards/campaign");
+    await router.replace("/dashboards/cdp/campaign");
     try {
       await trigger();
     } catch (error) {

@@ -66,7 +66,7 @@ const ChannelDetails = () => {
                         iconType="arrowRight"
                         aria-label="jump"
                         color="primary"
-                        onClick={() => router.push(`/dashboards/channels/info/${data?.id}`)}
+                        onClick={() => router.push(`/dashboards/cdp/channels/info/${data?.id}`)}
                       />
                     </EuiToolTip>
                   </EuiFlexItem>

@@ -24,26 +24,26 @@ const CollapsibleNav = () => {
     {
       label: "Audience",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/audience`);
+        router.push(`${pathPrefix}/dashboards/cdp/audience`);
       },
       pinnable: false,
-      color: router.pathname === "/dashboards/audience" ? "primary" : "subdued",
+      color: router.pathname === "/dashboards/cdp/audience" ? "primary" : "subdued",
     },
     {
       label: "Segments",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/segments`);
+        router.push(`${pathPrefix}/dashboards/cdp/segments`);
       },
       pinnable: false,
-      color: router.pathname === "/dashboards/segments" ? "primary" : "subdued",
+      color: router.pathname === "/dashboards/cdp/segments" ? "primary" : "subdued",
     },
     {
       label: "Campaign",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/campaign`);
+        router.push(`${pathPrefix}/dashboards/cdp/campaign`);
       },
       pinnable: false,
-      color: router.pathname === "/dashboards/campaign" ? "primary" : "subdued",
+      color: router.pathname === "/dashboards/cdp/campaign" ? "primary" : "subdued",
     },
   ];
 

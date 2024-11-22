@@ -93,7 +93,7 @@ const Audience = () => {
               onClick: (templateCustomer: TemplateCustomer) => {
                 const { object_id, type } = templateCustomer;
                 const type_path = type === "customer" ? "audience" : "segments";
-                router.push(`/dashboards/${type_path}/info/${object_id}`);
+                router.push(`/dashboards/cdp/${type_path}/info/${object_id}`);
               },
             },
           ],
@@ -113,7 +113,7 @@ const Audience = () => {
             onClick: (templateCustomer: TemplateCustomer) => {
               const { object_id, type } = templateCustomer;
               const type_path = type === "customer" ? "audience" : "segments";
-              router.push(`/dashboards/${type_path}/info/${object_id}`);
+              router.push(`/dashboards/cdp/${type_path}/info/${object_id}`);
             },
           },
         ],

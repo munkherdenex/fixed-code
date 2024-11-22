@@ -123,7 +123,7 @@ const ChannelsTable = () => {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/channels/info/${id}`);
+        router.push(`${pathPrefix}/dashboards/cdp/channels/info/${id}`);
       },
     };
   };

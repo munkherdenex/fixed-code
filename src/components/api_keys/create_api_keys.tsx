@@ -1,26 +1,25 @@
 import {
-  useGeneratedHtmlId,
-  EuiFlyout,
-  EuiFlyoutHeader,
-  EuiTitle,
-  EuiFlyoutBody,
-  EuiForm,
-  EuiFormRow,
-  EuiFieldText,
   EuiButton,
   EuiDatePicker,
+  EuiFieldText,
+  EuiFlyout,
+  EuiFlyoutBody,
+  EuiFlyoutHeader,
+  EuiForm,
+  EuiFormRow,
   EuiSelect,
+  EuiTitle,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
-import { SetStateAction, useContext } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { addToast } from "../toast";
-import useCreateAPIKeys from "../../hooks/useCreateAPIKeys";
-import AceEditorComponent from "../campaign/ace_editor";
 import moment from "moment";
-import useTeamID from "../../hooks/useTeamID";
-import { teamsContext } from "../../store/teams_store";
+import { SetStateAction } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
+import useCreateAPIKeys from "../../hooks/useCreateAPIKeys";
+import { useApiKeysContext } from "../../store/api_key_store";
+import AceEditorComponent from "../campaign/ace_editor";
+import { addToast } from "../toast";
 
 const schema = yup
   .object({
@@ -50,14 +49,15 @@ const CreateAPIKeysComponent = ({
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
   const { trigger, isMutating } = useCreateAPIKeys();
-  const { teams } = useContext(teamsContext);
+  const { adminTeams } = useApiKeysContext();
 
-  const dataTypeOptions = teams?.map((team) => {
+  const dataTypeOptions = adminTeams?.map((team) => {
     return {
       value: team?.id,
       text: `${team?.name}`,
     };
   }) || [{ value: "", text: "" }];
+
   const {
     handleSubmit,
     control,
@@ -66,7 +66,7 @@ const CreateAPIKeysComponent = ({
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      team_id: teams?.[0]?.id.toString() || "",
+      team_id: adminTeams?.[0]?.id.toString() || "",
     },
   });
 

@@ -12,7 +12,7 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import * as yup from "yup";
@@ -119,7 +119,12 @@ const InviteUserFlyout = ({
                 <EuiFieldText
                   onChange={onChange}
                   value={value}
-                  onBlur={onBlur}
+                  onBlur={() => {
+                    onBlur();
+                    if (value) {
+                      handleSubmitEmail(onSubmitEmail)();
+                    }
+                  }}
                   placeholder="Email"
                   isInvalid={!!errorsEmail.email?.message}
                   append={
@@ -150,6 +155,7 @@ const InviteUserFlyout = ({
                   onBlur={onBlur}
                   placeholder="First name"
                   isInvalid={!!errors.firstName?.message}
+                  disabled={!!data?.fname}
                   fullWidth
                 />
               )}
@@ -170,6 +176,7 @@ const InviteUserFlyout = ({
                   onBlur={onBlur}
                   placeholder="Last name"
                   isInvalid={!!errors.lastName?.message}
+                  disabled={!!data?.lname}
                   fullWidth
                 />
               )}
@@ -184,6 +191,24 @@ const InviteUserFlyout = ({
       </EuiFlyoutBody>
     </EuiFlyout>
   );
+};
+
+export const InviteUserFlyoutContainer = () => {
+  const { isAdmin, isManager } = useManagementTeamsContext();
+  const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
+
+  if (isAdmin || isManager) {
+    return (
+      <>
+        <EuiButton onClick={() => setIsFlyoutVisible(true)}>Invite user</EuiButton>
+        {isFlyoutVisible && (isAdmin || isManager) && (
+          <InviteUserFlyout setIsFlyoutVisible={setIsFlyoutVisible} />
+        )}
+      </>
+    );
+  }
+
+  return null;
 };
 
 export default InviteUserFlyout;

@@ -81,7 +81,7 @@ const DeleteConfirmModal = ({
   };
 
   const confirmModal = async () => {
-    await router.replace("/dashboards/segments");
+    await router.replace("/dashboards/cdp/segments");
     try {
       await trigger();
     } catch (error) {

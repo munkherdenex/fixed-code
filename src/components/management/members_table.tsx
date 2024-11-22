@@ -22,7 +22,7 @@ import DeleteMemberModal from "./delete_member_modal";
 import UpdateMemberModal from "./update_member_modal";
 
 const MembersTable = () => {
-  const { myProfile, currentTeam, isAdmin, isMember, isManager } = useManagementTeamsContext();
+  const { myProfile, currentTeam, isAdmin, isManager } = useManagementTeamsContext();
   const { data: teamMembers, isLoading: isMembersLoading } =
     useGetCurrentTeamMembers<TeamMembersType>(currentTeam);
 
@@ -135,11 +135,9 @@ const MembersTable = () => {
                   </strong>
                 </EuiText>
               </EuiFlexItem>
-              {!isMember && (
-                <EuiFlexItem grow={false}>
-                  <EuiText size="xs">{member?.user?.email}</EuiText>
-                </EuiFlexItem>
-              )}
+              <EuiFlexItem grow={false}>
+                <EuiText size="xs">{member?.user?.email}</EuiText>
+              </EuiFlexItem>
             </EuiFlexGroup>
           </EuiFlexItem>
         </EuiFlexGroup>
@@ -188,12 +186,21 @@ const MembersTable = () => {
         <DeleteMemberModal selectMember={selectMemberId} setIsModalVisible={setIsModalVisible} />
       )}
       <EuiPanel>
-        <EuiBasicTable
-          tableLayout="auto"
-          itemId="id"
-          items={teamMembers?.members || []}
-          columns={columns}
-        />
+        <EuiFlexGroup direction="column">
+          <EuiFlexItem>
+            <EuiPanel paddingSize="s" color="subdued">
+              Team members
+            </EuiPanel>
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiBasicTable
+              tableLayout="auto"
+              itemId="id"
+              items={teamMembers?.members || []}
+              columns={columns}
+            />
+          </EuiFlexItem>
+        </EuiFlexGroup>
       </EuiPanel>
     </>
   );

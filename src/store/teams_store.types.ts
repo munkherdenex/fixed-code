@@ -1,3 +1,4 @@
+import { Product } from "../hooks/useGetAvailableProduct";
 import { TeamsMyProfileResponse } from "../hooks/useGetTeamsMyprofile";
 
 export interface Member {
@@ -21,9 +22,11 @@ export interface Teams {
   created_at: string;
   updated_at: string;
   members: Member[];
+  parent_team: Teams | null;
 }
 
 export interface Initial_Teams_Type {
+  teamProducts: Product[] | null;
   teams: Teams[] | null;
   currentTeam: Teams | null;
   myProfile: TeamsMyProfileResponse | null;
@@ -34,4 +37,6 @@ export interface Initial_Teams_Type {
   isManager: boolean;
   isMember: boolean;
   isAccountActive: boolean;
+  isCDPEnabled?: boolean;
+  isCRMEnabled?: boolean;
 }

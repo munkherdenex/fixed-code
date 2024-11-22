@@ -3,10 +3,12 @@ import { convertToTree } from "../../utils/convertToTree";
 import RecursiveTree from "../recursive_tree";
 
 const ManagementTeamsTreeView = () => {
-  const { currentTeam, data: teams, changeCurrentTeam } = useManagementTeamsContext();
-  const items = convertToTree(teams, changeCurrentTeam, currentTeam);
+  // const { currentTeam } = useManagementTeamsContext();
+  // const items = convertToTree(teams, changeCurrentTeam, currentTeam);
 
-  return <RecursiveTree tree={items} />;
+  return null;
+
+  // return <RecursiveTree tree={items} />;
 };
 
 export default ManagementTeamsTreeView;

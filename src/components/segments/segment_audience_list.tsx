@@ -82,7 +82,7 @@ const SegmentAudienceList = () => {
         <>
           <EuiLink
             onClick={() => {
-              router.push(`${pathPrefix}/dashboards/audience/info/${segmentAudience?.id}`);
+              router.push(`${pathPrefix}/dashboards/cdp/audience/info/${segmentAudience?.id}`);
             }}
           >
             <EuiFlexGroup direction="row" alignItems="center">

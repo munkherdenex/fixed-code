@@ -15,22 +15,14 @@ import { commonStyles } from "../../styles/global.styles";
 
 const managementPaths = [
   {
-    path: "/dashboards/custom_attribute",
+    path: "/dashboards/cdp/custom_attribute",
     name: "Custom attributes",
     roles: ["admin", "manager"],
   },
   {
-    path: "/dashboards/channels",
+    path: "/dashboards/cdp/channels",
     name: "Channels",
     roles: ["admin", "manager"],
-  },
-  {
-    path: "/dashboards/management",
-    name: "Team",
-  },
-  {
-    path: "/dashboards/management/api-keys",
-    name: "Api keys",
   },
 ];
 
@@ -78,6 +70,10 @@ const SideMenu = () => {
       Management
     </EuiButton>
   );
+
+  if (managementPathsFiltered.length === 0) {
+    return null;
+  }
 
   return (
     <EuiPopover

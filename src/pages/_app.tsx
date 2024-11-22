@@ -15,6 +15,7 @@ import GlobalToastList from "../components/toast";
 import "../custom_typings/index.d.ts";
 import SWRConfigLayout from "../layouts/swr_config";
 import { AuthProvider } from "../store/auth_store";
+import { ProductProvider } from "../store/products_store";
 import { TeamsProvider } from "../store/teams_store";
 import { globalStyes } from "../styles/global.styles";
 import { NextIntlClientProvider } from "next-intl";
@@ -28,6 +29,7 @@ declare global {
       BACKEND_URL: string;
       IS_POCKET: string;
       IS_REGISTER_ENABLED: string;
+      CRM: string;
     };
   }
   interface Error {
@@ -45,7 +47,6 @@ declare global {
  */
 const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter();
-
   return (
     <>
       <Head>
@@ -57,18 +58,20 @@ const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
         <Chrome>
           <EuiErrorBoundary>
             <SWRConfigLayout>
-              <AuthProvider>
-                <TeamsProvider>
-                  <NextIntlClientProvider
-                    locale={router.locale}
-                    timeZone="Mongolia/Ulaanbaatar"
-                    messages={pageProps.messages}
-                  >
-                    <Component {...pageProps} />
-                  </NextIntlClientProvider>
-                  <GlobalToastList />
-                </TeamsProvider>
-              </AuthProvider>
+              <ProductProvider>
+                <AuthProvider>
+                  <TeamsProvider>
+                    <NextIntlClientProvider
+                      locale={router.locale}
+                      timeZone="Mongolia/Ulaanbaatar"
+                      messages={pageProps.messages}
+                    >
+                      <Component {...pageProps} />
+                    </NextIntlClientProvider>
+                    <GlobalToastList />
+                  </TeamsProvider>
+                </AuthProvider>
+              </ProductProvider>
             </SWRConfigLayout>
           </EuiErrorBoundary>
         </Chrome>

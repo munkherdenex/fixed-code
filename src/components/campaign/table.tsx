@@ -138,7 +138,7 @@ const SendsTable = () => {
     return {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
-      onClick: () => router.push(`/dashboards/campaign/info/${id}`),
+      onClick: () => router.push(`/dashboards/cdp/campaign/info/${id}`),
     };
   };
 

@@ -110,7 +110,7 @@ const SegmentsTable = () => {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
       onClick: () => {
-        router.push(`${pathPrefix}/dashboards/segments/info/${id}`);
+        router.push(`${pathPrefix}/dashboards/cdp/segments/info/${id}`);
       },
     };
   };
@@ -161,7 +161,7 @@ const SegmentsTable = () => {
             color="primary"
             fill
             onClick={() => {
-              router.push(`${pathPrefix}/dashboards/segments/create`);
+              router.push(`${pathPrefix}/dashboards/cdp/segments/create`);
             }}
           >
             Create segment
