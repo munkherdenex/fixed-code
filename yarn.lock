@@ -4019,6 +4019,14 @@ next@^14.2.18:
     "@next/swc-win32-ia32-msvc" "14.2.18"
     "@next/swc-win32-x64-msvc" "14.2.18"
 
+nextjs-toploader@^3.7.15:
+  version "3.7.15"
+  resolved "https://registry.yarnpkg.com/nextjs-toploader/-/nextjs-toploader-3.7.15.tgz#2baba98b3d11c2001ab0639004ae5214d0e65f30"
+  integrity sha512-DvvXEJVRPfE2j1HVXgFhmPl8pRcLb/4mvyVBDuYdMdkbEY7KJghp0fG5iOZ002cV6awbBw9j/Di7vQL8LRazxQ==
+  dependencies:
+    nprogress "^0.2.0"
+    prop-types "^15.8.1"
+
 node-addon-api@^7.0.0:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-7.1.1.tgz#1aba6693b0f255258a049d621329329322aad558"
@@ -4047,6 +4055,11 @@ npm-run-path@^4.0.1:
   integrity sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==
   dependencies:
     path-key "^3.0.0"
+
+nprogress@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/nprogress/-/nprogress-0.2.0.tgz#cb8f34c53213d895723fcbab907e9422adbcafb1"
+  integrity sha512-I19aIingLgR1fmhftnbWWO3dXc0hSxqHQHQb3H8m+K3TnEn/iSeTZZOyvKXWqQESMwuUVnatlCnZdLBZZt2VSA==
 
 null-loader@^4.0.1:
   version "4.0.1"

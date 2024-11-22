@@ -20,7 +20,7 @@ export function badgeColor(status: string) {
     case "DONE":
       return "#BADA55";
     case "ENDED":
-      return "#03fcf0";
+      return "#d1b3ff";
     default:
       return "default";
   }

@@ -46,6 +46,7 @@
     "jsonrepair": "^3.10.0",
     "moment-timezone": "^0.5.46",
     "next-intl": "^3.25.1",
+    "nextjs-toploader": "^3.7.15",
     "quill-image-drop-module": "^1.0.3",
     "quill-image-resize-module-react": "^3.0.0",
     "react-ace": "^13.0.0",
