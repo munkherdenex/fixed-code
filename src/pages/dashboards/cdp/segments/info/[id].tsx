@@ -1,7 +1,7 @@
 import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import Menu from "../../../../../components/campaign/menu";
+import Menu from "../../../../../components/segments/menu";
 import GeneralDetails from "../../../../../components/segments/general_details";
 import DashboardLayout from "../../../../../layouts/dashboard";
 import { SegmentProvider } from "../../../../../store/segment_store";
