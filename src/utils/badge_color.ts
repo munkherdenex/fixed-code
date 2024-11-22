@@ -13,6 +13,14 @@ export function badgeColor(status: string) {
       return "warning";
     case "manager":
       return "success";
+    case "SENT":
+      return "success";
+    case "ERROR":
+      return "danger";
+    case "DONE":
+      return "#BADA55";
+    case "ENDED":
+      return "#03fcf0";
     default:
       return "default";
   }
