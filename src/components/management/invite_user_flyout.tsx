@@ -20,6 +20,7 @@ import useInviteMember from "../../hooks/useInviteMember";
 import useSearchUser from "../../hooks/useSearchUser";
 import { useManagementTeamsContext } from "../../store/management_teams_store";
 import { globalMutate } from "../../utils/globalMutate";
+import AdminComponent from "../admin_component";
 
 const emailSchema = yup.object({
   email: yup.string().email().required().label("Email"),
@@ -199,12 +200,14 @@ export const InviteUserFlyoutContainer = () => {
 
   if (isAdmin || isManager) {
     return (
-      <>
-        <EuiButton onClick={() => setIsFlyoutVisible(true)}>Invite user</EuiButton>
-        {isFlyoutVisible && (isAdmin || isManager) && (
-          <InviteUserFlyout setIsFlyoutVisible={setIsFlyoutVisible} />
-        )}
-      </>
+      <AdminComponent>
+        <>
+          <EuiButton onClick={() => setIsFlyoutVisible(true)}>Invite user</EuiButton>
+          {isFlyoutVisible && (isAdmin || isManager) && (
+            <InviteUserFlyout setIsFlyoutVisible={setIsFlyoutVisible} />
+          )}
+        </>
+      </AdminComponent>
     );
   }
 

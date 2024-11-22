@@ -22,7 +22,7 @@ const managementPaths = [
   {
     path: "/dashboards/cdp/channels",
     name: "Channels",
-    roles: ["admin", "manager"],
+    roles: ["admin"],
   },
 ];
 
