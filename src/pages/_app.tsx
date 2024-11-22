@@ -55,7 +55,7 @@ const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
         <title>DATA</title>
       </Head>
       <Global styles={globalStyes} />
-      <PagesTopLoader />
+      <PagesTopLoader showSpinner={false} />
       <Theme>
         <Chrome>
           <EuiErrorBoundary>
