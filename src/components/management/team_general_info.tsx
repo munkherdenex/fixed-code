@@ -1,6 +1,5 @@
 import {
   EuiButtonEmpty,
-  EuiButtonIcon,
   EuiFlexGroup,
   EuiFlexItem,
   EuiPanel,
@@ -14,20 +13,9 @@ import { useContext, useMemo } from "react";
 import { useManagementTeamsContext } from "../../store/management_teams_store";
 import { teamsContext } from "../../store/teams_store";
 import { convertToTree } from "../../utils/convertToTree";
-import useUpdateTeamName from "../../hooks/useUpdateTeamName";
 
 const TeamGeneralInfo = () => {
-  const router = useRouter();
   const { currentTeam } = useManagementTeamsContext();
-  const { trigger } = useUpdateTeamName(router?.query?.id);
-
-  const update = () => {
-    trigger({
-      name: "Pocket-ийн баг",
-      description: "",
-      admin_id: 1,
-    });
-  };
 
   return (
     <>
@@ -37,17 +25,6 @@ const TeamGeneralInfo = () => {
             <EuiPanel paddingSize="s" color="subdued">
               <EuiFlexGroup justifyContent="spaceBetween">
                 <EuiFlexItem grow={false}>Team info</EuiFlexItem>
-                <EuiFlexItem grow={false}>
-                  <EuiFlexItem grow={false}>
-                    <EuiButtonIcon
-                      display="base"
-                      iconType="pencil"
-                      aria-label="Update"
-                      color="primary"
-                      onClick={() => update()}
-                    />
-                  </EuiFlexItem>
-                </EuiFlexItem>
               </EuiFlexGroup>
             </EuiPanel>
           </EuiFlexItem>
