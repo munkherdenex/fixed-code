@@ -20,6 +20,7 @@ import { globalMutate } from "../../utils/globalMutate";
 import { addToast } from "../toast";
 import { commonStyles } from "../../styles/global.styles";
 import useImportAudience from "../../hooks/useImportAudience";
+import { useTranslations } from "next-intl";
 
 const ImportAudienceSchema = yup
   .object({
@@ -35,6 +36,7 @@ const ImportAudienceComponent = ({
   setIsImportFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
+  const audienceT = useTranslations("dashboards.cdp.audience");
   const { trigger, isMutating } = useImportAudience();
 
   const styles = commonStyles();
@@ -70,13 +72,13 @@ const ImportAudienceComponent = ({
     <EuiFlyout onClose={() => setIsImportFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2 id={flyoutHeadingId}>Import audience</h2>
+          <h2 id={flyoutHeadingId}>{audienceT("import-audience")}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Upload file"
+            label={audienceT("upload-file")}
             isInvalid={!!errors.file?.message}
             error={[errors.file?.message]}
           >
@@ -119,8 +121,8 @@ const ImportAudienceComponent = ({
                         isInvalid={!!errors}
                         display="large"
                         disabled={isMutating}
-                        initialPromptText="Select or drag and drop file"
-                        aria-label="Select or drag and drop file"
+                        initialPromptText={audienceT("upload-file-description")}
+                        aria-label={audienceT("upload-file-description")}
                         accept=".csv"
                       />
                     );
@@ -131,7 +133,7 @@ const ImportAudienceComponent = ({
           </EuiFormRow>
           <EuiFormRow hasEmptyLabelSpace>
             <EuiButton type="submit" isLoading={isMutating} disabled={isMutating}>
-              Import
+              {audienceT("import")}
             </EuiButton>
           </EuiFormRow>
         </EuiForm>

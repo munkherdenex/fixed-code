@@ -25,6 +25,7 @@ import useGetFields, { FieldsResponse } from "../../hooks/useGetFields";
 import { globalMutate } from "../../utils/globalMutate";
 import { addToast } from "../toast";
 import { createCustomerSchema } from "./schema";
+import { useTranslations } from "next-intl";
 
 type FormData = yup.InferType<typeof createCustomerSchema>;
 
@@ -34,6 +35,7 @@ const CreateCustomerComponent = ({
   setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
+  const audienceT = useTranslations("dashboards.cdp.audience");
   const { trigger, isMutating } = useCreateCustomer();
   const { data } = useGetFields<FieldsResponse>();
   const {
@@ -80,7 +82,7 @@ const CreateCustomerComponent = ({
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Email address"
+            label={audienceT("email")}
             isInvalid={!!errors.email?.message}
             error={[errors.email?.message]}
           >
@@ -92,14 +94,14 @@ const CreateCustomerComponent = ({
                   onChange={onChange}
                   value={value}
                   onBlur={onBlur}
-                  placeholder="Email address"
+                  placeholder={audienceT("email")}
                   aria-label="email"
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow
-            label="Phone number"
+            label={audienceT("phone")}
             isInvalid={!!errors.phone?.message}
             error={[errors.phone?.message]}
           >
@@ -116,14 +118,14 @@ const CreateCustomerComponent = ({
                   }}
                   value={value}
                   onBlur={onBlur}
-                  placeholder="Phone number"
+                  placeholder={audienceT("phone")}
                   aria-label="phone"
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow
-            label="Reference ID"
+            label={audienceT("rid")}
             isInvalid={!!errors.rid?.message}
             error={[errors.rid?.message]}
           >
@@ -135,14 +137,14 @@ const CreateCustomerComponent = ({
                   onChange={onChange}
                   value={value}
                   onBlur={onBlur}
-                  placeholder="Reference ID"
+                  placeholder={audienceT("rid")}
                   aria-label="rid"
                 />
               )}
             />
           </EuiFormRow>
           <EuiSpacer />
-          <strong>Custom attributes</strong>
+          <strong>{audienceT("custom-attributes")}</strong>
           {data?.results &&
             Array.isArray(data?.results) &&
             data?.results.map((field, index) => (
@@ -259,7 +261,7 @@ const CreateCustomerComponent = ({
             ))}
           <EuiFormRow hasEmptyLabelSpace>
             <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-              Create audience
+              {audienceT("create-audience")}
             </EuiButton>
           </EuiFormRow>
         </EuiForm>

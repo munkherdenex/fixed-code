@@ -5,11 +5,13 @@ import CustomersTable from "../../../../components/customers/table";
 import DashboardLayout from "../../../../layouts/dashboard";
 import CreateCustomerFlyoutContainer from "../../../../components/customers/create_customer_flyout_container";
 import ImportAudienceFlyoutContainer from "../../../../components/customers/import_audience_flyout_container";
+import { useTranslations } from "next-intl";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersDashboard = () => {
   const router = useRouter();
+  const audienceT = useTranslations("dashboards.cdp.audience");
   const createCustomerFlyoutContainerId = useGeneratedHtmlId();
   const importAudienceFlyoutContainerId = useGeneratedHtmlId();
 
@@ -20,7 +22,7 @@ const CustomersDashboard = () => {
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Audience",
+          pageTitle: audienceT("title"),
           iconType: "usersRolesApp",
           rightSideItems: [
             <CreateCustomerFlyoutContainer key={createCustomerFlyoutContainerId} />,
@@ -50,5 +52,13 @@ const CustomersDashboard = () => {
     </>
   );
 };
+
+export async function getStaticProps(context) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}.json`)).default,
+    },
+  };
+}
 
 export default CustomersDashboard;

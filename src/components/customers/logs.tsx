@@ -12,7 +12,7 @@ import { useState } from "react";
 import useGetCustomerLogs, { CustomerLogsResponse } from "../../hooks/useGetCustomerLogs";
 import { logIcon } from "../../utils/log_icon";
 
-const LIMIT = 5;
+const LIMIT = 10;
 
 /**
  * The logs of the customer
@@ -30,11 +30,13 @@ const Logs: React.FC = () => {
     icon: logIcon(log.type),
     iconAriaLabel: log.title,
     children: (
-      <EuiText size="s">
-        <p>
-          {log.title} ({moment(log.created_at).format("YYYY-MM-DD LT")})
-        </p>
-      </EuiText>
+      <>
+        <EuiText size="s">
+          <p>
+            <b>{log.title}</b> ({moment(log.created_at).format("YYYY-MM-DD LT")})
+          </p>
+        </EuiText>
+      </>
     ),
   }));
 

@@ -1,8 +1,10 @@
 import { EuiButton } from "@elastic/eui";
 import { useState } from "react";
 import ImportAudienceComponent from "./import_audience";
+import { useTranslations } from "next-intl";
 
 const ImportAudienceFlyoutContainer = () => {
+  const audienceT = useTranslations("dashboards.cdp.audience");
   const [isImportFlyoutVisible, setIsImportFlyoutVisible] = useState(false);
 
   return (
@@ -14,7 +16,7 @@ const ImportAudienceFlyoutContainer = () => {
         iconType={"importAction"}
         key="audience-customer"
       >
-        Import
+        {audienceT("import")}
       </EuiButton>
       {isImportFlyoutVisible && (
         <ImportAudienceComponent setIsImportFlyoutVisible={setIsImportFlyoutVisible} />

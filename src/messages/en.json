@@ -34,6 +34,21 @@
             "footer": "Go for it"
           }
         }
+      },
+      "audience": {
+        "title": "Audience",
+        "import": "Import",
+        "import-audience": "Import audience",
+        "create-audience": "Create audience",
+        "upload-file": "Upload file",
+        "upload-file-description": "Upload a CSV file with your audience data",
+        "email": "Email",
+        "phone": "Phone",
+        "rid": "Reference ID",
+        "source": "Source",
+        "created-by": "Created by",
+        "created-at": "Created at",
+        "custom-attributes": "Custom attributes"
       }
     }
   },

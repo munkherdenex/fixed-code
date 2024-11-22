@@ -1,8 +1,10 @@
 import { EuiButton } from "@elastic/eui";
 import { useState } from "react";
 import CreateCustomerComponent from "./create_customer";
+import { useTranslations } from "next-intl";
 
 const CreateCustomerFlyoutContainer = () => {
+  const audienceT = useTranslations("dashboards.cdp.audience");
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
   return (
@@ -13,7 +15,7 @@ const CreateCustomerFlyoutContainer = () => {
         fill
         key="audience-customer"
       >
-        Create audience
+        {audienceT("create-audience")}
       </EuiButton>
       {isFlyoutVisible && <CreateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
     </div>

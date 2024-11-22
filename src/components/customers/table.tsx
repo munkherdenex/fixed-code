@@ -19,10 +19,12 @@ import { PAGINATION_CHOOSES } from "../../constants";
 import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
 import { isNumber } from "../../utils/helper";
 import CreateCustomerFlyoutContainer from "./create_customer_flyout_container";
+import { useTranslations } from "next-intl";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersTable = () => {
+  const audienceT = useTranslations("dashboards.cdp.audience");
   const router = useRouter();
   const { query } = router;
 
@@ -55,28 +57,28 @@ const CustomersTable = () => {
     (): Array<EuiBasicTableColumn<CustomersType>> => [
       {
         field: "email",
-        name: "Email address",
+        name: audienceT("email"),
         render: (email: CustomersType["email"]) => (
           <>{email ? email : <EuiTextColor color="subdued">None</EuiTextColor>}</>
         ),
       },
       {
         field: "phone",
-        name: "Phone number",
+        name: audienceT("phone"),
         render: (phone: CustomersType["phone"]) => (
           <>{phone ? phone : <EuiTextColor color="subdued">None</EuiTextColor>}</>
         ),
       },
       {
         field: "rid",
-        name: "Reference ID",
+        name: audienceT("rid"),
         render: (rid: CustomersType["rid"]) => (
           <>{rid ? rid : <EuiTextColor color="subdued">None</EuiTextColor>}</>
         ),
       },
       {
         field: "source",
-        name: "Source",
+        name: audienceT("source"),
         render: (source: CustomersType["source"]) => (
           <EuiBadge
             iconType={
@@ -90,19 +92,19 @@ const CustomersTable = () => {
       },
       {
         field: "created_by",
-        name: "Created by",
+        name: audienceT("created-by"),
         mobileOptions: { enlarge: true },
       },
       {
         field: "created_at",
-        name: "Created at",
+        name: audienceT("created-at"),
         align: "right",
         render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
         footer: () => <strong>Total: {data?.total_count || 0}</strong>,
         mobileOptions: { enlarge: true },
       },
     ],
-    [data?.total_count],
+    [data?.total_count, audienceT],
   );
 
   const onTableChange = ({ page }: Criteria<CustomersType>) => {
