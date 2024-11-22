@@ -4,7 +4,7 @@ import CreateCustomerComponent from "./create_customer";
 import { useTranslations } from "next-intl";
 
 const CreateCustomerFlyoutContainer = () => {
-  const audienceT = useTranslations("dashboards.cdp.audience");
+  const audienceT = useTranslations();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
   return (

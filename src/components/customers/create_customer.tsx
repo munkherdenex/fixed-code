@@ -35,7 +35,7 @@ const CreateCustomerComponent = ({
   setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
-  const audienceT = useTranslations("dashboards.cdp.audience");
+  const audienceT = useTranslations();
   const { trigger, isMutating } = useCreateCustomer();
   const { data } = useGetFields<FieldsResponse>();
   const {

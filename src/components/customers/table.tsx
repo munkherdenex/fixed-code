@@ -24,7 +24,7 @@ import { useTranslations } from "next-intl";
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersTable = () => {
-  const audienceT = useTranslations("dashboards.cdp.audience");
+  const audienceT = useTranslations();
   const router = useRouter();
   const { query } = router;
 

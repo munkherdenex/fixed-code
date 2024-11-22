@@ -36,7 +36,7 @@ const ImportAudienceComponent = ({
   setIsImportFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
-  const audienceT = useTranslations("dashboards.cdp.audience");
+  const audienceT = useTranslations();
   const { trigger, isMutating } = useImportAudience();
 
   const styles = commonStyles();

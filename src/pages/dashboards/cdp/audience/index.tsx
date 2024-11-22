@@ -11,7 +11,7 @@ const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersDashboard = () => {
   const router = useRouter();
-  const audienceT = useTranslations("dashboards.cdp.audience");
+  const audienceT = useTranslations();
   const createCustomerFlyoutContainerId = useGeneratedHtmlId();
   const importAudienceFlyoutContainerId = useGeneratedHtmlId();
 
@@ -56,7 +56,7 @@ const CustomersDashboard = () => {
 export async function getStaticProps(context) {
   return {
     props: {
-      messages: (await import(`../../../../messages/${context.locale}.json`)).default,
+      messages: (await import(`../../../../messages/${context.locale}/audience.json`)).default,
     },
   };
 }
