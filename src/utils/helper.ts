@@ -16,7 +16,7 @@ export function isNumber(num: any) {
 
 export const removeDeletedCustomFields = (data: Fields[], query: RuleGroupType) => {
   const fields = [
-    ...(Array.isArray(data) ? data?.map((item) => `cf_${item.name}`) : []),
+    ...(Array.isArray(data) ? data?.map((item) => `cf_${item.attribute_name}`) : []),
     "email",
     "phone",
     "rid",
