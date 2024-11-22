@@ -47,4 +47,14 @@ const Dashboards = () => {
   );
 };
 
+export async function getServerSideProps() {
+  return {
+    props: {},
+    redirect: {
+      destination: "/dashboards/cdp",
+      permanent: true,
+    },
+  };
+}
+
 export default Dashboards;
