@@ -1,100 +1,50 @@
-import { FunctionComponent, useMemo } from "react";
-import Head from "next/head";
-import {
-  EuiButton,
-  EuiCard,
-  EuiFlexGrid,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiIcon,
-  useEuiTheme,
-} from "@elastic/eui";
-import DashboardLayout from "../../layouts/dashboard";
-import { dashboardsStyles } from "../../styles/dashboards.styles";
+import { EuiCard, EuiFlexGroup, EuiFlexItem, EuiIcon } from "@elastic/eui";
 import { useRouter } from "next/router";
-import MetricChart from "../../components/metric-chart";
-import { useTranslations } from "next-intl";
+import { useProductContext } from "../../store/products_store";
+import { useContext } from "react";
+import { teamsContext } from "../../store/teams_store";
+import NoTeam from "../../components/no_team";
+import DashboardHeadersSettings from "../../layouts/dashboard_headers_settings";
 
-const pathPrefix = process.env.PATH_PREFIX;
+const defaultCard = {
+  icon: "advancedSettingsApp",
+  title: "Settings",
+  description:
+    "The settings are the configurations of your account. You can manage your profile, your team, and your preferences.",
+  footer: "Go to segments",
+  link: `/dashboards/settings`,
+};
 
-const Dashboard: FunctionComponent = () => {
+const Dashboards = () => {
   const router = useRouter();
-  const { euiTheme } = useEuiTheme();
-  const styles = dashboardsStyles(euiTheme);
-  const t = useTranslations("dashboards.analytics");
+  const { avialableProducts } = useProductContext();
+  const { teams } = useContext(teamsContext);
 
-  const cardList = useMemo(
-    () => [
-      {
-        icon: "usersRolesApp",
-        title: "Audience & Segment",
-        description:
-          "The audience is the group of people you want to reach with your campaign. A segment is a subset of your audience that you define based on specific criteria.",
-        footer: "Go to Dashboards",
-        link: `${pathPrefix}/dashboards/audience`,
-      },
-      {
-        icon: "spacesApp",
-        title: "Campaign",
-        description:
-          "The campaign is a marketing initiative that you want to send to your audience. It can be a newsletter, a promotion, or a survey.",
-        footer: "Go to Save Objects",
-        link: `${pathPrefix}/dashboards/campaign`,
-      },
-      {
-        icon: "managementApp",
-        title: "Settings",
-        description:
-          "The settings are the configurations of your account. You can manage your profile, your team, and your preferences.",
-        footer: "Go to segments",
-        link: `${pathPrefix}/dashboards/management/profile`,
-      },
-    ],
-    [],
-  );
+  if (teams?.length === 0) {
+    return (
+      <>
+        <DashboardHeadersSettings />
+        <NoTeam />
+      </>
+    );
+  }
 
   return (
-    <>
-      <Head>
-        <title>{t("title")}</title>
-      </Head>
-      <DashboardLayout>
-        <EuiFlexGroup direction="column">
-          <EuiFlexItem>
-            <MetricChart />
+    <EuiFlexGroup justifyContent="center" alignItems="center" gutterSize="l">
+      {[...avialableProducts, defaultCard].map((card, index) => {
+        return (
+          <EuiFlexItem key={index}>
+            <EuiCard
+              icon={<EuiIcon size="xxl" type={card.icon} />}
+              title={card.title}
+              description={card.description}
+              onClick={() => router.push(card.link)}
+            />
           </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiFlexGrid columns={3} gutterSize="l" css={styles.container}>
-              {cardList.map((card, index) => (
-                <EuiFlexItem key={index}>
-                  <EuiCard
-                    icon={<EuiIcon size="xxl" type={card.icon} />}
-                    title={card.title}
-                    description={card.description}
-                    footer={
-                      <div>
-                        <EuiButton onClick={() => router.push(card.link)} aria-label={card.footer}>
-                          {t("go-for-it")}
-                        </EuiButton>
-                      </div>
-                    }
-                  />
-                </EuiFlexItem>
-              ))}
-            </EuiFlexGrid>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </DashboardLayout>
-    </>
+        );
+      })}
+    </EuiFlexGroup>
   );
 };
 
-export async function getStaticProps(context) {
-  return {
-    props: {
-      messages: (await import(`../../messages/${context.locale}.json`)).default,
-    },
-  };
-}
-
-export default Dashboard;
+export default Dashboards;

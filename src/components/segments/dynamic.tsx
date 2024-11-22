@@ -48,7 +48,7 @@ const Dynamic = ({ name, description }: { name: string; description: string }) =
     });
 
     if (dynamicResponse) {
-      router.push("/dashboards/segments");
+      router.push("/dashboards/cdp/segments");
     }
   };
 

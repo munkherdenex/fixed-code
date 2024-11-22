@@ -5,15 +5,15 @@ import SideMenu from "./sidebar_menu";
 
 const audienceSegmentPaths = [
   {
-    path: "/dashboards/audience",
+    path: "/dashboards/cdp/audience",
     name: "Audience",
   },
   {
-    path: "/dashboards/segments",
+    path: "/dashboards/cdp/segments",
     name: "Segments",
   },
   {
-    path: "/dashboards/campaign",
+    path: "/dashboards/cdp/campaign",
     name: "Campaign",
   },
 ];

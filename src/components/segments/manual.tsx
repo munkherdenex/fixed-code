@@ -262,7 +262,7 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
       const fileResponse = await createSegmentFile(formData);
 
       if (fileResponse) {
-        router.push("/dashboards/segments");
+        router.push("/dashboards/cdp/segments");
       }
     }
 
@@ -275,7 +275,7 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
       });
 
       if (textResponse) {
-        router.push("/dashboards/segments");
+        router.push("/dashboards/cdp/segments");
       }
     }
   };

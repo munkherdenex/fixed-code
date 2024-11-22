@@ -37,7 +37,7 @@ const DeleteConfirmModal = ({
   };
 
   const confirmModal = async () => {
-    router.replace("/dashboards/channels");
+    router.replace("/dashboards/cdp/channels");
     try {
       await trigger();
     } catch (error) {

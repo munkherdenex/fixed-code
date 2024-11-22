@@ -123,7 +123,7 @@ const CustomersTable = () => {
 
   const getRowProps = (customer: CustomersType) => ({
     className: "customRowClass",
-    onClick: () => router.push(`${pathPrefix}/dashboards/audience/info/${customer.id}`),
+    onClick: () => router.push(`${pathPrefix}/dashboards/cdp/audience/info/${customer.id}`),
   });
 
   const getCellProps = (

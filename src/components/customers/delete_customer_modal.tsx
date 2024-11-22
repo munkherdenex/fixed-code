@@ -21,7 +21,7 @@ const DeleteCustomerModal = ({
       onCancel={() => setIsModalVisible(false)}
       confirmButtonDisabled={deleteMessage.toLowerCase() !== "delete"}
       onConfirm={async () => {
-        router.replace(`${pathPrefix}/dashboards/audience`);
+        router.replace(`${pathPrefix}/dashboards/cdp/audience`);
         try {
           await customerDeleteTrigger();
         } catch (error) {

@@ -3,15 +3,14 @@ import { createContext, useCallback, useEffect, useState } from "react";
 import { mutate } from "swr";
 import GlobalLoading from "../components/global-loading";
 import useChangeTeam from "../hooks/useChangeTeam";
+import useGetAvailableProduct, { Product } from "../hooks/useGetAvailableProduct";
 import useGetTeamsMyprofile, { TeamsMyProfileResponse } from "../hooks/useGetTeamsMyprofile";
 import useTeams from "../hooks/useTeams";
 import { isNumber } from "../utils/helper";
 import { Initial_Teams_Type, Teams } from "./teams_store.types";
-import NoTeam from "../components/no_team";
-import DashboardLayout from "../layouts/dashboard";
-import ManagementProfileTabs from "../components/management/management_profile_tabs";
 
 const initial_teams_state: Initial_Teams_Type = {
+  teamProducts: null,
   teams: null,
   currentTeam: null,
   myProfile: null,
@@ -22,6 +21,8 @@ const initial_teams_state: Initial_Teams_Type = {
   isManager: false,
   isMember: false,
   isAccountActive: false,
+  isCDPEnabled: false,
+  isCRMEnabled: false,
 };
 
 export const teamsContext = createContext(initial_teams_state);
@@ -32,7 +33,11 @@ export const TeamsProvider = ({ children }) => {
   const [currentTeam, setCurrentTeam] = useState<Teams | null>(null);
 
   const { trigger } = useChangeTeam();
-  const { data: teams, isLoading: teamsIsLoading, error: teamError } = useTeams();
+  const { data: teams, isLoading: teamsIsLoading, error: teamError } = useTeams<Teams[]>(null, {});
+  const { data: products, isLoading: isProductsLoading } = useGetAvailableProduct<Product[]>(
+    currentTeam?.id.toString(),
+  );
+
   const {
     data: myProfile,
     isLoading: profileIsloading,
@@ -44,6 +49,7 @@ export const TeamsProvider = ({ children }) => {
   const isGlobalLoading =
     teamsIsLoading ||
     profileIsloading ||
+    isProductsLoading ||
     teams === undefined ||
     (teams.length > 0 && myProfile === undefined) ||
     (currentTeam?.id && myProfile === undefined);
@@ -52,6 +58,8 @@ export const TeamsProvider = ({ children }) => {
   const isManager = myProfile?.role === "manager";
   const isMember = myProfile?.role === "member";
   const isAccountActive = myProfile?.status === "active";
+  const isCDPEnabled = !!products?.find((product) => product?.name === "CDP");
+  const isCRMEnabled = !!products?.find((product) => product?.name === "CRM");
 
   const changeCurrentTeam = useCallback(
     async (teamId: number) => {
@@ -137,38 +145,10 @@ export const TeamsProvider = ({ children }) => {
     console.log(profileError);
   }, [teamError, profileError]);
 
-  if (teams?.length === 0) {
-    return (
-      <>
-        <teamsContext.Provider
-          value={{
-            teams,
-            currentTeam,
-            myProfile,
-            setCurrentTeam,
-            changeCurrentTeam,
-            clearCurrentTeam,
-            isAdmin,
-            isManager,
-            isMember,
-            isAccountActive,
-          }}
-        >
-          <DashboardLayout hideSidebar>
-            {router.pathname.includes("/dashboards/management/profile") ? (
-              <ManagementProfileTabs />
-            ) : (
-              <NoTeam />
-            )}
-          </DashboardLayout>
-        </teamsContext.Provider>
-      </>
-    );
-  }
-
   return (
     <teamsContext.Provider
       value={{
+        teamProducts: products,
         teams,
         currentTeam,
         myProfile,
@@ -179,6 +159,8 @@ export const TeamsProvider = ({ children }) => {
         isManager,
         isMember,
         isAccountActive,
+        isCDPEnabled,
+        isCRMEnabled,
       }}
     >
       {isGlobalLoading && router.pathname.includes("dashboards") ? <GlobalLoading /> : children}

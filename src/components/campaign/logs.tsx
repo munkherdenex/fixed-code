@@ -34,7 +34,9 @@ const Logs: React.FC = () => {
         children: (
           <EuiText size="s" color={+log?.response_status === 1 ? "default" : "red"}>
             <p>
-              <EuiLink onClick={() => router.push(`/dashboards/audience/info/${log.customer_id}`)}>
+              <EuiLink
+                onClick={() => router.push(`/dashboards/cdp/audience/info/${log.customer_id}`)}
+              >
                 {log.customer}
               </EuiLink>{" "}
               ( {moment(log.created_at).format("YYYY-MM-DD LT")} )
@@ -54,7 +56,9 @@ const Logs: React.FC = () => {
                 +log?.response_status < 300 && +log?.response_status >= 200 ? "default" : "red"
               }
             >
-              <EuiLink onClick={() => router.push(`/dashboards/audience/info/${log.customer_id}`)}>
+              <EuiLink
+                onClick={() => router.push(`/dashboards/cdp/audience/info/${log.customer_id}`)}
+              >
                 {log.customer}
               </EuiLink>{" "}
               <span>( {moment(log.created_at).format("YYYY-MM-DD LT")} )</span>
