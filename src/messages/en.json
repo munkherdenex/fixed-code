@@ -12,10 +12,29 @@
     "forgot-password": "Forgot password"
   },
   "dashboards": {
-    "analytics": {
-      "title": "Analytics",
-      "subtitle": "Monitor your business performance",
-      "go-for-it": "Go for it"
+    "cdp": {
+      "analytics": {
+        "title": "Analytics",
+        "subtitle": "Monitor your business performance",
+        "go-for-it": "Go for it",
+        "cardlist": {
+          "audience": {
+            "title": "Audience",
+            "description": "The audience is the group of people you want to reach with your campaign. A segment is a subset of your audience that you define based on specific criteria.",
+            "footer": "Go for it"
+          },
+          "settings": {
+            "title": "Settings",
+            "description": "The settings are the configurations of your account. You can manage your profile, your team, and your preferences.",
+            "footer": "Go for it"
+          },
+          "campaign": {
+            "title": "Campaign",
+            "description": "The campaign is a marketing initiative that you want to send to your audience. It can be a newsletter, a promotion, or a survey.",
+            "footer": "Go for it"
+          }
+        }
+      }
     }
   },
   "About": {

@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 import Head from "next/head";
 import {
   EuiButton,
@@ -13,40 +13,36 @@ import { useRouter } from "next/router";
 import MetricChart from "../../../components/metric-chart";
 import DashboardLayout from "../../../layouts/dashboard";
 import { dashboardsStyles } from "../../../styles/dashboards.styles";
+import { useTranslations } from "next-intl";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
-const cardList = [
-  {
-    icon: "usersRolesApp",
-    title: "Audience & Segment",
-    description:
-      "The audience is the group of people you want to reach with your campaign. A segment is a subset of your audience that you define based on specific criteria.",
-    footer: "Go to Dashboards",
-    link: `${pathPrefix}/dashboards/cdp/audience`,
-  },
-  {
-    icon: "spacesApp",
-    title: "Campaign",
-    description:
-      "The campaign is a marketing initiative that you want to send to your audience. It can be a newsletter, a promotion, or a survey.",
-    footer: "Go to Save Objects",
-    link: `${pathPrefix}/dashboards/cdp/campaign`,
-  },
-  {
-    icon: "managementApp",
-    title: "Settings",
-    description:
-      "The settings are the configurations of your account. You can manage your profile, your team, and your preferences.",
-    footer: "Go to segments",
-    link: `${pathPrefix}/dashboards/settings/management`,
-  },
-];
-
 const Dashboard: FunctionComponent = () => {
   const router = useRouter();
+  const cardListT = useTranslations("dashboards.cdp.analytics.cardlist");
   const { euiTheme } = useEuiTheme();
   const styles = dashboardsStyles(euiTheme);
+
+  const cardList = useMemo(
+    () => [
+      {
+        name: "audience",
+        icon: "usersRolesApp",
+        link: `${pathPrefix}/dashboards/cdp/audience`,
+      },
+      {
+        name: "campaign",
+        icon: "spacesApp",
+        link: `${pathPrefix}/dashboards/cdp/campaign`,
+      },
+      {
+        name: "settings",
+        icon: "managementApp",
+        link: `${pathPrefix}/dashboards/settings/management`,
+      },
+    ],
+    [],
+  );
 
   return (
     <>
@@ -64,12 +60,15 @@ const Dashboard: FunctionComponent = () => {
                 <EuiFlexItem key={index}>
                   <EuiCard
                     icon={<EuiIcon size="xxl" type={card.icon} />}
-                    title={card.title}
-                    description={card.description}
+                    title={cardListT(`${card.name}.title`)}
+                    description={cardListT(`${card.name}.description`)}
                     footer={
                       <div>
-                        <EuiButton onClick={() => router.push(card.link)} aria-label={card.footer}>
-                          Go for it
+                        <EuiButton
+                          onClick={() => router.push(card.link)}
+                          aria-label={cardListT(`${card.name}.footer`)}
+                        >
+                          {cardListT(`${card.name}.footer`)}
                         </EuiButton>
                       </div>
                     }
@@ -83,5 +82,13 @@ const Dashboard: FunctionComponent = () => {
     </>
   );
 };
+
+export async function getStaticProps(context) {
+  return {
+    props: {
+      messages: (await import(`../../../messages/${context.locale}.json`)).default,
+    },
+  };
+}
 
 export default Dashboard;
