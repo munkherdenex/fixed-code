@@ -15,6 +15,7 @@ import useGetFields, { Fields } from "../../hooks/useGetFields";
 import AddSegmentsToAudience from "./add_segment_to_audience";
 import DeleteCustomerModal from "./delete_customer_modal";
 import UpdateCustomerComponent from "./update_customer";
+import AdminComponent from "../admin_component";
 
 const GeneralDetails = () => {
   const router = useRouter();
@@ -49,37 +50,39 @@ const GeneralDetails = () => {
                 <EuiFlexItem grow={false}>
                   <strong>Audience details</strong>
                 </EuiFlexItem>
-                <EuiFlexItem grow={false}>
-                  <EuiFlexGrid responsive={false} gutterSize="s" columns={3}>
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonIcon
-                        display="base"
-                        iconType="listAdd"
-                        aria-label="Add"
-                        color="success"
-                        onClick={() => setIsSegmentFlyoutVisible(true)}
-                      />
-                    </EuiFlexItem>
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonIcon
-                        display="base"
-                        iconType="trash"
-                        aria-label="Delete"
-                        color="danger"
-                        onClick={() => setIsModalVisible(true)}
-                      />
-                    </EuiFlexItem>
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonIcon
-                        display="base"
-                        iconType="pencil"
-                        aria-label="Update"
-                        color="primary"
-                        onClick={() => setIsFlyoutVisible(true)}
-                      />
-                    </EuiFlexItem>
-                  </EuiFlexGrid>
-                </EuiFlexItem>
+                <AdminComponent>
+                  <EuiFlexItem grow={false}>
+                    <EuiFlexGrid responsive={false} gutterSize="s" columns={3}>
+                      <EuiFlexItem grow={false}>
+                        <EuiButtonIcon
+                          display="base"
+                          iconType="listAdd"
+                          aria-label="Add"
+                          color="success"
+                          onClick={() => setIsSegmentFlyoutVisible(true)}
+                        />
+                      </EuiFlexItem>
+                      <EuiFlexItem grow={false}>
+                        <EuiButtonIcon
+                          display="base"
+                          iconType="trash"
+                          aria-label="Delete"
+                          color="danger"
+                          onClick={() => setIsModalVisible(true)}
+                        />
+                      </EuiFlexItem>
+                      <EuiFlexItem grow={false}>
+                        <EuiButtonIcon
+                          display="base"
+                          iconType="pencil"
+                          aria-label="Update"
+                          color="primary"
+                          onClick={() => setIsFlyoutVisible(true)}
+                        />
+                      </EuiFlexItem>
+                    </EuiFlexGrid>
+                  </EuiFlexItem>
+                </AdminComponent>
               </EuiFlexGroup>
             </EuiPanel>
           </EuiFlexItem>
