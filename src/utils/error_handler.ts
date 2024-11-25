@@ -12,24 +12,25 @@ export async function handleResponseNotOk(res: Response, showError: boolean = tr
     let data: any;
     const error = new Error();
 
-    if (res?.status === 404 && router?.pathname !== "/dashboards") {
-      router.replace("/dashboards");
-      return;
-    }
+    error.status = res.status;
+
     if (res?.headers?.get("content-type") === "application/json") {
       data = await res.json();
       error.message = JSON.stringify(data);
     }
 
-    error.status = res.status;
-
     if (showError) {
       addToast({
         id: "fields-list-error",
         color: "danger",
-        title: `${error?.status} An error occurred`,
+        title: `${error?.status}: An error occurred`,
         text: error?.message,
       });
+    }
+
+    if (res?.status === 404 && router?.pathname !== "/dashboards") {
+      router.replace("/dashboards");
+      return;
     }
 
     throw error;

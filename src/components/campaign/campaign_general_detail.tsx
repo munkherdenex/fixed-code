@@ -1,4 +1,5 @@
 import {
+  EuiBadge,
   EuiButtonIcon,
   EuiCallOut,
   EuiConfirmModal,
@@ -25,6 +26,7 @@ import useGetCampaignSuccessErrorCount, {
 import { useCampaignContext } from "../../store/campaign_store";
 import { getDataKind } from "../../utils/helper";
 import ReccurenceRuleLayout from "./reccurence_rule_layout";
+import { badgeColor } from "../../utils/badge_color";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -169,11 +171,7 @@ const CampaignGeneralDetails = () => {
               <EuiPanel hasBorder={true}>
                 <EuiFlexItem>
                   <EuiStat
-                    title={
-                      <EuiTextColor color="primary">
-                        <span>{data?.status}</span>
-                      </EuiTextColor>
-                    }
+                    title={<EuiBadge color={badgeColor(data?.status)}>{data?.status}</EuiBadge>}
                     description={
                       <EuiTextColor color="default">
                         <span>Status</span>
