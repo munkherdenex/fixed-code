@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  EuiBadge,
   EuiButtonIcon,
   EuiFlexGrid,
   EuiFlexGroup,
@@ -99,6 +100,12 @@ const GeneralDetails = () => {
               <EuiFlexItem>Reference ID :</EuiFlexItem>
               <EuiFlexItem>
                 {data?.rid ? data?.rid : <EuiTextColor color="subdued">None</EuiTextColor>}
+              </EuiFlexItem>
+              <EuiFlexItem>Subscribed :</EuiFlexItem>
+              <EuiFlexItem>
+                <div>
+                  <EuiBadge>{data?.is_subscribed.toString()}</EuiBadge>
+                </div>
               </EuiFlexItem>
               <EuiFlexItem>Created date :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>

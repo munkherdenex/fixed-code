@@ -20,6 +20,7 @@ export interface CustomersType {
   updated_by: string;
   source: string;
   team_id: string;
+  is_subscribed: boolean;
 }
 
 export interface CustomersResponse {
