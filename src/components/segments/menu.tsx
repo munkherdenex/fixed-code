@@ -35,8 +35,10 @@ const Menu = () => {
 
   return (
     <>
-      <EuiTabs>{renderTabs()}</EuiTabs>
-      <EuiPanel>{selectedTabContent}</EuiPanel>
+      <div>
+        <EuiTabs>{renderTabs()}</EuiTabs>
+        <EuiPanel>{selectedTabContent}</EuiPanel>
+      </div>
     </>
   );
 };
