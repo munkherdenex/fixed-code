@@ -1,21 +1,40 @@
 import {
   EuiButtonEmpty,
+  EuiButtonIcon,
+  EuiFieldText,
   EuiFlexGroup,
   EuiFlexItem,
   EuiPanel,
   EuiSpacer,
   EuiStat,
+  EuiTextArea,
   EuiTextColor,
   EuiTimeline,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import { useManagementTeamsContext } from "../../store/management_teams_store";
 import { teamsContext } from "../../store/teams_store";
 import { convertToTree } from "../../utils/convertToTree";
+import useUpdateTeamName from "../../hooks/useUpdateTeamName";
 
 const TeamGeneralInfo = () => {
-  const { currentTeam } = useManagementTeamsContext();
+  const { currentTeam, isAdmin, refetchTeam } = useManagementTeamsContext();
+  const { trigger } = useUpdateTeamName(currentTeam?.id.toString());
+
+  const [edit, setEdit] = useState(false);
+  const [name, setName] = useState(currentTeam?.name);
+  const [description, setDescription] = useState(currentTeam?.description);
+
+  const handleSave = async () => {
+    try {
+      await trigger({ name: name, description: description, admin_id: currentTeam?.admin_id });
+      refetchTeam();
+      setEdit(!edit);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -23,17 +42,64 @@ const TeamGeneralInfo = () => {
         <EuiFlexGroup direction="column">
           <EuiFlexItem>
             <EuiPanel paddingSize="s" color="subdued">
-              <EuiFlexGroup justifyContent="spaceBetween">
+              <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
                 <EuiFlexItem grow={false}>Team info</EuiFlexItem>
+                {isAdmin && (
+                  <EuiFlexItem grow={false}>
+                    {edit ? (
+                      <EuiFlexGroup gutterSize="none">
+                        <EuiFlexItem>
+                          <EuiButtonIcon
+                            iconType="cross"
+                            color="danger"
+                            size="s"
+                            onClick={() => {
+                              setEdit(!edit);
+                            }}
+                          />
+                        </EuiFlexItem>
+                        <EuiFlexItem>
+                          <EuiButtonIcon
+                            iconType="save"
+                            color="success"
+                            size="s"
+                            onClick={() => {
+                              handleSave();
+                            }}
+                          />
+                        </EuiFlexItem>
+                      </EuiFlexGroup>
+                    ) : (
+                      <EuiButtonIcon
+                        iconType="pencil"
+                        color="primary"
+                        size="s"
+                        onClick={() => {
+                          setEdit(!edit);
+                        }}
+                      />
+                    )}
+                  </EuiFlexItem>
+                )}
               </EuiFlexGroup>
             </EuiPanel>
           </EuiFlexItem>
           <EuiFlexItem>
-            <EuiFlexGroup alignItems="center">
-              <EuiPanel hasBorder={true}>
-                <EuiFlexItem>
+            <EuiFlexGroup>
+              <EuiFlexItem>
+                <EuiPanel hasBorder={true}>
                   <EuiStat
-                    title={currentTeam?.name}
+                    title={
+                      edit ? (
+                        <EuiFieldText
+                          placeholder="Enter team name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                        />
+                      ) : (
+                        currentTeam?.name
+                      )
+                    }
                     description={
                       <EuiTextColor color="default">
                         <span>Name</span>
@@ -41,14 +107,22 @@ const TeamGeneralInfo = () => {
                     }
                     titleSize="xs"
                   />
-                </EuiFlexItem>
-              </EuiPanel>
-
-              <EuiPanel hasBorder={true} style={{ height: "100%" }}>
-                <EuiFlexItem>
+                </EuiPanel>
+              </EuiFlexItem>
+              <EuiFlexItem>
+                <EuiPanel hasBorder={true}>
                   <EuiStat
                     title={
-                      currentTeam?.description ? (
+                      edit ? (
+                        <EuiTextArea
+                          style={{
+                            height: "40px",
+                          }}
+                          placeholder="Enter team description"
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                        />
+                      ) : currentTeam?.description ? (
                         currentTeam?.description
                       ) : (
                         <EuiTextColor color="subdued">No description</EuiTextColor>
@@ -61,8 +135,8 @@ const TeamGeneralInfo = () => {
                     }
                     titleSize="xs"
                   />
-                </EuiFlexItem>
-              </EuiPanel>
+                </EuiPanel>
+              </EuiFlexItem>
             </EuiFlexGroup>
           </EuiFlexItem>
         </EuiFlexGroup>

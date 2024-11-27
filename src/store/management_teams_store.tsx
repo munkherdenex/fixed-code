@@ -11,12 +11,14 @@ const initialSegmentState: {
   isAdmin: boolean;
   isManager: boolean;
   isMember: boolean;
+  refetchTeam: () => void;
 } = {
   currentTeam: undefined,
   myProfile: undefined,
   isAdmin: false,
   isManager: false,
   isMember: false,
+  refetchTeam: () => {},
 };
 
 export const managementTeamsContext = createContext(initialSegmentState);
@@ -28,7 +30,7 @@ export const useManagementTeamsContext = () => {
 export const ManagementTeamsProvider = ({ children }) => {
   const router = useRouter();
   const id = isNumber(router.query.id) ? router.query.id : "";
-  const { data } = useTeams<Teams>(id.toString(), {
+  const { data, mutate } = useTeams<Teams>(id.toString(), {
     parent_team: "True",
   });
 
@@ -42,7 +44,7 @@ export const ManagementTeamsProvider = ({ children }) => {
 
   return (
     <managementTeamsContext.Provider
-      value={{ currentTeam: data, myProfile, isAdmin, isManager, isMember }}
+      value={{ currentTeam: data, myProfile, isAdmin, isManager, isMember, refetchTeam: mutate }}
     >
       {children}
     </managementTeamsContext.Provider>

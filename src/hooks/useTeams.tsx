@@ -9,6 +9,7 @@ export default function useTeams<Type>(
   queryParam?: { [key: string]: string },
 ): {
   data: Type;
+  mutate: () => void;
   error: any;
   isLoading: boolean;
 } {
@@ -18,7 +19,7 @@ export default function useTeams<Type>(
   const path = router.pathname.includes("dashboard") ? `/api/v1/teams?${preparedQueryParam}` : null;
   const idPath = id ? `/api/v1/teams/${id}?${preparedQueryParam}` : path;
 
-  const { data, error, isLoading } = useSWRImmutable(idPath, async (path) => {
+  const { data, error, isLoading, mutate } = useSWRImmutable(idPath, async (path) => {
     const res = await fetch(`${BASE_URL}${path}`, {
       method: "GET",
       headers: { "content-type": "application/json" },
@@ -29,6 +30,7 @@ export default function useTeams<Type>(
   });
 
   return {
+    mutate,
     data,
     error,
     isLoading,

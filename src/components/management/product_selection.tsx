@@ -36,10 +36,13 @@ const ProductSelection = () => {
   const { trigger: deleteTrigger } = useDeleteProductFromTeam(deleteProductId, currentTeam?.id);
 
   const preparedData = useMemo(() => {
-    return data?.reduce((acc, product) => {
-      acc[product.name] = true;
-      return acc;
-    }, {} as Record<string, boolean>);
+    return data?.reduce(
+      (acc, product) => {
+        acc[product.name] = true;
+        return acc;
+      },
+      {} as Record<string, boolean>,
+    );
   }, [data]);
 
   const { control, reset } = useForm({
@@ -85,51 +88,53 @@ const ProductSelection = () => {
   }
 
   return (
-    <EuiPanel>
-      <EuiFlexGroup direction="column">
-        <EuiFlexItem>
-          <EuiPanel paddingSize="s" color="subdued">
-            Select products
-          </EuiPanel>
-        </EuiFlexItem>
-        <EuiFlexItem>
-          <EuiForm component="form">
-            <EuiFormRow>
-              <EuiKeyPadMenu style={{ width: "fit-content" }}>
-                {avialableProducts.map((product) => {
-                  return (
-                    <Controller
-                      control={control}
-                      key={product.name}
-                      name={product.name}
-                      render={({ field: { onChange, value } }) => (
-                        <EuiKeyPadMenuItem
-                          isSelected={value}
-                          checkable="multi"
-                          label={product.name}
-                          onChange={() => {
-                            onChange(!value);
-                            if (value) {
-                              setProductId(null);
-                              setDeleteProductId(product.id);
-                            } else {
-                              setProductId(product.id);
-                              setDeleteProductId(null);
-                            }
-                          }}
-                        >
-                          <EuiIcon type={product.icon} size="l" />
-                        </EuiKeyPadMenuItem>
-                      )}
-                    />
-                  );
-                })}
-              </EuiKeyPadMenu>
-            </EuiFormRow>
-          </EuiForm>
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </EuiPanel>
+    <div>
+      <EuiPanel>
+        <EuiFlexGroup direction="column">
+          <EuiFlexItem>
+            <EuiPanel paddingSize="s" color="subdued">
+              Select products
+            </EuiPanel>
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiForm component="form">
+              <EuiFormRow>
+                <EuiKeyPadMenu style={{ width: "fit-content" }}>
+                  {avialableProducts.map((product) => {
+                    return (
+                      <Controller
+                        control={control}
+                        key={product.name}
+                        name={product.name}
+                        render={({ field: { onChange, value } }) => (
+                          <EuiKeyPadMenuItem
+                            isSelected={value}
+                            checkable="multi"
+                            label={product.name}
+                            onChange={() => {
+                              onChange(!value);
+                              if (value) {
+                                setProductId(null);
+                                setDeleteProductId(product.id);
+                              } else {
+                                setProductId(product.id);
+                                setDeleteProductId(null);
+                              }
+                            }}
+                          >
+                            <EuiIcon type={product.icon} size="l" />
+                          </EuiKeyPadMenuItem>
+                        )}
+                      />
+                    );
+                  })}
+                </EuiKeyPadMenu>
+              </EuiFormRow>
+            </EuiForm>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiPanel>
+    </div>
   );
 };
 
