@@ -28,7 +28,11 @@ const TeamGeneralInfo = () => {
 
   const handleSave = async () => {
     try {
-      await trigger({ name: name, description: description, admin_id: currentTeam?.admin_id });
+      await trigger({
+        name: name || currentTeam?.name,
+        description: description || currentTeam?.description,
+        admin_id: currentTeam?.admin_id,
+      });
       refetchTeam();
       setEdit(!edit);
     } catch (error) {
@@ -93,7 +97,7 @@ const TeamGeneralInfo = () => {
                       edit ? (
                         <EuiFieldText
                           placeholder="Enter team name"
-                          value={name}
+                          value={name || currentTeam?.name}
                           onChange={(e) => setName(e.target.value)}
                         />
                       ) : (
@@ -119,7 +123,7 @@ const TeamGeneralInfo = () => {
                             height: "40px",
                           }}
                           placeholder="Enter team description"
-                          value={description}
+                          value={description || currentTeam?.description}
                           onChange={(e) => setDescription(e.target.value)}
                         />
                       ) : currentTeam?.description ? (
