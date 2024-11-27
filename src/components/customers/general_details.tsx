@@ -17,15 +17,19 @@ import AddSegmentsToAudience from "./add_segment_to_audience";
 import DeleteCustomerModal from "./delete_customer_modal";
 import UpdateCustomerComponent from "./update_customer";
 import AdminComponent from "../admin_component";
+import { useTranslations } from "next-intl";
 
 const GeneralDetails = () => {
   const router = useRouter();
+  const audientT = useTranslations();
+
   const { data, isLoading } = useGetCustomers<CustomersType>(router.query.id, {
     extended: "true",
   });
   const { data: fields } = useGetFields<Fields[]>(undefined, {
     all: "true",
   });
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSegmentFlyoutVisible, setIsSegmentFlyoutVisible] = useState(false);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
@@ -49,7 +53,7 @@ const GeneralDetails = () => {
             <EuiPanel paddingSize="s" color="subdued">
               <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="center">
                 <EuiFlexItem grow={false}>
-                  <strong>Audience details</strong>
+                  <strong>{audientT("audience-details")}</strong>
                 </EuiFlexItem>
                 <AdminComponent>
                   <EuiFlexItem grow={false}>
@@ -89,27 +93,27 @@ const GeneralDetails = () => {
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiFlexGrid responsive={false} columns={2}>
-              <EuiFlexItem>Email address :</EuiFlexItem>
+              <EuiFlexItem>{audientT("email-address")} :</EuiFlexItem>
               <EuiFlexItem>
                 {data?.email ? data?.email : <EuiTextColor color="subdued">None</EuiTextColor>}
               </EuiFlexItem>
-              <EuiFlexItem>Phone number :</EuiFlexItem>
+              <EuiFlexItem>{audientT("phone-number")} :</EuiFlexItem>
               <EuiFlexItem>
                 {data?.phone ? data?.phone : <EuiTextColor color="subdued">None</EuiTextColor>}
               </EuiFlexItem>
-              <EuiFlexItem>Reference ID :</EuiFlexItem>
+              <EuiFlexItem>{audientT("reference-id")} :</EuiFlexItem>
               <EuiFlexItem>
                 {data?.rid ? data?.rid : <EuiTextColor color="subdued">None</EuiTextColor>}
               </EuiFlexItem>
-              <EuiFlexItem>Subscribed :</EuiFlexItem>
+              <EuiFlexItem>{audientT("subscription-status")} :</EuiFlexItem>
               <EuiFlexItem>
                 <div>
                   <EuiBadge>{data?.is_subscribed.toString()}</EuiBadge>
                 </div>
               </EuiFlexItem>
-              <EuiFlexItem>Created date :</EuiFlexItem>
+              <EuiFlexItem>{audientT("created-date")} :</EuiFlexItem>
               <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-              <EuiFlexItem>Updated date :</EuiFlexItem>
+              <EuiFlexItem>{audientT("updated-date")} :</EuiFlexItem>
               <EuiFlexItem> {moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
             </EuiFlexGrid>
           </EuiFlexItem>
@@ -119,7 +123,7 @@ const GeneralDetails = () => {
                 <EuiPanel paddingSize="s" color="subdued">
                   <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
                     <EuiFlexItem grow={false}>
-                      <strong>Custom attributes</strong>
+                      <strong>{audientT("custom-attributes")}</strong>
                     </EuiFlexItem>
                   </EuiFlexGroup>
                 </EuiPanel>

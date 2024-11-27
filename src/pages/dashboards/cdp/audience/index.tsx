@@ -18,7 +18,7 @@ const CustomersDashboard = () => {
   return (
     <>
       <Head>
-        <title>Audience</title>
+        <title>{audienceT("title")}</title>
       </Head>
       <DashboardLayout
         pageHeader={{

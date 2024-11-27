@@ -3,6 +3,7 @@ import router from "next/router";
 import { SetStateAction, useState } from "react";
 import useDeleteCustomer from "../../hooks/useDeleteCustomer";
 import { addToast } from "../toast";
+import { useTranslations } from "next-intl";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -11,12 +12,13 @@ const DeleteCustomerModal = ({
 }: {
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
+  const audienceT = useTranslations();
   const { customerDeleteTrigger, isMutating } = useDeleteCustomer(router.query.id);
   const [deleteMessage, setDeleteMessage] = useState("");
 
   return (
     <EuiConfirmModal
-      title="Warning"
+      title={audienceT("warning")}
       isLoading={isMutating}
       onCancel={() => setIsModalVisible(false)}
       confirmButtonDisabled={deleteMessage.toLowerCase() !== "delete"}
@@ -30,15 +32,15 @@ const DeleteCustomerModal = ({
         addToast({
           id: "customer-deleted",
           color: "success",
-          title: "Success",
-          text: "Successfully deleted",
+          title: audienceT("success.title"),
+          text: audienceT("success.customer-deleted"),
         });
       }}
       confirmButtonText="Delete"
       cancelButtonText="Cancel"
       buttonColor="danger"
     >
-      <EuiFormRow label="Type the word 'delete' to confirm">
+      <EuiFormRow label={audienceT("type-the-word-delete")}>
         <EuiFieldText
           name="delete"
           value={deleteMessage}

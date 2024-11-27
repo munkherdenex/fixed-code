@@ -100,7 +100,11 @@ const CustomersTable = () => {
         name: audienceT("created-at"),
         align: "right",
         render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
-        footer: () => <strong>Total: {data?.total_count || 0}</strong>,
+        footer: () => (
+          <strong>
+            {audienceT("total-audience")}: {data?.total_count || 0}
+          </strong>
+        ),
         mobileOptions: { enlarge: true },
       },
     ],
@@ -151,7 +155,7 @@ const CustomersTable = () => {
   }, [queryPageIndex, queryPageSize, querySearch]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>{audienceT("loading")}</div>;
   }
 
   if (data?.results?.length === 0 && !searchValue && pageIndex === 0) {
@@ -161,7 +165,7 @@ const CustomersTable = () => {
         title={<h2>Create your audience</h2>}
         layout="horizontal"
         color="plain"
-        body={<p>The audience description</p>}
+        body={<p>{audienceT("the-audience-description")}</p>}
         actions={<CreateCustomerFlyoutContainer />}
       />
     );
@@ -180,7 +184,7 @@ const CustomersTable = () => {
             <EuiFieldSearch
               defaultValue={searchValue}
               onSearch={onSearchEmailAddress}
-              placeholder="Search Audiences"
+              placeholder={audienceT("search-audience")}
             />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>

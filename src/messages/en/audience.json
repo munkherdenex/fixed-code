@@ -11,5 +11,25 @@
   "source": "Source",
   "created-by": "Created by",
   "created-at": "Created at",
-  "custom-attributes": "Custom attributes"
+  "custom-attributes": "Custom attributes",
+  "the-audience-description": "The audience description",
+  "loading": "Loading...",
+  "search-audience": "Search audience",
+  "total-audience": "Total audience",
+  "audience-info": "Audience info",
+  "audience-details": "Audience details",
+  "email-address": "Email address",
+  "phone-number": "Phone number",
+  "reference-id": "Reference ID",
+  "created-date": "Created date",
+  "updated-date": "Updated date",
+  "subscription-status": "Subscription status",
+  "warning": "Warning",
+  "type-the-word-delete": "Type the word 'delete' to confirm",
+  "success": {
+    "title": "Success",
+    "import-audience": "Audience imported successfully",
+    "create-audience": "Audience created successfully",
+    "delete-audience": "Audience deleted successfully"
+  }
 }
