@@ -1,5 +1,4 @@
 import {
-  EuiBreadcrumbs,
   EuiButton,
   EuiCard,
   EuiFieldText,
@@ -18,15 +17,14 @@ import {
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { FunctionComponent, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import Dynamic from "../../../../../components/segments/dynamic";
 import Manual from "../../../../../components/segments/manual";
 import DashboardLayout from "../../../../../layouts/dashboard";
-
-const pathPrefix = process.env.PATH_PREFIX;
+import { useTranslations } from "next-intl";
+import { GetStaticProps } from "next/types";
 
 const schema = yup.object({
   name: yup.string().required().label("Name"),
@@ -36,7 +34,8 @@ const schema = yup.object({
 type MyFormData = yup.InferType<typeof schema>;
 
 const Dashboard: FunctionComponent = () => {
-  const router = useRouter();
+  const translate = useTranslations();
+
   const [firstFormData, setFirstFormData] = useState<MyFormData | null>(null);
   const [selectedCard, setCard] = useState(2);
   const [openFlyout, setOpenFlyout] = useState(false);
@@ -65,31 +64,13 @@ const Dashboard: FunctionComponent = () => {
   return (
     <>
       <Head>
-        <title>Create segment</title>
+        <title>{translate("create-segment")}</title>
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Create segment",
+          pageTitle: translate("create-segment"),
           iconType: "dashboardApp",
         }}
-        breadCrumb={
-          <EuiBreadcrumbs
-            breadcrumbs={[
-              {
-                text: "Dashboards",
-                onClick: () => router.push(`${pathPrefix}/dashboards/cdp`),
-              },
-              {
-                text: "Segments",
-                onClick: () => router.push(`${pathPrefix}/dashboards/cdp/segments`),
-              },
-              {
-                text: "Create segment",
-              },
-            ]}
-            truncate={false}
-          />
-        }
       >
         <>
           <EuiPanel>
@@ -97,7 +78,7 @@ const Dashboard: FunctionComponent = () => {
               <EuiFlexGroup direction="column">
                 <EuiFlexItem>
                   <EuiFormRow
-                    label="Name"
+                    label={translate("name")}
                     isInvalid={!!errors.name?.message}
                     error={[errors.name?.message]}
                   >
@@ -109,14 +90,14 @@ const Dashboard: FunctionComponent = () => {
                           onChange={onChange}
                           value={value}
                           onBlur={onBlur}
-                          placeholder={name}
+                          placeholder={translate("name")}
                           fullWidth
                           isInvalid={!!errors.name?.message}
                         />
                       )}
                     />
                   </EuiFormRow>
-                  <EuiFormRow label="Description">
+                  <EuiFormRow label={translate("description")}>
                     <Controller
                       control={control}
                       name="description"
@@ -125,8 +106,8 @@ const Dashboard: FunctionComponent = () => {
                           onChange={onChange}
                           value={value}
                           onBlur={onBlur}
-                          placeholder="Placeholder text"
-                          name="description"
+                          placeholder={translate("description")}
+                          fullWidth
                           aria-label="Use aria labels when no actual label is in use"
                         />
                       )}
@@ -138,8 +119,8 @@ const Dashboard: FunctionComponent = () => {
                     <EuiFlexItem>
                       <EuiCard
                         icon={<EuiIcon size="xxl" type="sqlApp" />}
-                        title="Dynamic"
-                        description="Create a dynamic segment based on a query."
+                        title={translate("dynamic")}
+                        description={translate("dynamic-segment-description")}
                         selectable={{
                           onClick: () => cardClicked(2),
                           isSelected: selectedCard === 2,
@@ -149,8 +130,8 @@ const Dashboard: FunctionComponent = () => {
                     <EuiFlexItem>
                       <EuiCard
                         icon={<EuiIcon size="xxl" type="notebookApp" />}
-                        title="Manual"
-                        description="Create a manual segment based on a file and text."
+                        title={translate("manual")}
+                        description={translate("manual-segment-description")}
                         selectable={{
                           onClick: () => cardClicked(3),
                           isSelected: selectedCard === 3,
@@ -160,7 +141,7 @@ const Dashboard: FunctionComponent = () => {
                   </EuiFlexGroup>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiButton type="submit">Add segment</EuiButton>
+                  <EuiButton type="submit">{translate("add-segment")}</EuiButton>
                 </EuiFlexItem>
               </EuiFlexGroup>
             </EuiForm>
@@ -170,8 +151,8 @@ const Dashboard: FunctionComponent = () => {
               <EuiFlyoutHeader hasBorder aria-labelledby={flyoutTitleId}>
                 <EuiTitle>
                   <h2 id={flyoutTitleId}>
-                    {selectedCard === 1 && "Static"} {selectedCard === 2 && "Dynamic"}{" "}
-                    {selectedCard === 3 && "Manual"}
+                    {selectedCard === 2 && translate("dynamic")}{" "}
+                    {selectedCard === 3 && translate("manual")}
                   </h2>
                 </EuiTitle>
               </EuiFlyoutHeader>
@@ -189,6 +170,14 @@ const Dashboard: FunctionComponent = () => {
       </DashboardLayout>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  return {
+    props: {
+      messages: (await import(`../../../../../messages/${context.locale}/segments.json`)).default,
+    },
+  };
 };
 
 export default Dashboard;

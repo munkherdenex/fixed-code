@@ -16,6 +16,10 @@ const audienceSegmentPaths = [
     path: "/dashboards/cdp/campaign",
     name: "Campaign",
   },
+  {
+    path: "/dashboards/cdp/analytics",
+    name: "Analytics",
+  },
 ];
 
 const Sidebar = () => {

@@ -46,7 +46,7 @@ const ChangeChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const router = useRouter();
   const { data } = useCampaignContext();
   const { isMutating, trigger } = useUpdateTemplate(router.query.id);
-  const { data: channelsData } = useGetChannels<Channels[]>(undefined, {
+  const { data: channelsData, isLoading } = useGetChannels<Channels[]>(undefined, {
     all: `${true}`,
   });
 
@@ -125,45 +125,48 @@ const ChangeChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
-        <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-          <EuiFormRow
-            label="Channel"
-            isInvalid={!!errors.channel?.message}
-            error={[errors.channel?.message]}
-          >
-            <EuiFlexGroup alignItems="center">
-              <EuiFlexItem
-                style={
-                  channelDataOptions.length === 0
-                    ? {
-                        display: "none",
-                      }
-                    : {}
-                }
-              >
-                <Controller
-                  control={control}
-                  name="channel"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiSelect
-                      onChange={onChange}
-                      value={value}
-                      options={channelDataOptions}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.channel?.message}
-                      aria-label="data type"
-                      hasNoInitialSelection
-                    />
-                  )}
-                />
-              </EuiFlexItem>
-              <JumpToCreateChannelButton show={channelDataOptions.length === 0} />
-            </EuiFlexGroup>
-          </EuiFormRow>
-          <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-            Change channel
-          </EuiButton>
-        </EuiForm>
+        {isLoading && <div>Loading...</div>}
+        {!isLoading && (
+          <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+            <EuiFormRow
+              label="Channel"
+              isInvalid={!!errors.channel?.message}
+              error={[errors.channel?.message]}
+            >
+              <EuiFlexGroup alignItems="center">
+                <EuiFlexItem
+                  style={
+                    channelDataOptions.length === 0
+                      ? {
+                          display: "none",
+                        }
+                      : {}
+                  }
+                >
+                  <Controller
+                    control={control}
+                    name="channel"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <EuiSelect
+                        onChange={onChange}
+                        value={value}
+                        options={channelDataOptions}
+                        onBlur={onBlur}
+                        isInvalid={!!errors.channel?.message}
+                        aria-label="data type"
+                        hasNoInitialSelection
+                      />
+                    )}
+                  />
+                </EuiFlexItem>
+                <JumpToCreateChannelButton show={channelDataOptions.length === 0} />
+              </EuiFlexGroup>
+            </EuiFormRow>
+            <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
+              Change channel
+            </EuiButton>
+          </EuiForm>
+        )}
       </EuiFlyoutBody>
     </EuiFlyout>
   );

@@ -1,41 +1,25 @@
-import { EuiBreadcrumbs, useGeneratedHtmlId } from "@elastic/eui";
+import { useGeneratedHtmlId } from "@elastic/eui";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import CreateCampaignActionPopover from "../../../../components/campaign/create_campaign_action_popover";
 import SendsTable from "../../../../components/campaign/table";
 import DashboardLayout from "../../../../layouts/dashboard";
-
-const pathPrefix = process.env.PATH_PREFIX;
+import { useTranslations } from "next-intl";
 
 const SendsDashboard = () => {
-  const router = useRouter();
   const rightSideItemOneId = useGeneratedHtmlId();
+  const translate = useTranslations();
 
   return (
     <>
       <Head>
-        <title>Campaign</title>
+        <title>{translate("campaign")}</title>
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Campaign",
+          pageTitle: translate("campaign"),
           iconType: "spacesApp",
           rightSideItems: [<CreateCampaignActionPopover key={rightSideItemOneId} />],
         }}
-        breadCrumb={
-          <EuiBreadcrumbs
-            breadcrumbs={[
-              {
-                text: "Dashboards",
-                onClick: () => router.push(`${pathPrefix}/dashboards`),
-              },
-              {
-                text: "Campaign",
-              },
-            ]}
-            truncate={false}
-          />
-        }
       >
         <div>
           <SendsTable />
@@ -44,5 +28,13 @@ const SendsDashboard = () => {
     </>
   );
 };
+
+export async function getStaticProps(context) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}/campaign.json`)).default,
+    },
+  };
+}
 
 export default SendsDashboard;

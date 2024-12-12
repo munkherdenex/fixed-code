@@ -24,6 +24,7 @@ import { isJson } from "../../utils/is_json";
 import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 import { addToast } from "../toast";
 import TestEmailLayout from "./test_email_layout";
+import { useTranslations } from "next-intl";
 
 const QuillEditorComponent = dynamic(() => import("../email_editor/quill_editor"), { ssr: false });
 
@@ -49,6 +50,7 @@ type EmailFormData = yup.InferType<typeof schema>;
 const EditEmailLayout = () => {
   const router = useRouter();
   const styles = quillEditorStyles();
+  const translate = useTranslations();
 
   const [isViewEmail, setIsViewEmail] = useState(true);
   const [isTestLayout, setIsTestLayout] = useState(false);
@@ -132,7 +134,7 @@ const EditEmailLayout = () => {
         <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
           <EuiFlexItem grow={false}>
             <EuiFormRow
-              label="Subject"
+              label={translate("title")}
               isInvalid={!!errors.title?.message}
               error={[errors.title?.message]}
             >
@@ -146,8 +148,8 @@ const EditEmailLayout = () => {
                     onBlur={onBlur}
                     readOnly={isViewEmail}
                     isInvalid={!!errors.title?.message}
-                    placeholder="Subject"
-                    aria-label="Subject"
+                    placeholder={translate("title")}
+                    aria-label={translate("title")}
                   />
                 )}
               />
@@ -155,7 +157,7 @@ const EditEmailLayout = () => {
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             {isViewEmail && (
-              <EuiFlexGroup gutterSize="xl" alignItems="flexEnd" justifyContent="flexEnd">
+              <EuiFlexGroup alignItems="flexEnd" justifyContent="flexEnd">
                 <EuiFlexItem grow={false}>
                   <EuiToolTip position="top" content="send test function on Email campaign">
                     <EuiButton
@@ -164,7 +166,7 @@ const EditEmailLayout = () => {
                         setIsTestLayout(true);
                       }}
                     >
-                      Test
+                      {translate("test")}
                     </EuiButton>
                   </EuiToolTip>
                 </EuiFlexItem>
@@ -203,7 +205,7 @@ const EditEmailLayout = () => {
                 </EuiFlexItem>
                 <EuiFlexItem>
                   <EuiButton isLoading={isMutating} disabled={isMutating} size="s" type="submit">
-                    Update Campaign
+                    {translate("update_campaign")}
                   </EuiButton>
                 </EuiFlexItem>
               </EuiFlexGroup>

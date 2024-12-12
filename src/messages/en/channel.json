@@ -1,0 +1,11 @@
+{
+  "channels": "Channels",
+  "create_channel": "Create channel",
+  "create_channel_description": "The channel is a way to communicate with your customers.",
+  "channel_details": "Channel details",
+  "delete_channel": "Delete channel",
+  "delete_warning": "This will delete the channel and all its data. This action cannot be undone. Please type the word 'delete' to confirm. (Campaigns and other related data will be)",
+  "delete_label": "Delete label",
+  "update_channel": "Update channel",
+  "add_header": "Add header"
+}

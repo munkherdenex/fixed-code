@@ -11,10 +11,12 @@ import { isNotValid } from "../../utils/helper";
 import { processDynamicFieldData } from "../../utils/process_data";
 import { customRuleProcessor } from "../../utils/rule_processer";
 import { dynamicStyles } from "./dynamic.styles";
+import { useTranslations } from "next-intl";
 
 const Dynamic = ({ name, description }: { name: string; description: string }) => {
   const styles = dynamicStyles();
   const router = useRouter();
+  const translate = useTranslations();
 
   const { trigger: createSegmentDynamic, isMutating: isCreateSegmentDynamicMutating } =
     useCreateSegmentDynamic();
@@ -55,7 +57,11 @@ const Dynamic = ({ name, description }: { name: string; description: string }) =
   return (
     <>
       <EuiForm component="form" onSubmit={createSegment}>
-        <EuiFormRow css={styles.queryBuilderContainer} label="Dynamic query builder" fullWidth>
+        <EuiFormRow
+          css={styles.queryBuilderContainer}
+          label={translate("dynamic-query-builder")}
+          fullWidth
+        >
           <QueryBuilder
             fields={[...QUERY_BUILDER_DEFAULT_FIELD, ...output]}
             query={query}
@@ -73,7 +79,7 @@ const Dynamic = ({ name, description }: { name: string; description: string }) =
             type="submit"
             isLoading={isCreateSegmentDynamicMutating}
           >
-            Create Segment
+            {translate("create-segment")}
           </EuiButton>
         </EuiFormRow>
       </EuiForm>

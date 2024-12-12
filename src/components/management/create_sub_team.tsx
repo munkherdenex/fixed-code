@@ -1,9 +1,11 @@
 import { EuiButton, EuiFlexItem } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useManagementTeamsContext } from "../../store/management_teams_store";
+import { useTranslations } from "next-intl";
 
 const CreateSubTeam = () => {
   const router = useRouter();
+  const translate = useTranslations();
   const { currentTeam, isAdmin } = useManagementTeamsContext();
 
   const isParentTeam = currentTeam?.parent_id === null;
@@ -21,7 +23,7 @@ const CreateSubTeam = () => {
             }
           }}
         >
-          Create sub team
+          {translate("create_sub_team")}
         </EuiButton>
       </EuiFlexItem>
     );

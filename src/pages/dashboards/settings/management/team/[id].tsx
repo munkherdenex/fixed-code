@@ -1,4 +1,6 @@
 import { EuiFlexGroup, EuiFlexItem, useGeneratedHtmlId } from "@elastic/eui";
+import { useTranslations } from "next-intl";
+import { GetStaticProps } from "next/types";
 import CreateSubTeam from "../../../../../components/management/create_sub_team";
 import { InviteUserFlyoutContainer } from "../../../../../components/management/invite_user_flyout";
 import MembersTable from "../../../../../components/management/members_table";
@@ -13,12 +15,16 @@ import {
 } from "../../../../../store/management_teams_store";
 
 const Information = () => {
+  const translate = useTranslations();
+
   const { currentTeam, isAdmin } = useManagementTeamsContext();
 
   return (
     <DashboardSettings
       pageHeader={{
-        pageTitle: `Team: ${currentTeam?.name}`,
+        pageTitle: translate("team_name", {
+          name: currentTeam?.name,
+        }),
         iconType: "managementApp",
         rightSideItems: [
           <CreateSubTeam key={useGeneratedHtmlId()} />,
@@ -56,6 +62,27 @@ const TeamInfo = () => {
       <Information />
     </ManagementTeamsProvider>
   );
+};
+
+export async function getStaticPaths() {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const teams = (await import(`../../../../../messages/${context.locale}/teams.json`)).default;
+  const common = (await import(`../../../../../messages/${context.locale}/common.json`)).default;
+
+  return {
+    props: {
+      messages: {
+        ...teams,
+        ...common,
+      },
+    },
+  };
 };
 
 export default TeamInfo;

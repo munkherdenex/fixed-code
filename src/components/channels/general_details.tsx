@@ -10,11 +10,13 @@ import {
   EuiFlexItem,
   EuiFormRow,
   EuiPanel,
+  EuiSkeletonRectangle,
   EuiSpacer,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { jsonrepair } from "jsonrepair";
 import moment from "moment";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
 import { SetStateAction, useState } from "react";
 import useDeleteChannel from "../../hooks/useDeleteChannel";
@@ -29,6 +31,8 @@ const DeleteConfirmModal = ({
 }) => {
   const router = useRouter();
   const modalTitleId = useGeneratedHtmlId();
+  const translate = useTranslations();
+
   const { trigger, isMutating } = useDeleteChannel(router.query.id);
   const [deleteConfirmValue, setDeleteConfirmValue] = useState("");
 
@@ -52,28 +56,26 @@ const DeleteConfirmModal = ({
   return (
     <EuiConfirmModal
       aria-labelledby={modalTitleId}
-      title="Delete channel?"
+      title={translate("delete_channel")}
       onCancel={closeModal}
       onConfirm={() => {
         confirmModal();
       }}
-      confirmButtonText="Delete"
-      cancelButtonText="Cancel"
+      confirmButtonText={translate("delete")}
+      cancelButtonText={translate("cancel")}
       buttonColor="danger"
       isLoading={isMutating}
       confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
     >
       <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
-        <p>
-          This will delete the channel and all its data. This action cannot be undone. Please type
-          the word &quot;delete&quot; to confirm. (Campaigns and other related data will be)
-        </p>
+        <p>{translate("delete_warning")}</p>
       </EuiCallOut>
       <EuiSpacer />
-      <EuiFormRow label="Type the word 'delete' to confirm">
+      <EuiFormRow label={translate("delete_label")}>
         <EuiFieldText
           isLoading={isMutating}
           name="delete"
+          type="text"
           value={deleteConfirmValue}
           onChange={onChange}
         />
@@ -102,74 +104,77 @@ const DeleteConfirmModalContainer = () => {
 
 const GeneralDetails = () => {
   const router = useRouter();
+  const translate = useTranslations();
+
   const { data, isLoading } = useGetChannels<Channels>(router.query.id);
   const [isEditFlyoutVisible, setIsEditFlyoutVisible] = useState(false);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!data) {
-    return <div>No data</div>;
-  }
 
   return (
     <div>
       <EuiPanel>
-        <EuiFlexGroup direction="column">
-          <EuiFlexItem>
-            <EuiPanel paddingSize="s" color="subdued">
-              <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
-                <EuiFlexItem grow={false}>
-                  <strong>Channel details</strong>
+        <EuiSkeletonRectangle
+          isLoading={isLoading || !data}
+          width="100%"
+          height={355}
+          borderRadius="m"
+        >
+          <EuiFlexGroup direction="column">
+            <EuiFlexItem>
+              <EuiPanel paddingSize="s" color="subdued">
+                <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
+                  <EuiFlexItem grow={false}>
+                    <strong>{translate("channel_details")}</strong>
+                  </EuiFlexItem>
+                  <EuiFlexItem grow={false}>
+                    <EuiFlexGroup gutterSize="s">
+                      <EuiFlexItem grow={false}>
+                        <EuiButtonIcon
+                          display="base"
+                          iconType="pencil"
+                          aria-label="Update"
+                          color="primary"
+                          onClick={() => setIsEditFlyoutVisible(true)}
+                        />
+                      </EuiFlexItem>
+                      <DeleteConfirmModalContainer />
+                    </EuiFlexGroup>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiPanel>
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiFlexGrid columns={2}>
+                <EuiFlexItem>{translate("name")}:</EuiFlexItem>
+                <EuiFlexItem>{data?.name}</EuiFlexItem>
+                <EuiFlexItem>{translate("channel_type")}:</EuiFlexItem>
+                <EuiFlexItem>
+                  <div>
+                    <EuiBadge color={badgeColor(data?.channel_type)}>
+                      {data?.channel_type.toUpperCase()}
+                    </EuiBadge>
+                  </div>
                 </EuiFlexItem>
-                <EuiFlexItem grow={false}>
-                  <EuiFlexGroup gutterSize="s">
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonIcon
-                        display="base"
-                        iconType="pencil"
-                        aria-label="Update"
-                        color="primary"
-                        onClick={() => setIsEditFlyoutVisible(true)}
-                      />
-                    </EuiFlexItem>
-                    <DeleteConfirmModalContainer />
-                  </EuiFlexGroup>
+                <EuiFlexItem>{translate("data")}:</EuiFlexItem>
+                <EuiFlexItem>
+                  <EuiCodeBlock
+                    language="json"
+                    fontSize="s"
+                    paddingSize="s"
+                    lineNumbers
+                    isCopyable
+                    overflowHeight={300}
+                  >
+                    <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.data || "{}")), null, 2)}</pre>
+                  </EuiCodeBlock>
                 </EuiFlexItem>
-              </EuiFlexGroup>
-            </EuiPanel>
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiFlexGrid columns={2}>
-              <EuiFlexItem>Name:</EuiFlexItem>
-              <EuiFlexItem>{data?.name}</EuiFlexItem>
-              <EuiFlexItem>Channel type:</EuiFlexItem>
-              <EuiFlexItem>
-                <div>
-                  <EuiBadge color={badgeColor(data?.channel_type)}>{data?.channel_type}</EuiBadge>
-                </div>
-              </EuiFlexItem>
-              <EuiFlexItem>Data:</EuiFlexItem>
-              <EuiFlexItem>
-                <EuiCodeBlock
-                  language="json"
-                  fontSize="s"
-                  paddingSize="s"
-                  lineNumbers
-                  isCopyable
-                  overflowHeight={300}
-                >
-                  <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.data)), null, 2)}</pre>
-                </EuiCodeBlock>
-              </EuiFlexItem>
-              <EuiFlexItem>Created date :</EuiFlexItem>
-              <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-              <EuiFlexItem>Updated date :</EuiFlexItem>
-              <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-            </EuiFlexGrid>
-          </EuiFlexItem>
-        </EuiFlexGroup>
+                <EuiFlexItem>{translate("created_at")}:</EuiFlexItem>
+                <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
+                <EuiFlexItem>{translate("updated_at")}:</EuiFlexItem>
+                <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
+              </EuiFlexGrid>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiSkeletonRectangle>
       </EuiPanel>
       {isEditFlyoutVisible && (
         <EditChannelFlyot setIsFlyoutVisible={setIsEditFlyoutVisible} data={data} />

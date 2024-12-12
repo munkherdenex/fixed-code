@@ -20,6 +20,7 @@ import useCreateAPIKeys from "../../hooks/useCreateAPIKeys";
 import { useApiKeysContext } from "../../store/api_key_store";
 import AceEditorComponent from "../campaign/ace_editor";
 import { addToast } from "../toast";
+import { useTranslations } from "next-intl";
 
 const schema = yup
   .object({
@@ -47,7 +48,9 @@ const CreateAPIKeysComponent = ({
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
   setResponseData: React.Dispatch<SetStateAction<ApiKeyResponseDataType>>;
 }) => {
+  const translate = useTranslations();
   const flyoutHeadingId = useGeneratedHtmlId();
+
   const { trigger, isMutating } = useCreateAPIKeys();
   const { adminTeams } = useApiKeysContext();
 
@@ -98,13 +101,13 @@ const CreateAPIKeysComponent = ({
       <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
         <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
           <EuiTitle>
-            <h2 id={flyoutHeadingId}>Create API KEY</h2>
+            <h2 id={flyoutHeadingId}>{translate("create_api_key")}</h2>
           </EuiTitle>
         </EuiFlyoutHeader>
         <EuiFlyoutBody>
           <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
             <EuiFormRow
-              label="Name"
+              label={translate("name")}
               isInvalid={!!errors.name?.message}
               error={[errors.name?.message]}
             >
@@ -117,14 +120,14 @@ const CreateAPIKeysComponent = ({
                     value={value}
                     onBlur={onBlur}
                     isInvalid={!!errors.name?.message}
-                    placeholder="Name"
+                    placeholder={translate("name")}
                     aria-label="name"
                   />
                 )}
               />
             </EuiFormRow>
             <EuiFormRow
-              label="Team name"
+              label={translate("team_name")}
               isInvalid={!!errors.team_id?.message}
               error={[errors.team_id?.message]}
             >
@@ -143,9 +146,8 @@ const CreateAPIKeysComponent = ({
                 )}
               />
             </EuiFormRow>
-
             <EuiFormRow
-              label="Expiry date"
+              label={translate("expiry_date")}
               isInvalid={!!errors.expires_at?.message}
               error={[errors.expires_at?.message]}
             >
@@ -158,15 +160,15 @@ const CreateAPIKeysComponent = ({
                     selected={value ? moment(value) : null}
                     onBlur={onBlur}
                     onChange={onChange}
-                    placeholder="Expiry date"
+                    placeholder={translate("expiry_date")}
                     isInvalid={!!errors.expires_at?.message}
                   />
                 )}
               />
             </EuiFormRow>
             <EuiFormRow
-              label="Data"
-              helpText="*Optional"
+              label={translate("data")}
+              helpText={translate("optional")}
               isInvalid={!!errors?.data?.message}
               error={[errors?.data?.message]}
             >
@@ -174,7 +176,7 @@ const CreateAPIKeysComponent = ({
             </EuiFormRow>
             <EuiFormRow hasEmptyLabelSpace>
               <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-                Create API KEY
+                {translate("create_api_key")}
               </EuiButton>
             </EuiFormRow>
           </EuiForm>

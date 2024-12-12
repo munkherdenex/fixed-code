@@ -27,6 +27,7 @@ import useGetFields, { Fields } from "../../hooks/useGetFields";
 import useUpdateCustomer from "../../hooks/useUpdateCustomer";
 import { addToast } from "../toast";
 import { createCustomerSchema } from "./schema";
+import { useTranslations } from "next-intl";
 
 type FormData = yup.InferType<typeof createCustomerSchema>;
 
@@ -37,6 +38,8 @@ const UpdateCustomerComponent = ({
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
   const router = useRouter();
+  const translate = useTranslations();
+
   const { trigger, isMutating } = useUpdateCustomer(router.query.id);
   const { data: detailData, isLoading: getCustomersIsLoading } = useGetCustomers<CustomersType>(
     router.query.id,
@@ -134,7 +137,7 @@ const UpdateCustomerComponent = ({
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Email address"
+            label={translate("email_address")}
             isInvalid={!!errors.email?.message}
             error={[errors.email?.message]}
           >
@@ -147,14 +150,14 @@ const UpdateCustomerComponent = ({
                   value={value}
                   onBlur={onBlur}
                   isInvalid={!!errors.email?.message}
-                  placeholder="Email address"
-                  aria-label="email"
+                  placeholder={translate("email_address")}
+                  aria-label={translate("email_address")}
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow
-            label="Phone number"
+            label={translate("phone_number")}
             isInvalid={!!errors.phone?.message}
             error={[errors.phone?.message]}
           >
@@ -167,14 +170,14 @@ const UpdateCustomerComponent = ({
                   value={value}
                   onBlur={onBlur}
                   isInvalid={!!errors.phone?.message}
-                  placeholder="Phone number"
-                  aria-label="phone"
+                  placeholder={translate("phone_number")}
+                  aria-label={translate("phone_number")}
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow
-            label="Reference ID"
+            label={translate("rid")}
             isInvalid={!!errors.email?.message}
             error={[errors.email?.message]}
           >
@@ -187,14 +190,14 @@ const UpdateCustomerComponent = ({
                   value={value}
                   onBlur={onBlur}
                   isInvalid={!!errors.email?.message}
-                  placeholder="Reference ID"
-                  aria-label="rid"
+                  placeholder={translate("rid")}
+                  aria-label={translate("rid")}
                 />
               )}
             />
           </EuiFormRow>
           <EuiSpacer />
-          <strong>Custom attributes</strong>
+          <strong>{translate("custom-attributes")}</strong>
           {fieldsData &&
             Array.isArray(fieldsData) &&
             fieldsData.map((field, index) => (
@@ -308,7 +311,7 @@ const UpdateCustomerComponent = ({
             ))}
           <EuiFormRow hasEmptyLabelSpace>
             <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-              Update audience
+              {translate("update_audience")}
             </EuiButton>
           </EuiFormRow>
         </EuiForm>

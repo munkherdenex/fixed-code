@@ -2,6 +2,7 @@ import { EuiButton, EuiPopover, EuiContextMenu } from "@elastic/eui";
 import { useState, useCallback, useMemo, memo } from "react";
 import { commonStyles } from "../../styles/global.styles";
 import AddAudienceFlyout from "./add_audience_flyot";
+import { useTranslations } from "next-intl";
 
 const DATA_TYPE_OPTIONS = [
   { inputDisplay: "Customer", value: "customer" },
@@ -10,6 +11,7 @@ const DATA_TYPE_OPTIONS = [
 
 const AddAudience = () => {
   const cStyles = commonStyles();
+  const translate = useTranslations();
 
   const [isAddAudienceFlyoutVisible, setIsAddAudienceFlyoutVisible] = useState(false);
   const [isPopoverOpen, setPopover] = useState(false);
@@ -26,10 +28,10 @@ const AddAudience = () => {
   const button = useMemo(
     () => (
       <EuiButton iconType="arrowDown" iconSide="right" onClick={onButtonClick}>
-        Add audience
+        {translate("add_audience")}
       </EuiButton>
     ),
-    [onButtonClick],
+    [onButtonClick, translate],
   );
 
   const panels = useMemo(

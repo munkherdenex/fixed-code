@@ -1,46 +1,31 @@
-import { EuiBreadcrumbs, useEuiTheme, useGeneratedHtmlId } from "@elastic/eui";
+import { useEuiTheme, useGeneratedHtmlId } from "@elastic/eui";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import AdminManagerComponent from "../../../../components/admin_manager_component";
 import CreateChannelFlyoutContainer from "../../../../components/channels/create_channel_flyout_container";
 import ChannelsTable from "../../../../components/channels/table";
 import DashboardLayout from "../../../../layouts/dashboard";
 import { dashboardsStyles } from "../../../../styles/dashboards.styles";
-
-const pathPrefix = process.env.PATH_PREFIX;
+import { useTranslations } from "next-intl";
+import { GetStaticProps } from "next/types";
 
 const Channels = () => {
   const { euiTheme } = useEuiTheme();
-  const router = useRouter();
   const styles = dashboardsStyles(euiTheme);
   const rightSideItemOneId = useGeneratedHtmlId();
+  const translate = useTranslations();
 
   return (
     <>
       <Head>
-        <title>Channels</title>
+        <title>{translate("channels")}</title>
       </Head>
       <AdminManagerComponent page>
         <DashboardLayout
           pageHeader={{
-            pageTitle: "Channels",
+            pageTitle: translate("channels"),
             iconType: "spacesApp",
             rightSideItems: [<CreateChannelFlyoutContainer key={rightSideItemOneId} />],
           }}
-          breadCrumb={
-            <EuiBreadcrumbs
-              breadcrumbs={[
-                {
-                  text: "Dashboards",
-                  onClick: () => router.push(`${pathPrefix}/dashboards`),
-                },
-                {
-                  text: "Channels",
-                },
-              ]}
-              truncate={false}
-            />
-          }
         >
           <div css={styles.container}>
             <ChannelsTable />
@@ -49,6 +34,20 @@ const Channels = () => {
       </AdminManagerComponent>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const channel = (await import(`../../../../messages/${context.locale}/channel.json`)).default;
+  const common = (await import(`../../../../messages/${context.locale}/common.json`)).default;
+
+  return {
+    props: {
+      messages: {
+        ...channel,
+        ...common,
+      },
+    },
+  };
 };
 
 export default Channels;

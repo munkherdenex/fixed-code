@@ -45,6 +45,14 @@ const CollapsibleNav = () => {
       pinnable: false,
       color: router.pathname === "/dashboards/cdp/campaign" ? "primary" : "subdued",
     },
+    {
+      label: "Analytics",
+      onClick: () => {
+        router.push(`${pathPrefix}/dashboards/cdp/analytics`);
+      },
+      pinnable: false,
+      color: router.pathname === "/dashboards/cdp/analytics" ? "primary" : "subdued",
+    },
   ];
 
   // const ManagementLinks: EuiPinnableListGroupItemProps[] = [
@@ -176,7 +184,7 @@ const CollapsibleNav = () => {
           aria-label="Toggle main navigation"
           onClick={() => setNavIsOpen(!navIsOpen)}
         >
-          <EuiIcon type={"menu"} size="m" aria-hidden="true" />
+          <EuiIcon type={"menu"} size="s" aria-hidden="true" />
         </EuiHeaderSectionItemButton>
       }
       // Accessibility - Add scroll to nav on very small screens

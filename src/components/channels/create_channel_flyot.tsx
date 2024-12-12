@@ -15,6 +15,7 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -26,9 +27,9 @@ import { createChannelSchema } from "./schema";
 type FormData = yup.InferType<typeof createChannelSchema>;
 
 const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
-  const flyoutHeadingId = useGeneratedHtmlId({
-    prefix: "flyoutTitle",
-  });
+  const translate = useTranslations();
+  const flyoutHeadingId = useGeneratedHtmlId();
+
   const { trigger, isMutating } = useCreateChannel();
 
   const {
@@ -81,13 +82,13 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     <EuiFlyout onClose={closeFlyout}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2>Create channel</h2>
+          <h2>{translate("create_channel")}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Name"
+            label={translate("name")}
             isInvalid={!!errors.name?.message}
             error={[errors.name?.message]}
           >
@@ -100,14 +101,14 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                   value={value}
                   onBlur={onBlur}
                   isInvalid={!!errors.name?.message}
-                  placeholder="Name"
-                  aria-label="name"
+                  placeholder={translate("name")}
+                  aria-label={translate("name")}
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow
-            label="Channel type"
+            label={translate("channel_type")}
             isInvalid={!!errors.channel_type?.message}
             error={[errors.channel_type?.message]}
           >
@@ -121,7 +122,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                   options={CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS}
                   onBlur={onBlur}
                   isInvalid={!!errors.channel_type?.message}
-                  aria-label="channel type"
+                  aria-label={translate("channel_type")}
                 />
               )}
             />
@@ -132,14 +133,18 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 control={control}
                 name={`data.host`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                  <EuiFormRow label="Host" isInvalid={!!error?.message} error={[error?.message]}>
+                  <EuiFormRow
+                    label={translate("host")}
+                    isInvalid={!!error?.message}
+                    error={[error?.message]}
+                  >
                     <EuiFieldText
                       onChange={onChange}
                       value={value as string}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="host"
-                      aria-label="host"
+                      placeholder={translate("host")}
+                      aria-label={translate("host")}
                     />
                   </EuiFormRow>
                 )}
@@ -148,14 +153,18 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 control={control}
                 name={`data.port`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                  <EuiFormRow label="Port" isInvalid={!!error?.message} error={[error?.message]}>
+                  <EuiFormRow
+                    label={translate("port")}
+                    isInvalid={!!error?.message}
+                    error={[error?.message]}
+                  >
                     <EuiFieldNumber
                       onChange={onChange}
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="port"
-                      aria-label="port"
+                      placeholder={translate("port")}
+                      aria-label={translate("port")}
                     />
                   </EuiFormRow>
                 )}
@@ -165,7 +174,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 name={`data.from_email`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <EuiFormRow
-                    label="From email"
+                    label={translate("from_email")}
                     isInvalid={!!error?.message}
                     error={[error?.message]}
                   >
@@ -174,8 +183,8 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="From email"
-                      aria-label="from email"
+                      placeholder={translate("from_email")}
+                      aria-label={translate("from_email")}
                     />
                   </EuiFormRow>
                 )}
@@ -185,7 +194,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 name={`data.host_user`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <EuiFormRow
-                    label="Host user"
+                    label={translate("host_user")}
                     isInvalid={!!error?.message}
                     error={[error?.message]}
                   >
@@ -194,8 +203,8 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="Host user"
-                      aria-label="host user"
+                      placeholder={translate("host_user")}
+                      aria-label={translate("host_user")}
                     />
                   </EuiFormRow>
                 )}
@@ -205,7 +214,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 name={`data.host_password`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <EuiFormRow
-                    label="Host password"
+                    label={translate("host_password")}
                     isInvalid={!!error?.message}
                     error={[error?.message]}
                   >
@@ -214,8 +223,8 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="host password"
-                      aria-label="host password"
+                      placeholder={translate("host_password")}
+                      aria-label={translate("host_password")}
                     />
                   </EuiFormRow>
                 )}
@@ -228,14 +237,18 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 control={control}
                 name={`data.url`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                  <EuiFormRow label="Url" isInvalid={!!error?.message} error={[error?.message]}>
+                  <EuiFormRow
+                    label={translate("url")}
+                    isInvalid={!!error?.message}
+                    error={[error?.message]}
+                  >
                     <EuiFieldText
                       onChange={onChange}
                       value={value as string}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="url"
-                      aria-label="url"
+                      placeholder={translate("url")}
+                      aria-label={translate("url")}
                     />
                   </EuiFormRow>
                 )}
@@ -254,7 +267,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                             fieldState: { error },
                           }) => (
                             <EuiFormRow
-                              label="Key"
+                              label={translate("key")}
                               isInvalid={!!error?.message}
                               error={[error?.message]}
                             >
@@ -263,8 +276,8 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                                 value={value as string}
                                 onBlur={onBlur}
                                 isInvalid={!!error?.message}
-                                placeholder="key"
-                                aria-label="key"
+                                placeholder={translate("key")}
+                                aria-label={translate("key")}
                               />
                             </EuiFormRow>
                           )}
@@ -280,7 +293,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                             fieldState: { error },
                           }) => (
                             <EuiFormRow
-                              label="Value"
+                              label={translate("value")}
                               isInvalid={!!error?.message}
                               error={[error?.message]}
                             >
@@ -289,8 +302,8 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                                 value={value as string}
                                 onBlur={onBlur}
                                 isInvalid={!!error?.message}
-                                placeholder="value"
-                                aria-label="value"
+                                placeholder={translate("value")}
+                                aria-label={translate("value")}
                               />
                             </EuiFormRow>
                           )}
@@ -314,7 +327,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                 name={`data.rate_limit`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <EuiFormRow
-                    label="Rate limit"
+                    label={translate("rate_limit")}
                     isInvalid={!!error?.message}
                     error={[error?.message]}
                   >
@@ -323,8 +336,8 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                       value={value as number}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="rate limit"
-                      aria-label="rate limit"
+                      placeholder={translate("rate_limit")}
+                      aria-label={translate("rate_limit")}
                     />
                   </EuiFormRow>
                 )}
@@ -335,7 +348,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
             <EuiFlexGroup gutterSize="s">
               <EuiFlexItem grow={false}>
                 <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-                  Create channel
+                  {translate("create_channel")}
                 </EuiButton>
               </EuiFlexItem>
               {watch("channel_type") === "api" && (
@@ -349,7 +362,7 @@ const CreateChannelFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                       })
                     }
                   >
-                    Add header
+                    {translate("add_header")}
                   </EuiButton>
                 </EuiFlexItem>
               )}

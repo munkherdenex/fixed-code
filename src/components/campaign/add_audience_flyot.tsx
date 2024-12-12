@@ -18,6 +18,7 @@ import useCreateTemplateAudience from "../../hooks/useCreateTemplateAudience";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
 import useGetSegments, { SegmentResponse } from "../../hooks/useGetSegments";
 import { globalMutate } from "../../utils/globalMutate";
+import { useTranslations } from "next-intl";
 
 const schema = yup
   .object({
@@ -49,10 +50,11 @@ const AddAudienceFlyout = ({
 
   const router = useRouter();
   const { id } = router.query;
-  const { isMutating, trigger } = useCreateTemplateAudience(id);
+  const translate = useTranslations();
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
   });
+  const { isMutating, trigger } = useCreateTemplateAudience(id);
 
   const [searchValue, setSearchValue] = useState<string>("");
 
@@ -134,7 +136,7 @@ const AddAudienceFlyout = ({
     <EuiFlyout onClose={closeFlyout}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2>Add audience</h2>
+          <h2>{translate("add_audience")}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
@@ -152,7 +154,7 @@ const AddAudienceFlyout = ({
                   isInvalid={!!errors.type?.message}
                   onSearchChange={onSearch}
                   isLoading={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
-                  aria-label="data type"
+                  aria-label={translate("data_type")}
                   singleSelection
                 />
               )}
@@ -163,7 +165,7 @@ const AddAudienceFlyout = ({
             isLoading={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
             type="submit"
           >
-            Add audience
+            {translate("add_audience")}
           </EuiButton>
         </EuiForm>
       </EuiFlyoutBody>

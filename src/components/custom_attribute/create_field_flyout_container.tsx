@@ -1,8 +1,10 @@
 import { EuiButton } from "@elastic/eui";
 import { useState } from "react";
 import CreateFieldFlyout from "./create_field_flyout";
+import { useTranslations } from "next-intl";
 
 const CreateFieldFlyoutContainer = () => {
+  const translate = useTranslations();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
   const closeFlyout = () => {
@@ -17,7 +19,7 @@ const CreateFieldFlyoutContainer = () => {
         fill
         key="create-customer"
       >
-        Create custom attribute
+        {translate("create_custom_attribute")}
       </EuiButton>
       {isFlyoutVisible && <CreateFieldFlyout closeFlyout={closeFlyout} />}
     </div>

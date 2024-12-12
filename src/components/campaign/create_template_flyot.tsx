@@ -28,6 +28,7 @@ import { dataTypeSwitch, dataTypeToSwitch } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
+import { useTranslations } from "next-intl";
 
 const bodyHelpText = "Use custom attributes to make data dynamic. {{cf_*}}";
 
@@ -69,6 +70,8 @@ const CreateTemplateFlyot = ({
   dataType: FormData["kind"];
 }) => {
   const router = useRouter();
+  const translate = useTranslations();
+
   const { isMutating, trigger } = useCreateTemplate();
   const { data: channelsData, isLoading } = useGetChannels<Channels[]>(undefined, {
     all: `${true}`,
@@ -142,17 +145,17 @@ const CreateTemplateFlyot = ({
     <EuiFlyout onClose={closeFlyout}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2>Create {dataType} campaign</h2>
+          <h2>{translate("create_campaign_title", { dataType })}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
-        {isLoading && <div>...loading</div>}
+        {isLoading && <div>{translate("loading")}</div>}
         {!isLoading && (
           <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
             {channelDataOptions.length === 0 && (
               <EuiFormRow>
                 <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
-                  <p>You need to create a channel before you can create a campaign.</p>
+                  <p>{translate("create_channel_warning")}</p>
                   <EuiButton
                     onClick={() =>
                       router.push("/dashboards/channels", {
@@ -162,13 +165,13 @@ const CreateTemplateFlyot = ({
                       })
                     }
                   >
-                    Create
+                    {translate("create_channel")}
                   </EuiButton>
                 </EuiCallOut>
               </EuiFormRow>
             )}
             <EuiFormRow
-              label="Title"
+              label={translate("title")}
               isInvalid={!!errors.title?.message}
               error={[errors.title?.message]}
             >
@@ -181,8 +184,8 @@ const CreateTemplateFlyot = ({
                     value={value}
                     onBlur={onBlur}
                     isInvalid={!!errors.title?.message}
-                    placeholder="Title"
-                    aria-label="Title"
+                    placeholder={translate("title")}
+                    aria-label={translate("title")}
                   />
                 )}
               />
@@ -209,7 +212,7 @@ const CreateTemplateFlyot = ({
               />
             </EuiFormRow>
             <EuiFormRow
-              label="Description"
+              label={translate("description")}
               isInvalid={!!errors.title?.message}
               error={[errors.title?.message]}
             >
@@ -223,15 +226,15 @@ const CreateTemplateFlyot = ({
                     onBlur={onBlur}
                     isInvalid={!!errors.title?.message}
                     style={{ height: "100px" }}
-                    placeholder="Title"
-                    aria-label="Title"
+                    placeholder={translate("description")}
+                    aria-label={translate("description")}
                   />
                 )}
               />
             </EuiFormRow>
             {watch("kind") === "api" && (
               <EuiFormRow
-                label="Data"
+                label={translate("data")}
                 labelAppend={<BodyInfoToolTip />}
                 helpText={bodyHelpText}
                 isInvalid={!!errors?.body?.message}
@@ -242,7 +245,7 @@ const CreateTemplateFlyot = ({
             )}
             {(watch("kind") === "sms" || watch("kind") === "push") && (
               <EuiFormRow
-                label="Data"
+                label={translate("data")}
                 labelAppend={<BodyInfoToolTip />}
                 helpText={bodyHelpText}
                 isInvalid={!!errors?.body?.message}
@@ -257,15 +260,15 @@ const CreateTemplateFlyot = ({
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!errors.title?.message}
-                      placeholder="Data"
-                      aria-label="data"
+                      placeholder={translate("data")}
+                      aria-label={translate("data")}
                     />
                   )}
                 />
               </EuiFormRow>
             )}
             <EuiFormRow
-              label="Channel"
+              label={translate("channel")}
               isInvalid={!!errors.channel?.message}
               error={[errors.channel?.message]}
             >
@@ -289,7 +292,7 @@ const CreateTemplateFlyot = ({
                         options={channelDataOptions}
                         onBlur={onBlur}
                         isInvalid={!!errors.channel?.message}
-                        aria-label="data type"
+                        aria-label={translate("channel")}
                         hasNoInitialSelection
                       />
                     )}
@@ -299,7 +302,7 @@ const CreateTemplateFlyot = ({
               </EuiFlexGroup>
             </EuiFormRow>
             <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-              Create campaign
+              {translate("create_campaign")}
             </EuiButton>
           </EuiForm>
         )}

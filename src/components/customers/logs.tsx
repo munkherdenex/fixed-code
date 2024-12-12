@@ -3,6 +3,7 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiPagination,
+  EuiSkeletonRectangle,
   EuiText,
   EuiTimeline,
 } from "@elastic/eui";
@@ -40,10 +41,6 @@ const Logs: React.FC = () => {
     ),
   }));
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   if (data?.results?.length === 0)
     return (
       <EuiFlexGroup>
@@ -58,26 +55,28 @@ const Logs: React.FC = () => {
     );
 
   return (
-    <EuiFlexGroup direction="column">
-      <EuiFlexItem>
-        <EuiTimeline items={preparedData} />
-      </EuiFlexItem>
-      {data?.total_count > LIMIT && (
+    <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={655} borderRadius="m">
+      <EuiFlexGroup direction="column">
         <EuiFlexItem>
-          <EuiFlexGroup responsive={false} justifyContent="spaceAround">
-            <EuiFlexItem grow={false}>
-              <EuiPagination
-                aria-label="Customer logs"
-                pageCount={Math.ceil(data?.total_count / LIMIT) || 0}
-                activePage={activePage}
-                onPageClick={(activePage) => setActivePage(activePage)}
-                compressed
-              />
-            </EuiFlexItem>
-          </EuiFlexGroup>
+          <EuiTimeline items={preparedData} />
         </EuiFlexItem>
-      )}
-    </EuiFlexGroup>
+        {data?.total_count > LIMIT && (
+          <EuiFlexItem>
+            <EuiFlexGroup responsive={false} justifyContent="spaceAround">
+              <EuiFlexItem grow={false}>
+                <EuiPagination
+                  aria-label="Customer logs"
+                  pageCount={Math.ceil(data?.total_count / LIMIT) || 0}
+                  activePage={activePage}
+                  onPageClick={(activePage) => setActivePage(activePage)}
+                  compressed
+                />
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </EuiFlexItem>
+        )}
+      </EuiFlexGroup>
+    </EuiSkeletonRectangle>
   );
 };
 

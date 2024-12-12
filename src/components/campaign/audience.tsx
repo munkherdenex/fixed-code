@@ -5,9 +5,11 @@ import {
   EuiConfirmModal,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiSkeletonRectangle,
   EuiTableFieldDataColumnType,
   useGeneratedHtmlId,
 } from "@elastic/eui";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
@@ -22,6 +24,7 @@ import AddAudience from "./add_audience";
 
 const Audience = () => {
   const router = useRouter();
+  const translate = useTranslations();
 
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -53,15 +56,15 @@ const Audience = () => {
 
   const columns: Array<EuiBasicTableColumn<TemplateCustomer>> = [
     {
-      name: "Name",
+      name: translate("name"),
       "data-test-subj": "nameCell",
       render: (templateCustomer: TemplateCustomer) => {
         return templateCustomer?.name;
       },
     },
     {
+      name: translate("type"),
       field: "type",
-      name: "Type",
       "data-test-subj": "typeCell",
     },
   ];
@@ -157,52 +160,52 @@ const Audience = () => {
     closeModal();
   };
 
-  if (isLoading) return <div>Loading...</div>;
-
   return (
-    <EuiFlexGroup direction="column">
-      {actionEnabled && (
-        <EuiFlexItem grow={false}>
-          <AddAudience />
+    <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={390}>
+      <EuiFlexGroup direction="column">
+        {actionEnabled && (
+          <EuiFlexItem grow={false}>
+            <AddAudience />
+          </EuiFlexItem>
+        )}
+        <EuiFlexItem>
+          <EuiBasicTable
+            tableCaption="Template customers"
+            items={templateCustomers?.results || []}
+            columns={[...columns, ...actions]}
+            cellProps={getCellProps}
+            pagination={
+              templateCustomers?.total_count > pageSize
+                ? {
+                    ...pagination,
+                    totalItemCount: templateCustomers?.total_count || 0,
+                  }
+                : {
+                    totalItemCount: 0,
+                    pageSize: 0,
+                    pageIndex: 0,
+                  }
+            }
+            onChange={onTableChange}
+          />
         </EuiFlexItem>
-      )}
-      <EuiFlexItem>
-        <EuiBasicTable
-          tableCaption="Template customers"
-          items={templateCustomers?.results || []}
-          columns={[...columns, ...actions]}
-          cellProps={getCellProps}
-          pagination={
-            templateCustomers?.total_count > pageSize
-              ? {
-                  ...pagination,
-                  totalItemCount: templateCustomers?.total_count || 0,
-                }
-              : {
-                  totalItemCount: 0,
-                  pageSize: 0,
-                  pageIndex: 0,
-                }
-          }
-          onChange={onTableChange}
-        />
-      </EuiFlexItem>
-      {isModalVisible && (
-        <EuiConfirmModal
-          aria-labelledby={modalTitleId}
-          title="Delete templates customer"
-          isLoading={isMutating}
-          onCancel={closeModal}
-          onConfirm={handleDeleteModalConfirm}
-          cancelButtonText="Cancel"
-          confirmButtonText="Delete"
-          defaultFocusedButton="confirm"
-          buttonColor="danger"
-        >
-          <p></p>
-        </EuiConfirmModal>
-      )}
-    </EuiFlexGroup>
+        {isModalVisible && (
+          <EuiConfirmModal
+            aria-labelledby={modalTitleId}
+            title="Delete templates customer"
+            isLoading={isMutating}
+            onCancel={closeModal}
+            onConfirm={handleDeleteModalConfirm}
+            cancelButtonText="Cancel"
+            confirmButtonText="Delete"
+            defaultFocusedButton="confirm"
+            buttonColor="danger"
+          >
+            <p></p>
+          </EuiConfirmModal>
+        )}
+      </EuiFlexGroup>
+    </EuiSkeletonRectangle>
   );
 };
 

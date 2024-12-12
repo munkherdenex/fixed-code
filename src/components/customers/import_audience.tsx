@@ -36,7 +36,7 @@ const ImportAudienceComponent = ({
   setIsImportFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
-  const audienceT = useTranslations();
+  const translate = useTranslations();
   const { trigger, isMutating } = useImportAudience();
 
   const styles = commonStyles();
@@ -72,13 +72,13 @@ const ImportAudienceComponent = ({
     <EuiFlyout onClose={() => setIsImportFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2 id={flyoutHeadingId}>{audienceT("import-audience")}</h2>
+          <h2 id={flyoutHeadingId}>{translate("import-audience")}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label={audienceT("upload-file")}
+            label={translate("upload-file")}
             isInvalid={!!errors.file?.message}
             error={[errors.file?.message]}
           >
@@ -121,8 +121,8 @@ const ImportAudienceComponent = ({
                         isInvalid={!!errors}
                         display="large"
                         disabled={isMutating}
-                        initialPromptText={audienceT("upload-file-description")}
-                        aria-label={audienceT("upload-file-description")}
+                        initialPromptText={translate("upload-file-description")}
+                        aria-label={translate("upload-file-description")}
                         accept=".csv"
                       />
                     );
@@ -133,7 +133,7 @@ const ImportAudienceComponent = ({
           </EuiFormRow>
           <EuiFormRow hasEmptyLabelSpace>
             <EuiButton type="submit" isLoading={isMutating} disabled={isMutating}>
-              {audienceT("import")}
+              {translate("import")}
             </EuiButton>
           </EuiFormRow>
         </EuiForm>

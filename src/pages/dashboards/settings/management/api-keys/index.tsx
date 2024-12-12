@@ -13,7 +13,9 @@ import {
   EuiModalHeaderTitle,
   EuiSpacer,
 } from "@elastic/eui";
+import { useTranslations } from "next-intl";
 import Head from "next/head";
+import { GetStaticProps } from "next/types";
 import { useState } from "react";
 import CreateAPIKeysComponent, {
   ApiKeyResponseDataType,
@@ -29,6 +31,7 @@ const CreateFlyout = ({
   isFlyoutVisible: boolean;
   setIsFlyoutVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const translate = useTranslations();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [responseData, setResponseData] = useState<ApiKeyResponseDataType>();
 
@@ -44,11 +47,11 @@ const CreateFlyout = ({
       {isModalVisible && (
         <EuiModal aria-labelledby="title" onClose={() => setIsModalVisible(false)}>
           <EuiModalHeader>
-            <EuiModalHeaderTitle id="id">API Key created</EuiModalHeaderTitle>
+            <EuiModalHeaderTitle id="id">{translate("api_key_created")}</EuiModalHeaderTitle>
           </EuiModalHeader>
           <EuiModalBody>
             <div>
-              <EuiFormRow label="Key id">
+              <EuiFormRow label={translate("key_id")}>
                 <EuiFieldText
                   readOnly
                   value={responseData ? responseData?.kid : ""}
@@ -64,9 +67,9 @@ const CreateFlyout = ({
                 />
               </EuiFormRow>
               <EuiSpacer size="m" />
-              <EuiFormRow label="Secret key">
+              <EuiFormRow label={translate("secret_key")}>
                 <EuiFieldText
-                  placeholder="Secret key"
+                  placeholder={translate("secret_key")}
                   aria-readonly
                   value={responseData ? responseData?.secret : ""}
                   append={
@@ -88,16 +91,14 @@ const CreateFlyout = ({
                   className="eui-textInheritColor"
                   style={{ maxWidth: 390, fontSize: "13px" }}
                 >
-                  Please save this secret key somewhere safe and accessible. For security reasons,
-                  you won&apos;t be able to view it again through your Data UI. If you lose this
-                  secret key, you&apos;ll need to generate a new one.
+                  {translate("create_api_text")}
                 </EuiFlexItem>
               </EuiCallOut>
             </div>
           </EuiModalBody>
           <EuiModalFooter>
             <EuiButton onClick={() => setIsModalVisible(false)} fill>
-              Ok
+              {translate("ok")}
             </EuiButton>
           </EuiModalFooter>
         </EuiModal>
@@ -107,17 +108,18 @@ const CreateFlyout = ({
 };
 
 const ApiKeys = () => {
+  const translate = useTranslations();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
   return (
     <>
       <Head>
-        <title>Management</title>
+        <title>{translate("api_keys")}</title>
       </Head>
       <ApiKeyProvider>
         <DashboardSettings
           pageHeader={{
-            pageTitle: "User API keys",
+            pageTitle: translate("api_keys"),
             iconType: "managementApp",
             rightSideItems: [
               <EuiButton
@@ -126,7 +128,7 @@ const ApiKeys = () => {
                 fill
                 key="create-api-key"
               >
-                Create API Key
+                {translate("create_api_keys")}
               </EuiButton>,
             ],
           }}
@@ -143,4 +145,19 @@ const ApiKeys = () => {
     </>
   );
 };
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const keys = (await import(`../../../../../messages/${context.locale}/keys.json`)).default;
+  const common = (await import(`../../../../../messages/${context.locale}/common.json`)).default;
+
+  return {
+    props: {
+      messages: {
+        ...keys,
+        ...common,
+      },
+    },
+  };
+};
+
 export default ApiKeys;

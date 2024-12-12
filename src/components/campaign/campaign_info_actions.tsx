@@ -7,16 +7,19 @@ import {
   EuiSpacer,
   useGeneratedHtmlId,
 } from "@elastic/eui";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import useUpdateApproveTemplate from "../../hooks/useUpdateApproveTemplate";
 import useUpdateDoneTemplate from "../../hooks/useUpdateDoneTemplate";
 import useUpdateRejectTemplate from "../../hooks/useUpdateRejectTemplate";
+import useUpdateStopTemplate from "../../hooks/useUpdateStopTemplate";
 import { useCampaignContext } from "../../store/campaign_store";
 import { globalMutate } from "../../utils/globalMutate";
 import AdminManagerComponent from "../admin_manager_component";
 
 const CampaignInfoActions = () => {
   const modalTitleId = useGeneratedHtmlId();
+  const translate = useTranslations();
 
   const { data } = useCampaignContext();
 
@@ -25,13 +28,16 @@ const CampaignInfoActions = () => {
 
   const { trigger: rejectTrigger, isMutating: rejectIsLoading } = useUpdateRejectTemplate(data?.id);
   const { trigger: doneTrigger, isMutating: doneIsMutating } = useUpdateDoneTemplate(data?.id);
+  const { trigger: stopTrigger, isMutating: stopIsMutating } = useUpdateStopTemplate(data?.id);
   const { trigger: approveTrigger, isMutating: approveIsMutating } = useUpdateApproveTemplate(
     data?.id,
   );
 
-  const isMutating = doneIsMutating || approveIsMutating || rejectIsLoading;
+  const isMutating = doneIsMutating || approveIsMutating || rejectIsLoading || stopIsMutating;
   const isDraft = data?.status === "DRAFT";
   const isDone = data?.status === "DONE";
+  const isStopable =
+    data?.status === "RECURRING" || data?.status === "SENDING" || data?.status === "SCHEDULED";
 
   const closeModal = () => setIsModalVisible(false);
   const showModal = () => setIsModalVisible(true);
@@ -72,6 +78,18 @@ const CampaignInfoActions = () => {
     }
   };
 
+  const handleStopTrigger = async () => {
+    try {
+      const response = await stopTrigger();
+      if (response) {
+        closeModal();
+        globalMutate("/api/v1/dj/templates/");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <EuiFlexGroup>
@@ -84,7 +102,7 @@ const CampaignInfoActions = () => {
               fill
               key="Create-segment"
             >
-              Done
+              {translate("done")}
             </EuiButton>
           </EuiFlexItem>
         )}
@@ -98,7 +116,7 @@ const CampaignInfoActions = () => {
                 fill
                 key="Approve-segment"
               >
-                Reject
+                {translate("reject")}
               </EuiButton>
             </AdminManagerComponent>
           </EuiFlexItem>
@@ -113,7 +131,22 @@ const CampaignInfoActions = () => {
                 fill
                 key="Approve-segment"
               >
-                Approve
+                {translate("approve")}
+              </EuiButton>
+            </AdminManagerComponent>
+          </EuiFlexItem>
+        )}
+        {isStopable && (
+          <EuiFlexItem>
+            <AdminManagerComponent>
+              <EuiButton
+                isLoading={isMutating}
+                color="primary"
+                onClick={showModal}
+                fill
+                key="stop-segment"
+              >
+                {translate("stop")}
               </EuiButton>
             </AdminManagerComponent>
           </EuiFlexItem>
@@ -179,6 +212,19 @@ const CampaignInfoActions = () => {
             <strong>{data?.aud_count}</strong>. Are you sure you want to continue?
           </p>
         </EuiConfirmModal>
+      )}
+      {isModalVisible && isStopable && (
+        <EuiConfirmModal
+          aria-labelledby={modalTitleId}
+          style={{ width: 600 }}
+          title="Stop campaign"
+          onCancel={closeModal}
+          onConfirm={handleStopTrigger}
+          isLoading={isMutating}
+          cancelButtonText="Cancel"
+          confirmButtonText="Confirm"
+          defaultFocusedButton="confirm"
+        />
       )}
     </>
   );

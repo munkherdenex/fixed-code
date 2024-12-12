@@ -20,6 +20,7 @@ import useCreateSegmentsAudience from "../../hooks/useCreateSegmentsAudience";
 import { useRouter } from "next/router";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
 import { PAGINATION_CHOOSES } from "../../constants";
+import { useTranslations } from "next-intl";
 
 const schema = yup
   .object({
@@ -47,6 +48,8 @@ const CreateAudienceSegment = ({
   const flyoutHeadingId = useGeneratedHtmlId();
   const router = useRouter();
   const { id } = router.query;
+  const translate = useTranslations();
+
   const { trigger, isMutating } = useCreateSegmentsAudience(id);
 
   const [searchValue, setSearchValue] = useState("");
@@ -103,13 +106,13 @@ const CreateAudienceSegment = ({
     <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2 id={flyoutHeadingId}>Add audience</h2>
+          <h2 id={flyoutHeadingId}>{translate("add_audience")}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Search email address, phone and rid"
+            label={translate("search_email_address_phone_rid")}
             isInvalid={!!errors.customer?.message || !!errors.customer?.[0]?.value?.message}
             error={[errors.customer?.message || errors.customer?.[0]?.value?.message]}
           >
@@ -135,7 +138,7 @@ const CreateAudienceSegment = ({
           </EuiFormRow>
           <EuiFormRow hasEmptyLabelSpace>
             <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-              Add audience
+              {translate("add_audience")}
             </EuiButton>
           </EuiFormRow>
         </EuiForm>

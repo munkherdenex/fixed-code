@@ -1,14 +1,17 @@
-import { EuiBreadcrumbs, EuiButton, useEuiTheme } from "@elastic/eui";
+import { EuiButton, useEuiTheme } from "@elastic/eui";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import SegmentsTable from "../../../../components/segments/table";
 import DashboardLayout from "../../../../layouts/dashboard";
 import { dashboardsStyles } from "../../../../styles/dashboards.styles";
+import { useTranslations } from "next-intl";
+import { GetStaticProps } from "next/types";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const Dashboard: FunctionComponent = () => {
+  const segmentsT = useTranslations();
   const { euiTheme } = useEuiTheme();
   const router = useRouter();
   const styles = dashboardsStyles(euiTheme);
@@ -20,7 +23,7 @@ const Dashboard: FunctionComponent = () => {
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Segments",
+          pageTitle: segmentsT("title"),
           iconType: "dashboardApp",
           rightSideItems: [
             <EuiButton
@@ -29,24 +32,10 @@ const Dashboard: FunctionComponent = () => {
               fill
               key="create-segment"
             >
-              Create segment
+              {segmentsT("create-segment")}
             </EuiButton>,
           ],
         }}
-        breadCrumb={
-          <EuiBreadcrumbs
-            breadcrumbs={[
-              {
-                text: "Dashboards",
-                onClick: () => router.push(`${pathPrefix}/dashboards/cdp`),
-              },
-              {
-                text: "Segments",
-              },
-            ]}
-            truncate={false}
-          />
-        }
       >
         <div css={styles.container}>
           <SegmentsTable />
@@ -54,6 +43,14 @@ const Dashboard: FunctionComponent = () => {
       </DashboardLayout>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}/segments.json`)).default,
+    },
+  };
 };
 
 export default Dashboard;

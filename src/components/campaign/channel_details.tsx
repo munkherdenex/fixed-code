@@ -6,6 +6,7 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiPanel,
+  EuiSkeletonRectangle,
   EuiToolTip,
 } from "@elastic/eui";
 import { jsonrepair } from "jsonrepair";
@@ -16,9 +17,11 @@ import { useCampaignContext } from "../../store/campaign_store";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import ChangeChannelFlyout from "./change_channel_flyout";
+import { useTranslations } from "next-intl";
 
 const ChannelDetails = () => {
   const router = useRouter();
+  const translate = useTranslations();
 
   const { data: templateData } = useCampaignContext();
   const { data, isLoading } = useGetChannels<Channels>(templateData?.channel?.toString());
@@ -27,22 +30,14 @@ const ChannelDetails = () => {
 
   const templateStatus = templateData?.status;
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!data) {
-    return <div>No data</div>;
-  }
-
   return (
-    <div>
+    <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={390}>
       <EuiFlexGroup direction="column">
         <EuiFlexItem>
           <EuiPanel paddingSize="s" color="subdued">
             <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
               <EuiFlexItem grow={false}>
-                <strong>Channel details</strong>
+                <strong>{translate("channel_details")}</strong>
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
                 <EuiFlexGroup responsive={false} gutterSize="s">
@@ -77,15 +72,15 @@ const ChannelDetails = () => {
         </EuiFlexItem>
         <EuiFlexItem>
           <EuiFlexGrid columns={2}>
-            <EuiFlexItem>Name:</EuiFlexItem>
+            <EuiFlexItem>{translate("name")}:</EuiFlexItem>
             <EuiFlexItem>{data?.name}</EuiFlexItem>
-            <EuiFlexItem>Channel type:</EuiFlexItem>
+            <EuiFlexItem>{translate("channel_type")}:</EuiFlexItem>
             <EuiFlexItem>
               <div>
                 <EuiBadge color={badgeColor(data?.channel_type)}>{data?.channel_type}</EuiBadge>
               </div>
             </EuiFlexItem>
-            <EuiFlexItem>Data:</EuiFlexItem>
+            <EuiFlexItem>{translate("data")}:</EuiFlexItem>
             <EuiFlexItem>
               <EuiCodeBlock
                 language="json"
@@ -98,9 +93,9 @@ const ChannelDetails = () => {
                 <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.data || "{}")), null, 2)}</pre>
               </EuiCodeBlock>
             </EuiFlexItem>
-            <EuiFlexItem>Created date :</EuiFlexItem>
+            <EuiFlexItem>{translate("created_date")}:</EuiFlexItem>
             <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-            <EuiFlexItem>Updated date :</EuiFlexItem>
+            <EuiFlexItem>{translate("updated_date")}:</EuiFlexItem>
             <EuiFlexItem>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
           </EuiFlexGrid>
         </EuiFlexItem>
@@ -108,7 +103,7 @@ const ChannelDetails = () => {
       {isChangeChannelFlyoutVisible && (
         <ChangeChannelFlyout closeFlyout={() => setIsChangeChannelFlyoutVisible(false)} />
       )}
-    </div>
+    </EuiSkeletonRectangle>
   );
 };
 

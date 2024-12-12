@@ -22,6 +22,7 @@ import { commonStyles } from "../../styles/global.styles";
 import { globalMutate } from "../../utils/globalMutate";
 import { extendWeekDays, getMonthDays, isNumber, shorthenWeekDays } from "../../utils/helper";
 import { addToast } from "../toast";
+import { useTranslations } from "next-intl";
 
 const repeatOptions = [
   { value: "hourly", text: "Hourly" },
@@ -139,6 +140,7 @@ const ReccurenceRule = ({
 }: {
   setIsFlyoutVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const translate = useTranslations();
   const { data } = useCampaignContext();
   const { trigger, isMutating } = useCreateReccurenceRule(data?.id);
   const cStyles = commonStyles();
@@ -291,7 +293,7 @@ const ReccurenceRule = ({
   return (
     <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
       <EuiFormRow
-        label="Start date"
+        label={translate("start_date")}
         isInvalid={!!errors.start_date?.message}
         error={[errors.start_date?.message]}
       >
@@ -305,7 +307,7 @@ const ReccurenceRule = ({
               selected={value as Moment}
               onChange={onChange}
               onBlur={onBlur}
-              placeholder={name}
+              placeholder={translate("start_date")}
               readOnly={!isDraft}
             />
           )}
@@ -318,7 +320,7 @@ const ReccurenceRule = ({
           name="is_recurring"
           render={({ field: { value, onChange } }) => (
             <EuiSwitch
-              label="Enable reccurence"
+              label={translate("enable_recurrence")}
               checked={value}
               disabled={!isDraft}
               onChange={(e) => onChange(e.target.checked)}
@@ -337,7 +339,7 @@ const ReccurenceRule = ({
                   name="interval"
                   render={({ field: { onChange, onBlur, value, ref } }) => (
                     <EuiFieldNumber
-                      prepend="Repeat every"
+                      prepend={translate("repeat_every")}
                       value={value}
                       onChange={onChange}
                       onBlur={onBlur}
@@ -459,7 +461,7 @@ const ReccurenceRule = ({
           <EuiFlexGrid columns={2} gutterSize="s" alignItems="end">
             <EuiFlexItem>
               <EuiFormRow
-                label="Ends"
+                label={translate("ends")}
                 isInvalid={!!errors.end?.message}
                 error={[errors.end?.message]}
               >
@@ -530,7 +532,7 @@ const ReccurenceRule = ({
           isLoading={isMutating}
           disabled={isMutating}
         >
-          {data?.start_date ? "Update" : "Create"} Recurrence Rule
+          {translate("action_reccurence_rule", { action: data?.start_date ? "Update" : "Create" })}
         </EuiButton>
       )}
     </EuiForm>

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import AdminComponent from "../admin_component";
 
 const CreateCustomerFlyoutContainer = () => {
-  const audienceT = useTranslations();
+  const translate = useTranslations();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
   return (
@@ -17,7 +17,7 @@ const CreateCustomerFlyoutContainer = () => {
           fill
           key="audience-customer"
         >
-          {audienceT("create-audience")}
+          {translate("create-audience")}
         </EuiButton>
         {isFlyoutVisible && <CreateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
       </>

@@ -10,6 +10,7 @@ import {
   EuiEmptyPrompt,
   EuiButton,
   EuiImage,
+  EuiTextColor,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useLayoutEffect, useState } from "react";
@@ -17,12 +18,14 @@ import useGetSegments, { Segment, SegmentResponse } from "../../hooks/useGetSegm
 import { PAGINATION_CHOOSES } from "../../constants";
 import moment from "moment";
 import { isNumber } from "../../utils/helper";
+import { useTranslations } from "next-intl";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
 const SegmentsTable = () => {
   const router = useRouter();
   const { query } = router;
+  const translate = useTranslations();
 
   const querySearch = query?.search?.toString() || "";
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
@@ -46,44 +49,58 @@ const SegmentsTable = () => {
   const columns: Array<EuiBasicTableColumn<Segment>> = [
     {
       field: "name",
-      name: "Name",
+      name: translate("name"),
       "data-test-subj": "nameCell",
       mobileOptions: {
         render: (segment: Segment) => <>{segment.name}</>,
-        enlarge: true,
       },
     },
     {
       field: "description",
-      name: "Description",
+      name: translate("description"),
       "data-test-subj": "descriptionCell",
       mobileOptions: {
-        render: (segment: Segment) => <>{segment.description}</>,
-        enlarge: true,
+        render: (segment: Segment) => (
+          <>
+            {segment?.description ? (
+              segment?.description
+            ) : (
+              <EuiTextColor color="subdued">None</EuiTextColor>
+            )}
+          </>
+        ),
       },
     },
     {
       field: "type",
-      name: "Type",
+      name: translate("type"),
       "data-test-subj": "typeCell",
       mobileOptions: {
         render: (segment: Segment) => <>{segment.type}</>,
-        enlarge: true,
       },
     },
     {
       field: "created_at",
-      name: "Created at",
-      align: "right",
+      name: translate("created-at"),
       "data-test-subj": "createdAtCell",
       render: (date: string) => {
         return moment(date).format("YYYY-MM-DD LT");
       },
-      footer: () => {
-        return <strong>Total: {data?.total_count || 0}</strong>;
+    },
+    {
+      field: "updated_at",
+      name: translate("updated-at"),
+      align: "right",
+      "data-test-subj": "updatedAtCell",
+      render: (date: string) => {
+        return moment(date).format("YYYY-MM-DD LT");
       },
-      mobileOptions: {
-        enlarge: true,
+      footer: () => {
+        return (
+          <strong>
+            {translate("total-segments")}: {data?.total_count || 0}
+          </strong>
+        );
       },
     },
   ];
@@ -141,7 +158,7 @@ const SegmentsTable = () => {
   }, [queryPageIndex, queryPageSize, querySearch]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>{translate("loading")}</div>;
   }
 
   if (data?.results?.length === 0 && !searchValue && pageIndex === 0) {
@@ -153,7 +170,7 @@ const SegmentsTable = () => {
         color="plain"
         body={
           <>
-            <p>The segment description</p>
+            <p>{translate("the-segment-description")}</p>
           </>
         }
         actions={
@@ -164,7 +181,7 @@ const SegmentsTable = () => {
               router.push(`${pathPrefix}/dashboards/cdp/segments/create`);
             }}
           >
-            Create segment
+            {translate("create-segment")}
           </EuiButton>
         }
       />
@@ -179,7 +196,7 @@ const SegmentsTable = () => {
             <EuiFieldSearch
               defaultValue={searchValue}
               onSearch={onSearch}
-              placeholder="Search Segments"
+              placeholder={translate("search-segments")}
             />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
@@ -195,7 +212,7 @@ const SegmentsTable = () => {
       </EuiFlexItem>
       <EuiFlexItem>
         {isLoading ? (
-          <div>Loading...</div>
+          <div>{translate("loading")}</div>
         ) : (
           <EuiBasicTable
             tableCaption="Segments table"

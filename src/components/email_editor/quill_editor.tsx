@@ -7,8 +7,21 @@ import { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { quillEditorStyles } from "./quill_editor.styles";
 
+const alignClass = Quill.import("attributors/style/align");
+const backgroundClass = Quill.import("attributors/style/background");
+const colorClass = Quill.import("attributors/style/color");
+const directionClass = Quill.import("attributors/style/direction");
+const fontClass = Quill.import("attributors/style/font");
+const sizeClass = Quill.import("attributors/style/size");
+
 Quill.register("modules/imageResize", ImageResize);
 Quill.register("modules/imageDrop", ImageDrop);
+Quill.register(alignClass, true);
+Quill.register(backgroundClass, true);
+Quill.register(colorClass, true);
+Quill.register(directionClass, true);
+Quill.register(fontClass, true);
+Quill.register(sizeClass, true);
 
 const ReactQuill = memo(dynamic(() => import("react-quill"), { ssr: false }));
 

@@ -1,43 +1,24 @@
-import { EuiBreadcrumbs } from "@elastic/eui";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import AdminManagerComponent from "../../../../../components/admin_manager_component";
 import GeneralDetails from "../../../../../components/channels/general_details";
 import DashboardLayout from "../../../../../layouts/dashboard";
+import { GetStaticProps } from "next/types";
+import { useTranslations } from "next-intl";
 
 const ChannelInfo = () => {
-  const router = useRouter();
+  const translate = useTranslations();
 
   return (
     <>
       <Head>
-        <title>Info</title>
+        <title>{translate("channel_details")}</title>
       </Head>
       <AdminManagerComponent page>
         <DashboardLayout
           pageHeader={{
-            pageTitle: "Channel info",
+            pageTitle: translate("channel_details"),
             iconType: "spacesApp",
           }}
-          breadCrumb={
-            <EuiBreadcrumbs
-              breadcrumbs={[
-                {
-                  text: "Dashboards",
-                  onClick: () => router.push("/dashboards/cdp"),
-                },
-                {
-                  text: "Channels",
-                  onClick: () => router.push("/dashboards/cdp/channels"),
-                },
-                {
-                  text: "Info",
-                },
-              ]}
-              truncate={false}
-              aria-label="Channels info breadCrumb"
-            />
-          }
         >
           <>
             <GeneralDetails />
@@ -46,6 +27,27 @@ const ChannelInfo = () => {
       </AdminManagerComponent>
     </>
   );
+};
+
+export async function getStaticPaths() {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const channel = (await import(`../../../../../messages/${context.locale}/channel.json`)).default;
+  const common = (await import(`../../../../../messages/${context.locale}/common.json`)).default;
+
+  return {
+    props: {
+      messages: {
+        ...channel,
+        ...common,
+      },
+    },
+  };
 };
 
 export default ChannelInfo;

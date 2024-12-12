@@ -11,18 +11,18 @@ const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersDashboard = () => {
   const router = useRouter();
-  const audienceT = useTranslations();
+  const translate = useTranslations();
   const createCustomerFlyoutContainerId = useGeneratedHtmlId();
   const importAudienceFlyoutContainerId = useGeneratedHtmlId();
 
   return (
     <>
       <Head>
-        <title>{audienceT("title")}</title>
+        <title>{translate("title")}</title>
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: audienceT("title"),
+          pageTitle: translate("title"),
           iconType: "usersRolesApp",
           rightSideItems: [
             <CreateCustomerFlyoutContainer key={createCustomerFlyoutContainerId} />,

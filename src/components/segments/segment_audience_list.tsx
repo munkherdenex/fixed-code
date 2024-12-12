@@ -10,25 +10,26 @@ import {
   EuiFlexItem,
   EuiFormRow,
   EuiLink,
-  EuiSpacer,
+  EuiSkeletonRectangle,
   EuiText,
 } from "@elastic/eui";
+import { yupResolver } from "@hookform/resolvers/yup";
+import moment from "moment";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
+import { PAGINATION_CHOOSES } from "../../constants";
 import useGetSegmentAudienceList, {
   SegmentAudience,
   SegmentAudienceResponse,
 } from "../../hooks/useGetSegmentAudienceList";
-import { useState } from "react";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm } from "react-hook-form";
-import moment from "moment";
-import { PAGINATION_CHOOSES } from "../../constants";
-import CreateAudienceSegment from "./add_segments_audience";
-import DeleteSegmentAudience from "./delete_segment_audience";
 import useRerunSegmentAudience from "../../hooks/useRerunSegmentAudience";
 import { useSegmentContext } from "../../store/segment_store";
 import { addToast } from "../toast";
+import CreateAudienceSegment from "./add_segments_audience";
+import DeleteSegmentAudience from "./delete_segment_audience";
 
 const schema = yup.object({
   search: yup.string().notRequired(),
@@ -39,8 +40,9 @@ const pathPrefix = process.env.PATH_PREFIX;
 const SegmentAudienceList = () => {
   const router = useRouter();
   const { id } = router.query;
+  const translate = useTranslations();
 
-  const { data: segmentData } = useSegmentContext();
+  const { data: segmentData, isLoading: segmentIsLoading } = useSegmentContext();
 
   const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(0);
@@ -77,7 +79,7 @@ const SegmentAudienceList = () => {
 
   const columns: Array<EuiBasicTableColumn<SegmentAudience>> = [
     {
-      name: "Profile",
+      name: translate("profile"),
       render: (segmentAudience: SegmentAudience) => (
         <>
           <EuiLink
@@ -108,7 +110,7 @@ const SegmentAudienceList = () => {
     },
     {
       field: "source",
-      name: "Source",
+      name: translate("Source"),
       render: (source: SegmentAudience["source"]) => (
         <>
           <EuiBadge
@@ -122,16 +124,20 @@ const SegmentAudienceList = () => {
     },
     {
       field: "created_at",
-      name: "Created at",
+      name: translate("created_at"),
       align: "right",
       render: (date: string) => {
         return <div style={{ textWrap: "nowrap" }}>{moment(date).format("YYYY-MM-DD LT")}</div>;
       },
     },
     {
-      name: "Actions",
+      name: translate("actions"),
       footer: () => {
-        return <strong>Total: {data?.total_count || 0}</strong>;
+        return (
+          <strong>
+            {translate("total")}: {data?.total_count || 0}
+          </strong>
+        );
       },
       actions: [
         {
@@ -167,10 +173,6 @@ const SegmentAudienceList = () => {
     }
   };
 
-  if (isLoading) return <div>loading...</div>;
-
-  if (!data) return <div>empty</div>;
-
   return (
     <>
       <EuiFlexGroup direction="column">
@@ -192,7 +194,7 @@ const SegmentAudienceList = () => {
                       onBlur={onBlur}
                       height={1}
                       onSearch={onSearchEmailAddress}
-                      placeholder="Search email or phone"
+                      placeholder={translate("search_phone_email")}
                       isInvalid={!!errors.search?.message}
                     />
                   )}
@@ -209,7 +211,7 @@ const SegmentAudienceList = () => {
                       disabled={isMutating}
                       onClick={reRunSegmentAudience}
                     >
-                      Update audience
+                      {translate("update_audience")}
                     </EuiButton>
                   </EuiFlexItem>
                 )}
@@ -221,26 +223,26 @@ const SegmentAudienceList = () => {
                       setIsFlyoutVisible(true);
                     }}
                   >
-                    Add audience
+                    {translate("add_audience")}
                   </EuiButton>
                 </EuiFlexItem>
               </EuiFlexGroup>
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFlexItem>
-        <EuiSpacer size="s" />
-
         <EuiFlexItem>
-          <EuiBasicTable
-            tableLayout="auto"
-            items={data?.results || []}
-            columns={columns}
-            pagination={{
-              ...pagination,
-              totalItemCount: data?.total_count || 0,
-            }}
-            onChange={onTableChange}
-          />
+          <EuiSkeletonRectangle isLoading={isLoading || segmentIsLoading} width="100%" height={300}>
+            <EuiBasicTable
+              tableLayout="auto"
+              items={data?.results || []}
+              columns={columns}
+              pagination={{
+                ...pagination,
+                totalItemCount: data?.total_count || 0,
+              }}
+              onChange={onTableChange}
+            />
+          </EuiSkeletonRectangle>
         </EuiFlexItem>
       </EuiFlexGroup>
       {isFlyoutVisible && <CreateAudienceSegment setIsFlyoutVisible={setIsFlyoutVisible} />}

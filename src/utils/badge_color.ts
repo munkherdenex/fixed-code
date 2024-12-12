@@ -7,6 +7,8 @@ export function badgeColor(status: string) {
   switch (status) {
     case "APPROVED":
       return "green";
+    case "STOPPED":
+      return "red";
     case "admin":
       return "primary";
     case "member":
@@ -21,6 +23,16 @@ export function badgeColor(status: string) {
       return "#BADA55";
     case "ENDED":
       return "#d1b3ff";
+    case "active":
+      return "success";
+    case "true":
+      return "success";
+    case "email":
+      return "#246aab";
+    case "sms":
+      return "warning";
+    case "api":
+      return "danger";
     default:
       return "default";
   }

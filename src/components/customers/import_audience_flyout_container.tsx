@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import AdminComponent from "../admin_component";
 
 const ImportAudienceFlyoutContainer = () => {
-  const audienceT = useTranslations();
+  const translate = useTranslations();
   const [isImportFlyoutVisible, setIsImportFlyoutVisible] = useState(false);
 
   return (
@@ -18,7 +18,7 @@ const ImportAudienceFlyoutContainer = () => {
           iconType={"importAction"}
           key="audience-customer"
         >
-          {audienceT("import")}
+          {translate("import")}
         </EuiButton>
         {isImportFlyoutVisible && (
           <ImportAudienceComponent setIsImportFlyoutVisible={setIsImportFlyoutVisible} />

@@ -1,0 +1,9 @@
+{
+  "api_keys": "Api keys",
+  "api_key_created": "Api key created",
+  "key_id": "Key id",
+  "secret_key": "Secret key",
+  "create_api_text": "Please save this secret key somewhere safe and accessible. For security reasons, you won't be able to view it again through your Data UI. If you lose this secret key, you'll need to generate a new one.",
+  "create_api_keys": "Create api keys",
+  "create_api_key": "Create api key"
+}

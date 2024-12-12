@@ -19,12 +19,14 @@ import { Product } from "../../hooks/useGetProducts";
 import useSetProductToTeam from "../../hooks/useSetProductToTeam";
 import { useManagementTeamsContext } from "../../store/management_teams_store";
 import { useProductContext } from "../../store/products_store";
+import { useTranslations } from "next-intl";
 
 const SchemaObject = Object.fromEntries(TEAM_PRODUCTS.map((field) => [field.name, yup.boolean()]));
 
 const schema = yup.object().shape(SchemaObject);
 
 const ProductSelection = () => {
+  const translate = useTranslations();
   const { currentTeam, isAdmin } = useManagementTeamsContext();
   const { avialableProducts } = useProductContext();
 
@@ -93,7 +95,7 @@ const ProductSelection = () => {
         <EuiFlexGroup direction="column">
           <EuiFlexItem>
             <EuiPanel paddingSize="s" color="subdued">
-              Select products
+              {translate("select_products")}
             </EuiPanel>
           </EuiFlexItem>
           <EuiFlexItem>
