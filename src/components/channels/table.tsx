@@ -11,6 +11,9 @@ import {
   EuiImage,
   EuiFlexGrid,
   EuiSelect,
+  EuiBadge,
+  EuiTextColor,
+  EuiIcon,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import useGetChannels, { Channels, ChannelsResponse } from "../../hooks/useGetChannels";
@@ -19,6 +22,8 @@ import { PAGINATION_CHOOSES } from "../../constants";
 import moment from "moment";
 import CreateChannelFlyoutContainer from "./create_channel_flyout_container";
 import { isNumber } from "../../utils/helper";
+import { useTranslations } from "next-intl";
+import { badgeColor } from "../../utils/badge_color";
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -34,6 +39,7 @@ const options = [
 const ChannelsTable = () => {
   const router = useRouter();
   const { query } = router;
+  const translate = useTranslations();
 
   const querySearch = query?.search?.toString() || "";
   const queryFilter = query?.filter?.toString() || "";
@@ -61,32 +67,37 @@ const ChannelsTable = () => {
   const columns: Array<EuiBasicTableColumn<Channels>> = [
     {
       field: "name",
-      name: "Name",
+      name: translate("name"),
       "data-test-subj": "nameCell",
-      mobileOptions: {
-        enlarge: true,
-      },
     },
     {
       field: "channel_type",
-      name: "Channel type",
+      name: translate("channel_type"),
       "data-test-subj": "descriptionCell",
-      mobileOptions: {
-        enlarge: true,
+      render: (channelType: string) => {
+        return (
+          <EuiTextColor color={badgeColor(channelType)}>
+            <span>
+              <EuiIcon aria-label="email" type="email" color={badgeColor(channelType)} />{" "}
+              {channelType.toUpperCase()}
+            </span>
+          </EuiTextColor>
+        );
       },
     },
     {
       field: "created_at",
-      name: "Created at",
+      name: translate("created_at"),
       "data-test-subj": "createdAtCell",
       render: (date: string) => {
         return moment(date).format("YYYY-MM-DD LT");
       },
       footer: () => {
-        return <strong>Total: {data?.total_count || 0}</strong>;
-      },
-      mobileOptions: {
-        enlarge: true,
+        return (
+          <strong>
+            {translate("total")}: {data?.total_count || 0}
+          </strong>
+        );
       },
     },
   ];
@@ -121,7 +132,6 @@ const ChannelsTable = () => {
     const { id } = channel;
     return {
       "data-test-subj": `row-${id}`,
-      className: "customRowClass",
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/cdp/channels/info/${id}`);
       },
@@ -133,7 +143,6 @@ const ChannelsTable = () => {
     const { field } = column;
 
     return {
-      className: "customCellClass",
       "data-test-subj": `cell-${id}-${String(field)}`,
       textOnly: true,
     };
@@ -157,19 +166,19 @@ const ChannelsTable = () => {
   }, [queryPageIndex, queryPageSize, querySearch, queryFilter]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>{translate("loading")}</div>;
   }
 
   if (data?.results?.length === 0 && !searchValue && !filter) {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
-        title={<h2>Create your channel</h2>}
+        title={<h2>{translate("create_channel")}</h2>}
         layout="horizontal"
         color="plain"
         body={
           <>
-            <p>The channel is a way to communicate with your customers.</p>
+            <p>{translate("create_channel_description")}</p>
           </>
         }
         actions={<CreateChannelFlyoutContainer />}
@@ -187,7 +196,7 @@ const ChannelsTable = () => {
                 <EuiFieldSearch
                   defaultValue={searchValue}
                   onSearch={onSearch}
-                  placeholder="Search Channels"
+                  placeholder={translate("search")}
                 />
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
@@ -214,10 +223,9 @@ const ChannelsTable = () => {
       </EuiFlexItem>
       <EuiFlexItem>
         {isLoading ? (
-          <div>Loading...</div>
+          <div>{translate("loading")}</div>
         ) : (
           <EuiBasicTable
-            tableCaption="Channels table"
             items={data?.results || []}
             columns={columns}
             rowProps={getRowProps}

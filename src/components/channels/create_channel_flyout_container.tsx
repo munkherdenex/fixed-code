@@ -1,8 +1,10 @@
 import { EuiButton } from "@elastic/eui";
 import { useState } from "react";
 import CreateChannelFlyout from "./create_channel_flyot";
+import { useTranslations } from "next-intl";
 
 const CreateChannelFlyoutContainer = () => {
+  const translate = useTranslations();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
   const closeFlyout = () => {
@@ -17,7 +19,7 @@ const CreateChannelFlyoutContainer = () => {
         fill
         key="create-channels"
       >
-        Create channel
+        {translate("create_channel")}
       </EuiButton>
       {isFlyoutVisible && <CreateChannelFlyout closeFlyout={closeFlyout} />}
     </div>

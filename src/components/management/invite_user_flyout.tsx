@@ -15,6 +15,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
+import { useTranslations } from "next-intl";
 import * as yup from "yup";
 import useInviteMember from "../../hooks/useInviteMember";
 import useSearchUser from "../../hooks/useSearchUser";
@@ -40,7 +41,9 @@ const InviteUserFlyout = ({
 }: {
   setIsFlyoutVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const translate = useTranslations();
   const { currentTeam } = useManagementTeamsContext();
+
   const { trigger, data } = useSearchUser();
   const { trigger: inviteTrigger, isMutating } = useInviteMember(currentTeam?.id);
   const pushedFlyoutTitleId = useGeneratedHtmlId({
@@ -103,13 +106,13 @@ const InviteUserFlyout = ({
     >
       <EuiFlyoutHeader hasBorder>
         <EuiTitle size="m">
-          <h2 id={pushedFlyoutTitleId}>Add user to team</h2>
+          <h2 id={pushedFlyoutTitleId}>{translate("add_to_user")}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmitEmail(onSubmitEmail)}>
           <EuiFormRow
-            label="Email"
+            label={translate("email")}
             isInvalid={!!errorsEmail.email?.message}
             error={[errorsEmail?.email?.message]}
           >
@@ -130,7 +133,7 @@ const InviteUserFlyout = ({
                   isInvalid={!!errorsEmail.email?.message}
                   append={
                     <EuiButtonIcon iconType={"search"} type="submit" disabled={isMutating}>
-                      Search
+                      {translate("search")}
                     </EuiButtonIcon>
                   }
                   fullWidth
@@ -142,7 +145,7 @@ const InviteUserFlyout = ({
         <EuiSpacer size="m" />
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="First name"
+            label={translate("first_name")}
             isInvalid={!!errors.firstName?.message}
             error={[errors?.firstName?.message]}
           >
@@ -163,7 +166,7 @@ const InviteUserFlyout = ({
             />
           </EuiFormRow>
           <EuiFormRow
-            label="Last name"
+            label={translate("last_name")}
             isInvalid={!!errors.lastName?.message}
             error={[errors?.lastName?.message]}
           >
@@ -185,7 +188,7 @@ const InviteUserFlyout = ({
           </EuiFormRow>
           <EuiFormRow>
             <EuiButton type="submit" fill disabled={isMutating} isLoading={isMutating}>
-              Invite user
+              {translate("invite_user")}
             </EuiButton>
           </EuiFormRow>
         </EuiForm>
@@ -195,14 +198,16 @@ const InviteUserFlyout = ({
 };
 
 export const InviteUserFlyoutContainer = () => {
+  const translate = useTranslations();
   const { isAdmin, isManager } = useManagementTeamsContext();
+
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
   if (isAdmin || isManager) {
     return (
       <AdminComponent>
         <>
-          <EuiButton onClick={() => setIsFlyoutVisible(true)}>Invite user</EuiButton>
+          <EuiButton onClick={() => setIsFlyoutVisible(true)}>{translate("invite_user")}</EuiButton>
           {isFlyoutVisible && (isAdmin || isManager) && (
             <InviteUserFlyout setIsFlyoutVisible={setIsFlyoutVisible} />
           )}

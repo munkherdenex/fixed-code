@@ -39,7 +39,7 @@ const DashboardHeadersSettings = () => {
                 style={{ cursor: "pointer" }}
                 onClick={onClick}
               >
-                Settings
+                {!largeMaxBreakpoint ? "Settings" : ""}
               </EuiHeaderLogo>,
               largeMaxBreakpoint && leftSectionItems,
               teams?.length > 0 && <ChangeProductButton />,

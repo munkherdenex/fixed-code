@@ -5,10 +5,13 @@ import { PAGINATION_CHOOSES } from "../../constants";
 import { useRouter } from "next/router";
 import { isNumber } from "../../utils/helper";
 import { useLayoutEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 const ApiKeysTable = () => {
   const router = useRouter();
   const { query } = router;
+  const translate = useTranslations();
+
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
 
@@ -23,22 +26,22 @@ const ApiKeysTable = () => {
   const columns: Array<EuiBasicTableColumn<ApiKeysType>> = [
     {
       field: "name",
-      name: "Name",
+      name: translate("name"),
     },
     {
       field: "team_name",
-      name: "Team name",
+      name: translate("team_name"),
     },
     {
       field: "created_at",
-      name: "Created at",
+      name: translate("created_at"),
       render: (date: string) => {
         return moment(date).format("YYYY-MM-DD LT");
       },
     },
     {
       field: "kid",
-      name: "Key Id",
+      name: translate("key_id"),
       render: (kid: ApiKeysType["kid"]) => {
         return <p>{kid}</p>;
       },

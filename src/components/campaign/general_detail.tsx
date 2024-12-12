@@ -23,6 +23,7 @@ import { globalMutate } from "../../utils/globalMutate";
 import { dataTypeToSwitch, getDataKind, processBody, processKind } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
+import { useTranslations } from "next-intl";
 
 const schema = yup
   .object({
@@ -43,6 +44,7 @@ const schema = yup
 type FormData = yup.InferType<typeof schema>;
 
 const GeneralDetails = () => {
+  const translate = useTranslations();
   const { data, isLoading } = useCampaignContext();
 
   const { isMutating, trigger } = useUpdateTemplate(data?.id?.toString());
@@ -110,11 +112,11 @@ const GeneralDetails = () => {
     }
   };
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>{translate("loading")}</div>;
   }
 
   if (!data) {
-    return <div>No data</div>;
+    return <div>{translate("No data")}</div>;
   }
 
   return (
@@ -122,7 +124,7 @@ const GeneralDetails = () => {
       <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
         <EuiFlexItem grow={false}>
           <EuiFormRow
-            label="Subject"
+            label={translate("title")}
             isInvalid={!!errors.title?.message}
             error={[errors.title?.message]}
           >
@@ -136,8 +138,8 @@ const GeneralDetails = () => {
                   onBlur={onBlur}
                   readOnly={isView}
                   isInvalid={!!errors.title?.message}
-                  placeholder="Subject"
-                  aria-label="Subject"
+                  placeholder={translate("title")}
+                  aria-label={translate("title")}
                 />
               )}
             />
@@ -180,7 +182,7 @@ const GeneralDetails = () => {
               </EuiFlexItem>
               <EuiFlexItem>
                 <EuiButton isLoading={isMutating} disabled={isMutating} size="s" type="submit">
-                  Update Campaign
+                  {translate("update_campaign")}
                 </EuiButton>
               </EuiFlexItem>
             </EuiFlexGroup>
@@ -189,58 +191,54 @@ const GeneralDetails = () => {
       </EuiFlexGroup>
       <EuiSpacer size="s" />
       <EuiFlexGroup direction="column">
-        {dataKind === "api" && (
-          <EuiFormRow
-            fullWidth
-            label="Data"
-            helpText="Use custom attributes to make data dynamic. {{custom_attribute}}"
-            isInvalid={!!errors?.body?.message}
-            error={[errors?.body?.message]}
-          >
-            <>
-              {!isView && <AceEditorComponent control={control} onChange={setAceEditorValue} />}
-              {isView && (
-                <EuiFlexItem>
-                  <EuiCodeBlock
-                    language="json"
-                    fontSize="s"
-                    paddingSize="s"
-                    isCopyable
-                    overflowHeight={300}
-                  >
-                    <pre>{JSON.stringify(JSON.parse(jsonrepair(data?.body || "{}")), null, 2)}</pre>
-                  </EuiCodeBlock>
-                </EuiFlexItem>
-              )}
-            </>
-          </EuiFormRow>
-        )}
-        {(dataKind === "sms" || dataKind === "push") && (
-          <EuiFormRow
-            fullWidth
-            label="Data"
-            helpText="Use custom attributes to make data dynamic. {{custom_attribute}}"
-            isInvalid={!!errors?.body?.message}
-            error={[errors?.body?.message]}
-          >
-            <Controller
-              control={control}
-              name="body"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <EuiTextArea
-                  onChange={onChange}
-                  value={value}
-                  onBlur={onBlur}
-                  isInvalid={!!errors.title?.message}
-                  readOnly={isView}
-                  placeholder="Data"
-                  aria-label="data"
-                  fullWidth
-                />
-              )}
-            />
-          </EuiFormRow>
-        )}
+        <EuiFormRow
+          fullWidth
+          label={translate("data")}
+          helpText={`${translate("create_campaign_help_text")} {{custom_attribute}}`}
+          isInvalid={!!errors?.body?.message}
+          error={[errors?.body?.message]}
+        >
+          <>
+            {dataKind === "api" && (
+              <>
+                {!isView && <AceEditorComponent control={control} onChange={setAceEditorValue} />}
+                {isView && (
+                  <EuiFlexItem>
+                    <EuiCodeBlock
+                      language="json"
+                      fontSize="s"
+                      paddingSize="s"
+                      isCopyable
+                      overflowHeight={300}
+                    >
+                      <pre>
+                        {JSON.stringify(JSON.parse(jsonrepair(data?.body || "{}")), null, 2)}
+                      </pre>
+                    </EuiCodeBlock>
+                  </EuiFlexItem>
+                )}
+              </>
+            )}
+            {(dataKind === "sms" || dataKind === "push") && (
+              <Controller
+                control={control}
+                name="body"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <EuiTextArea
+                    onChange={onChange}
+                    value={value}
+                    onBlur={onBlur}
+                    isInvalid={!!errors.title?.message}
+                    readOnly={isView}
+                    placeholder={translate("data")}
+                    aria-label={translate("data")}
+                    fullWidth
+                  />
+                )}
+              />
+            )}
+          </>
+        </EuiFormRow>
       </EuiFlexGroup>
     </EuiForm>
   );

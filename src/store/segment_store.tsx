@@ -19,10 +19,6 @@ export const SegmentProvider = ({ children }) => {
 
   const { data, isLoading } = useGetSegments<Segment>(router.query.id);
 
-  if (isLoading) {
-    return <div>...loading</div>;
-  }
-
   return (
     <segmentContext.Provider
       value={{

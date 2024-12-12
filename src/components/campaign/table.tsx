@@ -10,9 +10,11 @@ import {
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiIcon,
   EuiImage,
   EuiSelect,
   EuiTableFieldDataColumnType,
+  EuiTextColor,
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -22,13 +24,14 @@ import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetT
 import { badgeColor } from "../../utils/badge_color";
 import { getDataKind, isNumber } from "../../utils/helper";
 import CreateCampaignActionPopover from "./create_campaign_action_popover";
+import { useTranslations } from "next-intl";
 
 const options = [
   { value: "", text: "All" },
   { value: "DRAFT", text: "DRAFT" },
   { value: "APPROVED", text: "APPROVED" },
   { value: "DONE", text: "DONE" },
-  { value: "SENDING", text: "SENDING" },
+  { value: "STOPPED", text: "STOPPED" },
   { value: "SENT", text: "SENT" },
   { value: "ERROR", text: "ERROR" },
   { value: "SCHEDULED", text: "SCHEDULED" },
@@ -38,6 +41,7 @@ const options = [
 const SendsTable = () => {
   const router = useRouter();
   const { query } = router;
+  const translate = useTranslations();
 
   const querySearch = query?.search?.toString() || "";
   const queryFilter = query?.filter?.toString() || "";
@@ -65,33 +69,51 @@ const SendsTable = () => {
   const columns: Array<EuiBasicTableColumn<Template>> = [
     {
       field: "title",
-      name: "Title",
+      name: translate("title"),
       "data-test-subj": "titleCell",
     },
     {
-      name: "Kind",
+      name: translate("kind"),
       "data-test-subj": "kindCell",
       render: (template: Template) => {
         //INFO: This is a workaround to get the kind of the template becaouse of POCKET
         const dataKind = getDataKind(template);
 
-        return <span>{dataKind}</span>;
+        return (
+          <span>
+            <EuiIcon aria-label="email" type="email" color={badgeColor(dataKind)} />{" "}
+            <EuiTextColor color={badgeColor(dataKind)}>{dataKind.toUpperCase()}</EuiTextColor>
+          </span>
+        );
       },
     },
     {
-      name: "Status",
+      name: translate("status"),
       render: (template: Template) => {
-        const { status } = template;
+        const { status, start_date, is_recurring } = template;
+
+        const iconType =
+          start_date && is_recurring
+            ? "timeRefresh"
+            : start_date && !is_recurring
+              ? "timeslider"
+              : "pivot";
+
         return (
           <span>
+            <EuiIcon type={iconType} color={badgeColor(status)} />{" "}
             <EuiBadge color={badgeColor(status)}>{status}</EuiBadge>
           </span>
         );
       },
     },
     {
+      field: "aud_count",
+      name: translate("aud_count"),
+    },
+    {
       field: "created_at",
-      name: "Created at",
+      name: translate("created_at"),
       "data-test-subj": "createdAtCell",
       render: (date: string) => {
         return moment(date).format("YYYY-MM-DD LT");
@@ -99,7 +121,7 @@ const SendsTable = () => {
     },
     {
       field: "created_by",
-      name: "Created by",
+      name: translate("created_by"),
       "data-test-subj": "createdByCell",
       footer: () => {
         return <strong>Total: {data?.total_count || 0}</strong>;
@@ -171,7 +193,7 @@ const SendsTable = () => {
   }, [queryPageIndex, queryPageSize, querySearch, queryFilter]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>{translate("loading")}</div>;
   }
 
   if (data?.results?.length === 0 && !searchValue && !filter) {
@@ -183,7 +205,7 @@ const SendsTable = () => {
         color="plain"
         body={
           <>
-            <p>The campaign description</p>
+            <p>{translate("the_campaign_description")}</p>
           </>
         }
         actions={<CreateCampaignActionPopover />}
@@ -201,7 +223,7 @@ const SendsTable = () => {
                 <EuiFieldSearch
                   defaultValue={searchValue}
                   onSearch={onSearch}
-                  placeholder="Search Campaign"
+                  placeholder={translate("search_campaign")}
                 />
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
@@ -221,7 +243,7 @@ const SendsTable = () => {
                       onFilter("DONE");
                     }}
                   >
-                    Done
+                    {translate("done")}
                   </EuiButton>
                 </div>
               </EuiFlexItem>
@@ -240,7 +262,7 @@ const SendsTable = () => {
       </EuiFlexItem>
       <EuiFlexItem>
         {isLoading ? (
-          <div>Loading...</div>
+          <div>{translate("loading")}</div>
         ) : (
           <EuiBasicTable
             tableCaption="Campaign table"

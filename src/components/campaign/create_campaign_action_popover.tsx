@@ -4,10 +4,12 @@ import { useState, useCallback, useMemo } from "react";
 import { TEMPLATE_DATA_TYPE_OPTIONS } from "../../constants";
 import { commonStyles } from "../../styles/global.styles";
 import CreateTemplateFlyot from "./create_template_flyot";
+import { useTranslations } from "next-intl";
 
 const CreateCampaignActionPopover = ({}) => {
   const router = useRouter();
   const common = commonStyles();
+  const translate = useTranslations();
 
   const [isPopoverOpen, setPopover] = useState(false);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
@@ -59,10 +61,10 @@ const CreateCampaignActionPopover = ({}) => {
   const button = useMemo(
     () => (
       <EuiButton iconType="arrowDown" iconSide="right" onClick={onButtonClick}>
-        Create new
+        {translate("create_new_campaign")}
       </EuiButton>
     ),
-    [onButtonClick],
+    [onButtonClick, translate],
   );
 
   return (

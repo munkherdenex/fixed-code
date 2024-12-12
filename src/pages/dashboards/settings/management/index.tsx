@@ -1,21 +1,24 @@
 import { EuiButton } from "@elastic/eui";
+import { useTranslations } from "next-intl";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { GetStaticProps } from "next/types";
 import TeamsTable from "../../../../components/management/teams_table";
 import { IS_POCKET } from "../../../../constants";
 import DashboardSettings from "../../../../layouts/dashboard_settings";
 
 const Management = () => {
   const router = useRouter();
+  const translate = useTranslations();
 
   return (
     <>
       <Head>
-        <title>Management</title>
+        <title>{translate("teams")}</title>
       </Head>
       <DashboardSettings
         pageHeader={{
-          pageTitle: "Teams",
+          pageTitle: translate("teams"),
           iconType: "managementApp",
           rightSideItems: [
             !IS_POCKET && (
@@ -25,7 +28,7 @@ const Management = () => {
                 fill
                 onClick={() => router.push("/dashboards/settings/team/create")}
               >
-                Create team
+                {translate("create_team")}
               </EuiButton>
             ),
           ],
@@ -35,6 +38,14 @@ const Management = () => {
       </DashboardSettings>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}/teams.json`)).default,
+    },
+  };
 };
 
 export default Management;

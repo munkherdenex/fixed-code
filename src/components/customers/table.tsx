@@ -24,7 +24,7 @@ import { useTranslations } from "next-intl";
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersTable = () => {
-  const audienceT = useTranslations();
+  const translate = useTranslations();
   const router = useRouter();
   const { query } = router;
 
@@ -57,28 +57,28 @@ const CustomersTable = () => {
     (): Array<EuiBasicTableColumn<CustomersType>> => [
       {
         field: "email",
-        name: audienceT("email"),
+        name: translate("email"),
         render: (email: CustomersType["email"]) => (
           <>{email ? email : <EuiTextColor color="subdued">None</EuiTextColor>}</>
         ),
       },
       {
         field: "phone",
-        name: audienceT("phone"),
+        name: translate("phone"),
         render: (phone: CustomersType["phone"]) => (
           <>{phone ? phone : <EuiTextColor color="subdued">None</EuiTextColor>}</>
         ),
       },
       {
         field: "rid",
-        name: audienceT("rid"),
+        name: translate("rid"),
         render: (rid: CustomersType["rid"]) => (
           <>{rid ? rid : <EuiTextColor color="subdued">None</EuiTextColor>}</>
         ),
       },
       {
         field: "source",
-        name: audienceT("source"),
+        name: translate("source"),
         render: (source: CustomersType["source"]) => (
           <EuiBadge
             iconType={
@@ -92,23 +92,23 @@ const CustomersTable = () => {
       },
       {
         field: "created_by",
-        name: audienceT("created-by"),
+        name: translate("created-by"),
         mobileOptions: { enlarge: true },
       },
       {
         field: "created_at",
-        name: audienceT("created-at"),
+        name: translate("created-at"),
         align: "right",
         render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
         footer: () => (
           <strong>
-            {audienceT("total-audience")}: {data?.total_count || 0}
+            {translate("total-audience")}: {data?.total_count || 0}
           </strong>
         ),
         mobileOptions: { enlarge: true },
       },
     ],
-    [data?.total_count, audienceT],
+    [data?.total_count, translate],
   );
 
   const onTableChange = ({ page }: Criteria<CustomersType>) => {
@@ -155,7 +155,7 @@ const CustomersTable = () => {
   }, [queryPageIndex, queryPageSize, querySearch]);
 
   if (isLoading) {
-    return <div>{audienceT("loading")}</div>;
+    return <div>{translate("loading")}</div>;
   }
 
   if (data?.results?.length === 0 && !searchValue && pageIndex === 0) {
@@ -165,7 +165,7 @@ const CustomersTable = () => {
         title={<h2>Create your audience</h2>}
         layout="horizontal"
         color="plain"
-        body={<p>{audienceT("the-audience-description")}</p>}
+        body={<p>{translate("the-audience-description")}</p>}
         actions={<CreateCustomerFlyoutContainer />}
       />
     );
@@ -184,7 +184,7 @@ const CustomersTable = () => {
             <EuiFieldSearch
               defaultValue={searchValue}
               onSearch={onSearchEmailAddress}
-              placeholder={audienceT("search-audience")}
+              placeholder={translate("search-audience")}
             />
           </EuiFlexItem>
           <EuiFlexItem grow={false}>

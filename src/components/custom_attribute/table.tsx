@@ -21,6 +21,7 @@ import useGetFields, { Fields, FieldsResponse } from "../../hooks/useGetFields";
 import { globalMutate } from "../../utils/globalMutate";
 import { isNumber } from "../../utils/helper";
 import CreateFieldFlyoutContainer from "./create_field_flyout_container";
+import { useTranslations } from "next-intl";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -30,6 +31,7 @@ const DeleteConfirmModal = ({
   selectedField: Fields | null;
 }) => {
   const modalTitleId = useGeneratedHtmlId();
+  const translate = useTranslations();
 
   const [deleteConfirmValue, setDeleteConfirmValue] = useState("");
 
@@ -57,28 +59,26 @@ const DeleteConfirmModal = ({
   return (
     <EuiConfirmModal
       aria-labelledby={modalTitleId}
-      title="Delete custom attribute?"
+      title={translate("delete_title")}
       onCancel={closeModal}
       onConfirm={() => {
         confirmModal();
       }}
-      confirmButtonText="Delete"
-      cancelButtonText="Cancel"
+      confirmButtonText={translate("delete")}
+      cancelButtonText={translate("cancel")}
       buttonColor="danger"
       isLoading={isMutating}
       confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
     >
       <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
-        <p>
-          You are about to delete this custom attribute. This is a destructive action and cannot be
-          undone. Are you sure you want to proceed?
-        </p>
+        <p>{translate("delete_description")}</p>
       </EuiCallOut>
       <EuiSpacer />
-      <EuiFormRow label="Type the word 'delete' to confirm">
+      <EuiFormRow label={translate("delete_form_label")}>
         <EuiFieldText
           isLoading={isMutating}
           name="delete"
+          type="text"
           value={deleteConfirmValue}
           onChange={onChange}
         />
@@ -90,6 +90,7 @@ const DeleteConfirmModal = ({
 const FieldsTable = () => {
   const router = useRouter();
   const { query } = router;
+  const translate = useTranslations();
 
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
@@ -114,29 +115,29 @@ const FieldsTable = () => {
   const columns: Array<EuiBasicTableColumn<Fields>> = [
     {
       field: "name",
-      name: "Name",
+      name: translate("name"),
       "data-test-subj": "nameCell",
     },
     {
       field: "attribute_name",
-      name: "Attribute",
+      name: translate("attribute"),
       "data-test-subj": "attributeCell",
     },
     {
       field: "data_type",
-      name: "Data type",
+      name: translate("Data type"),
       "data-test-subj": "typeCell",
     },
     {
       field: "created_at",
-      name: "Created at",
+      name: translate("created_at"),
       "data-test-subj": "createdAtCell",
       render: (date: string) => {
         return moment(date).format("YYYY-MM-DD LT");
       },
     },
     {
-      name: "Actions",
+      name: translate("actions"),
       footer: () => {
         return <strong>Total: {data?.total_count || 0}</strong>;
       },
@@ -191,14 +192,9 @@ const FieldsTable = () => {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
-        title={<h2>Create your custom attribute</h2>}
+        title={<h2>{translate("create_custom_attribute")}</h2>}
         layout="horizontal"
         color="plain"
-        body={
-          <>
-            <p>The custom attribute description</p>
-          </>
-        }
         actions={<CreateFieldFlyoutContainer />}
       />
     );
@@ -207,9 +203,7 @@ const FieldsTable = () => {
   return (
     <>
       <EuiBasicTable
-        tableCaption="Custom attribute table caption"
         items={data?.results || []}
-        rowHeader="firstName"
         columns={columns}
         cellProps={getCellProps}
         pagination={

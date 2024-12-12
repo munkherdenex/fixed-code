@@ -23,9 +23,12 @@ import { EMAIL_PHONE_DATA_TYPE_OPTIONS } from "../../constants";
 import useCreateSegmentManualFile from "../../hooks/useCreateSegmentManualFile";
 import useCreateSegmentManualText from "../../hooks/useCreateSegmentManualText";
 import { commonStyles } from "../../styles/global.styles";
+import { useTranslations } from "next-intl";
 
 const FileContent = ({ control }: { control: Control<FieldValues, any> }) => {
   const styles = commonStyles();
+  const translate = useTranslations();
+
   const [isTourOpen, setIsTourOpen] = useState(() => {
     return localStorage.getItem("isManualSegmentTourOpen") === "false" ? false : true;
   });
@@ -36,11 +39,7 @@ const FileContent = ({ control }: { control: Control<FieldValues, any> }) => {
         content={
           <div>
             <EuiText>
-              <p>
-                Upload a CSV file with the following columns like: email, phone, first_name,
-                last_name, and any other custom fields you want to include. The first row should be
-                the header row with the column names.
-              </p>
+              <p>{translate("manual.tour.file.description")}</p>
             </EuiText>
           </div>
         }
@@ -74,8 +73,8 @@ const FileContent = ({ control }: { control: Control<FieldValues, any> }) => {
                 }}
                 isInvalid={!!errors}
                 display="large"
-                initialPromptText="Select or drag and drop file"
-                aria-label="Select or drag and drop file"
+                initialPromptText={translate("manual.tour.upload")}
+                aria-label={translate("manual.tour.upload")}
                 accept=".csv"
               />
             );
@@ -88,6 +87,8 @@ const FileContent = ({ control }: { control: Control<FieldValues, any> }) => {
 
 const TextContent = ({ control }: { control: Control<FieldValues, any> }) => {
   const styles = commonStyles();
+  const translate = useTranslations();
+
   const [isTourOpen, setIsTourOpen] = useState(() => {
     return localStorage.getItem("isSegmentTextTourOpen") === "false" ? false : true;
   });
@@ -108,10 +109,7 @@ const TextContent = ({ control }: { control: Control<FieldValues, any> }) => {
               content={
                 <div>
                   <EuiText>
-                    <p>
-                      Enter the text you want to use for segmenting your users. You can also choose
-                      the type of data you are entering, such as email or phone number
-                    </p>
+                    <p>{translate("manual.tour.text.description")}</p>
                   </EuiText>
                   <EuiSpacer />
                   <EuiCodeBlock>a@gmail.com,a@gmail.com,...</EuiCodeBlock>
@@ -135,9 +133,9 @@ const TextContent = ({ control }: { control: Control<FieldValues, any> }) => {
                 value={value}
                 onBlur={onBlur}
                 isInvalid={!!errors}
-                placeholder="Placeholder text"
+                placeholder="a@gmail.com,a@gmail.com,..."
                 name="text"
-                aria-label="Use aria labels when no actual label is in use"
+                aria-label="a@gmail.com,a@gmail.com,..."
               />
             </EuiTourStep>
           );
@@ -150,12 +148,12 @@ const TextContent = ({ control }: { control: Control<FieldValues, any> }) => {
 const tabs = [
   {
     id: "file",
-    name: "Files",
+    name: "files",
     content: (control: Control<FieldValues, any>) => <FileContent control={control} />,
   },
   {
     id: "text",
-    name: "Text",
+    name: "text",
     content: (control: Control<FieldValues, any>) => <TextContent control={control} />,
   },
 ];
@@ -180,6 +178,8 @@ type MyFormData = yup.InferType<typeof schema>;
 const Manual = ({ name, description }: { name: string; description: string }) => {
   const styles = commonStyles();
   const router = useRouter();
+  const translate = useTranslations();
+
   const { trigger: createSegmentFile, isMutating: isCreateSegmentFileMutating } =
     useCreateSegmentManualFile();
   const { trigger: createSegmentText, isMutating: isCreateSegmentMutating } =
@@ -224,7 +224,7 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
         onClick={() => onSelectedTabChanged(tab.id)}
         isSelected={tab.id === selectedTabId}
       >
-        {tab.name}
+        {translate(tab.name)}
       </EuiTab>
     ));
   };
@@ -304,9 +304,7 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
                   content={
                     <div>
                       <EuiText>
-                        <p>
-                          Choose the type of data you are entering, such as email or phone number
-                        </p>
+                        <p>{translate("manual-text-type-description")}</p>
                       </EuiText>
                     </div>
                   }
@@ -319,7 +317,7 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
                   }}
                   step={2}
                   stepsTotal={2}
-                  title="Choose Text Type"
+                  title={translate("choose_text_type")}
                   anchorPosition="rightUp"
                   css={styles.tourStep}
                 >
@@ -346,7 +344,7 @@ const Manual = ({ name, description }: { name: string; description: string }) =>
               disabled={isCreateSegmentMutating || isCreateSegmentFileMutating}
               isLoading={isCreateSegmentMutating || isCreateSegmentFileMutating}
             >
-              Create
+              {translate("create")}
             </EuiButton>
           </EuiForm>
         </EuiFlexItem>

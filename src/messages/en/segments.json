@@ -1,0 +1,41 @@
+{
+  "title": "Segments",
+  "create-segment": "Create Segment",
+  "name": "Name",
+  "description": "Description",
+  "type": "Type",
+  "created-at": "Created-at",
+  "updated-at": "Updated-at",
+  "the-segment-description": "The segment description",
+  "search-segments": "Search Segments",
+  "loading": "Loading...",
+  "dynamic": "Dynamic",
+  "dynamic-query-builder": "Dynamic Query Builder",
+  "dynamic-segment-description": "Create a dynamic segment based on a query.",
+  "manual-segment-description": "Create a manual segment based on a file and text.",
+  "add-segment": "Add Segment",
+  "files": "Files",
+  "text": "Text",
+  "audience_list": "Audience list",
+  "search_email_address_phone_rid": "Search email address, phone and rid",
+  "segment_detail": "Segment detail",
+  "update_segment": "Update segment",
+  "delete_segment": "Delete segment",
+  "segment_info": "Segment info",
+  "manual": {
+    "title": "Manual",
+    "tour": {
+      "upload": "Upload a CSV file with your audience data",
+      "file": {
+        "title": "Upload a CSV file",
+        "description": "Upload a CSV file with your audience data"
+      },
+      "text": {
+        "title": "Paste your audience data",
+        "description": "Enter the text you want to use for segmenting your users. You can also choose the type of data you are entering, such as email or phone number"
+      }
+    }
+  },
+  "total-segments": "Total Segments",
+  "choose_text_type": "Choose Text Type"
+}

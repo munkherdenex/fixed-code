@@ -26,6 +26,12 @@
   "subscription-status": "Subscription status",
   "warning": "Warning",
   "type-the-word-delete": "Type the word 'delete' to confirm",
+  "last-clicked": "Last clicked",
+  "add_to_segment": "Add to segment",
+  "add_to_segment_description": "Search email address, phone and rid",
+  "last-opened": "Last opened",
+  "update_audience": "Update audience",
+  "status": "Status",
   "success": {
     "title": "Success",
     "import-audience": "Audience imported successfully",

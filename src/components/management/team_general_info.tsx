@@ -17,8 +17,11 @@ import { useManagementTeamsContext } from "../../store/management_teams_store";
 import { teamsContext } from "../../store/teams_store";
 import { convertToTree } from "../../utils/convertToTree";
 import useUpdateTeamName from "../../hooks/useUpdateTeamName";
+import { useTranslations } from "next-intl";
 
 const TeamGeneralInfo = () => {
+  const translate = useTranslations();
+
   const { currentTeam, isAdmin, refetchTeam } = useManagementTeamsContext();
   const { trigger } = useUpdateTeamName(currentTeam?.id.toString());
 
@@ -47,7 +50,7 @@ const TeamGeneralInfo = () => {
           <EuiFlexItem>
             <EuiPanel paddingSize="s" color="subdued">
               <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
-                <EuiFlexItem grow={false}>Team info</EuiFlexItem>
+                <EuiFlexItem grow={false}>{translate("team_info")}</EuiFlexItem>
                 {isAdmin && (
                   <EuiFlexItem grow={false}>
                     {edit ? (
@@ -106,7 +109,7 @@ const TeamGeneralInfo = () => {
                     }
                     description={
                       <EuiTextColor color="default">
-                        <span>Name</span>
+                        <span>{translate("name")}</span>
                       </EuiTextColor>
                     }
                     titleSize="xs"
@@ -129,12 +132,12 @@ const TeamGeneralInfo = () => {
                       ) : currentTeam?.description ? (
                         currentTeam?.description
                       ) : (
-                        <EuiTextColor color="subdued">No description</EuiTextColor>
+                        <EuiTextColor color="subdued">{translate("no_description")}</EuiTextColor>
                       )
                     }
                     description={
                       <EuiTextColor color="default">
-                        <span>Description</span>
+                        <span>{translate("description")}</span>
                       </EuiTextColor>
                     }
                     titleSize="xs"
@@ -151,6 +154,8 @@ const TeamGeneralInfo = () => {
 
 export const TeamGeneralInfoTwo = () => {
   const router = useRouter();
+  const translate = useTranslations();
+
   const { currentTeam } = useManagementTeamsContext();
   const { teams, changeCurrentTeam } = useContext(teamsContext);
 
@@ -180,7 +185,7 @@ export const TeamGeneralInfoTwo = () => {
     return (
       <EuiPanel>
         <EuiPanel color="subdued" paddingSize="s">
-          Parent team:
+          {translate("parent_team")}:
           <EuiButtonEmpty
             onClick={() =>
               router.push(`/dashboards/settings/management/team/${currentTeam?.parent_team?.id}`)
@@ -205,7 +210,7 @@ export const TeamGeneralInfoTwo = () => {
           }
           description={
             <EuiPanel color="subdued" paddingSize="s">
-              <span>Sub teams</span>
+              <span>{translate("sub_team")}s</span>
             </EuiPanel>
           }
           titleSize="xs"

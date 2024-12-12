@@ -7,6 +7,7 @@ import { authContext } from "../../store/auth_store";
 import { useRouter } from "next/router";
 import { IS_POCKET } from "../../constants";
 import { useTranslations } from "next-intl";
+import { GetStaticProps } from "next/types";
 
 const Index = () => {
   const router = useRouter();
@@ -60,12 +61,12 @@ const Index = () => {
   );
 };
 
-export async function getStaticProps(context) {
+export const getStaticProps: GetStaticProps = async (context) => {
   return {
     props: {
       messages: (await import(`../../messages/${context.locale}.json`)).default,
     },
   };
-}
+};
 
 export default Index;

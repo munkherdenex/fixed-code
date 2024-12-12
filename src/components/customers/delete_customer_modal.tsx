@@ -12,13 +12,13 @@ const DeleteCustomerModal = ({
 }: {
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
-  const audienceT = useTranslations();
+  const translate = useTranslations();
   const { customerDeleteTrigger, isMutating } = useDeleteCustomer(router.query.id);
   const [deleteMessage, setDeleteMessage] = useState("");
 
   return (
     <EuiConfirmModal
-      title={audienceT("warning")}
+      title={translate("warning")}
       isLoading={isMutating}
       onCancel={() => setIsModalVisible(false)}
       confirmButtonDisabled={deleteMessage.toLowerCase() !== "delete"}
@@ -32,15 +32,15 @@ const DeleteCustomerModal = ({
         addToast({
           id: "customer-deleted",
           color: "success",
-          title: audienceT("success.title"),
-          text: audienceT("success.customer-deleted"),
+          title: translate("success.title"),
+          text: translate("success.customer-deleted"),
         });
       }}
-      confirmButtonText="Delete"
-      cancelButtonText="Cancel"
+      confirmButtonText={translate("delete")}
+      cancelButtonText={translate("cancel")}
       buttonColor="danger"
     >
-      <EuiFormRow label={audienceT("type-the-word-delete")}>
+      <EuiFormRow label={translate("type-the-word-delete")}>
         <EuiFieldText
           name="delete"
           value={deleteMessage}

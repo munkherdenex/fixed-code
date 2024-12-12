@@ -16,6 +16,7 @@ import * as yup from "yup";
 import { CUSTOM_DATA_TYPE_OPTIONS } from "../../constants";
 import useCreateField from "../../hooks/useCreateCustomField";
 import { globalMutate } from "../../utils/globalMutate";
+import { useTranslations } from "next-intl";
 
 const schema = yup
   .object({
@@ -36,6 +37,7 @@ const schema = yup
 type FormData = yup.InferType<typeof schema>;
 
 const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
+  const translate = useTranslations();
   const { trigger, isMutating } = useCreateField<FormData>();
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
@@ -68,13 +70,13 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     <EuiFlyout onClose={closeFlyout}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2>Create custom attribute</h2>
+          <h2>{translate("create_custom_attribute")}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Name"
+            label={translate("name")}
             isInvalid={!!errors.name?.message}
             error={[errors.name?.message]}
           >
@@ -87,14 +89,14 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                   value={value}
                   onBlur={onBlur}
                   isInvalid={!!errors.name?.message}
-                  placeholder="Name"
-                  aria-label="name"
+                  placeholder={translate("name")}
+                  aria-label={translate("name")}
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow
-            label="Attribute name"
+            label={translate("attribute_name")}
             isInvalid={!!errors.attribute_name?.message}
             error={[errors.attribute_name?.message]}
           >
@@ -107,14 +109,14 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                   value={value}
                   onBlur={onBlur}
                   isInvalid={!!errors.attribute_name?.message}
-                  placeholder="Attribute name"
-                  aria-label="Attribute name"
+                  placeholder={translate("attribute_name")}
+                  aria-label={translate("attribute_name")}
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow
-            label="Data type"
+            label={translate("data_type")}
             isInvalid={!!errors.data_type?.message}
             error={[errors.data_type?.message]}
           >
@@ -128,14 +130,14 @@ const CreateFieldFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
                   options={CUSTOM_DATA_TYPE_OPTIONS}
                   onBlur={onBlur}
                   isInvalid={!!errors.data_type?.message}
-                  aria-label="data type"
+                  aria-label={translate("data_type")}
                   hasNoInitialSelection
                 />
               )}
             />
           </EuiFormRow>
           <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-            Create custom attribute
+            {translate("create_custom_attribute")}
           </EuiButton>
         </EuiForm>
       </EuiFlyoutBody>

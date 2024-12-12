@@ -6,26 +6,24 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiPanel,
+  EuiSkeletonRectangle,
   EuiTextColor,
 } from "@elastic/eui";
 import moment from "moment";
-import { useRouter } from "next/router";
 import { useState } from "react";
-import useGetCustomers, { CustomersType } from "../../hooks/useGetCustomers";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
 import AddSegmentsToAudience from "./add_segment_to_audience";
 import DeleteCustomerModal from "./delete_customer_modal";
 import UpdateCustomerComponent from "./update_customer";
 import AdminComponent from "../admin_component";
 import { useTranslations } from "next-intl";
+import { badgeColor } from "../../utils/badge_color";
+import { useAudienceContext } from "../../store/audience_store";
 
 const GeneralDetails = () => {
-  const router = useRouter();
   const audientT = useTranslations();
 
-  const { data, isLoading } = useGetCustomers<CustomersType>(router.query.id, {
-    extended: "true",
-  });
+  const { data, isLoading } = useAudienceContext();
   const { data: fields } = useGetFields<Fields[]>(undefined, {
     all: "true",
   });
@@ -43,118 +41,154 @@ const GeneralDetails = () => {
       }))
       .filter((data) => data?.value !== undefined);
 
-  if (isLoading) return <div>Loading...</div>;
-
   return (
     <div>
       <EuiPanel>
-        <EuiFlexGroup direction="column">
-          <EuiFlexItem>
-            <EuiPanel paddingSize="s" color="subdued">
-              <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="center">
-                <EuiFlexItem grow={false}>
-                  <strong>{audientT("audience-details")}</strong>
-                </EuiFlexItem>
-                <AdminComponent>
+        <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={655} borderRadius="m">
+          <EuiFlexGroup direction="column">
+            <EuiFlexItem>
+              <EuiPanel paddingSize="s" color="subdued">
+                <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="center">
                   <EuiFlexItem grow={false}>
-                    <EuiFlexGrid responsive={false} gutterSize="s" columns={3}>
-                      <EuiFlexItem grow={false}>
-                        <EuiButtonIcon
-                          display="base"
-                          iconType="listAdd"
-                          aria-label="Add"
-                          color="success"
-                          onClick={() => setIsSegmentFlyoutVisible(true)}
-                        />
-                      </EuiFlexItem>
-                      <EuiFlexItem grow={false}>
-                        <EuiButtonIcon
-                          display="base"
-                          iconType="trash"
-                          aria-label="Delete"
-                          color="danger"
-                          onClick={() => setIsModalVisible(true)}
-                        />
-                      </EuiFlexItem>
-                      <EuiFlexItem grow={false}>
-                        <EuiButtonIcon
-                          display="base"
-                          iconType="pencil"
-                          aria-label="Update"
-                          color="primary"
-                          onClick={() => setIsFlyoutVisible(true)}
-                        />
-                      </EuiFlexItem>
-                    </EuiFlexGrid>
+                    <strong>{audientT("audience-details")}</strong>
                   </EuiFlexItem>
-                </AdminComponent>
-              </EuiFlexGroup>
-            </EuiPanel>
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiFlexGrid responsive={false} columns={2}>
-              <EuiFlexItem>{audientT("email-address")} :</EuiFlexItem>
-              <EuiFlexItem>
-                {data?.email ? data?.email : <EuiTextColor color="subdued">None</EuiTextColor>}
-              </EuiFlexItem>
-              <EuiFlexItem>{audientT("phone-number")} :</EuiFlexItem>
-              <EuiFlexItem>
-                {data?.phone ? data?.phone : <EuiTextColor color="subdued">None</EuiTextColor>}
-              </EuiFlexItem>
-              <EuiFlexItem>{audientT("reference-id")} :</EuiFlexItem>
-              <EuiFlexItem>
-                {data?.rid ? data?.rid : <EuiTextColor color="subdued">None</EuiTextColor>}
-              </EuiFlexItem>
-              <EuiFlexItem>{audientT("subscription-status")} :</EuiFlexItem>
-              <EuiFlexItem>
-                <div>
-                  <EuiBadge>{data?.is_subscribed.toString()}</EuiBadge>
-                </div>
-              </EuiFlexItem>
-              <EuiFlexItem>{audientT("created-date")} :</EuiFlexItem>
-              <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-              <EuiFlexItem>{audientT("updated-date")} :</EuiFlexItem>
-              <EuiFlexItem> {moment(data?.updated_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
-            </EuiFlexGrid>
-          </EuiFlexItem>
-          {extendedCustomerData && extendedCustomerData?.length > 0 && (
-            <>
-              <EuiFlexItem>
-                <EuiPanel paddingSize="s" color="subdued">
-                  <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
+                  <AdminComponent>
                     <EuiFlexItem grow={false}>
-                      <strong>{audientT("custom-attributes")}</strong>
+                      <EuiFlexGrid responsive={false} gutterSize="s" columns={3}>
+                        <EuiFlexItem grow={false}>
+                          <EuiButtonIcon
+                            display="base"
+                            iconType="listAdd"
+                            aria-label="Add"
+                            color="success"
+                            onClick={() => setIsSegmentFlyoutVisible(true)}
+                          />
+                        </EuiFlexItem>
+                        <EuiFlexItem grow={false}>
+                          <EuiButtonIcon
+                            display="base"
+                            iconType="trash"
+                            aria-label="Delete"
+                            color="danger"
+                            onClick={() => setIsModalVisible(true)}
+                          />
+                        </EuiFlexItem>
+                        <EuiFlexItem grow={false}>
+                          <EuiButtonIcon
+                            display="base"
+                            iconType="pencil"
+                            aria-label="Update"
+                            color="primary"
+                            onClick={() => setIsFlyoutVisible(true)}
+                          />
+                        </EuiFlexItem>
+                      </EuiFlexGrid>
                     </EuiFlexItem>
-                  </EuiFlexGroup>
-                </EuiPanel>
-              </EuiFlexItem>
-              <EuiFlexItem>
-                <EuiFlexGrid responsive={false} columns={2}>
-                  {extendedCustomerData?.map((data) => (
-                    <React.Fragment key={data?.id}>
-                      <EuiFlexItem>
-                        {data?.name} ({data?.attribute_name}) :
+                  </AdminComponent>
+                </EuiFlexGroup>
+              </EuiPanel>
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiFlexGrid responsive={false} columns={2}>
+                <EuiFlexItem>{audientT("email-address")} :</EuiFlexItem>
+                <EuiFlexItem>
+                  {data?.email ? data?.email : <EuiTextColor color="subdued">None</EuiTextColor>}
+                </EuiFlexItem>
+                <EuiFlexItem>{audientT("phone-number")} :</EuiFlexItem>
+                <EuiFlexItem>
+                  {data?.phone ? data?.phone : <EuiTextColor color="subdued">None</EuiTextColor>}
+                </EuiFlexItem>
+                <EuiFlexItem>{audientT("reference-id")} :</EuiFlexItem>
+                <EuiFlexItem>
+                  {data?.rid ? data?.rid : <EuiTextColor color="subdued">None</EuiTextColor>}
+                </EuiFlexItem>
+                <EuiFlexItem>{audientT("subscription-status")} :</EuiFlexItem>
+                <EuiFlexItem>
+                  <div>
+                    <EuiBadge color={badgeColor(data?.is_subscribed.toString())}>
+                      {data?.is_subscribed.toString().toUpperCase()}
+                    </EuiBadge>
+                  </div>
+                </EuiFlexItem>
+                {data?.last_clicked_at && (
+                  <>
+                    <EuiFlexItem>{audientT("last-clicked")} :</EuiFlexItem>
+                    <EuiFlexItem>
+                      {moment(data?.last_clicked_at).format("YYYY-MM-DD LT")}
+                    </EuiFlexItem>
+                  </>
+                )}
+                {data?.status && (
+                  <>
+                    <EuiFlexItem>{audientT("status")} :</EuiFlexItem>
+                    <EuiFlexItem>
+                      <div>
+                        <EuiBadge color={badgeColor(data?.status)}>
+                          {data?.status.toUpperCase()}
+                        </EuiBadge>
+                      </div>
+                    </EuiFlexItem>
+                  </>
+                )}
+                {data?.last_opened_at && (
+                  <>
+                    <EuiFlexItem>{audientT("last-opened")} :</EuiFlexItem>
+                    <EuiFlexItem>
+                      {moment(data?.last_opened_at).format("YYYY-MM-DD LT")}
+                    </EuiFlexItem>
+                  </>
+                )}
+                <EuiFlexItem>{audientT("created")} :</EuiFlexItem>
+                <EuiFlexItem>
+                  <div>{data?.created_by}</div>
+                  <div>{moment(data?.created_at).format("YYYY-MM-DD LT")}</div>
+                </EuiFlexItem>
+                <EuiFlexItem>{audientT("updated")} :</EuiFlexItem>
+                <EuiFlexItem>
+                  <div>{data?.updated_by}</div>
+                  <div>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</div>
+                </EuiFlexItem>
+              </EuiFlexGrid>
+            </EuiFlexItem>
+            {extendedCustomerData && extendedCustomerData?.length > 0 && (
+              <>
+                <EuiFlexItem>
+                  <EuiPanel paddingSize="s" color="subdued">
+                    <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
+                      <EuiFlexItem grow={false}>
+                        <strong>{audientT("custom-attributes")}</strong>
                       </EuiFlexItem>
-                      <EuiFlexItem>
-                        {data?.data_type === "date" && moment(data?.value).format("YYYY-MM-DD")}
-                        {data?.data_type === "datetime" &&
-                          moment(data?.value).format("YYYY-MM-DD LT")}
-                        {data?.data_type !== "date" &&
-                          data?.data_type !== "datetime" &&
-                          data?.value}
-                      </EuiFlexItem>
-                    </React.Fragment>
-                  ))}
-                </EuiFlexGrid>
-              </EuiFlexItem>
-            </>
+                    </EuiFlexGroup>
+                  </EuiPanel>
+                </EuiFlexItem>
+                <EuiFlexItem>
+                  <EuiFlexGrid responsive={false} columns={2}>
+                    {extendedCustomerData?.map((data) => (
+                      <React.Fragment key={data?.id}>
+                        <EuiFlexItem>
+                          {data?.name} ({data?.attribute_name}) :
+                        </EuiFlexItem>
+                        <EuiFlexItem>
+                          {data?.data_type === "date" && moment(data?.value).format("YYYY-MM-DD")}
+                          {data?.data_type === "datetime" &&
+                            moment(data?.value).format("YYYY-MM-DD LT")}
+                          {data?.data_type !== "date" &&
+                            data?.data_type !== "datetime" &&
+                            data?.value}
+                        </EuiFlexItem>
+                      </React.Fragment>
+                    ))}
+                  </EuiFlexGrid>
+                </EuiFlexItem>
+              </>
+            )}
+          </EuiFlexGroup>
+          {isModalVisible && <DeleteCustomerModal setIsModalVisible={setIsModalVisible} />}
+          {isSegmentFlyoutVisible && (
+            <AddSegmentsToAudience setIsFlyoutVisible={setIsSegmentFlyoutVisible} />
           )}
-        </EuiFlexGroup>
-        {isModalVisible && <DeleteCustomerModal setIsModalVisible={setIsModalVisible} />}
-        {isSegmentFlyoutVisible && (
-          <AddSegmentsToAudience setIsFlyoutVisible={setIsSegmentFlyoutVisible} />
-        )}
-        {isFlyoutVisible && <UpdateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
+          {isFlyoutVisible && <UpdateCustomerComponent setIsFlyoutVisible={setIsFlyoutVisible} />}
+        </EuiSkeletonRectangle>
       </EuiPanel>
     </div>
   );

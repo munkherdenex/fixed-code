@@ -2,7 +2,7 @@ import { EuiButton, EuiFieldText, EuiForm, EuiFormRow, EuiTextArea } from "@elas
 import { yupResolver } from "@hookform/resolvers/yup";
 import { jsonrepair } from "jsonrepair";
 import { useRouter } from "next/router";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ActionElement, formatQuery, QueryBuilder, RuleGroupType } from "react-querybuilder";
 import { parseMongoDB } from "react-querybuilder/parseMongoDB";
@@ -18,6 +18,7 @@ import { processDynamicFieldData } from "../../utils/process_data";
 import { customRuleProcessor } from "../../utils/rule_processer";
 import { addToast } from "../toast";
 import { dynamicStyles } from "./dynamic.styles";
+import { useTranslations } from "next-intl";
 
 const schema = yup.object({
   name: yup.string().required("please enter your name"),
@@ -39,11 +40,13 @@ const EditDynamic = ({
 }) => {
   const styles = dynamicStyles();
   const router = useRouter();
+  const translate = useTranslations();
+
+  const [query, setQuery] = useState<RuleGroupType>();
+
   const { data } = useGetFields<Fields[]>(undefined, {
     all: `${true}`,
   });
-  const [query, setQuery] = useState<RuleGroupType>();
-
   const { trigger, isMutating } = useUpdateSegment(router.query.id);
 
   const {
@@ -101,7 +104,11 @@ const EditDynamic = ({
   return (
     <>
       <EuiForm component="form" onSubmit={handleSubmit(createSegment)}>
-        <EuiFormRow label="Title" isInvalid={!!errors.name?.message} error={[errors.name?.message]}>
+        <EuiFormRow
+          label={translate("title")}
+          isInvalid={!!errors.name?.message}
+          error={[errors.name?.message]}
+        >
           <Controller
             control={control}
             name="name"
@@ -110,7 +117,7 @@ const EditDynamic = ({
                 onChange={onChange}
                 value={value}
                 onBlur={onBlur}
-                placeholder="title"
+                placeholder={translate("title")}
                 fullWidth
                 required
                 isInvalid={!!errors.name?.message}
@@ -118,7 +125,7 @@ const EditDynamic = ({
             )}
           />
         </EuiFormRow>
-        <EuiFormRow label="Description">
+        <EuiFormRow label={translate("description")}>
           <Controller
             control={control}
             name="description"
@@ -127,15 +134,19 @@ const EditDynamic = ({
                 onChange={onChange}
                 value={value}
                 onBlur={onBlur}
-                placeholder="Placeholder text"
+                placeholder={translate("description")}
+                aria-label={translate("description")}
                 name="description"
-                aria-label="Use aria labels when no actual label is in use"
               />
             )}
           />
         </EuiFormRow>
         {query && (
-          <EuiFormRow css={styles.queryBuilderContainer} label="Dynamic query builder" fullWidth>
+          <EuiFormRow
+            css={styles.queryBuilderContainer}
+            label={translate("dynamic-query-builder")}
+            fullWidth
+          >
             <QueryBuilder
               fields={[...QUERY_BUILDER_DEFAULT_FIELD, ...output]}
               query={query}
@@ -151,7 +162,7 @@ const EditDynamic = ({
         )}
         <EuiFormRow>
           <EuiButton disabled={isNotValid(query)} type="submit" isLoading={isMutating}>
-            Update segment
+            {translate("update_segment")}
           </EuiButton>
         </EuiFormRow>
       </EuiForm>

@@ -1,4 +1,4 @@
-import { EuiButton, EuiFlexGroup, EuiPopover } from "@elastic/eui";
+import { EuiButton, EuiFlexGroup, EuiPopover, useIsWithinMaxBreakpoint } from "@elastic/eui";
 import { useContext, useState } from "react";
 import { dashboardHeadersStyles } from "../../layouts/dashboard_headers.style";
 import { teamsContext } from "../../store/teams_store";
@@ -6,6 +6,7 @@ import TeamsTreeView from "../management/teams_tree_view";
 
 const TeamSwitcher = () => {
   const styles = dashboardHeadersStyles();
+  const largeMaxBreakpoint = useIsWithinMaxBreakpoint("s");
   const { currentTeam, teams } = useContext(teamsContext);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -19,7 +20,7 @@ const TeamSwitcher = () => {
       color="text"
       iconType="arrowDown"
       iconSide="right"
-      css={styles.popover}
+      css={largeMaxBreakpoint ? styles.popover : null}
       onClick={onButtonClick}
     >
       {currentTeam?.name || "Select team"}
@@ -37,7 +38,6 @@ const TeamSwitcher = () => {
       closePopover={closePopover}
       anchorPosition="downLeft"
       panelPaddingSize="s"
-      css={styles.popover}
     >
       <EuiFlexGroup direction="column" gutterSize="s">
         <TeamsTreeView />

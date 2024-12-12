@@ -19,6 +19,7 @@ import useCreateSegmentsAudience from "../../hooks/useCreateSegmentsAudience";
 import useGetSegments, { SegmentResponse } from "../../hooks/useGetSegments";
 import { globalMutate } from "../../utils/globalMutate";
 import { addToast } from "../toast";
+import { useTranslations } from "next-intl";
 
 const schema = yup
   .object({
@@ -44,7 +45,9 @@ const AddSegmentsToAudience = ({
   const flyoutHeadingId = useGeneratedHtmlId();
   const router = useRouter();
   const { id } = router.query;
-  const [searchValue, setSearchValue] = useState<any>();
+  const translate = useTranslations();
+
+  const [searchValue, setSearchValue] = useState<string>();
 
   const { data: customerSegments, isLoading } = useGetSegments<SegmentResponse>(undefined, {
     query: searchValue,
@@ -100,13 +103,13 @@ const AddSegmentsToAudience = ({
     <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2 id={flyoutHeadingId}>Add to segment</h2>
+          <h2 id={flyoutHeadingId}>{translate("add_to_segment")}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Search email address, phone and rid"
+            label={translate("add_to_segment_description")}
             isInvalid={!!errors.segment?.message || !!errors.segment?.[0]?.value?.message}
             error={[errors.segment?.message || errors.segment?.[0]?.value?.message]}
           >
@@ -115,7 +118,7 @@ const AddSegmentsToAudience = ({
               name="segment"
               render={({ field: { value, onBlur, onChange } }) => (
                 <EuiComboBox
-                  placeholder="Search"
+                  placeholder={translate("search")}
                   singleSelection={{ asPlainText: true }}
                   options={dataTypeOptions}
                   onChange={onChange}
@@ -130,7 +133,7 @@ const AddSegmentsToAudience = ({
           </EuiFormRow>
           <EuiFormRow hasEmptyLabelSpace>
             <EuiButton isLoading={isLoading} disabled={isLoading} type="submit">
-              Add to segment
+              {translate("add_to_segment")}
             </EuiButton>
           </EuiFormRow>
         </EuiForm>

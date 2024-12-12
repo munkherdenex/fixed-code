@@ -21,6 +21,15 @@ export interface CustomersType {
   source: string;
   team_id: string;
   is_subscribed: boolean;
+  last_clicked_at: string;
+  last_opened_at: string;
+  open_rate: string;
+  status: string;
+  click_rate: string;
+  total_clicks: string;
+  total_sent: string;
+  total_unique_opens: string;
+  unsubscribed_at: string;
 }
 
 export interface CustomersResponse {

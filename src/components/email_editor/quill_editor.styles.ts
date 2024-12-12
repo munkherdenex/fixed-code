@@ -26,9 +26,9 @@ export const quillEditorStyles = () => ({
       height: auto;
       margin-bottom: 0px;
       .ql-container {
-        min-height: 250px;
+        min-height: 340px;
         .ql-editor {
-          min-height: 250px;
+          min-height: 340px;
         }
       }
     }

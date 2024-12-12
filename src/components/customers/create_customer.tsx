@@ -35,7 +35,7 @@ const CreateCustomerComponent = ({
   setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const flyoutHeadingId = useGeneratedHtmlId();
-  const audienceT = useTranslations();
+  const translate = useTranslations();
   const { trigger, isMutating } = useCreateCustomer();
   const { data } = useGetFields<FieldsResponse>();
   const {
@@ -82,7 +82,7 @@ const CreateCustomerComponent = ({
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label={audienceT("email")}
+            label={translate("email")}
             isInvalid={!!errors.email?.message}
             error={[errors.email?.message]}
           >
@@ -94,14 +94,14 @@ const CreateCustomerComponent = ({
                   onChange={onChange}
                   value={value}
                   onBlur={onBlur}
-                  placeholder={audienceT("email")}
+                  placeholder={translate("email")}
                   aria-label="email"
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow
-            label={audienceT("phone")}
+            label={translate("phone")}
             isInvalid={!!errors.phone?.message}
             error={[errors.phone?.message]}
           >
@@ -118,14 +118,14 @@ const CreateCustomerComponent = ({
                   }}
                   value={value}
                   onBlur={onBlur}
-                  placeholder={audienceT("phone")}
+                  placeholder={translate("phone")}
                   aria-label="phone"
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow
-            label={audienceT("rid")}
+            label={translate("rid")}
             isInvalid={!!errors.rid?.message}
             error={[errors.rid?.message]}
           >
@@ -137,14 +137,14 @@ const CreateCustomerComponent = ({
                   onChange={onChange}
                   value={value}
                   onBlur={onBlur}
-                  placeholder={audienceT("rid")}
+                  placeholder={translate("rid")}
                   aria-label="rid"
                 />
               )}
             />
           </EuiFormRow>
           <EuiSpacer />
-          <strong>{audienceT("custom-attributes")}</strong>
+          <strong>{translate("custom-attributes")}</strong>
           {data?.results &&
             Array.isArray(data?.results) &&
             data?.results.map((field, index) => (
@@ -261,7 +261,7 @@ const CreateCustomerComponent = ({
             ))}
           <EuiFormRow hasEmptyLabelSpace>
             <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-              {audienceT("create-audience")}
+              {translate("create-audience")}
             </EuiButton>
           </EuiFormRow>
         </EuiForm>

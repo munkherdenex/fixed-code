@@ -1,43 +1,25 @@
-import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem } from "@elastic/eui";
+import { EuiFlexGroup, EuiFlexItem } from "@elastic/eui";
+import { useTranslations } from "next-intl";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import Menu from "../../../../../components/segments/menu";
+import { GetStaticProps } from "next/types";
 import GeneralDetails from "../../../../../components/segments/general_details";
+import Menu from "../../../../../components/segments/menu";
 import DashboardLayout from "../../../../../layouts/dashboard";
 import { SegmentProvider } from "../../../../../store/segment_store";
 
 const Info = () => {
-  const router = useRouter();
+  const translate = useTranslations();
 
   return (
     <>
       <Head>
-        <title>Info</title>
+        <title>{translate("segment_info")}</title>
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Segments info",
+          pageTitle: translate("segment_info"),
           iconType: "dashboardApp",
         }}
-        breadCrumb={
-          <EuiBreadcrumbs
-            breadcrumbs={[
-              {
-                text: "Dashboards",
-                onClick: () => router.push("/dashboards/cdp"),
-              },
-              {
-                text: "Segments",
-                onClick: () => router.push("/dashboards/cdp/segments"),
-              },
-              {
-                text: "Info",
-              },
-            ]}
-            truncate={false}
-            aria-label="Segments info breadCrumb"
-          />
-        }
       >
         <SegmentProvider>
           <EuiFlexGroup direction="row">
@@ -52,6 +34,28 @@ const Info = () => {
       </DashboardLayout>
     </>
   );
+};
+
+export async function getStaticPaths() {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const segments = (await import(`../../../../../messages/${context.locale}/segments.json`))
+    .default;
+  const common = (await import(`../../../../../messages/${context.locale}/common.json`)).default;
+
+  return {
+    props: {
+      messages: {
+        ...segments,
+        ...common,
+      },
+    },
+  };
 };
 
 export default Info;

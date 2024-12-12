@@ -12,6 +12,7 @@ import {
   EuiToolTip,
 } from "@elastic/eui";
 import moment from "moment";
+import { useTranslations } from "next-intl";
 import { useLayoutEffect, useState } from "react";
 import { MembersType, TeamMembersType } from "../../constants/members.types";
 import useGetCurrentTeamMembers from "../../hooks/useCurrentTeamMembers";
@@ -22,6 +23,8 @@ import DeleteMemberModal from "./delete_member_modal";
 import UpdateMemberModal from "./update_member_modal";
 
 const MembersTable = () => {
+  const translate = useTranslations();
+
   const { myProfile, currentTeam, isAdmin, isManager } = useManagementTeamsContext();
   const { data: teamMembers, isLoading: isMembersLoading } =
     useGetCurrentTeamMembers<TeamMembersType>(currentTeam);
@@ -94,7 +97,7 @@ const MembersTable = () => {
 
   const adminColumns: Array<EuiBasicTableColumn<MembersType>> = [
     {
-      name: "Actions",
+      name: translate("actions"),
       align: "right",
       render: (member: MembersType) => (
         <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
@@ -118,8 +121,8 @@ const MembersTable = () => {
 
   const defaultColumn: Array<EuiBasicTableColumn<MembersType>> = [
     {
+      name: translate("username_and_email"),
       field: "user.email",
-      name: "Username & Email",
       width: "auto",
       render: (role: MembersType["role"], member: MembersType) => (
         <EuiFlexGroup>
@@ -145,20 +148,20 @@ const MembersTable = () => {
     },
     {
       field: "role",
-      name: "Role",
+      name: translate("role"),
       render: (role: MembersType["role"], member: MembersType) => (
         <RoleColumn role={role} member={member} />
       ),
     },
     {
-      name: "Joined Date",
+      name: translate("joined_date"),
       field: "joined_date",
       render: (joined_date: MembersType["joined_date"]) => (
         <EuiFlexItem>{moment(joined_date).format("YYYY-MM-DD LT")}</EuiFlexItem>
       ),
     },
     {
-      name: "Status",
+      name: translate("status"),
       field: "status",
       render: (status: MembersType["status"]) => (
         <EuiFlexItem>
@@ -178,7 +181,7 @@ const MembersTable = () => {
   const columns =
     !lastUser && isAdminOrManager ? [...defaultColumn, ...adminColumns] : defaultColumn;
 
-  if (isMembersLoading) return <div>Loading...</div>;
+  if (isMembersLoading) return <div>{translate("loading")}</div>;
 
   return (
     <>
@@ -189,7 +192,7 @@ const MembersTable = () => {
         <EuiFlexGroup direction="column">
           <EuiFlexItem>
             <EuiPanel paddingSize="s" color="subdued">
-              Team members
+              {translate("team_members")}
             </EuiPanel>
           </EuiFlexItem>
           <EuiFlexItem>

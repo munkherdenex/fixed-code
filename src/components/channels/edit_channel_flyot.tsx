@@ -25,6 +25,7 @@ import { Channels } from "../../hooks/useGetChannels";
 import useUpdateChannel from "../../hooks/useUpdateChannel";
 import { globalMutate } from "../../utils/globalMutate";
 import { createChannelSchema } from "./schema";
+import { useTranslations } from "next-intl";
 
 type FormData = yup.InferType<typeof createChannelSchema>;
 
@@ -45,6 +46,8 @@ const EditChannelFlyot = ({
       : undefined;
 
   const router = useRouter();
+  const translate = useTranslations();
+
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
   });
@@ -116,7 +119,7 @@ const EditChannelFlyot = ({
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Name"
+            label={translate("name")}
             isInvalid={!!errors.name?.message}
             error={[errors.name?.message]}
           >
@@ -129,14 +132,14 @@ const EditChannelFlyot = ({
                   value={value}
                   onBlur={onBlur}
                   isInvalid={!!errors.name?.message}
-                  placeholder="Name"
-                  aria-label="name"
+                  placeholder={translate("name")}
+                  aria-label={translate("name")}
                 />
               )}
             />
           </EuiFormRow>
           <EuiFormRow
-            label="Channel type"
+            label={translate("channel_type")}
             isInvalid={!!errors.channel_type?.message}
             error={[errors.channel_type?.message]}
           >
@@ -150,7 +153,7 @@ const EditChannelFlyot = ({
                   options={CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS}
                   onBlur={onBlur}
                   isInvalid={!!errors.channel_type?.message}
-                  aria-label="channel type"
+                  aria-label={translate("channel_type")}
                 />
               )}
             />
@@ -161,14 +164,18 @@ const EditChannelFlyot = ({
                 control={control}
                 name={`data.host`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                  <EuiFormRow label="Host" isInvalid={!!error?.message} error={[error?.message]}>
+                  <EuiFormRow
+                    label={translate("host")}
+                    isInvalid={!!error?.message}
+                    error={[error?.message]}
+                  >
                     <EuiFieldText
                       onChange={onChange}
                       value={value as string}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="host"
-                      aria-label="host"
+                      placeholder={translate("host")}
+                      aria-label={translate("host")}
                     />
                   </EuiFormRow>
                 )}
@@ -177,14 +184,18 @@ const EditChannelFlyot = ({
                 control={control}
                 name={`data.port`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                  <EuiFormRow label="Port" isInvalid={!!error?.message} error={[error?.message]}>
+                  <EuiFormRow
+                    label={translate("port")}
+                    isInvalid={!!error?.message}
+                    error={[error?.message]}
+                  >
                     <EuiFieldNumber
                       onChange={onChange}
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="port"
-                      aria-label="port"
+                      placeholder={translate("port")}
+                      aria-label={translate("port")}
                     />
                   </EuiFormRow>
                 )}
@@ -194,7 +205,7 @@ const EditChannelFlyot = ({
                 name={`data.from_email`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <EuiFormRow
-                    label="From email"
+                    label={translate("from_email")}
                     isInvalid={!!error?.message}
                     error={[error?.message]}
                   >
@@ -203,8 +214,8 @@ const EditChannelFlyot = ({
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="From email"
-                      aria-label="from email"
+                      placeholder={translate("from_email")}
+                      aria-label={translate("from_email")}
                     />
                   </EuiFormRow>
                 )}
@@ -214,7 +225,7 @@ const EditChannelFlyot = ({
                 name={`data.host_user`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <EuiFormRow
-                    label="Host user"
+                    label={translate("host_user")}
                     isInvalid={!!error?.message}
                     error={[error?.message]}
                   >
@@ -223,8 +234,8 @@ const EditChannelFlyot = ({
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="Host user"
-                      aria-label="host user"
+                      placeholder={translate("host_user")}
+                      aria-label={translate("host_user")}
                     />
                   </EuiFormRow>
                 )}
@@ -234,7 +245,7 @@ const EditChannelFlyot = ({
                 name={`data.host_password`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <EuiFormRow
-                    label="Host password"
+                    label={translate("host_password")}
                     isInvalid={!!error?.message}
                     error={[error?.message]}
                   >
@@ -243,8 +254,8 @@ const EditChannelFlyot = ({
                       value={value}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="host password"
-                      aria-label="host password"
+                      placeholder={translate("host_password")}
+                      aria-label={translate("host_password")}
                     />
                   </EuiFormRow>
                 )}
@@ -257,14 +268,18 @@ const EditChannelFlyot = ({
                 control={control}
                 name={`data.url`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                  <EuiFormRow label="Url" isInvalid={!!error?.message} error={[error?.message]}>
+                  <EuiFormRow
+                    label={translate("url")}
+                    isInvalid={!!error?.message}
+                    error={[error?.message]}
+                  >
                     <EuiFieldText
                       onChange={onChange}
                       value={value as string}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="url"
-                      aria-label="url"
+                      placeholder={translate("url")}
+                      aria-label={translate("url")}
                     />
                   </EuiFormRow>
                 )}
@@ -283,7 +298,7 @@ const EditChannelFlyot = ({
                             fieldState: { error },
                           }) => (
                             <EuiFormRow
-                              label="Key"
+                              label={translate("key")}
                               isInvalid={!!error?.message}
                               error={[error?.message]}
                             >
@@ -292,8 +307,8 @@ const EditChannelFlyot = ({
                                 value={value as string}
                                 onBlur={onBlur}
                                 isInvalid={!!error?.message}
-                                placeholder="key"
-                                aria-label="key"
+                                placeholder={translate("key")}
+                                aria-label={translate("key")}
                               />
                             </EuiFormRow>
                           )}
@@ -309,7 +324,7 @@ const EditChannelFlyot = ({
                             fieldState: { error },
                           }) => (
                             <EuiFormRow
-                              label="Value"
+                              label={translate("value")}
                               isInvalid={!!error?.message}
                               error={[error?.message]}
                             >
@@ -318,8 +333,8 @@ const EditChannelFlyot = ({
                                 value={value as string}
                                 onBlur={onBlur}
                                 isInvalid={!!error?.message}
-                                placeholder="value"
-                                aria-label="value"
+                                placeholder={translate("value")}
+                                aria-label={translate("value")}
                               />
                             </EuiFormRow>
                           )}
@@ -343,7 +358,7 @@ const EditChannelFlyot = ({
                 name={`data.rate_limit`}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <EuiFormRow
-                    label="Rate limit"
+                    label={translate("rate_limit")}
                     isInvalid={!!error?.message}
                     error={[error?.message]}
                   >
@@ -352,8 +367,8 @@ const EditChannelFlyot = ({
                       value={value as number}
                       onBlur={onBlur}
                       isInvalid={!!error?.message}
-                      placeholder="rate limit"
-                      aria-label="rate limit"
+                      placeholder={translate("rate_limit")}
+                      aria-label={translate("rate_limit")}
                     />
                   </EuiFormRow>
                 )}
@@ -364,7 +379,7 @@ const EditChannelFlyot = ({
             <EuiFlexGroup gutterSize="s">
               <EuiFlexItem grow={false}>
                 <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-                  Update channel
+                  {translate("update_channel")}
                 </EuiButton>
               </EuiFlexItem>
               {watch("channel_type") === "api" && (
@@ -378,7 +393,7 @@ const EditChannelFlyot = ({
                       })
                     }
                   >
-                    Add header
+                    {translate("add_header")}
                   </EuiButton>
                 </EuiFlexItem>
               )}
