@@ -43,7 +43,7 @@ const Customer = () => {
 
   const { data, isMutating, trigger } = useGetCustomerAnalytics();
 
-  const [startDate, setStartDate] = useState(moment().subtract(1, "months"));
+  const [startDate, setStartDate] = useState(moment().subtract(1, "weeks"));
   const [endDate, setEndDate] = useState(maxDate);
 
   const isInvalid = startDate >= endDate || startDate < minDate || endDate > maxDate;
