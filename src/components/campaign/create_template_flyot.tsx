@@ -47,6 +47,7 @@ const schema = yup
   .object({
     title: yup.string().required().label("Title"),
     kind: yup.string().oneOf(["email", "sms", "push", "inapp", "api", ""]).required().label("Data"),
+    template_id: yup.string(),
     description: yup.string().label("Description"),
     body: yup
       .string()
@@ -123,6 +124,7 @@ const CreateTemplateFlyot = ({
       if ((dataType === "sms" || dataType === "push") && IS_POCKET) {
         //TODO: If team is not pocket dont edit data
         preparedData.kind = "api";
+        preparedData.template_id = '{{template_id}}';
         preparedData.body = JSON.stringify({
           type: dataType,
           to: `{{${dataTypeToSwitch(data?.kind)}}}`,
