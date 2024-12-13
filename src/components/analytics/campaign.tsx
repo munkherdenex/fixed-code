@@ -50,7 +50,16 @@ const Campaign = () => {
         start: `${Math.ceil(start.asDays())}d`,
         stop: `${Math.ceil(end.asDays())}d`,
         window: "1d",
-        log_types: ["api_called", "api_interacted"],
+        log_types: [
+          "api_called",
+          "api_interacted",
+          "email_sent",
+          "email_opened",
+          "email_link_clicked",
+          "email_unsubscribed",
+          "push_notif_clicked",
+          "sms_link_clicked",
+        ],
       });
       console.log(response);
     } catch (error) {
