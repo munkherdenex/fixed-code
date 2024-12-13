@@ -16,14 +16,12 @@ const CampaignStatus = () => {
 
   const { data, isLoading } = useGetCampaignAnalytics();
 
-  const preperadData =
-    data &&
-    Object.keys(data).map((key) => ({
-      name: key,
-      data: data[key],
-    }));
-
-  console.log(preperadData);
+  const preperadData = data
+    ? Object.keys(data).map((key) => ({
+        name: key,
+        data: data[key],
+      }))
+    : [];
 
   return (
     <div>
