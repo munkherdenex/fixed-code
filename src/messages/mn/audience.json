@@ -11,5 +11,30 @@
   "source": "Сурвалж",
   "created-by": "Үүсгэсэн",
   "created-at": "Үүсгэсэн огноо",
-  "custom-attributes": "Харилцагчийн мэдээлэл"
+  "the-audience-description": "Үзэгчдийн тодорхойлолт",
+  "loading": "Ачааллаж байна...",
+  "search-audience": "Үзэгч хайх",
+  "total-audience": "Нийт үзэгчид",
+  "audience-info": "Үзэгчдийн мэдээлэл",
+  "audience-details": "Үзэгчдийн дэлгэрэнгүй мэдээлэл",
+  "email-address": "И-мэйл хаяг",
+  "phone-number": "Утасны дугаар",
+  "reference-id": "Лавлагааны ID",
+  "created-date": "Үүсгэсэн огноо",
+  "updated-date": "Шинэчилсэн огноо",
+  "subscription-status": "Захиалгын байдал",
+  "warning": "Анхааруулга",
+  "type-the-word-delete": "'устгах' гэдэг үгийг оруулна уу",
+  "last-clicked": "Сүүлд дарсан",
+  "add_to_segment": "Сегментэд нэмэх",
+  "add_to_segment_description": "И-мэйл хаяг, утасны дугаар, лавлагааны ID хайх",
+  "last-opened": "Сүүлд нээсэн",
+  "update_audience": "Үзэгчдийг шинэчлэх",
+  "status": "Байдал",
+  "success": {
+    "title": "Амжилттай",
+    "import-audience": "Үзэгчдийг амжилттай импортоллоо",
+    "create-audience": "Үзэгчдийг амжилттай үүсгэлээ",
+    "delete-audience": "Үзэгчдийг амжилттай устгалаа"
+  }
 }
