@@ -25,7 +25,7 @@ const nextConfig = {
   output: "standalone",
   i18n: {
     locales: ["en", "mn"],
-    defaultLocale: "en",
+    defaultLocale: "mn",
   },
   compiler: {
     emotion: true,
