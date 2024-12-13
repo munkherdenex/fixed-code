@@ -23,8 +23,10 @@ import {
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useGetCustomerAnalytics from "../../hooks/useGetCustomerAnalytics";
+import { useTranslations } from "next-intl";
 
 const Campaign = () => {
+  const translate = useTranslations();
   const { colorMode } = useEuiTheme();
   const isDarkTheme = colorMode === "DARK";
   const chartBaseTheme = isDarkTheme ? DARK_THEME : LIGHT_THEME;
@@ -71,7 +73,7 @@ const Campaign = () => {
       <EuiFlexGroup>
         <EuiFlexItem>
           <EuiText grow={false}>
-            <h2>Campaign</h2>
+            <h2>{translate("campaign")}</h2>
           </EuiText>
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
@@ -107,7 +109,7 @@ const Campaign = () => {
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
               <EuiButton fill iconType="refresh" onClick={() => console.log("refresh")}>
-                Refresh
+                {translate("refresh")}
               </EuiButton>
             </EuiFlexItem>
           </EuiFlexGroup>

@@ -1,1 +1,27 @@
-{}
+{
+  "teams": "Багууд",
+  "team_name": "Баг: {name}",
+  "team_info": "Багийн мэдээлэл",
+  "description": "Тодорхойлолт",
+  "no_description": "Тодорхойлолт байхгүй",
+  "type": "Төрөл",
+  "none": "Байхгүй",
+  "sub_team": "Дэд баг",
+  "create_sub_team": "Дэд баг үүсгэх",
+  "invite_user": "Хэрэглэгчийг урь",
+  "select_products": "Бүтээгдэхүүн сонгох",
+  "username_and_email": "Хэрэглэгчийн нэр & И-мэйл",
+  "role": "Үүрэг",
+  "joined_date": "Нэгдсэн огноо",
+  "status": "Байдал",
+  "team_members": "Багийн гишүүд",
+  "last_name": "Овог",
+  "first_name": "Нэр",
+  "email": "И-мэйл",
+  "add_to_user": "Хэрэглэгчийг багт нэмэх",
+  "parent_team": "Эх баг",
+  "created_at": "Үүсгэсэн огноо",
+  "updated_at": "Шинэчилсэн огноо",
+  "create_team": "Баг үүсгэх",
+  "actions": "Үйлдлүүд"
+}

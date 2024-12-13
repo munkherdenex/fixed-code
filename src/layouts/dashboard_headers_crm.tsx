@@ -29,7 +29,7 @@ const DashboardHeadersCRM = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => router.push(`/dashboards/crm`)}
               >
-                {!largeMaxBreakpoint ? "CRM dashboard" : ""}
+                {!largeMaxBreakpoint ? "CRM" : ""}
               </EuiHeaderLogo>,
               <TeamSwitcher key={useGeneratedHtmlId()} />,
               largeMaxBreakpoint && leftSectionItems,

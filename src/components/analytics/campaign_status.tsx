@@ -8,9 +8,12 @@ import {
 } from "@elastic/charts";
 import { EuiPanel, EuiText, EuiSpacer, useEuiTheme, EuiSkeletonRectangle } from "@elastic/eui";
 import useGetCampaignAnalytics from "../../hooks/useGetCampaignAnalytics";
+import { useTranslations } from "next-intl";
 
 const CampaignStatus = () => {
   const { colorMode } = useEuiTheme();
+  const translate = useTranslations();
+
   const isDarkTheme = colorMode === "DARK";
   const chartBaseTheme = isDarkTheme ? DARK_THEME : LIGHT_THEME;
 
@@ -27,7 +30,7 @@ const CampaignStatus = () => {
     <div>
       <EuiPanel>
         <EuiText>
-          <h3>Status</h3>
+          <h3>{translate("status")}</h3>
         </EuiText>
         <EuiSpacer size="s" />
         <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={250}>

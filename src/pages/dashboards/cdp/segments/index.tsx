@@ -46,9 +46,15 @@ const Dashboard: FunctionComponent = () => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
+  const common = (await import(`../../../../messages/${context.locale}/common.json`)).default;
+  const segments = (await import(`../../../../messages/${context.locale}/segments.json`)).default;
+
   return {
     props: {
-      messages: (await import(`../../../../messages/${context.locale}/segments.json`)).default,
+      messages: {
+        ...common,
+        ...segments,
+      },
     },
   };
 };

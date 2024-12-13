@@ -12,19 +12,7 @@ import { useRouter } from "next/router";
 import { useContext, useState, useMemo } from "react";
 import { teamsContext } from "../../store/teams_store";
 import { commonStyles } from "../../styles/global.styles";
-
-const managementPaths = [
-  {
-    path: "/dashboards/cdp/custom_attribute",
-    name: "Custom attributes",
-    roles: ["admin", "manager"],
-  },
-  {
-    path: "/dashboards/cdp/channels",
-    name: "Channels",
-    roles: ["admin"],
-  },
-];
+import { useTranslations } from "next-intl";
 
 const SideMenu = () => {
   const router = useRouter();
@@ -32,6 +20,7 @@ const SideMenu = () => {
   const { euiTheme } = useEuiTheme();
   const { myProfile } = useContext(teamsContext);
   const largeMaxBreakpoint = useIsWithinMaxBreakpoint("l");
+  const translate = useTranslations();
 
   const [isPopoverOpen, setPopover] = useState(false);
 
@@ -39,12 +28,27 @@ const SideMenu = () => {
     prefix: "customContextMenuPopover",
   });
 
+  const managementPaths = useMemo(() => {
+    return [
+      {
+        path: "/dashboards/cdp/custom_attribute",
+        name: translate("custom_attribute"),
+        roles: ["admin", "manager"],
+      },
+      {
+        path: "/dashboards/cdp/channels",
+        name: translate("channel"),
+        roles: ["admin"],
+      },
+    ];
+  }, [translate]);
+
   const managementPathsFiltered = useMemo(
     () =>
       managementPaths?.filter((path) => {
         return path.roles ? path.roles.includes(myProfile?.role) : true;
       }),
-    [myProfile?.role],
+    [managementPaths, myProfile?.role],
   );
 
   const onButtonClick = () => {
@@ -67,7 +71,7 @@ const SideMenu = () => {
       color="text"
       onClick={onButtonClick}
     >
-      Management
+      {translate("management")}
     </EuiButton>
   );
 

@@ -76,7 +76,7 @@ const CreateCustomerComponent = ({
     <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2 id={flyoutHeadingId}>Create audience</h2>
+          <h2 id={flyoutHeadingId}>{translate("create-audience")}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>

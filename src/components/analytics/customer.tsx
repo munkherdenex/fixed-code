@@ -24,8 +24,10 @@ import {
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useGetCustomerAnalytics from "../../hooks/useGetCustomerAnalytics";
+import { useTranslations } from "next-intl";
 
 const Customer = () => {
+  const translate = useTranslations();
   const { colorMode } = useEuiTheme();
   const isDarkTheme = colorMode === "DARK";
   const chartBaseTheme = isDarkTheme ? DARK_THEME : LIGHT_THEME;
@@ -51,7 +53,7 @@ const Customer = () => {
     try {
       const start = moment.duration(startDate.diff(endDate));
       const end = moment.duration(endDate.diff(moment()));
-      const response = await trigger({
+      await trigger({
         start: `${Math.ceil(start.asDays())}d`,
         stop: `${Math.ceil(end.asDays())}d`,
         window: "1d",
@@ -77,7 +79,7 @@ const Customer = () => {
       <EuiFlexGroup>
         <EuiFlexItem>
           <EuiText grow={false}>
-            <h2>Customers</h2>
+            <h2>{translate("customers")}</h2>
           </EuiText>
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
@@ -113,7 +115,7 @@ const Customer = () => {
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
               <EuiButton fill iconType="refresh" onClick={() => refresh()}>
-                Refresh
+                {translate("refresh")}
               </EuiButton>
             </EuiFlexItem>
           </EuiFlexGroup>

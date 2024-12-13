@@ -17,17 +17,18 @@ import {
   EuiSkeletonRectangle,
   EuiText,
   useEuiTheme,
-  useIsWithinMaxBreakpoint,
 } from "@elastic/eui";
 import moment from "moment";
 import { useMemo, useState, useCallback, useEffect } from "react";
 import useGetCustomerAnalytics from "../../hooks/useGetCustomerAnalytics";
 import { useCampaignContext } from "../../store/campaign_store";
+import { useTranslations } from "next-intl";
 
 const Graph = () => {
   const { data: campaignData } = useCampaignContext();
+  const translate = useTranslations();
   const { colorMode } = useEuiTheme();
-  const largeMaxBreakpoint = useIsWithinMaxBreakpoint("l");
+
   const isDarkTheme = colorMode === "DARK";
   const chartBaseTheme = isDarkTheme ? DARK_THEME : LIGHT_THEME;
 
@@ -74,7 +75,7 @@ const Graph = () => {
       <EuiFlexGroup>
         <EuiFlexItem>
           <EuiText grow={false}>
-            <h2>Campaign</h2>
+            <h2>{translate("campaign")}</h2>
           </EuiText>
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
@@ -109,8 +110,8 @@ const Graph = () => {
               />
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
-              <EuiButton fill iconType="refresh" onClick={() => console.log("refresh")}>
-                Refresh
+              <EuiButton fill iconType="refresh" onClick={() => refresh()}>
+                {translate("refresh")}
               </EuiButton>
             </EuiFlexItem>
           </EuiFlexGroup>

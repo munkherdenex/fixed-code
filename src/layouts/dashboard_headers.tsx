@@ -29,7 +29,7 @@ const DashboardHeaders = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => router.push(`/dashboards/cdp`)}
               >
-                {!largeMaxBreakpoint ? "CDP dashboard" : ""}
+                {!largeMaxBreakpoint ? "CDP" : ""}
               </EuiHeaderLogo>,
               <TeamSwitcher key={useGeneratedHtmlId()} />,
               largeMaxBreakpoint && leftSectionItems,

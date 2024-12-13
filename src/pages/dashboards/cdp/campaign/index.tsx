@@ -30,9 +30,15 @@ const SendsDashboard = () => {
 };
 
 export async function getStaticProps(context) {
+  const common = (await import(`../../../../messages/${context.locale}/common.json`)).default;
+  const campaign = (await import(`../../../../messages/${context.locale}/campaign.json`)).default;
+
   return {
     props: {
-      messages: (await import(`../../../../messages/${context.locale}/campaign.json`)).default,
+      messages: {
+        ...common,
+        ...campaign,
+      },
     },
   };
 }

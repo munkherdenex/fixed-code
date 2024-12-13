@@ -1,6 +1,5 @@
 import {
   EuiAccordion,
-  EuiBreadcrumbs,
   EuiFlexGrid,
   EuiFlexItem,
   EuiPanel,
@@ -8,49 +7,44 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import Head from "next/head";
-import router from "next/router";
 import DashboardLayout from "../../../../layouts/dashboard";
 import Customer from "../../../../components/analytics/customer";
 import Campaign from "../../../../components/analytics/campaign";
 import CampaignStatus from "../../../../components/analytics/campaign_status";
 import CampaignStatusTable from "../../../../components/analytics/campaign_status_table";
+import { useTranslations } from "next-intl";
 
 const Analytics = () => {
+  const translate = useTranslations();
   const simpleAccordionId = useGeneratedHtmlId({ prefix: "simpleAccordion" });
+
   return (
     <>
       <Head>
-        <title>Audience</title>
+        <title>{translate("analytics")}</title>
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Analytics",
+          pageTitle: translate("analytics"),
           iconType: "reportingApp",
         }}
-        breadCrumb={
-          <EuiBreadcrumbs
-            breadcrumbs={[
-              {
-                text: "Dashboards",
-                onClick: () => router.push(`/dashboards`),
-              },
-              {
-                text: "Audience",
-              },
-            ]}
-            truncate={false}
-            aria-label="Customer info breadCrumb"
-          />
-        }
       >
         <div>
-          <EuiAccordion id={simpleAccordionId} buttonContent="Customer analytics" initialIsOpen>
+          <EuiAccordion
+            id={simpleAccordionId}
+            buttonContent={translate("customer-analytics")}
+            initialIsOpen
+          >
             <EuiPanel color="transparent">
               <Customer />
             </EuiPanel>
           </EuiAccordion>
           <EuiSpacer size="l" />
-          <EuiAccordion id={simpleAccordionId} buttonContent="Campaign analytics" initialIsOpen>
+          <EuiAccordion
+            id={simpleAccordionId}
+            buttonContent={translate("campaign-analytics")}
+            initialIsOpen
+          >
             <EuiPanel color="transparent">
               <Campaign />
               <EuiSpacer size="s" />

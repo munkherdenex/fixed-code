@@ -41,9 +41,15 @@ const Management = () => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
+  const teams = (await import(`../../../../messages/${context.locale}/teams.json`)).default;
+  const common = (await import(`../../../../messages/${context.locale}/common.json`)).default;
+
   return {
     props: {
-      messages: (await import(`../../../../messages/${context.locale}/teams.json`)).default,
+      messages: {
+        ...teams,
+        ...common,
+      },
     },
   };
 };

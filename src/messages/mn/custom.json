@@ -1,7 +1,7 @@
 {
-  "custom_attribute": "Custom attribute",
-  "create_custom_attribute": "Create custom attribute",
-  "delete_title": "Delete custom attribute?",
-  "delete_form_label": "Type the word 'delete' to confirm",
-  "delete_description": "You are about to delete this custom attribute. This is a destructive action and cannot be undone. Are you sure you want to proceed?"
+  "custom_attribute": "Захиалгат шинж чанар",
+  "create_custom_attribute": "Захиалгат шинж чанар үүсгэх",
+  "delete_title": "Захиалгат шинж чанарыг устгах уу?",
+  "delete_form_label": "'устгах' гэдэг үгийг оруулж баталгаажуулна уу",
+  "delete_description": "Та энэ захиалгат шинж чанарыг устгах гэж байна. Энэ нь буцаах боломжгүй үйлдэл юм. Үргэлжлүүлэхдээ итгэлтэй байна уу?"
 }

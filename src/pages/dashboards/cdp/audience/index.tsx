@@ -54,9 +54,15 @@ const CustomersDashboard = () => {
 };
 
 export async function getStaticProps(context) {
+  const common = (await import(`../../../../messages/${context.locale}/common.json`)).default;
+  const audience = (await import(`../../../../messages/${context.locale}/audience.json`)).default;
+
   return {
     props: {
-      messages: (await import(`../../../../messages/${context.locale}/audience.json`)).default,
+      messages: {
+        ...common,
+        ...audience,
+      },
     },
   };
 }

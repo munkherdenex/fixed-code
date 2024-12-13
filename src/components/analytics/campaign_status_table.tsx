@@ -53,7 +53,7 @@ const CampaignStatusTable = () => {
     <div>
       <EuiPanel>
         <EuiText>
-          <h3>Last 10 campaign</h3>
+          <h3>{translate("last_ten_campaign")}</h3>
         </EuiText>
         <EuiSpacer size="s" />
         <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={250}>

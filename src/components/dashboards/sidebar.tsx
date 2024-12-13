@@ -1,30 +1,35 @@
 import { EuiFlexGroup, EuiFlexItem, EuiSideNav, htmlIdGenerator } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import SideMenu from "./sidebar_menu";
-
-const audienceSegmentPaths = [
-  {
-    path: "/dashboards/cdp/audience",
-    name: "Audience",
-  },
-  {
-    path: "/dashboards/cdp/segments",
-    name: "Segments",
-  },
-  {
-    path: "/dashboards/cdp/campaign",
-    name: "Campaign",
-  },
-  {
-    path: "/dashboards/cdp/analytics",
-    name: "Analytics",
-  },
-];
+import { useTranslations } from "next-intl";
 
 const Sidebar = () => {
   const router = useRouter();
+  const translate = useTranslations();
+
   const [isSideNavOpenOnMobile, setisSideNavOpenOnMobile] = useState(false);
+
+  const audienceSegmentPaths = useMemo(() => {
+    return [
+      {
+        path: "/dashboards/cdp/audience",
+        name: translate("audience"),
+      },
+      {
+        path: "/dashboards/cdp/segments",
+        name: translate("segments"),
+      },
+      {
+        path: "/dashboards/cdp/campaign",
+        name: translate("campaign"),
+      },
+      {
+        path: "/dashboards/cdp/analytics",
+        name: translate("analytics"),
+      },
+    ];
+  }, [translate]);
 
   const toggleOpenOnMobile = () => {
     setisSideNavOpenOnMobile(!isSideNavOpenOnMobile);

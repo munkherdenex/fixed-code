@@ -2,22 +2,11 @@ import { EuiFlexGroup, EuiFlexItem, EuiSideNav, htmlIdGenerator } from "@elastic
 import { useRouter } from "next/router";
 import { useContext, useMemo, useState } from "react";
 import { teamsContext } from "../../store/teams_store";
-
-const managementPaths = [
-  {
-    path: "/dashboards/settings/management",
-    name: "Teams",
-    roles: ["admin", "manager", "member"],
-  },
-  {
-    path: "/dashboards/settings/management/api-keys",
-    name: "Api keys",
-    roles: ["admin", "manager", "member"],
-  },
-];
+import { useTranslations } from "next-intl";
 
 const SettingsSidebar = () => {
   const router = useRouter();
+  const translate = useTranslations();
   const { myProfile } = useContext(teamsContext);
 
   const [isSideNavOpenOnMobile, setisSideNavOpenOnMobile] = useState(false);
@@ -26,12 +15,27 @@ const SettingsSidebar = () => {
     setisSideNavOpenOnMobile(!isSideNavOpenOnMobile);
   };
 
+  const managementPaths = useMemo(() => {
+    return [
+      {
+        path: "/dashboards/settings/management",
+        name: translate("teams"),
+        roles: ["admin", "manager", "member"],
+      },
+      {
+        path: "/dashboards/settings/management/api-keys",
+        name: translate("api_keys"),
+        roles: ["admin", "manager", "member"],
+      },
+    ];
+  }, [translate]);
+
   const managementPathsFiltered = useMemo(
     () =>
       managementPaths.filter((path) => {
         return path?.roles ? path?.roles.includes(myProfile?.role) : true;
       }),
-    [myProfile?.role],
+    [managementPaths, myProfile?.role],
   );
 
   const sideNav = [
