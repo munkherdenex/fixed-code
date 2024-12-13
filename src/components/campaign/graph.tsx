@@ -51,7 +51,16 @@ const Graph = () => {
         start: `${Math.ceil(start.asDays())}d`,
         stop: `${Math.ceil(end.asDays())}d`,
         window: "1d",
-        log_types: ["sms_link_clicked", "create", "update", "email_opened"],
+        log_types: [
+          "api_called",
+          "api_interacted",
+          "email_sent",
+          "email_opened",
+          "email_link_clicked",
+          "email_unsubscribed",
+          "push_notif_clicked",
+          "sms_link_clicked",
+        ],
         template_id: campaignData?.id,
       });
       console.log(response);
