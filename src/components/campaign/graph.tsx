@@ -32,7 +32,7 @@ const Graph = () => {
   const isDarkTheme = colorMode === "DARK";
   const chartBaseTheme = isDarkTheme ? DARK_THEME : LIGHT_THEME;
 
-  const minDate = useMemo(() => moment("2024-1-1"), []);
+  const minDate = useMemo(() => moment("2024-12-1"), []);
   const maxDate = useMemo(() => moment(), []);
 
   const { data, isMutating, trigger } = useGetCustomerAnalytics();
