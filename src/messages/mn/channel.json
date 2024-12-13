@@ -1,1 +1,11 @@
-{}
+{
+  "channels": "Сувгууд",
+  "create_channel": "Суваг үүсгэх",
+  "create_channel_description": "Харилцагчиддаа мэдээлэл хүргэх сувгаа тохируулна.",
+  "channel_details": "Сувгийн дэлгэрэнгүй мэдээлэл",
+  "delete_channel": "Устгах",
+  "delete_warning": "Та сувгийн мэдээллийг устгах гэж байна. Энэ үйлдлийг буцаах боломжгүй. Та итгэлтэй байна уу?",
+  "delete_label": "Устгах",
+  "update_channel": "Шинэчлэх",
+  "add_header": "HTTP header нэмэх"
+}

@@ -7,9 +7,52 @@
     "forgot": "Нууц үг мартсан?",
     "register": "Бүртгүүлэх",
     "login-with-pocket": "Pocket-тай нэвтрэх",
-    "sent-verification-email": "Бид танд баталгаажуулалтын имэйл илгээсэн байна. Та таны имэйл хайж үзнэ үү."
+    "sent-verification-email": "Бид танд баталгаажуулалтын имэйл илгээсэн байна. Та таны имэйл хайж үзнэ үү.",
+    "sent-verification-email-title": "Verification email sent",
+    "forgot-password": "Forgot password"
+  },
+  "dashboards": {
+    "cdp": {
+      "analytics": {
+        "title": "Analytics",
+        "subtitle": "Monitor your business performance",
+        "go-for-it": "Go for it",
+        "cardlist": {
+          "audience": {
+            "title": "Audience",
+            "description": "The audience is the group of people you want to reach with your campaign. A segment is a subset of your audience that you define based on specific criteria.",
+            "footer": "Go for it"
+          },
+          "settings": {
+            "title": "Settings",
+            "description": "The settings are the configurations of your account. You can manage your profile, your team, and your preferences.",
+            "footer": "Go for it"
+          },
+          "campaign": {
+            "title": "Campaign",
+            "description": "The campaign is a marketing initiative that you want to send to your audience. It can be a newsletter, a promotion, or a survey.",
+            "footer": "Go for it"
+          }
+        }
+      },
+      "audience": {
+        "title": "Audience",
+        "import": "Import",
+        "import-audience": "Import audience",
+        "create-audience": "Create audience",
+        "upload-file": "Upload file",
+        "upload-file-description": "Upload a CSV file with your audience data",
+        "email": "Email",
+        "phone": "Phone",
+        "rid": "Reference ID",
+        "source": "Source",
+        "created-by": "Created by",
+        "created-at": "Created at",
+        "custom-attributes": "Custom attributes"
+      }
+    }
   },
   "About": {
-    "title": "Sain uu"
+    "title": "About us"
   }
 }
