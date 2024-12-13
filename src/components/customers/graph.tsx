@@ -52,6 +52,9 @@ const Graph = () => {
         stop: `${Math.ceil(end.asDays())}d`,
         window: "1d",
         log_types: [
+          "opened",
+          "updated",
+          "event",
           "sms_link_clicked",
           "push_notif_clicked",
           "email_unsubscribed",
