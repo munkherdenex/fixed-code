@@ -47,7 +47,7 @@ const Graph = () => {
     try {
       const start = moment.duration(startDate.diff(endDate));
       const end = moment.duration(endDate.diff(moment()));
-      const response = await trigger({
+      await trigger({
         start: `${Math.ceil(start.asDays())}d`,
         stop: `${Math.ceil(end.asDays())}d`,
         window: "1d",
@@ -63,7 +63,6 @@ const Graph = () => {
         ],
         template_id: campaignData?.id,
       });
-      console.log(response);
     } catch (error) {
       console.error(error);
     }

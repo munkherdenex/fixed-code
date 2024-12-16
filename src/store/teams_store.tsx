@@ -141,8 +141,8 @@ export const TeamsProvider = ({ children }) => {
   }, [currentTeam]);
 
   useEffect(() => {
-    console.log(teamError);
-    console.log(profileError);
+    console.error(teamError);
+    console.error(profileError);
   }, [teamError, profileError]);
 
   return (
