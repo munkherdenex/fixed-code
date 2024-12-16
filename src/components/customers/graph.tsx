@@ -85,7 +85,7 @@ const Graph = () => {
       <EuiFlexGroup>
         <EuiFlexItem>
           <EuiText grow={false}>
-            <h2>{translate("campaign")}</h2>
+            <h2>{translate("analytics")}</h2>
           </EuiText>
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
