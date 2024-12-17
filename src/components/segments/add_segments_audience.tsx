@@ -45,6 +45,8 @@ const CreateAudienceSegment = ({
 }: {
   setIsFlyoutVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
+  let searchTimeout: NodeJS.Timeout;
+
   const flyoutHeadingId = useGeneratedHtmlId();
   const router = useRouter();
   const { id } = router.query;
@@ -75,7 +77,10 @@ const CreateAudienceSegment = ({
   });
 
   const onSearchChange = (value: string) => {
-    setSearchValue(value);
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      setSearchValue(value);
+    }, 250);
   };
 
   const onSubmit = async (data: AudienceFormData) => {
