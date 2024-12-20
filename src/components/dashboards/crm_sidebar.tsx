@@ -5,6 +5,10 @@ import SideMenu from "./sidebar_menu";
 
 const audienceSegmentPaths = [
   {
+    path: "/dashboards/crm",
+    name: "Template",
+  },
+  {
     path: "/dashboards/crm/field_template",
     name: "Field template",
   },
