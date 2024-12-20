@@ -22,7 +22,7 @@ export const quillEditorStyles = () => ({
   quillEditorContainer: css`
     max-width: 100% !important;
     .quill {
-      min-height: 340px;
+      min-height: 390px;
       height: auto;
       margin-bottom: 0px;
       .ql-container {

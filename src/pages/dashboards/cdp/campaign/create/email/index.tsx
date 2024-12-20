@@ -30,6 +30,8 @@ import useGetChannels, { Channels } from "../../../../../../hooks/useGetChannels
 import DashboardLayout from "../../../../../../layouts/dashboard";
 import { globalMutate } from "../../../../../../utils/globalMutate";
 import { dataTypeSwitch } from "../../../../../../utils/helper";
+import { GetStaticProps } from "next/types";
+import { useTranslations } from "next-intl";
 
 const QuillEditorComponent = dynamic(
   () => import("../../../../../../components/email_editor/quill_editor"),
@@ -71,6 +73,7 @@ type FormData = yup.InferType<typeof schema>;
 const pathPrefix = process.env.PATH_PREFIX;
 
 const Dashboard: FunctionComponent = () => {
+  const translate = useTranslations();
   const styles = quillEditorStyles();
   const router = useRouter();
   const { isMutating, trigger } = useCreateTemplate();
@@ -129,11 +132,11 @@ const Dashboard: FunctionComponent = () => {
   return (
     <>
       <Head>
-        <title>Create email campaign</title>
+        <title>{translate("create_new_campaign")}</title>
       </Head>
       <DashboardLayout
         pageHeader={{
-          pageTitle: "Create email campaign",
+          pageTitle: translate("create_new_campaign"),
           iconType: "dashboardApp",
         }}
       >
@@ -153,7 +156,7 @@ const Dashboard: FunctionComponent = () => {
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>
                   <EuiButton isLoading={isMutating} type="submit">
-                    Create campaign
+                    {translate("create_new_campaign")}
                   </EuiButton>
                 </EuiFlexItem>
               </EuiFlexGroup>
@@ -171,7 +174,7 @@ const Dashboard: FunctionComponent = () => {
                         })
                       }
                     >
-                      Create
+                      {translate("create")}
                     </EuiButton>
                   </EuiCallOut>
                 </EuiFormRow>
@@ -180,7 +183,7 @@ const Dashboard: FunctionComponent = () => {
               <EuiFlexGroup>
                 <EuiFlexItem grow={false}>
                   <EuiFormRow
-                    label="Title"
+                    label={translate("title")}
                     isInvalid={!!errors.title?.message}
                     error={[errors.title?.message]}
                   >
@@ -193,8 +196,8 @@ const Dashboard: FunctionComponent = () => {
                           value={value}
                           onBlur={onBlur}
                           isInvalid={!!errors.title?.message}
-                          placeholder="Title"
-                          aria-label="Title"
+                          placeholder={translate("title")}
+                          aria-label={translate("title")}
                         />
                       )}
                     />
@@ -202,7 +205,7 @@ const Dashboard: FunctionComponent = () => {
                 </EuiFlexItem>
                 <EuiFlexItem>
                   <EuiFormRow
-                    label="Channel"
+                    label={translate("channel")}
                     isInvalid={!!errors.channel?.message}
                     error={[errors.channel?.message]}
                   >
@@ -266,19 +269,19 @@ const Dashboard: FunctionComponent = () => {
               <EuiSpacer size="s" />
               <EuiFormRow
                 fullWidth
-                label="Description"
+                label={translate("description")}
                 isInvalid={!!errors?.description?.message}
                 error={[errors?.description?.message]}
               >
                 <Controller
                   control={control}
                   name="description"
-                  render={({ field: { onChange, onBlur, value, name } }) => (
+                  render={({ field: { onChange, onBlur, value } }) => (
                     <EuiTextArea
                       onChange={onChange}
                       value={value}
                       onBlur={onBlur}
-                      placeholder={name}
+                      placeholder={translate("description")}
                       fullWidth
                       isInvalid={!!errors.description?.message}
                     />
@@ -288,7 +291,7 @@ const Dashboard: FunctionComponent = () => {
               <EuiSpacer size="s" />
               <EuiFormRow
                 fullWidth
-                label="Data"
+                label={translate("data")}
                 labelAppend={<BodyInfoToolTip />}
                 helpText={bodyHelpText}
                 isInvalid={!!errors?.body?.message}
@@ -303,6 +306,21 @@ const Dashboard: FunctionComponent = () => {
       </DashboardLayout>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const common = (await import(`../../../../../../messages/${context.locale}/common.json`)).default;
+  const campaign = (await import(`../../../../../../messages/${context.locale}/campaign.json`))
+    .default;
+
+  return {
+    props: {
+      messages: {
+        ...common,
+        ...campaign,
+      },
+    },
+  };
 };
 
 export default Dashboard;
