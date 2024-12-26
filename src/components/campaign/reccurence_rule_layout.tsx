@@ -92,16 +92,12 @@ const RecurrenceRuleButtons = ({ startDate, isDraft, setIsFlyoutVisible }) => {
     <div>
       {startDate ? (
         <EuiButton color="primary" iconType="timeRefresh" onClick={() => setIsFlyoutVisible(true)}>
-          {translate("action_reccurence_rule", {
-            action: isDraft ? "Update" : "View",
-          })}
+          {translate("view_action_reccurence_rule")}
         </EuiButton>
       ) : (
         isDraft && (
           <EuiButton color="primary" iconType="plus" onClick={() => setIsFlyoutVisible(true)}>
-            {translate("action_reccurence_rule", {
-              action: "Add",
-            })}
+            {translate("update_action_reccurence_rule")}
           </EuiButton>
         )
       )}
@@ -165,7 +161,8 @@ const ReccurenceRuleLayout = () => {
         description={
           <EuiTextColor color="subdued">
             <span>
-              <EuiIcon type="tokenDate" /> {data?.is_recurring ? "Recurring" : "One-time"} schedule
+              <EuiIcon type="tokenDate" />{" "}
+              {data?.is_recurring ? translate("recurring") : translate("one_time")}
             </span>
           </EuiTextColor>
         }

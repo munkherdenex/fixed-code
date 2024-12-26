@@ -1,4 +1,5 @@
 import {
+  EuiBadge,
   EuiButton,
   EuiComboBox,
   EuiFlyout,
@@ -85,13 +86,16 @@ const AddAudienceFlyout = ({
     Array.isArray(customerData?.results) &&
     customerData?.results.map((customer) => ({
       value: customer?.id,
+      "aria-label": `${customer?.email} ${customer?.phone} ${customer?.rid}`,
       label: customer?.email || customer?.phone || customer?.rid,
+      append: <EuiBadge>{customer?.phone || customer?.email || customer?.rid}</EuiBadge>,
     }));
 
   const preparedSegmentData =
     Array.isArray(segmentsData?.results) &&
     segmentsData?.results.map((segment) => ({
       value: segment?.id,
+      "aria-label": `${segment?.name}`,
       label: segment?.name,
     }));
 
@@ -113,7 +117,7 @@ const AddAudienceFlyout = ({
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
       setSearchValue(data);
-    }, 250);
+    }, 500);
   };
 
   const onSubmit = async (data: FormData) => {
@@ -141,7 +145,11 @@ const AddAudienceFlyout = ({
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-          <EuiFormRow label="Ids" isInvalid={!!errors.id?.message} error={[errors.id?.message]}>
+          <EuiFormRow
+            label={translate("rid")}
+            isInvalid={!!errors.id?.message}
+            error={[errors.id?.message]}
+          >
             <Controller
               control={control}
               name="id"
@@ -154,6 +162,9 @@ const AddAudienceFlyout = ({
                   isInvalid={!!errors.type?.message}
                   onSearchChange={onSearch}
                   isLoading={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
+                  optionMatcher={({ option, searchValue }) => {
+                    return option?.["aria-label"].includes(searchValue);
+                  }}
                   aria-label={translate("data_type")}
                   singleSelection
                 />

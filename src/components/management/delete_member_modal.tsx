@@ -4,6 +4,7 @@ import useDeleteMember from "../../hooks/useDeleteMember";
 import { useManagementTeamsContext } from "../../store/management_teams_store";
 import { globalMutate } from "../../utils/globalMutate";
 import { addToast } from "../toast";
+import { useTranslations } from "next-intl";
 
 const DeleteMemberModal = ({
   selectMember,
@@ -12,6 +13,7 @@ const DeleteMemberModal = ({
   selectMember: string;
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
+  const translate = useTranslations();
   const { currentTeam } = useManagementTeamsContext();
   const { trigger, isMutating } = useDeleteMember(selectMember);
   const [deleteMessage, setDeleteMessage] = useState("");
@@ -43,7 +45,7 @@ const DeleteMemberModal = ({
       cancelButtonText="Cancel"
       buttonColor="danger"
     >
-      <EuiFormRow label="Type the word 'delete' to confirm">
+      <EuiFormRow label={translate("type_the_word_delete_confirm")}>
         <EuiFieldText
           name="delete"
           value={deleteMessage}

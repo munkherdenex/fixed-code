@@ -9,6 +9,7 @@ import {
   EuiButton,
   EuiComboBox,
   EuiComboBoxOptionOption,
+  EuiBadge,
 } from "@elastic/eui";
 import { SetStateAction, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -61,12 +62,15 @@ const CreateAudienceSegment = ({
     limit: `${PAGINATION_CHOOSES[1]}`,
   });
 
-  const dataTypeOptions: EuiComboBoxOptionOption[] = segmentCustomers?.results?.map((customer) => {
-    return {
-      label: customer?.email || customer?.phone || customer?.rid,
-      value: String(customer?.id),
-    };
-  }) || [{ label: "", value: "" }];
+  const dataTypeOptions: EuiComboBoxOptionOption[] =
+    segmentCustomers?.results?.map((customer) => {
+      return {
+        label: customer?.email || customer?.phone || customer?.rid,
+        "aria-label": `${customer?.email} ${customer?.phone} ${customer?.rid}`,
+        value: String(customer?.id),
+        append: <EuiBadge>{customer?.phone || customer?.email || customer?.rid}</EuiBadge>,
+      };
+    }) || [];
 
   const {
     handleSubmit,
@@ -80,7 +84,7 @@ const CreateAudienceSegment = ({
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
       setSearchValue(value);
-    }, 250);
+    }, 500);
   };
 
   const onSubmit = async (data: AudienceFormData) => {
@@ -131,6 +135,9 @@ const CreateAudienceSegment = ({
                   options={dataTypeOptions}
                   onChange={(selected) => {
                     onChange(selected);
+                  }}
+                  optionMatcher={({ option, searchValue }) => {
+                    return option?.["aria-label"].includes(searchValue);
                   }}
                   selectedOptions={[{ label: (value && value[0]?.label) || "" }]}
                   onSearchChange={onSearchChange}

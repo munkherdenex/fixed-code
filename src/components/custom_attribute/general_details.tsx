@@ -18,12 +18,14 @@ import { SetStateAction, useState } from "react";
 import useDeleteField from "../../hooks/useDeleteCustomField";
 import useGetFields, { Fields } from "../../hooks/useGetFields";
 import UpdateFieldFlyout from "./edit_field_flyout";
+import { useTranslations } from "next-intl";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
 }: {
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
+  const translate = useTranslations();
   const router = useRouter();
   const modalTitleId = useGeneratedHtmlId();
   const { trigger, isMutating } = useDeleteField(router.query.id);
@@ -67,7 +69,7 @@ const DeleteConfirmModal = ({
         </p>
       </EuiCallOut>
       <EuiSpacer />
-      <EuiFormRow label="Type the word 'delete' to confirm">
+      <EuiFormRow label={translate("type_the_word_delete_confirm")}>
         <EuiFieldText
           isLoading={isMutating}
           name="delete"

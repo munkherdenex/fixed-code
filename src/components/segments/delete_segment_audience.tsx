@@ -4,8 +4,10 @@ import { addToast } from "../toast";
 import { EuiButtonIcon, EuiConfirmModal, EuiFieldText, EuiFormRow } from "@elastic/eui";
 import { globalMutate } from "../../utils/globalMutate";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const DeleteSegmentAudience = ({ audience_id }: { audience_id: string | number | string[] }) => {
+  const translate = useTranslations();
   const router = useRouter();
   const { id } = router.query;
   const { trigger, isMutating } = useDeleteSegmentAudience(id, audience_id);
@@ -51,7 +53,7 @@ const DeleteSegmentAudience = ({ audience_id }: { audience_id: string | number |
           cancelButtonText="Cancel"
           buttonColor="danger"
         >
-          <EuiFormRow label="Type the word 'delete' to confirm">
+          <EuiFormRow label={translate("type_the_word_delete_confirm")}>
             <EuiFieldText
               name="delete"
               value={deleteMessage}

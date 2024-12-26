@@ -130,7 +130,7 @@ const Dashboard: FunctionComponent = () => {
                     <EuiFlexItem>
                       <EuiCard
                         icon={<EuiIcon size="xxl" type="notebookApp" />}
-                        title={translate("manual")}
+                        title={translate("manual.title")}
                         description={translate("manual-segment-description")}
                         selectable={{
                           onClick: () => cardClicked(3),
@@ -152,7 +152,7 @@ const Dashboard: FunctionComponent = () => {
                 <EuiTitle>
                   <h2 id={flyoutTitleId}>
                     {selectedCard === 2 && translate("dynamic")}{" "}
-                    {selectedCard === 3 && translate("manual")}
+                    {selectedCard === 3 && translate("manual.title")}
                   </h2>
                 </EuiTitle>
               </EuiFlyoutHeader>
@@ -173,9 +173,15 @@ const Dashboard: FunctionComponent = () => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
+  const common = (await import(`../../../../../messages/${context.locale}/common.json`)).default;
+  const segments = (await import(`../../../../../messages/${context.locale}/segments.json`)).default;
+
   return {
     props: {
-      messages: (await import(`../../../../../messages/${context.locale}/segments.json`)).default,
+      messages: {
+        ...common,
+        ...segments,
+      },
     },
   };
 };

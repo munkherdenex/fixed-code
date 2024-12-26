@@ -37,7 +37,7 @@ const Sidebar = () => {
 
   const sideNav = [
     {
-      name: "Main menu",
+      name: translate("main_menu"),
       id: htmlIdGenerator("audience&Segments")(),
       items: audienceSegmentPaths.map((path) => {
         return {
