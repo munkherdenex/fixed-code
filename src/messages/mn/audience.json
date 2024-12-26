@@ -27,7 +27,7 @@
   "type-the-word-delete": "'delete' гэдэг үгийг оруулна уу",
   "last-clicked": "Сүүлд дарсан",
   "add_to_segment": "Сегментэд нэмэх",
-  "add_to_segment_description": "И-мэйл хаяг, утасны дугаар, харилцагчийн ID хайх",
+  "add_to_segment_description": "Сегментийн нэр",
   "last-opened": "Сүүлд нээсэн",
   "update_audience": "Шинэчлэх",
   "status": "Төлөв",
