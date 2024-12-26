@@ -14,8 +14,10 @@ import { mutate } from "swr";
 import useLogout from "../../hooks/useLogout";
 import { dashboardHeadersStyles } from "../../layouts/dashboard_headers.style";
 import { authContext } from "../../store/auth_store";
+import { useTranslations } from "next-intl";
 
 const HeaderUserMenu = () => {
+  const translate = useTranslations();
   const router = useRouter();
   const styles = dashboardHeadersStyles();
   const { user } = useContext(authContext);
@@ -72,7 +74,7 @@ const HeaderUserMenu = () => {
                 <EuiButtonEmpty
                   onClick={() => router.push(`/dashboards/settings/management/profile`)}
                 >
-                  Edit profile
+                  {translate("edit_profile")}
                 </EuiButtonEmpty>
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
@@ -84,7 +86,7 @@ const HeaderUserMenu = () => {
                     window.location.href = "/";
                   }}
                 >
-                  Log out
+                  {translate("log_out")}
                 </EuiButtonEmpty>
               </EuiFlexItem>
             </EuiFlexGroup>

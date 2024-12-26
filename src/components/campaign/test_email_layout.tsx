@@ -19,6 +19,7 @@ import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers"
 import useTestSend from "../../hooks/useTestSend";
 import { globalMutate } from "../../utils/globalMutate";
 import { addToast } from "../toast";
+import { useTranslations } from "next-intl";
 
 const schema = yup
   .object({
@@ -41,6 +42,7 @@ type TestFormData = yup.InferType<typeof schema>;
 
 const TestEmailLayout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const router = useRouter();
+  const translate = useTranslations();
   const templateId = router.query?.id;
   const { isMutating, trigger } = useTestSend();
   const { data: customers } = useGetCustomers<CustomersResponse>();
@@ -96,13 +98,13 @@ const TestEmailLayout = ({ closeFlyout }: { closeFlyout: () => void }) => {
     <EuiFlyout onClose={closeFlyout}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2>Test send</h2>
+          <h2>{translate("test_send")}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
           <EuiFormRow
-            label="Customers"
+            label={translate("customers")}
             isInvalid={!!errors.customer?.message}
             error={[errors.customer?.message]}
           >
@@ -129,7 +131,7 @@ const TestEmailLayout = ({ closeFlyout }: { closeFlyout: () => void }) => {
             />
           </EuiFormRow>
           <EuiFormRow
-            label="Worker emails"
+            label={translate("worker_emails")}
             isInvalid={!!errors.worker_emails?.message}
             error={[errors.worker_emails?.message]}
           >
@@ -149,7 +151,7 @@ const TestEmailLayout = ({ closeFlyout }: { closeFlyout: () => void }) => {
             />
           </EuiFormRow>
           <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-            Send
+            {translate("send")}
           </EuiButton>
         </EuiForm>
       </EuiFlyoutBody>

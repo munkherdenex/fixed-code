@@ -16,6 +16,7 @@ import * as yup from "yup";
 import useUpdateProfile from "../../hooks/useUpdateProfile";
 import { authContext } from "../../store/auth_store";
 import { signinFormStyles } from "../signin_form/signin_form.styles";
+import { useTranslations } from "next-intl";
 
 const schema = yup
   .object({
@@ -27,6 +28,7 @@ const schema = yup
 type FormData = yup.InferType<typeof schema>;
 
 const Settings = () => {
+  const translate = useTranslations();
   const { euiTheme } = useEuiTheme();
   const { user } = useContext(authContext);
   const styles = signinFormStyles(euiTheme);
@@ -65,7 +67,11 @@ const Settings = () => {
   return (
     <EuiFlexGroup responsive={false} css={styles.container} direction="column">
       <EuiFlexItem>
-        <EuiSwitch label="Edit profile" checked={isEditProfile} onChange={(e) => onChange(e)} />
+        <EuiSwitch
+          label={translate("edit_profile")}
+          checked={isEditProfile}
+          onChange={(e) => onChange(e)}
+        />
       </EuiFlexItem>
       <EuiFlexItem>
         <EuiPanel>
@@ -77,7 +83,7 @@ const Settings = () => {
                 onSubmit={handleSubmit(onSubmit)}
               >
                 <EuiFormRow
-                  label="First name"
+                  label={translate("name")}
                   isInvalid={!!errors.fname?.message}
                   error={[errors.fname?.message]}
                 >
@@ -91,14 +97,14 @@ const Settings = () => {
                         onBlur={onBlur}
                         isInvalid={!!errors.fname?.message}
                         readOnly={!isEditProfile}
-                        placeholder="First name"
+                        placeholder={translate("name")}
                         aria-label="first name"
                       />
                     )}
                   />
                 </EuiFormRow>
                 <EuiFormRow
-                  label="Last name"
+                  label={translate("last_name")}
                   isInvalid={!!errors.lname?.message}
                   error={[errors.lname?.message]}
                 >
@@ -112,7 +118,7 @@ const Settings = () => {
                         onBlur={onBlur}
                         isInvalid={!!errors.lname?.message}
                         readOnly={!isEditProfile}
-                        placeholder="Last name"
+                        placeholder={translate("last_name")}
                         aria-label="Last name"
                       />
                     )}
@@ -120,7 +126,7 @@ const Settings = () => {
                 </EuiFormRow>
                 {isEditProfile && (
                   <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">
-                    Update
+                    {translate("update")}
                   </EuiButton>
                 )}
               </EuiForm>

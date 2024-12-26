@@ -2,33 +2,38 @@ import { EuiTab, EuiTabs, EuiSpacer } from "@elastic/eui";
 import { Fragment, useState, useMemo } from "react";
 import SecurityComponent from "./security";
 import Settings from "./settings";
-
-const tabs = [
-  {
-    id: "edit-profile--id",
-    name: "Edit profile",
-    content: (
-      <Fragment>
-        <Settings />
-      </Fragment>
-    ),
-  },
-  {
-    id: "change-password--id",
-    name: "Change passsword",
-    content: (
-      <Fragment>
-        <SecurityComponent />
-      </Fragment>
-    ),
-  },
-];
+import { useTranslations } from "next-intl";
 
 const ManagementProfileTabs = () => {
+  const translate = useTranslations();
+
+  const tabs = useMemo(() => {
+    return [
+      {
+        id: "edit-profile--id",
+        name: translate("edit_profile"),
+        content: (
+          <Fragment>
+            <Settings />
+          </Fragment>
+        ),
+      },
+      {
+        id: "change-password--id",
+        name: translate("change_password"),
+        content: (
+          <Fragment>
+            <SecurityComponent />
+          </Fragment>
+        ),
+      },
+    ];
+  }, [translate]);
+
   const [selectedTabId, setSelectedTabId] = useState("edit-profile--id");
   const selectedTabContent = useMemo(() => {
     return tabs.find((obj) => obj.id === selectedTabId)?.content;
-  }, [selectedTabId]);
+  }, [selectedTabId, tabs]);
 
   const onSelectedTabChanged = (id: string) => {
     setSelectedTabId(id);

@@ -17,6 +17,7 @@ import { signinFormStyles } from "../signin_form/signin_form.styles";
 import { addToast } from "../toast";
 import useChangePassword from "../../hooks/useChangePassword";
 import { teamsContext } from "../../store/teams_store";
+import { useTranslations } from "next-intl";
 
 const schema = yup
   .object({
@@ -38,6 +39,8 @@ type FormData = yup.InferType<typeof schema>;
 const SecurityComponent = () => {
   const { euiTheme } = useEuiTheme();
   const styles = signinFormStyles(euiTheme);
+  const translate = useTranslations();
+
   const { trigger, isMutating } = useChangePassword<FormData>();
   const { removeUserTokenData } = useContext(authContext);
   const { clearCurrentTeam } = useContext(teamsContext);
@@ -74,7 +77,7 @@ const SecurityComponent = () => {
         <EuiPanel>
           <EuiForm component="form" css={styles.form.container} onSubmit={handleSubmit(onSubmit)}>
             <EuiFormRow
-              label="Old password"
+              label={translate("old_password")}
               isInvalid={!!errors.current_password?.message}
               error={[errors.current_password?.message]}
             >
@@ -88,14 +91,14 @@ const SecurityComponent = () => {
                     onBlur={onBlur}
                     isInvalid={!!errors.current_password?.message}
                     type={"dual"}
-                    placeholder="Old password"
+                    placeholder={translate("old_password")}
                     aria-label="current_password"
                   />
                 )}
               />
             </EuiFormRow>
             <EuiFormRow
-              label="New password"
+              label={translate("new_password")}
               isInvalid={!!errors.new_password?.message}
               error={[errors.new_password?.message]}
             >
@@ -109,14 +112,14 @@ const SecurityComponent = () => {
                     onBlur={onBlur}
                     isInvalid={!!errors.new_password?.message}
                     type={"dual"}
-                    placeholder="New password"
+                    placeholder={translate("new_password")}
                     aria-label="new_password"
                   />
                 )}
               />
             </EuiFormRow>
             <EuiFormRow
-              label="Repeat password"
+              label={translate("repeat_password")}
               isInvalid={!!errors.new_password_repeat?.message}
               error={[errors.new_password_repeat?.message]}
             >
@@ -130,14 +133,14 @@ const SecurityComponent = () => {
                     onBlur={onBlur}
                     isInvalid={!!errors.new_password_repeat?.message}
                     type={"dual"}
-                    placeholder="Repeat password"
+                    placeholder={translate("repeat_password")}
                     aria-label="new_password_repeat"
                   />
                 )}
               />
             </EuiFormRow>
             <EuiButton isLoading={isMutating} disabled={isMutating} type="submit" fill>
-              Change password
+              {translate("change_password")}
             </EuiButton>
           </EuiForm>
         </EuiPanel>
