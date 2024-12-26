@@ -47,7 +47,6 @@ const SigninForm: FunctionComponent = () => {
     handleSubmit,
     control,
     getValues,
-
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),

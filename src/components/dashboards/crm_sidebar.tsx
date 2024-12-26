@@ -1,16 +1,24 @@
 import { EuiFlexGroup, EuiFlexItem, EuiSideNav, htmlIdGenerator } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import SideMenu from "./sidebar_menu";
+import CrmSideMenu from "./crm_sidebar_menu";
 
 const audienceSegmentPaths = [
   {
-    path: "/dashboards/crm",
-    name: "Template",
+    path: "/dashboards/crm/ticket",
+    name: "Ticket",
   },
   {
-    path: "/dashboards/crm/field_template",
-    name: "Field template",
+    path: "/dashboards/crm/call",
+    name: "Call",
+  },
+  {
+    path: "/dashboards/crm/chat",
+    name: "Chat",
+  },
+  {
+    path: "/dashboards/crm/data",
+    name: "Data",
   },
 ];
 
@@ -51,7 +59,7 @@ const CRMSidebar = () => {
         />
       </EuiFlexItem>
       <EuiFlexItem grow={false}>
-        <SideMenu />
+        <CrmSideMenu />
       </EuiFlexItem>
     </EuiFlexGroup>
   );
