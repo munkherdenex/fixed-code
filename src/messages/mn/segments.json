@@ -18,7 +18,7 @@
   "files": "Файлууд",
   "text": "Текст",
   "audience_list": "Харилцагчийн жагсаалт",
-  "search_email_address_phone_rid": "Сегментийн нэр",
+  "search_email_address_phone_rid": "Харилцагч",
   "segment_detail": "Сегментийн дэлгэрэнгүй",
   "update_segment": "Сегментийг шинэчлэх",
   "delete_segment": "Сегментийг устгах",
