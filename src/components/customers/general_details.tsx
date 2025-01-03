@@ -114,21 +114,19 @@ const GeneralDetails = () => {
 
                 <EuiFlexItem>{audientT("is-test-user")} :</EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiFormRow error={audientT("only-admin-can-do")} isInvalid={true}>
+                  <EuiFormRow>
                     <EuiSwitch
                       label={data?.is_test_user ? audientT("yes") : audientT("no")}
                       checked={data?.is_test_user}
                       onChange={() => {
-                        if (isAdmin || !isAccountActive) {
+                        if (!isAdmin || !isAccountActive) {
                           return false
                         }
 
                         if (data?.is_test_user) {
                           const a = removeTestCustomerTrigger();
-                          console.log("DEL", a);
                         } else {
                           const a = addTestCustomerTrigger();
-                          console.log("POS", a);
                         }
                       }}
                       compressed
