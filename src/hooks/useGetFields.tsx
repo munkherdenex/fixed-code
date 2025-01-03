@@ -1,7 +1,7 @@
-import useSWR from "swr";
 import { BASE_URL } from "../constants";
 import { handleResponseNotOk } from "../utils/error_handler";
 import { createParam } from "../utils/createParam";
+import useSWRImmutable from "swr/immutable";
 
 export interface Fields {
   id: number;
@@ -35,7 +35,7 @@ export default function useGetFields<Type>(
     ? `/api/v1/dj/fields/${id}/?${preparedQueryParam}`
     : `/api/v1/dj/fields/?${preparedQueryParam}`;
 
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading } = useSWRImmutable(
     //INFO: slash needs to be added to the end of the path
     path,
     async (path) => {

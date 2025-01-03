@@ -10,6 +10,10 @@ import { FunctionComponent } from "react";
 import "react-querybuilder/dist/query-builder.css";
 import "react-quill/dist/quill.snow.css";
 import "regenerator-runtime/runtime";
+import { NextIntlClientProvider } from "next-intl";
+import { useRouter } from "next/router";
+import { PagesProgressBar as ProgressBar } from "next-nprogress-bar";
+
 import { Theme } from "../components/theme";
 import GlobalToastList from "../components/toast";
 import "../custom_typings/index.d.ts";
@@ -18,9 +22,6 @@ import { AuthProvider } from "../store/auth_store";
 import { ProductProvider } from "../store/products_store";
 import { TeamsProvider } from "../store/teams_store";
 import { globalStyes } from "../styles/global.styles";
-import { NextIntlClientProvider } from "next-intl";
-import { useRouter } from "next/router";
-import { PagesProgressBar as ProgressBar } from "next-nprogress-bar";
 
 const Chrome = dynamic(() => import("../components/chrome"), { ssr: false });
 

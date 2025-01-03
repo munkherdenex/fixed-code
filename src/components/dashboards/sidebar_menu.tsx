@@ -31,6 +31,11 @@ const SideMenu = () => {
   const managementPaths = useMemo(() => {
     return [
       {
+        path: "/dashboards/cdp/test_users",
+        name: translate("test_users"),
+        roles: ["admin"],
+      },
+      {
         path: "/dashboards/cdp/custom_attribute",
         name: translate("custom_attribute"),
         roles: ["admin", "manager"],

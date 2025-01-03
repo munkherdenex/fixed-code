@@ -13,10 +13,9 @@
   "created-at": "Үүсгэсэн огноо",
   "the-audience-description": "Харилцагчийн тодорхойлолт",
   "loading": "Ачааллаж байна...",
-  "search-audience": "Харилцагч хайх",
   "total-audience": "Нийт үзэгчид",
   "audience-info": "Харилцагчийн мэдээлэл",
-  "audience-details": "Харилцагчийн дэлгэрэнгүй мэдээлэл",
+  "audience-details": "Үндсэн мэдээлэл",
   "email-address": "И-мэйл хаяг",
   "phone-number": "Утасны дугаар",
   "reference-id": "Харилцагчийн ID",
@@ -36,5 +35,9 @@
     "import-audience": "Үзэгчдийг амжилттай импортоллоо",
     "create-audience": "Үзэгчдийг амжилттай үүсгэлээ",
     "delete-audience": "Үзэгчдийг амжилттай устгалаа"
-  }
+  },
+  "is-test-user": "Тестийн хэрэглэгч эсэх",
+  "yes": "Тийм",
+  "no": "Үгүй",
+  "only-admin-can-do": "Зөвхөн админ хэрэглэгч өөрчилж чадна"
 }

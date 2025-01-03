@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   EuiBadge,
   EuiButtonIcon,
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiFormRow,
   EuiPanel,
   EuiSkeletonRectangle,
+  EuiSwitch,
   EuiTextColor,
 } from "@elastic/eui";
 import moment from "moment";
@@ -19,14 +21,21 @@ import AdminComponent from "../admin_component";
 import { useTranslations } from "next-intl";
 import { badgeColor } from "../../utils/badge_color";
 import { useAudienceContext } from "../../store/audience_store";
+import useAddTestCustomer from "../../hooks/useAddTestCustomer";
+import useRemoveTestCustomer from "../../hooks/useRemoveTestCustomer";
+import { teamsContext } from "../../store/teams_store";
+import { addToast } from '../toast';
 
 const GeneralDetails = () => {
   const audientT = useTranslations();
 
+  const { isAdmin, isAccountActive } = useContext(teamsContext);
   const { data, isLoading } = useAudienceContext();
   const { data: fields } = useGetFields<Fields[]>(undefined, {
     all: "true",
   });
+  const { addTestCustomerTrigger } = useAddTestCustomer(data);
+  const { removeTestCustomerTrigger } = useRemoveTestCustomer(data);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSegmentFlyoutVisible, setIsSegmentFlyoutVisible] = useState(false);
@@ -67,19 +76,19 @@ const GeneralDetails = () => {
                         <EuiFlexItem grow={false}>
                           <EuiButtonIcon
                             display="base"
-                            iconType="trash"
-                            aria-label="Delete"
-                            color="danger"
-                            onClick={() => setIsModalVisible(true)}
+                            iconType="pencil"
+                            aria-label="Update"
+                            color="primary"
+                            onClick={() => setIsFlyoutVisible(true)}
                           />
                         </EuiFlexItem>
                         <EuiFlexItem grow={false}>
                           <EuiButtonIcon
                             display="base"
-                            iconType="pencil"
-                            aria-label="Update"
-                            color="primary"
-                            onClick={() => setIsFlyoutVisible(true)}
+                            iconType="trash"
+                            aria-label="Delete"
+                            color="danger"
+                            onClick={() => setIsModalVisible(true)}
                           />
                         </EuiFlexItem>
                       </EuiFlexGrid>
@@ -102,6 +111,31 @@ const GeneralDetails = () => {
                 <EuiFlexItem>
                   {data?.rid ? data?.rid : <EuiTextColor color="subdued">None</EuiTextColor>}
                 </EuiFlexItem>
+
+                <EuiFlexItem>{audientT("is-test-user")} :</EuiFlexItem>
+                <EuiFlexItem>
+                  <EuiFormRow error={audientT("only-admin-can-do")} isInvalid={true}>
+                    <EuiSwitch
+                      label={data?.is_test_user ? audientT("yes") : audientT("no")}
+                      checked={data?.is_test_user}
+                      onChange={() => {
+                        if (isAdmin || !isAccountActive) {
+                          return false
+                        }
+
+                        if (data?.is_test_user) {
+                          const a = removeTestCustomerTrigger();
+                          console.log("DEL", a);
+                        } else {
+                          const a = addTestCustomerTrigger();
+                          console.log("POS", a);
+                        }
+                      }}
+                      compressed
+                    />
+                  </EuiFormRow>
+                </EuiFlexItem>
+
                 <EuiFlexItem>{audientT("subscription-status")} :</EuiFlexItem>
                 <EuiFlexItem>
                   <div>

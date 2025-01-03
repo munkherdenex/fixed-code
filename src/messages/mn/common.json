@@ -76,5 +76,7 @@
   "optional": "Сонголттой",
   "expiry_date": "Дуусах огноо",
   "search": "Хайх",
-  "search_param": "{param} хайх"
+  "search_param": "{param} хайх",
+  "test_users": "Тестийн харилцагчид",
+  "search-audience": "Имэйл эсвэл утсаар хайх"
 }

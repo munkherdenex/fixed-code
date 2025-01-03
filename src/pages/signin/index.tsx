@@ -22,7 +22,7 @@ const Index = () => {
   }, [user]);
 
   if (isLoading) {
-    return <div>...loading</div>;
+    return <div>Loading...</div>;
   }
 
   if (user) {
