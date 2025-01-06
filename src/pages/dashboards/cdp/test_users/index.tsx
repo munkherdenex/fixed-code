@@ -35,12 +35,14 @@ const TestUsers = () => {
 export const getStaticProps: GetStaticProps = async (context) => {
   const custom = (await import(`../../../../messages/${context.locale}/custom.json`)).default;
   const common = (await import(`../../../../messages/${context.locale}/common.json`)).default;
+  const audience = (await import(`../../../../messages/${context.locale}/audience.json`)).default;
 
   return {
     props: {
       messages: {
         ...custom,
         ...common,
+        ...audience
       },
     },
   };

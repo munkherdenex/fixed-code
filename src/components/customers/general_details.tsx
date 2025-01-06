@@ -24,13 +24,20 @@ import { useAudienceContext } from "../../store/audience_store";
 import useAddTestCustomer from "../../hooks/useAddTestCustomer";
 import useRemoveTestCustomer from "../../hooks/useRemoveTestCustomer";
 import { teamsContext } from "../../store/teams_store";
-import { addToast } from '../toast';
+import { addToast } from "../toast";
+import audienceApi from "../../api/audience";
+import useSWR from "swr";
+import { useRouter } from 'next/router';
 
 const GeneralDetails = () => {
   const audientT = useTranslations();
+  const router = useRouter();
 
   const { isAdmin, isAccountActive } = useContext(teamsContext);
-  const { data, isLoading } = useAudienceContext();
+  const { data, isLoading } = useSWR(
+    [`/customers/${router.query?.id}`, { id: +router.query?.id, extended: true }],
+    audienceApi.getAudience,
+  );
   const { data: fields } = useGetFields<Fields[]>(undefined, {
     all: "true",
   });
@@ -120,13 +127,13 @@ const GeneralDetails = () => {
                       checked={data?.is_test_user}
                       onChange={() => {
                         if (!isAdmin || !isAccountActive) {
-                          return false
+                          return false;
                         }
 
                         if (data?.is_test_user) {
-                          const a = removeTestCustomerTrigger();
+                          removeTestCustomerTrigger(data);
                         } else {
-                          const a = addTestCustomerTrigger();
+                          addTestCustomerTrigger(data);
                         }
                       }}
                       compressed

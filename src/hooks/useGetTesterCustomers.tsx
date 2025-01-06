@@ -1,42 +1,44 @@
 import useSWR from "swr";
-import { BASE_URL } from "../constants";
 import { createParam } from "../utils/createParam";
-import { handleResponseNotOk } from "../utils/error_handler";
+import audienceApi from "../api/audience";
+import { CustomerDataType, CustomersType } from "./useGetCustomers";
 
-export default function useGetTesterCustomers<Type>(
-  id?: string | string[] | undefined,
-  queryParam?: {
-    [key: string]: string;
-  },
-  condition?: {
-    isFetch: boolean;
-  },
-): {
+export default function useGetTesterCustomers<Type>(queryParam?: { [key: string]: string }): {
   data: Type;
   error: any;
   isLoading: boolean;
   mutate: any;
+  removeAudience: CallableFunction;
 } {
-  const isFetch = condition?.isFetch === undefined ? true : condition.isFetch;
   const preparedQueryParam = createParam(queryParam);
-  const path = id
-    ? `/api/v1/dj/test_users/${id}/?${preparedQueryParam}`
-    : `/api/v1/dj/test_users/?${preparedQueryParam}`;
+  const pathKey = `/test_users/?${preparedQueryParam}`;
 
-  const { data, error, isLoading, mutate } = useSWR(isFetch ? path : null, async (path) => {
-    const res = await fetch(`${BASE_URL}${path}`, {
-      method: "GET",
-      headers: { "content-type": "application/json" },
-      credentials: "include",
-    });
+  const { data, error, isLoading, mutate } = useSWR(
+    [pathKey, queryParam],
+    audienceApi.getTestAudiences,
+  );
 
-    return handleResponseNotOk(res);
-  });
+  const removeAudience = async (customer: CustomersType) => {
+    try {
+      await audienceApi.removeTestAudience(customer?.id);
+      mutate(
+        (prevData) => {
+          if (!prevData) return prevData;
+          return prevData?.results?.filter((cc) => cc.id !== customer.id);
+        },
+        false,
+      );
+      mutate();
+    } catch (error) {
+      mutate();
+    }
+  };
 
   return {
     data,
     error,
     isLoading,
     mutate,
+    removeAudience,
   };
 }
