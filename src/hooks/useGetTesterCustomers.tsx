@@ -7,38 +7,25 @@ export default function useGetTesterCustomers<Type>(queryParam?: { [key: string]
   data: Type;
   error: any;
   isLoading: boolean;
+  isValidating: boolean;
   mutate: any;
-  removeAudience: CallableFunction;
 } {
   const preparedQueryParam = createParam(queryParam);
   const pathKey = `/test_users/?${preparedQueryParam}`;
 
-  const { data, error, isLoading, mutate } = useSWR(
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
     [pathKey, queryParam],
     audienceApi.getTestAudiences,
-  );
-
-  const removeAudience = async (customer: CustomersType) => {
-    try {
-      await audienceApi.removeTestAudience(customer?.id);
-      mutate(
-        (prevData) => {
-          if (!prevData) return prevData;
-          return prevData?.results?.filter((cc) => cc.id !== customer.id);
-        },
-        false,
-      );
-      mutate();
-    } catch (error) {
-      mutate();
+    {
+      revalidateOnFocus: false
     }
-  };
+  );
 
   return {
     data,
     error,
     isLoading,
-    mutate,
-    removeAudience,
+    isValidating,
+    mutate
   };
 }

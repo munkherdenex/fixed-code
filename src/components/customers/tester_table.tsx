@@ -3,7 +3,7 @@ import {
   EuiBadge,
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiButtonIcon,
+  EuiConfirmModal,
   EuiEmptyPrompt,
   EuiFieldSearch,
   EuiFlexGroup,
@@ -12,22 +12,51 @@ import {
   EuiTableFieldDataColumnType,
   EuiTextColor,
 } from "@elastic/eui";
-import moment from "moment";
 import { useRouter } from "next/router";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTesterCustomers from "../../hooks/useGetTesterCustomers";
 import { isNumber } from "../../utils/helper";
 import CreateCustomerFlyoutContainer from "./create_customer_flyout_container";
 import { useTranslations } from "next-intl";
 import { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
+import audienceApi from '../../api/audience';
+import Link from 'next/link';
 
 const pathPrefix = process.env.PATH_PREFIX;
+
+const RemoveTestUserModal = ({ customer, onCancel, onConfirm }) => {
+  const translate = useTranslations();
+
+  return (
+    <Fragment>
+      <EuiConfirmModal
+        title={translate("warning")}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+        cancelButtonText={translate("cancel")}
+        confirmButtonText={translate("yes-remove")}
+        buttonColor="danger"
+        defaultFocusedButton="confirm"
+      >
+        <p>{translate("sure-to-remove-test-customer")}</p>
+        <dl>
+          <dt>{translate("email")}</dt>
+          <dd>{customer?.email}</dd>
+          <dt>{translate("phone")}</dt>
+          <dd>{customer?.phone}</dd>
+        </dl>
+      </EuiConfirmModal>
+    </Fragment>
+  );
+};
 
 const TesterCustomersTable = () => {
   const translate = useTranslations();
   const router = useRouter();
   const { query } = router;
+  const [isRemoveModalVisible, setIsRemoveModalVisible] = useState(false);
+  const [removingCustomer, setRemovingCustomer] = useState(null);
 
   const querySearch = query?.search?.toString() || "";
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
@@ -37,7 +66,7 @@ const TesterCustomersTable = () => {
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
   const [pageSize, setPageSize] = useState(queryPageSize);
 
-  const { data, isLoading, mutate } = useGetTesterCustomers<CustomersResponse>(null, {
+  const { data, isLoading, isValidating, mutate } = useGetTesterCustomers<CustomersResponse>({
     query: searchValue,
     limit: `${pageSize}`,
     offset: `${pageIndex * pageSize}`,
@@ -100,7 +129,7 @@ const TesterCustomersTable = () => {
       actions: [
         {
           name: "View",
-          description: "View customer info",
+          description: translate("view"),
           type: "icon",
           icon: "eye",
           color: "primary",
@@ -110,12 +139,13 @@ const TesterCustomersTable = () => {
         },
         {
           name: "Delete",
-          description: "Remove from testers list",
+          description: translate("remove-from-tester-list"),
           type: "icon",
-          icon: "trash",
+          icon: "minus",
           color: "danger",
           onClick: (customer: CustomersType) => {
-            alert("clicked on " + customer.email);
+            setRemovingCustomer(customer);
+            setIsRemoveModalVisible(true);
           },
         },
       ],
@@ -164,7 +194,7 @@ const TesterCustomersTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryPageIndex, queryPageSize, querySearch]);
 
-  if (isLoading) {
+  if (isLoading || isValidating) {
     return <div>{translate("loading")}</div>;
   }
 
@@ -172,11 +202,11 @@ const TesterCustomersTable = () => {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
-        title={<h2>Create your audience</h2>}
+        title={<h2>{translate("empty-title")}</h2>}
         layout="horizontal"
         color="plain"
-        body={<p>{translate("the-audience-description")}</p>}
-        actions={<CreateCustomerFlyoutContainer />}
+        body={<p>{translate("description-to-add-test-audience")}</p>}
+        actions={<Link href="/dashboards/cdp/audience">{translate("to-audience-page")}</Link>}
       />
     );
   }
@@ -214,6 +244,23 @@ const TesterCustomersTable = () => {
           onChange={onTableChange}
         />
       </EuiFlexItem>
+      {isRemoveModalVisible && (
+        <RemoveTestUserModal
+          customer={removingCustomer}
+          onCancel={() => setIsRemoveModalVisible(false)}
+          onConfirm={() => {
+            audienceApi.removeTestAudience([null, removingCustomer]);
+            mutate((prevData) => {
+              if (!prevData) return prevData
+
+              const newResult = prevData?.results?.filter((cc) => cc.id !== removingCustomer.id)
+
+              return { ...prevData, results: newResult }
+            }, false)
+            setIsRemoveModalVisible(false)
+          }}
+        />
+      )}
     </EuiFlexGroup>
   );
 };
