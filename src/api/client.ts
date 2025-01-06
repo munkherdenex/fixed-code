@@ -1,7 +1,8 @@
 import axios from "axios";
+import { BASE_URL } from "../constants";
 
 const client = axios.create({
-  baseURL: "http://app.local:999/api/v1/dj",
+  baseURL: `${BASE_URL}/api/v1/dj`,
 });
 
 export default client;
