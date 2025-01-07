@@ -1,7 +1,7 @@
 import { useGeneratedHtmlId } from "@elastic/eui";
 import Head from "next/head";
 import CreateCampaignActionPopover from "../../../../components/campaign/create_campaign_action_popover";
-import SendsTable from "../../../../components/campaign/table";
+import CampaignsTable from "../../../../components/campaign/campaigns_table";
 import DashboardLayout from "../../../../layouts/dashboard";
 import { useTranslations } from "next-intl";
 
@@ -22,7 +22,7 @@ const SendsDashboard = () => {
         }}
       >
         <div>
-          <SendsTable />
+          <CampaignsTable />
         </div>
       </DashboardLayout>
     </>

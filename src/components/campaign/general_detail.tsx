@@ -14,7 +14,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { jsonrepair } from "jsonrepair";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, set, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { IS_POCKET } from "../../constants";
 import useUpdateTemplate from "../../hooks/useUpdateTemplate";
@@ -24,6 +24,7 @@ import { dataTypeToSwitch, getDataKind, processBody, processKind } from "../../u
 import { isJson } from "../../utils/is_json";
 import AceEditorComponent from "./ace_editor";
 import { useTranslations } from "next-intl";
+import TestCampaignFlyout from "./test_campaign_flyout";
 
 const schema = yup
   .object({
@@ -49,6 +50,7 @@ const GeneralDetails = () => {
 
   const { isMutating, trigger } = useUpdateTemplate(data?.id?.toString());
   const [isView, setIsView] = useState(true);
+  const [showTestView, setShowTestView] = useState(false);
 
   const {
     handleSubmit,
@@ -120,127 +122,149 @@ const GeneralDetails = () => {
   }
 
   return (
-    <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-      <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
-        <EuiFlexItem grow={false}>
-          <EuiFormRow
-            label={translate("title")}
-            isInvalid={!!errors.title?.message}
-            error={[errors.title?.message]}
-          >
-            <Controller
-              control={control}
-              name="title"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <EuiFieldText
-                  onChange={onChange}
-                  value={value}
-                  onBlur={onBlur}
-                  readOnly={isView}
-                  isInvalid={!!errors.title?.message}
-                  placeholder={translate("title")}
-                  aria-label={translate("title")}
-                />
-              )}
-            />
-          </EuiFormRow>
-        </EuiFlexItem>
-        <EuiFlexItem grow={false}>
-          {isView && (
-            <EuiFlexGroup gutterSize="xl" alignItems="flexEnd" justifyContent="flexEnd">
-              {(data?.status === "DRAFT" || data?.status === "ERROR") && (
-                <EuiFlexItem grow={false}>
-                  <EuiToolTip position="top" content="move to the update screen">
+    <>
+      <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+        <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
+          <EuiFlexItem grow={false}>
+            <EuiFormRow
+              label={translate("title")}
+              isInvalid={!!errors.title?.message}
+              error={[errors.title?.message]}
+            >
+              <Controller
+                control={control}
+                name="title"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <EuiFieldText
+                    onChange={onChange}
+                    value={value}
+                    onBlur={onBlur}
+                    readOnly={isView}
+                    isInvalid={!!errors.title?.message}
+                    placeholder={translate("title")}
+                    aria-label={translate("title")}
+                  />
+                )}
+              />
+            </EuiFormRow>
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            {isView && (
+              <EuiFlexGroup gutterSize="xl" alignItems="flexEnd" justifyContent="flexEnd">
+                {(data?.status === "DRAFT" || data?.status === "ERROR") && (
+                  <>
+                    <EuiFlexItem grow={false}>
+                      <EuiButton
+                        color={"primary"}
+                        size="s"
+                        onClick={() => {
+                          setShowTestView(true);
+                        }}
+                      >
+                        {translate("test_send")}
+                      </EuiButton>
+                    </EuiFlexItem>
+                    <EuiFlexItem grow={false}>
+                      <EuiToolTip position="top" content="move to the update screen">
+                        <EuiButtonIcon
+                          display={"base"}
+                          iconType="documentEdit"
+                          size="s"
+                          onClick={() => {
+                            setView();
+                          }}
+                        />
+                      </EuiToolTip>
+                    </EuiFlexItem>
+                  </>
+                )}
+              </EuiFlexGroup>
+            )}
+            {!isView && (
+              <EuiFlexGroup justifyContent="flexEnd" alignItems="flexEnd">
+                <EuiFlexItem>
+                  <EuiToolTip position="top" content="Cancel">
                     <EuiButtonIcon
                       display={"base"}
-                      iconType="documentEdit"
+                      iconType="cross"
                       size="s"
+                      color="success"
                       onClick={() => {
                         setView();
+                        reset();
                       }}
                     />
                   </EuiToolTip>
                 </EuiFlexItem>
+                <EuiFlexItem>
+                  <EuiButton isLoading={isMutating} disabled={isMutating} size="s" type="submit">
+                    {translate("update_campaign")}
+                  </EuiButton>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            )}
+          </EuiFlexItem>
+        </EuiFlexGroup>
+        <EuiSpacer size="s" />
+        <EuiFlexGroup direction="column">
+          <EuiFormRow
+            fullWidth
+            label={translate("data")}
+            helpText={`${translate("create_campaign_help_text")} {{custom_attribute}}`}
+            isInvalid={!!errors?.body?.message}
+            error={[errors?.body?.message]}
+          >
+            <>
+              {dataKind === "api" && (
+                <>
+                  {!isView && <AceEditorComponent control={control} onChange={setAceEditorValue} />}
+                  {isView && (
+                    <EuiFlexItem>
+                      <EuiCodeBlock
+                        language="json"
+                        fontSize="s"
+                        paddingSize="s"
+                        isCopyable
+                        overflowHeight={300}
+                      >
+                        <pre>
+                          {JSON.stringify(JSON.parse(jsonrepair(data?.body || "{}")), null, 2)}
+                        </pre>
+                      </EuiCodeBlock>
+                    </EuiFlexItem>
+                  )}
+                </>
               )}
-            </EuiFlexGroup>
-          )}
-          {!isView && (
-            <EuiFlexGroup justifyContent="flexEnd" alignItems="flexEnd">
-              <EuiFlexItem>
-                <EuiToolTip position="top" content="Cancel">
-                  <EuiButtonIcon
-                    display={"base"}
-                    iconType="cross"
-                    size="s"
-                    color="success"
-                    onClick={() => {
-                      setView();
-                      reset();
-                    }}
-                  />
-                </EuiToolTip>
-              </EuiFlexItem>
-              <EuiFlexItem>
-                <EuiButton isLoading={isMutating} disabled={isMutating} size="s" type="submit">
-                  {translate("update_campaign")}
-                </EuiButton>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          )}
-        </EuiFlexItem>
-      </EuiFlexGroup>
-      <EuiSpacer size="s" />
-      <EuiFlexGroup direction="column">
-        <EuiFormRow
-          fullWidth
-          label={translate("data")}
-          helpText={`${translate("create_campaign_help_text")} {{custom_attribute}}`}
-          isInvalid={!!errors?.body?.message}
-          error={[errors?.body?.message]}
-        >
-          <>
-            {dataKind === "api" && (
-              <>
-                {!isView && <AceEditorComponent control={control} onChange={setAceEditorValue} />}
-                {isView && (
-                  <EuiFlexItem>
-                    <EuiCodeBlock
-                      language="json"
-                      fontSize="s"
-                      paddingSize="s"
-                      isCopyable
-                      overflowHeight={300}
-                    >
-                      <pre>
-                        {JSON.stringify(JSON.parse(jsonrepair(data?.body || "{}")), null, 2)}
-                      </pre>
-                    </EuiCodeBlock>
-                  </EuiFlexItem>
-                )}
-              </>
-            )}
-            {(dataKind === "sms" || dataKind === "push") && (
-              <Controller
-                control={control}
-                name="body"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <EuiTextArea
-                    onChange={onChange}
-                    value={value}
-                    onBlur={onBlur}
-                    isInvalid={!!errors.title?.message}
-                    readOnly={isView}
-                    placeholder={translate("data")}
-                    aria-label={translate("data")}
-                    fullWidth
-                  />
-                )}
-              />
-            )}
-          </>
-        </EuiFormRow>
-      </EuiFlexGroup>
-    </EuiForm>
+              {(dataKind === "sms" || dataKind === "push") && (
+                <Controller
+                  control={control}
+                  name="body"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <EuiTextArea
+                      onChange={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      isInvalid={!!errors.title?.message}
+                      readOnly={isView}
+                      placeholder={translate("data")}
+                      aria-label={translate("data")}
+                      fullWidth
+                    />
+                  )}
+                />
+              )}
+            </>
+          </EuiFormRow>
+        </EuiFlexGroup>
+      </EuiForm>
+      {showTestView && (
+        <TestCampaignFlyout
+          closeFlyout={() => {
+            setShowTestView(false);
+          }}
+        ></TestCampaignFlyout>
+      )}
+    </>
   );
 };
 

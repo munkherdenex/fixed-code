@@ -38,7 +38,7 @@ const options = [
   { value: "RECURRING", text: "RECURRING" },
 ];
 
-const SendsTable = () => {
+const CampaignsTable = () => {
   const router = useRouter();
   const { query } = router;
   const translate = useTranslations();
@@ -291,4 +291,4 @@ const SendsTable = () => {
   );
 };
 
-export default SendsTable;
+export default CampaignsTable;

@@ -23,7 +23,7 @@ import { dataTypeToSwitch, processBody, processKind } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
 import { quillEditorStyles } from "../email_editor/quill_editor.styles";
 import { addToast } from "../toast";
-import TestEmailLayout from "./test_email_layout";
+import TestCampaignFlyout from "./test_campaign_flyout";
 import { useTranslations } from "next-intl";
 
 const QuillEditorComponent = dynamic(() => import("../email_editor/quill_editor"), { ssr: false });
@@ -222,7 +222,7 @@ const EditEmailLayout = () => {
           <QuillEditorComponent readonly={isViewEmail} control={control} onChange={setReactQuill} />
         </EuiFormRow>
       </EuiForm>
-      {isTestLayout && <TestEmailLayout closeFlyout={closeFlyout} />}
+      {isTestLayout && <TestCampaignFlyout closeFlyout={closeFlyout} />}
     </>
   );
 };

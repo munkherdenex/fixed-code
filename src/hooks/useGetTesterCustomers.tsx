@@ -1,10 +1,10 @@
 import useSWR from "swr";
 import { createParam } from "../utils/createParam";
 import audienceApi from "../api/audience";
-import { CustomerDataType, CustomersType } from "./useGetCustomers";
+import { CustomersResponse } from "./useGetCustomers";
 
-export default function useGetTesterCustomers<Type>(queryParam?: { [key: string]: string }): {
-  data: Type;
+export default function useGetTesterCustomers(queryParam?: { [key: string]: string }): {
+  data: CustomersResponse;
   error: any;
   isLoading: boolean;
   isValidating: boolean;

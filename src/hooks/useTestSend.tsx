@@ -1,19 +1,11 @@
-import { BASE_URL } from "../constants";
 import useSWRMutation from "swr/mutation";
-import { handleResponseNotOk } from "../utils/error_handler";
+import templateApi from "../api/template";
 
-export default function useTestSend<Type>() {
+export default function useTestSend() {
   const { data, error, isMutating, trigger } = useSWRMutation(
     `/api/v1/dj/templates/test_send/`,
-    async (path, { arg }: { arg: Type }) => {
-      const res = await fetch(`${BASE_URL}${path}`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(arg),
-        credentials: "include",
-      });
-
-      return handleResponseNotOk(res);
+    async (_path, { arg }: { arg: { templateId: number; testerIds: number[] } }) => {
+      templateApi.testSend(arg.templateId, arg.testerIds);
     },
   );
 

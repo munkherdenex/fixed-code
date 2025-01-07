@@ -66,7 +66,7 @@ const TesterCustomersTable = () => {
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
   const [pageSize, setPageSize] = useState(queryPageSize);
 
-  const { data, isLoading, isValidating, mutate } = useGetTesterCustomers<CustomersResponse>({
+  const { data, isLoading, isValidating, mutate } = useGetTesterCustomers({
     query: searchValue,
     limit: `${pageSize}`,
     offset: `${pageIndex * pageSize}`,
