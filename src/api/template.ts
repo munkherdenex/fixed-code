@@ -7,6 +7,13 @@ const templateApi = {
       customer_ids: testerIds
     })
     return response
+  },
+
+  toggleIsToAll: async (templateId: number, value: boolean) => {
+    const response = await client.post(`/templates/${templateId}/send_to_all/`, {
+      is_to_all: value
+    })
+    return response
   }
 }
 

@@ -2,10 +2,13 @@ import {
   Criteria,
   EuiBasicTable,
   EuiBasicTableColumn,
+  EuiCheckbox,
   EuiConfirmModal,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiFormRow,
   EuiSkeletonRectangle,
+  EuiSwitch,
   EuiTableFieldDataColumnType,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -33,7 +36,7 @@ const Audience = () => {
 
   const modalTitleId = useGeneratedHtmlId({ prefix: "modalTitle" });
 
-  const { data: template } = useCampaignContext();
+  const { data: template, toggleIsToAll } = useCampaignContext();
   const { data: templateCustomers, isLoading } = useGetTemplatesCustomer<TemplateCustomerResponse>(
     router.query.id,
     {
@@ -163,32 +166,46 @@ const Audience = () => {
   return (
     <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={390}>
       <EuiFlexGroup direction="column">
-        {actionEnabled && (
-          <EuiFlexItem grow={false}>
+        <EuiFormRow
+          fullWidth
+          helpText={translate("help__to_all_customers")}
+        >
+          <EuiSwitch
+            id="isToAllCustomers11"
+            checked={template.is_to_all}
+            onChange={toggleIsToAll}
+            label={translate("to_all_customers")}
+            disabled={!actionEnabled}
+          />
+        </EuiFormRow>
+        {!template.is_to_all && actionEnabled && (
+          <EuiFlexItem>
             <AddAudience />
           </EuiFlexItem>
         )}
-        <EuiFlexItem>
-          <EuiBasicTable
-            tableCaption="Template customers"
-            items={templateCustomers?.results || []}
-            columns={[...columns, ...actions]}
-            cellProps={getCellProps}
-            pagination={
-              templateCustomers?.total_count > pageSize
-                ? {
-                    ...pagination,
-                    totalItemCount: templateCustomers?.total_count || 0,
-                  }
-                : {
-                    totalItemCount: 0,
-                    pageSize: 0,
-                    pageIndex: 0,
-                  }
-            }
-            onChange={onTableChange}
-          />
-        </EuiFlexItem>
+        {!template.is_to_all && (
+          <EuiFlexItem>
+            <EuiBasicTable
+              tableCaption="Template customers"
+              items={templateCustomers?.results || []}
+              columns={[...columns, ...actions]}
+              cellProps={getCellProps}
+              pagination={
+                templateCustomers?.total_count > pageSize
+                  ? {
+                      ...pagination,
+                      totalItemCount: templateCustomers?.total_count || 0,
+                    }
+                  : {
+                      totalItemCount: 0,
+                      pageSize: 0,
+                      pageIndex: 0,
+                    }
+              }
+              onChange={onTableChange}
+            />
+          </EuiFlexItem>
+        )}
         {isModalVisible && (
           <EuiConfirmModal
             aria-labelledby={modalTitleId}

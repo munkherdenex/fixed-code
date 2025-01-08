@@ -81,7 +81,11 @@ const CampaignsTable = () => {
 
         return (
           <span>
-            <EuiIcon aria-label="email" type={getCampaignIcon(dataKind)} color={badgeColor(dataKind)} />{" "}
+            <EuiIcon
+              aria-label="email"
+              type={getCampaignIcon(dataKind)}
+              color={badgeColor(dataKind)}
+            />{" "}
             <EuiTextColor color={badgeColor(dataKind)}>{dataKind.toUpperCase()}</EuiTextColor>
           </span>
         );
@@ -108,8 +112,12 @@ const CampaignsTable = () => {
       },
     },
     {
-      field: "aud_count",
       name: translate("aud_count"),
+      render: (template: Template) => {
+        const { is_to_all, aud_count } = template;
+
+        return <span>{is_to_all ? "ALL" : aud_count}</span>;
+      },
     },
     {
       field: "created_at",

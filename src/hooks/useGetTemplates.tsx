@@ -27,6 +27,7 @@ export interface Template {
   start_date?: string | null;
   end_date?: string | null;
   is_recurring?: boolean;
+  is_to_all?: boolean;
   recur_count?: number | null;
   recur_current_count?: number;
   recur_rule?: {

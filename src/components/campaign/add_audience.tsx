@@ -1,4 +1,4 @@
-import { EuiButton, EuiPopover, EuiContextMenu } from "@elastic/eui";
+import { EuiButton, EuiPopover, EuiContextMenu, EuiCheckbox, EuiFormRow, EuiFlexItem } from "@elastic/eui";
 import { useState, useCallback, useMemo, memo } from "react";
 import { commonStyles } from "../../styles/global.styles";
 import AddAudienceFlyout from "./add_audience_flyot";
