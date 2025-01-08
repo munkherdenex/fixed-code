@@ -47,6 +47,16 @@ const TestCampaignFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   });
 
   const onSubmit = async () => {
+    if (!selectedTesters.length) {
+      addToast({
+        id: "success",
+        title: translate("error"),
+        text: translate("select-at-least-one-tester"),
+        color: "danger",
+      });
+      return false;
+    }
+
     const ids = selectedTesters.map((testerRow) => {
       console.debug(testerRow);
       return +testerRow.value;

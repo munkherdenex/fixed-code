@@ -34,7 +34,7 @@ const GlobalToastList = () => {
     setToasts([]);
   };
 
-  return <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={6000} />;
+  return <EuiGlobalToastList toasts={toasts} dismissToast={removeToast} toastLifeTimeMs={3000} />;
 };
 
 export default GlobalToastList;
