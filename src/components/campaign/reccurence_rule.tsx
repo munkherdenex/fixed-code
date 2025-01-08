@@ -532,7 +532,7 @@ const ReccurenceRule = ({
           isLoading={isMutating}
           disabled={isMutating}
         >
-          {translate("action_reccurence_rule", { action: data?.start_date ? "Update" : "Create" })}
+          {translate("configure_schedule", { action: data?.start_date ? "Update" : "Create" })}
         </EuiButton>
       )}
     </EuiForm>

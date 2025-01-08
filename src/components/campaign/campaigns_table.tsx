@@ -22,7 +22,7 @@ import { useLayoutEffect, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
-import { getDataKind, isNumber } from "../../utils/helper";
+import { getCampaignIcon, getDataKind, isNumber } from "../../utils/helper";
 import CreateCampaignActionPopover from "./create_campaign_action_popover";
 import { useTranslations } from "next-intl";
 
@@ -81,7 +81,7 @@ const CampaignsTable = () => {
 
         return (
           <span>
-            <EuiIcon aria-label="email" type="email" color={badgeColor(dataKind)} />{" "}
+            <EuiIcon aria-label="email" type={getCampaignIcon(dataKind)} color={badgeColor(dataKind)} />{" "}
             <EuiTextColor color={badgeColor(dataKind)}>{dataKind.toUpperCase()}</EuiTextColor>
           </span>
         );

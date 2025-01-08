@@ -17,7 +17,6 @@ import { addToast } from "../toast";
 import { useTranslations } from "next-intl";
 import useGetTesterCustomers from "../../hooks/useGetTesterCustomers";
 import { useState } from "react";
-import templateApi from "../../api/template";
 
 const LIMIT = "10";
 
@@ -34,17 +33,27 @@ const TestCampaignFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
   const [selectedTesters, setSelectedTesters] = useState([]);
 
   const dataTypeOptions: EuiComboBoxOptionOption[] =
-    customers?.results?.map((customer) => {
-      return {
-        label: customer?.email || customer?.phone || customer?.rid,
-        value: customer?.id,
-        append: <EuiBadge>{customer?.phone || customer?.email || customer?.rid}</EuiBadge>,
-      };
-    }) || [];
+    (Array.isArray(customers?.results) &&
+      customers?.results?.map((customer) => {
+        return {
+          label: customer?.email || customer?.phone || customer?.rid,
+          value: customer?.id,
+          append: <EuiBadge>{customer?.phone || customer?.email || customer?.rid}</EuiBadge>,
+        };
+      })) ||
+    [];
 
   const flyoutHeadingId = useGeneratedHtmlId({
     prefix: "flyoutTitle",
   });
+
+  let searchTimeout: NodeJS.Timeout;
+  const onSearch = async (data: string) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      setSearchValue(data);
+    }, 500);
+  };
 
   const onSubmit = async () => {
     if (!selectedTesters.length) {
@@ -70,7 +79,7 @@ const TestCampaignFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
       text: "Sent to: " + ids,
       color: "success",
     });
-    closeFlyout()
+    closeFlyout();
   };
 
   return (
@@ -89,7 +98,9 @@ const TestCampaignFlyout = ({ closeFlyout }: { closeFlyout: () => void }) => {
               onChange={(selected) => {
                 setSelectedTesters(selected);
               }}
+              onSearchChange={onSearch}
               selectedOptions={selectedTesters}
+              isLoading={isGetCustomersLoading}
             />
           </EuiFormRow>
           <EuiButton isLoading={isMutating} disabled={isMutating} type="submit">

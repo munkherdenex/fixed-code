@@ -2,6 +2,7 @@ import useSWR from "swr";
 import { BASE_URL } from "../constants";
 import { createParam } from "../utils/createParam";
 import { handleResponseNotOk } from "../utils/error_handler";
+import useSWRImmutable from 'swr/immutable';
 
 export interface Product {
   id: number;
@@ -28,7 +29,7 @@ export default function useGetAvailableProduct<Type>(
   const preparedQueryParam = createParam(queryParam);
   const path = id ? `/api/v1/products/team/${id}?${preparedQueryParam}` : null;
 
-  const { data, error, isLoading, mutate } = useSWR(
+  const { data, error, isLoading, mutate } = useSWRImmutable(
     //INFO: slash needs to be added to the end of the path
     path,
     async (path) => {

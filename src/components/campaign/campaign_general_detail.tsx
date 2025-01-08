@@ -25,7 +25,7 @@ import useGetCampaignSuccessErrorCount, {
 } from "../../hooks/useGetCampaignCount";
 import { useCampaignContext } from "../../store/campaign_store";
 import { badgeColor } from "../../utils/badge_color";
-import { getDataKind } from "../../utils/helper";
+import { getCampaignIcon, getDataKind } from "../../utils/helper";
 import ReccurenceRuleLayout from "./reccurence_rule_layout";
 
 const DeleteConfirmModal = ({
@@ -136,123 +136,107 @@ const CampaignGeneralDetails = () => {
         </EuiFlexItem>
         <EuiFlexItem>
           <EuiFlexGroup>
-            <EuiPanel hasBorder={true}>
-              <EuiFlexItem>
-                <EuiStat title={data?.title} description={translate("title")} titleSize="xs" />
-              </EuiFlexItem>
-            </EuiPanel>
-
-            <EuiPanel hasBorder={true}>
-              <EuiFlexItem>
-                <EuiStat
-                  title={
-                    <EuiTextColor color="accent">
-                      <span>
-                        <EuiIcon aria-label="email" type="email" color="accent" /> {dataKind}
-                      </span>
-                    </EuiTextColor>
-                  }
-                  description={translate("kind")}
-                  titleSize="xs"
-                  titleColor="subdued"
-                />
-              </EuiFlexItem>
-            </EuiPanel>
-            <EuiPanel hasBorder={true}>
-              <EuiFlexItem>
-                <EuiStat
-                  title={
-                    <div>
-                      <EuiIcon type={iconType} color={badgeColor(data?.status)} />{" "}
-                      <EuiBadge color={badgeColor(data?.status)}>{data?.status}</EuiBadge>
-                    </div>
-                  }
-                  description={translate("status")}
-                  titleSize="xs"
-                  titleColor="primary"
-                />
-              </EuiFlexItem>
-            </EuiPanel>
-            <EuiPanel hasBorder={true}>
-              <EuiFlexItem>
-                <EuiStat
-                  title={
-                    <div>
-                      {data?.created_by}
-                      <br />
-                      {moment(data?.created_at).format("YYYY-MM-DD LT")}
-                    </div>
-                  }
-                  description={translate("created")}
-                  titleSize="xs"
-                />
-              </EuiFlexItem>
-            </EuiPanel>
-            <EuiPanel hasBorder={true}>
-              <EuiFlexItem>
-                <EuiStat
-                  title={
-                    <div>
-                      {data?.updated_by}
-                      <br />
-                      {moment(data?.updated_at).format("YYYY-MM-DD LT")}
-                    </div>
-                  }
-                  description={translate("updated")}
-                  titleSize="xs"
-                />
-              </EuiFlexItem>
-            </EuiPanel>
+            <EuiFlexItem>
+              <EuiStat title={data?.title} description={translate("title")} titleSize="xs" />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiStat
+                title={
+                  <EuiTextColor color="accent">
+                    <span>
+                      <EuiIcon aria-label="email" type={getCampaignIcon(dataKind)} color="accent" /> 
+                      <EuiTextColor color={badgeColor(dataKind)}>{dataKind.toUpperCase()}</EuiTextColor>
+                    </span>
+                  </EuiTextColor>
+                }
+                description={translate("kind")}
+                titleSize="xs"
+                titleColor="subdued"
+              />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiStat
+                title={
+                  <div>
+                    <EuiIcon type={iconType} color={badgeColor(data?.status)} />{" "}
+                    <EuiBadge color={badgeColor(data?.status)}>{data?.status}</EuiBadge>
+                  </div>
+                }
+                description={translate("status")}
+                titleSize="xs"
+                titleColor="primary"
+              />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiStat
+                title={
+                  <div>
+                    {data?.created_by}
+                    <br />
+                    {moment(data?.created_at).format("YYYY-MM-DD LT")}
+                  </div>
+                }
+                description={translate("created")}
+                titleSize="xs"
+              />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiStat
+                title={
+                  <div>
+                    {data?.updated_by}
+                    <br />
+                    {moment(data?.updated_at).format("YYYY-MM-DD LT")}
+                  </div>
+                }
+                description={translate("updated")}
+                titleSize="xs"
+              />
+            </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFlexItem>
         <EuiFlexItem>
           <EuiFlexGroup>
-            <EuiPanel hasBorder={true}>
-              <EuiFlexItem>
-                <>
-                  <EuiStat
-                    title={<span>{data?.description || "Empty description"}</span>}
-                    titleSize="xs"
-                    description={translate("description")}
-                    titleColor=""
-                  />
-                </>
-              </EuiFlexItem>
-            </EuiPanel>
-            <EuiPanel hasBorder={true}>
-              <EuiFlexItem>
-                <EuiStat
-                  title={
-                    <EuiFlexGroup gutterSize="xs">
-                      <EuiFlexItem>
-                        <EuiTextColor>
-                          <span>
-                            {translate("audience")}: {data?.aud_count}
-                          </span>
-                        </EuiTextColor>{" "}
-                      </EuiFlexItem>
-                      <EuiFlexItem>
-                        <EuiTextColor color="success">
-                          <span>
-                            {translate("success")}: {countData?.success_count}
-                          </span>
-                        </EuiTextColor>{" "}
-                      </EuiFlexItem>
-                      <EuiFlexItem>
-                        <EuiTextColor color="danger">
-                          <span>
-                            {translate("error")}: {countData?.error_count}
-                          </span>
-                        </EuiTextColor>
-                      </EuiFlexItem>
-                    </EuiFlexGroup>
-                  }
-                  description={translate("sent_result")}
-                  titleSize="xs"
-                  titleColor="primary"
-                />
-              </EuiFlexItem>
-            </EuiPanel>
+            <EuiFlexItem>
+              <EuiStat
+                title={<span>{data?.description || "Empty description"}</span>}
+                titleSize="xs"
+                description={translate("description")}
+                titleColor=""
+              />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiStat
+                title={
+                  <EuiFlexGroup gutterSize="xs">
+                    <EuiFlexItem>
+                      <EuiTextColor>
+                        <span>
+                          {translate("audience")}: {data?.aud_count}
+                        </span>
+                      </EuiTextColor>{" "}
+                    </EuiFlexItem>
+                    <EuiFlexItem>
+                      <EuiTextColor color="success">
+                        <span>
+                          {translate("success")}: {countData?.success_count}
+                        </span>
+                      </EuiTextColor>{" "}
+                    </EuiFlexItem>
+                    <EuiFlexItem>
+                      <EuiTextColor color="danger">
+                        <span>
+                          {translate("error")}: {countData?.error_count}
+                        </span>
+                      </EuiTextColor>
+                    </EuiFlexItem>
+                  </EuiFlexGroup>
+                }
+                description={translate("sent_result")}
+                titleSize="xs"
+                titleColor="primary"
+              />
+            </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFlexItem>
         <EuiFlexItem>

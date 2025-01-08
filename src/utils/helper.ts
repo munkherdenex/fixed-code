@@ -146,6 +146,19 @@ export function getDataKind(data: { kind: string; body: string }) {
   return kind;
 }
 
+export function getCampaignIcon(kind: string) {
+  switch (kind) {
+    case "email":
+      return "email";
+    case "sms":
+      return "index";
+    case "push":
+      return "push";
+    default:
+      return "globe";
+  }
+}
+
 export function getBodyContent(
   data: {
     body: string;
