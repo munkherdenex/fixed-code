@@ -24,8 +24,7 @@ export const CampaignProvider = ({ children }) => {
   const { data, isLoading, mutate } = useGetTemplates<Template>(router.query.id);
 
   const toggleIsToAll = async () => {
-    const response = await templateApi.toggleIsToAll(data.id, !data.is_to_all);
-    console.log(response);
+    await templateApi.toggleIsToAll(data.id, !data.is_to_all);
     mutate();
   };
 

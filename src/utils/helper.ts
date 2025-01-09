@@ -159,6 +159,15 @@ export function getCampaignIcon(kind: string) {
   }
 }
 
+export function getCampaignStatusIcon(has_start_date: boolean, is_recurring: boolean) {
+  if (has_start_date && is_recurring)
+    return "timeRefresh"
+  if (has_start_date && !is_recurring)
+    return "timeslider"
+  else
+    return "pivot"
+}
+
 export function getBodyContent(
   data: {
     body: string;

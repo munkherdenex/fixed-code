@@ -157,9 +157,9 @@ const EditEmailLayout = () => {
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             {isViewEmail && (
-              <EuiFlexGroup alignItems="flexEnd" justifyContent="flexEnd">
-                <EuiFlexItem grow={false}>
-                  <EuiToolTip position="top" content="send test function on Email campaign">
+              <EuiFlexGroup alignItems="flexEnd" justifyContent="flexEnd" gutterSize='s'>
+                {(data?.status === "DRAFT" || data?.status === "ERROR") && (
+                  <EuiFlexItem grow={false}>
                     <EuiButton
                       size="s"
                       onClick={() => {
@@ -168,21 +168,19 @@ const EditEmailLayout = () => {
                     >
                       {translate("test")}
                     </EuiButton>
-                  </EuiToolTip>
-                </EuiFlexItem>
+                  </EuiFlexItem>
+                )}
                 {(data?.status === "DRAFT" || data?.status === "ERROR") && (
                   <EuiFlexItem grow={false}>
-                    <EuiToolTip position="top" content="move to the update screen">
-                      <EuiButtonIcon
-                        display={"base"}
-                        iconType="documentEdit"
-                        aria-label="Edit"
-                        size="s"
-                        onClick={() => {
-                          setView();
-                        }}
-                      />
-                    </EuiToolTip>
+                    <EuiButtonIcon
+                      display={"fill"}
+                      iconType="documentEdit"
+                      aria-label="Edit"
+                      size="s"
+                      onClick={() => {
+                        setView();
+                      }}
+                    />
                   </EuiFlexItem>
                 )}
               </EuiFlexGroup>

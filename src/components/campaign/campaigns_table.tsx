@@ -22,7 +22,7 @@ import { useLayoutEffect, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
-import { getCampaignIcon, getDataKind, isNumber } from "../../utils/helper";
+import { getCampaignIcon, getCampaignStatusIcon, getDataKind, isNumber } from "../../utils/helper";
 import CreateCampaignActionPopover from "./create_campaign_action_popover";
 import { useTranslations } from "next-intl";
 
@@ -82,7 +82,7 @@ const CampaignsTable = () => {
         return (
           <span>
             <EuiIcon
-              aria-label="email"
+              aria-label={dataKind}
               type={getCampaignIcon(dataKind)}
               color={badgeColor(dataKind)}
             />{" "}
@@ -96,12 +96,7 @@ const CampaignsTable = () => {
       render: (template: Template) => {
         const { status, start_date, is_recurring } = template;
 
-        const iconType =
-          start_date && is_recurring
-            ? "timeRefresh"
-            : start_date && !is_recurring
-              ? "timeslider"
-              : "pivot";
+        const iconType = getCampaignStatusIcon(start_date != null, is_recurring);
 
         return (
           <span>

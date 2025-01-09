@@ -25,67 +25,8 @@ import useGetCampaignSuccessErrorCount, {
 } from "../../hooks/useGetCampaignCount";
 import { useCampaignContext } from "../../store/campaign_store";
 import { badgeColor } from "../../utils/badge_color";
-import { getCampaignIcon, getDataKind } from "../../utils/helper";
+import { getCampaignIcon, getCampaignStatusIcon, getDataKind } from "../../utils/helper";
 import ReccurenceRuleLayout from "./reccurence_rule_layout";
-
-const DeleteConfirmModal = ({
-  setIsModalVisible,
-}: {
-  setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
-}) => {
-  const router = useRouter();
-  const modalTitleId = useGeneratedHtmlId();
-  const translate = useTranslations();
-
-  const { trigger, isMutating } = useDeleteTemplate(router.query.id);
-  const [deleteConfirmValue, setDeleteConfirmValue] = useState("");
-
-  const closeModal = async () => {
-    setIsModalVisible(false);
-  };
-
-  const confirmModal = async () => {
-    await router.replace("/dashboards/cdp/campaign");
-    try {
-      await trigger();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDeleteConfirmValue(e.target.value);
-  };
-
-  return (
-    <EuiConfirmModal
-      aria-labelledby={modalTitleId}
-      title="Delete campaign?"
-      onCancel={closeModal}
-      onConfirm={() => {
-        confirmModal();
-      }}
-      confirmButtonText={translate("confirm")}
-      cancelButtonText={translate("cancel")}
-      buttonColor="danger"
-      isLoading={isMutating}
-      confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
-    >
-      <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
-        <p>{translate("delete_campaign_warning")}</p>
-      </EuiCallOut>
-      <EuiSpacer />
-      <EuiFormRow label={translate("type_the_word_delete_confirm")}>
-        <EuiFieldText
-          isLoading={isMutating}
-          name="delete"
-          value={deleteConfirmValue}
-          onChange={onChange}
-        />
-      </EuiFormRow>
-    </EuiConfirmModal>
-  );
-};
 
 const CampaignGeneralDetails = () => {
   const translate = useTranslations();
@@ -94,46 +35,13 @@ const CampaignGeneralDetails = () => {
     data?.id?.toString(),
   );
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
   //INFO: This is a workaround to get the kind of the template becaouse of POCKET
   const dataKind = getDataKind(data);
-  const iconType =
-    data?.start_date && data?.is_recurring
-      ? "timeRefresh"
-      : data?.start_date && !data?.is_recurring
-        ? "timeslider"
-        : "pivot";
+  const iconType = getCampaignStatusIcon(data?.start_date != null, data?.is_recurring);
 
   return (
     <div>
       <EuiFlexGroup direction="column">
-        <EuiFlexItem>
-          <EuiPanel paddingSize="s" color="subdued">
-            <EuiFlexGroup responsive={false} alignItems="center" justifyContent="spaceBetween">
-              <EuiFlexItem grow={false}>
-                <strong>{translate("campaign_details")}</strong>
-              </EuiFlexItem>
-              <EuiFlexItem grow={false}>
-                <EuiFlexGroup responsive={false} gutterSize="s">
-                  {(data?.status === "DRAFT" || data?.status === "ERROR") && (
-                    <EuiFlexItem grow={false}>
-                      <EuiToolTip position="top" content="Delete">
-                        <EuiButtonIcon
-                          display="base"
-                          iconType="trash"
-                          aria-label="Delete"
-                          color="danger"
-                          onClick={() => setIsModalVisible(true)}
-                        />
-                      </EuiToolTip>
-                    </EuiFlexItem>
-                  )}
-                </EuiFlexGroup>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </EuiPanel>
-        </EuiFlexItem>
         <EuiFlexItem>
           <EuiFlexGroup>
             <EuiFlexItem>
@@ -142,12 +50,16 @@ const CampaignGeneralDetails = () => {
             <EuiFlexItem>
               <EuiStat
                 title={
-                  <EuiTextColor color="accent">
-                    <span>
-                      <EuiIcon aria-label="email" type={getCampaignIcon(dataKind)} color="accent" /> 
-                      <EuiTextColor color={badgeColor(dataKind)}>{dataKind.toUpperCase()}</EuiTextColor>
-                    </span>
-                  </EuiTextColor>
+                  <span>
+                    <EuiIcon
+                      aria-label={dataKind}
+                      type={getCampaignIcon(dataKind)}
+                      color={badgeColor(dataKind)}
+                    />{" "}
+                    <EuiTextColor color={badgeColor(dataKind)}>
+                      {dataKind.toUpperCase()}
+                    </EuiTextColor>
+                  </span>
                 }
                 description={translate("kind")}
                 titleSize="xs"
@@ -247,7 +159,6 @@ const CampaignGeneralDetails = () => {
           </EuiFlexGroup>
         </EuiFlexItem>
       </EuiFlexGroup>
-      {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
     </div>
   );
 };

@@ -2,13 +2,16 @@ import {
   EuiButton,
   EuiCallOut,
   EuiConfirmModal,
+  EuiFieldText,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiFormRow,
   EuiSpacer,
+  EuiToolTip,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import useUpdateApproveTemplate from "../../hooks/useUpdateApproveTemplate";
 import useUpdateDoneTemplate from "../../hooks/useUpdateDoneTemplate";
 import useUpdateRejectTemplate from "../../hooks/useUpdateRejectTemplate";
@@ -16,6 +19,67 @@ import useUpdateStopTemplate from "../../hooks/useUpdateStopTemplate";
 import { useCampaignContext } from "../../store/campaign_store";
 import { globalMutate } from "../../utils/globalMutate";
 import AdminManagerComponent from "../admin_manager_component";
+import { useRouter } from "next/router";
+import useDeleteTemplate from "../../hooks/useDeleteTemplate";
+
+const DeleteConfirmModal = ({
+  setIsModalVisible,
+}: {
+  setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
+}) => {
+  const router = useRouter();
+  const modalTitleId = useGeneratedHtmlId();
+  const translate = useTranslations();
+
+  const { trigger, isMutating } = useDeleteTemplate(router.query.id);
+  const [deleteConfirmValue, setDeleteConfirmValue] = useState("");
+
+  const closeModal = async () => {
+    setIsModalVisible(false);
+  };
+
+  const confirmModal = async () => {
+    await router.replace("/dashboards/cdp/campaign");
+    try {
+      await trigger();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDeleteConfirmValue(e.target.value);
+  };
+
+  return (
+    <EuiConfirmModal
+      aria-labelledby={modalTitleId}
+      title="Delete campaign?"
+      onCancel={closeModal}
+      onConfirm={() => {
+        confirmModal();
+      }}
+      confirmButtonText={translate("confirm")}
+      cancelButtonText={translate("cancel")}
+      buttonColor="danger"
+      isLoading={isMutating}
+      confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
+    >
+      <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
+        <p>{translate("delete_campaign_warning")}</p>
+      </EuiCallOut>
+      <EuiSpacer />
+      <EuiFormRow label={translate("type_the_word_delete_confirm")}>
+        <EuiFieldText
+          isLoading={isMutating}
+          name="delete"
+          value={deleteConfirmValue}
+          onChange={onChange}
+        />
+      </EuiFormRow>
+    </EuiConfirmModal>
+  );
+};
 
 const CampaignInfoActions = () => {
   const modalTitleId = useGeneratedHtmlId();
@@ -36,6 +100,7 @@ const CampaignInfoActions = () => {
   const isMutating = doneIsMutating || approveIsMutating || rejectIsLoading || stopIsMutating;
   const isDraft = data?.status === "DRAFT";
   const isDone = data?.status === "DONE";
+  const isErrored = data?.status === "ERROR";
   const isStopable =
     data?.status === "RECURRING" || data?.status === "SENDING" || data?.status === "SCHEDULED";
 
@@ -93,17 +158,31 @@ const CampaignInfoActions = () => {
   return (
     <>
       <EuiFlexGroup>
-        {isDraft && (
-          <EuiFlexItem>
-            <EuiButton
-              isLoading={isMutating}
-              color="success"
-              onClick={showModal}
-              fill
-              key="Create-segment"
-            >
-              {translate("done")}
-            </EuiButton>
+        {(isDraft || isErrored) && (
+          <EuiFlexItem grow={false}>
+            <EuiFlexGroup responsive={false} gutterSize="s">
+              <EuiFlexItem grow={false}>
+                <EuiButton
+                  iconType="trash"
+                  aria-label="Delete"
+                  color="danger"
+                  onClick={() => setIsModalVisible(true)}
+                >
+                  {translate("delete")}
+                </EuiButton>
+              </EuiFlexItem>
+              <EuiFlexItem>
+                <EuiButton
+                  isLoading={isMutating}
+                  color="success"
+                  onClick={showModal}
+                  fill
+                  key="Create-segment"
+                >
+                  {translate("done")}
+                </EuiButton>
+              </EuiFlexItem>
+            </EuiFlexGroup>
           </EuiFlexItem>
         )}
         {isDone && (
@@ -159,7 +238,7 @@ const CampaignInfoActions = () => {
           title="Update campaign"
           onCancel={closeModal}
           onConfirm={handleDoneTrigger}
-          confirmButtonDisabled={data?.aud_count === 0}
+          confirmButtonDisabled={data?.aud_count === 0 && !data?.is_to_all}
           cancelButtonText="Cancel"
           isLoading={isMutating}
           confirmButtonText="Confirm"
@@ -171,7 +250,8 @@ const CampaignInfoActions = () => {
           <EuiSpacer />
           <p>
             The campaign will be marked as done, and it has reached an audience of{" "}
-            <strong>{data?.aud_count}</strong>. Are you sure you want to continue?
+            <strong>{data?.is_to_all ? "all" : data?.aud_count}</strong>. Are you sure you want to
+            continue?
           </p>
         </EuiConfirmModal>
       )}
@@ -226,6 +306,7 @@ const CampaignInfoActions = () => {
           defaultFocusedButton="confirm"
         />
       )}
+      {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
     </>
   );
 };

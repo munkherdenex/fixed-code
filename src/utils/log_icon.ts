@@ -18,6 +18,6 @@ export function logIcon(status: string) {
     case "manager":
       return "usersRolesApp";
     default:
-      return "default";
+      return "apmTrace";
   }
 }
