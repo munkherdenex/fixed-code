@@ -10,6 +10,7 @@ const SWRConfigLayout = ({ children }) => {
   return (
     <SWRConfig
       value={{
+        revalidateOnFocus: false,
         onError: async (error) => {
           if (error?.status === 401 && router.pathname.includes("dashboards")) {
             await trigger();
@@ -26,7 +27,10 @@ const SWRConfigLayout = ({ children }) => {
           if (error?.status === 403) {
             return;
           }
-          if (retryCount >= 10) return;
+          if (error?.status === 502) {
+            return;
+          }
+          if (retryCount >= 3) return;
           setTimeout(() => revalidate({ retryCount }), 5000);
         },
       }}

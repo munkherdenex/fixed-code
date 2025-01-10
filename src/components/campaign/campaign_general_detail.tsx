@@ -1,25 +1,14 @@
 import {
   EuiBadge,
-  EuiButtonIcon,
-  EuiCallOut,
-  EuiConfirmModal,
-  EuiFieldText,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFormRow,
   EuiIcon,
   EuiPanel,
-  EuiSpacer,
   EuiStat,
   EuiTextColor,
-  EuiToolTip,
-  useGeneratedHtmlId,
 } from "@elastic/eui";
 import moment from "moment";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/router";
-import { SetStateAction, useState } from "react";
-import useDeleteTemplate from "../../hooks/useDeleteTemplate";
 import useGetCampaignSuccessErrorCount, {
   CampaignCountSuccessErrorResponse,
 } from "../../hooks/useGetCampaignCount";
@@ -57,7 +46,7 @@ const CampaignGeneralDetails = () => {
                       color={badgeColor(dataKind)}
                     />{" "}
                     <EuiTextColor color={badgeColor(dataKind)}>
-                      {dataKind.toUpperCase()}
+                      {dataKind?.toUpperCase()}
                     </EuiTextColor>
                   </span>
                 }

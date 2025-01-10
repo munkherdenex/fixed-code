@@ -52,6 +52,6 @@ export default function useGetFields<Type>(
   return {
     data,
     error,
-    isLoading,
+    isLoading
   };
 }

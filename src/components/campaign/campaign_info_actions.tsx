@@ -88,6 +88,7 @@ const CampaignInfoActions = () => {
   const { data } = useCampaignContext();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
 
   const { trigger: rejectTrigger, isMutating: rejectIsLoading } = useUpdateRejectTemplate(data?.id);
@@ -166,7 +167,7 @@ const CampaignInfoActions = () => {
                   iconType="trash"
                   aria-label="Delete"
                   color="danger"
-                  onClick={() => setIsModalVisible(true)}
+                  onClick={() => setIsDeleteModalVisible(true)}
                 >
                   {translate("delete")}
                 </EuiButton>
@@ -306,7 +307,7 @@ const CampaignInfoActions = () => {
           defaultFocusedButton="confirm"
         />
       )}
-      {isModalVisible && <DeleteConfirmModal setIsModalVisible={setIsModalVisible} />}
+      {isDeleteModalVisible && isDraft && <DeleteConfirmModal setIsModalVisible={setIsDeleteModalVisible} />}
     </>
   );
 };

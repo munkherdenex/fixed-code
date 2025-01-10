@@ -12,13 +12,18 @@ import {
   EuiFlexItem,
   EuiIcon,
   EuiImage,
+  EuiNotificationBadge,
   EuiSelect,
+  EuiSpacer,
+  EuiTab,
   EuiTableFieldDataColumnType,
+  EuiTabs,
+  EuiText,
   EuiTextColor,
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { useLayoutEffect, useState } from "react";
+import { Fragment, useLayoutEffect, useMemo, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
@@ -53,6 +58,32 @@ const CampaignsTable = () => {
   const [pageSize, setPageSize] = useState(queryPageSize);
   const [filter, setFilter] = useState(queryFilter);
 
+  const [selectedTabId, setSelectedTabId] = useState("all-tab--id");
+
+  const tabs = [
+    {
+      id: "all-tab--id",
+      name: translate("all"),
+    },
+    {
+      id: "draft-tab--id",
+      name: translate("draft"),
+    },
+    {
+      id: "done-tab--id",
+      name: translate("done"),
+    },
+    {
+      id: "active-tab--id",
+      name: translate("active"),
+    },
+    {
+      id: "stopped-tab--id",
+      disabled: false,
+      name: translate("stopped"),
+    },
+  ];
+
   const pagination = {
     pageIndex,
     pageSize,
@@ -61,7 +92,7 @@ const CampaignsTable = () => {
 
   const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, {
     query: searchValue,
-    filter: filter,
+    status: filter,
     offset: `${pageIndex * pageSize}`,
     limit: `${pageSize}`,
   });
@@ -111,7 +142,13 @@ const CampaignsTable = () => {
       render: (template: Template) => {
         const { is_to_all, aud_count } = template;
 
-        return <span>{is_to_all ? "ALL" : aud_count}</span>;
+        return <span>{is_to_all ? translate("all_customer") : aud_count}</span>;
+      },
+    },
+    {
+      name: translate("click_rate"),
+      render: (template: Template) => {
+        return (template.status == "DRAFT" || template.status == "DONE") ? "-" : Math.random().toFixed(2);
       },
     },
     {
@@ -216,6 +253,45 @@ const CampaignsTable = () => {
     );
   }
 
+  const onSelectedTabChanged = (tab: any) => {
+    setSelectedTabId(tab.id);
+    switch (tab.id) {
+      case "all-tab--id": {
+        setFilter("");
+        break;
+      }
+      case "draft-tab--id": {
+        setFilter("DRAFT");
+        break;
+      }
+      case "done-tab--id": {
+        setFilter("DONE");
+        break;
+      }
+      case "active-tab--id": {
+        setFilter("APPROVED,SCHEDULED,RECURRING,SENDING");
+        break;
+      }
+      case "stopped-tab--id": {
+        setFilter("SENT,ERROR,STOPPED,ENDED");
+        break;
+      }
+    }
+  };
+
+  const renderTabs = () => {
+    return tabs.map((tab, index) => (
+      <EuiTab
+        key={index}
+        onClick={() => onSelectedTabChanged(tab)}
+        isSelected={tab.id === selectedTabId}
+        append={tab.append}
+      >
+        {tab.name}
+      </EuiTab>
+    ));
+  };
+
   return (
     <EuiFlexGroup direction="column">
       <EuiFlexItem>
@@ -264,6 +340,7 @@ const CampaignsTable = () => {
         </EuiFlexGroup>
       </EuiFlexItem>
       <EuiFlexItem>
+        <EuiTabs>{renderTabs()}</EuiTabs>
         {isLoading ? (
           <div>{translate("loading")}</div>
         ) : (

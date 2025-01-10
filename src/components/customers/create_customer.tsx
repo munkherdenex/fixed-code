@@ -37,7 +37,7 @@ const CreateCustomerComponent = ({
   const flyoutHeadingId = useGeneratedHtmlId();
   const translate = useTranslations();
   const { trigger, isMutating } = useCreateCustomer();
-  const { data } = useGetFields<FieldsResponse>();
+  const { data } = useGetFields<FieldsResponse>(null, { limit: '100' });
   const {
     handleSubmit,
     control,

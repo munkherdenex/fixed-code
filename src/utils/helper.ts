@@ -143,7 +143,7 @@ export function getDataKind(data: { kind: string; body: string }) {
     return kind;
   }
 
-  return kind;
+  return kind || 'none';
 }
 
 export function getCampaignIcon(kind: string) {

@@ -172,18 +172,18 @@ const Audience = () => {
         >
           <EuiSwitch
             id="isToAllCustomers11"
-            checked={template.is_to_all}
+            checked={template?.is_to_all}
             onChange={toggleIsToAll}
             label={translate("to_all_customers")}
             disabled={!actionEnabled}
           />
         </EuiFormRow>
-        {!template.is_to_all && actionEnabled && (
+        {!template?.is_to_all && actionEnabled && (
           <EuiFlexItem>
             <AddAudience />
           </EuiFlexItem>
         )}
-        {!template.is_to_all && (
+        {!template?.is_to_all && (
           <EuiFlexItem>
             <EuiBasicTable
               tableCaption="Template customers"
