@@ -285,7 +285,6 @@ const CampaignsTable = () => {
         key={index}
         onClick={() => onSelectedTabChanged(tab)}
         isSelected={tab.id === selectedTabId}
-        append={tab.append}
       >
         {tab.name}
       </EuiTab>
