@@ -1,20 +1,15 @@
 import client from './client';
 
 const segmentApi = {
-  getSegments: async () => {
+  retargetCampaign: async () => {
     /*
-    {
-      "id": 1,
-      "name": "Retargeted - clicked on 'Test campaign name'", 
-      "condition": {
-        "opened": true,
-        "clicked": true
+      {
+        "template_id": 0,
+        "retarget_type": "clicked"
       }
-      "retarget_template_id": 1
-    }
     */
     const response = await client.post('/segments/retarget/');
-    return response;
+    return response.data;
   },
 }
 

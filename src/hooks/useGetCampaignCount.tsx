@@ -2,22 +2,26 @@ import useSWR from "swr";
 import { BASE_URL } from "../constants";
 import { handleResponseNotOk } from "../utils/error_handler";
 import { createParam } from "../utils/createParam";
+import templateApi from '../api/template';
 
 export interface CampaignCountSuccessErrorResponse {
   success_count: number;
   error_count: number;
+  opened_count: number;
+  clicked_count: number;
+  total_sent_count: number;
 }
 
-export default function useGetCampaignSuccessErrorCount<Type>(
+export default function useGetCampaignSuccessErrorCount(
   id: string | string[] | undefined,
   queryParam?: {
     [key: string]: string;
   },
 ): {
-  data: Type;
+  data: CampaignCountSuccessErrorResponse;
   error: any;
   isLoading: boolean;
-  mutate: () => Promise<Type>;
+  mutate: () => Promise<CampaignCountSuccessErrorResponse>;
 } {
   const preparedQueryParam = createParam(queryParam);
   const path = id ? `/api/v1/dj/templates/${id}/counts/?${preparedQueryParam}` : null;
@@ -25,14 +29,8 @@ export default function useGetCampaignSuccessErrorCount<Type>(
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path
     path,
-    async (path) => {
-      const res = await fetch(`${BASE_URL}${path}`, {
-        method: "GET",
-        headers: { "content-type": "application/json" },
-        credentials: "include",
-      });
-
-      return handleResponseNotOk(res);
+    (_path) => {
+      return templateApi.getStatCounts(+id)
     },
   );
 
