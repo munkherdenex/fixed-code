@@ -52,7 +52,24 @@ const TemplateTable = () => {
     },
   );
 
-  const columns: Array<EuiBasicTableColumn<CRMTicketTemplate>> = [];
+  const columns: Array<EuiBasicTableColumn<CRMTicketTemplate>> = [
+    {
+      field: "name",
+      name: "Нэр",
+    },
+    {
+      field: "description",
+      name: "Тайлбар",
+    },
+    {
+      field: "is_active",
+      name: "Идэвхтэй эсэх",
+    },
+    {
+      field: "updated_at",
+      name: "Өөрчилсөн огноо",
+    }
+  ];
 
   const onSearch = (value: string) => {
     setSearchValue(value);
@@ -80,7 +97,7 @@ const TemplateTable = () => {
     return {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
-      onClick: () => router.push(`/dashboards/cdp/campaign/info/${id}`),
+      // onClick: () => router.push(`/dashboards/cdp/campaign/info/${id}`),
     };
   };
 

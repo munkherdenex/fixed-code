@@ -15,10 +15,10 @@ import { GetStaticProps } from "next/types";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import TemplateTable from "../../../components/crm/template/table";
-import DashboardCRMLayout from "../../../layouts/dashboard_crm";
-import useCreateCRMTemplate from "../../../hooks/useCreateCRMTemplate";
-import { addToast } from "../../../components/toast";
+import TemplateTable from "../../../../../components/crm/template/table";
+import DashboardCRMLayout from "../../../../../layouts/dashboard_crm";
+import useCreateCRMTemplate from "../../../../../hooks/useCreateCRMTemplate";
+import { addToast } from "../../../../../components/toast";
 
 const schema = yup
   .object({
@@ -135,12 +135,12 @@ const CRM = () => {
     <>
       <DashboardCRMLayout
         pageHeader={{
-          pageTitle: "CRM dashboard",
+          pageTitle: "Тикетийн загвар",
           rightSideItems: [<CreateTemplateFlyout key="dfgaiogvao" />],
         }}
       >
         <div>
-          CRM main screen here!
+          <TemplateTable />
         </div>
       </DashboardCRMLayout>
     </>
@@ -148,8 +148,8 @@ const CRM = () => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const common = (await import(`../../../messages/${context.locale}/common.json`)).default;
-  const campaign = (await import(`../../../messages/${context.locale}/campaign.json`)).default;
+  const common = (await import(`../../../../../messages/${context.locale}/common.json`)).default;
+  const campaign = (await import(`../../../../../messages/${context.locale}/campaign.json`)).default;
 
   return {
     props: {

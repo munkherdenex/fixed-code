@@ -15,6 +15,8 @@ import { PAGINATION_CHOOSES } from "../../constants";
 import { Template } from "../../hooks/useGetTemplates";
 import { isNumber } from "../../utils/helper";
 import { useTranslations } from "next-intl";
+import useSWR from 'swr';
+import contactLogApi from '../../api/contact_log';
 
 const Table = () => {
   const router = useRouter();
@@ -38,8 +40,9 @@ const Table = () => {
   };
 
   //TODO: create api request
-  const data = undefined;
-  const isLoading = false;
+  const { data, isLoading } = useSWR([], async (path) => {
+    contactLogApi.getCalls();
+  });
   const mutate = () => {};
 
   const columns: Array<EuiBasicTableColumn<Template>> = [

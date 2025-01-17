@@ -31,9 +31,9 @@ const CrmSideMenu = () => {
   const managementPaths = useMemo(() => {
     return [
       {
-        path: "/dashboards/crm",
-        name: "Template",
-        roles: ["admin", "manager"],
+        path: "/dashboards/crm/settings/ticket_template",
+        name: "Ticket template",
+        roles: ["admin"],
       },
       {
         path: "/dashboards/crm/field_template",

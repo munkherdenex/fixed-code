@@ -59,8 +59,8 @@ const Content = ({
               <CRMSidebar />
             </EuiPageTemplate.Sidebar>
           )}
-          {pageHeader && <EuiPageTemplate.Header {...pageHeader} />}
-          <EuiPageTemplate.Section>{children}</EuiPageTemplate.Section>
+          {pageHeader && <EuiPageTemplate.Header restrictWidth={false} {...pageHeader} />}
+          <EuiPageTemplate.Section restrictWidth={false}>{children}</EuiPageTemplate.Section>
         </EuiPageTemplate>
       </div>
     );
