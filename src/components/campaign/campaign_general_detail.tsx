@@ -1,6 +1,7 @@
 import {
   EuiBadge,
   EuiButton,
+  EuiConfirmModal,
   EuiContextMenuItem,
   EuiContextMenuPanel,
   EuiFlexGrid,
@@ -16,11 +17,14 @@ import {
 import moment from "moment";
 import { useTranslations } from "next-intl";
 import useGetCampaignSuccessErrorCount from "../../hooks/useGetCampaignCount";
+import useCreateSegmentRetarget from "../../hooks/useCreateSegmentRetarget";
 import { useCampaignContext } from "../../store/campaign_store";
 import { badgeColor } from "../../utils/badge_color";
 import { getCampaignIcon, getCampaignStatusIcon, getDataKind } from "../../utils/helper";
 import ReccurenceRuleLayout from "./reccurence_rule_layout";
 import { useState } from "react";
+import { useRouter } from "next/router";
+import { addToast } from "../toast";
 
 const CampaignGeneralDetails = () => {
   const translate = useTranslations();
@@ -43,6 +47,50 @@ const CampaignGeneralDetails = () => {
     setRetargetPopover(false);
   };
 
+  const [chosenSegmentType, setChosenSegmentType] = useState(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const router = useRouter();
+  const {
+    data: retargetRes,
+    isMutating: isCreateSegmentRetargetMutating,
+    trigger: createSegmentRetarget,
+  } = useCreateSegmentRetarget();
+  const showConfirm = (type: string) => {
+    setChosenSegmentType(type);
+    setIsConfirmOpen(true);
+  };
+
+  const segmentTypes = Object.freeze({
+    opened: "Нээсэн харилцагчид",
+    "not-opened": "Нээгээгүй харилцагчид",
+    clicked: "Дарсан харилцагчид",
+    "not-clicked": "Дараагүй харилцагчид",
+  });
+
+  const createSegment = async (e) => {
+    e.preventDefault();
+    const templateId = data?.id;
+    try {
+      await createSegmentRetarget({
+        template_id: templateId,
+        retarget_type: chosenSegmentType,
+      });
+      if (retargetRes) {
+        router.push(`/dashboards/cdp/segments/info/${retargetRes.id}`);
+      } else {
+        router.push("/dashboards/cdp/segments");
+      }
+    } catch (error) {
+      addToast({
+        id: "api-keys-success",
+        color: "danger",
+        title: "Error",
+        text: "Алдаа гарлаа!",
+      });
+      console.error("Error creating segment:", error);
+    }
+  };
+
   const retargetButton = (
     <EuiButton
       size="s"
@@ -57,6 +105,23 @@ const CampaignGeneralDetails = () => {
 
   return (
     <div>
+      {isConfirmOpen && (
+        <EuiConfirmModal
+          style={{ width: 600 }}
+          title={`Сонгосон: ${segmentTypes[chosenSegmentType]}`}
+          onCancel={() => {
+            setIsConfirmOpen(false);
+          }}
+          onConfirm={createSegment}
+          cancelButtonText="Болих"
+          confirmButtonText="Сегмент үүсгэх"
+          defaultFocusedButton="confirm"
+          isLoading={isCreateSegmentRetargetMutating}
+        >
+          <p>Та тухайн харилцагддагаас сегмент үүсгэх гэж байна. Та итгэлтэй байна уу?</p>
+        </EuiConfirmModal>
+      )}
+
       <EuiFlexGroup direction="column">
         <EuiFlexGroup>
           <EuiFlexItem>
@@ -129,7 +194,7 @@ const CampaignGeneralDetails = () => {
                 <EuiFlexGrid columns={2}>
                   <EuiFlexItem>
                     <EuiText color="success">
-                      {(countData?.opened_count / countData?.total_sent_count * 100).toFixed(2)}%
+                      {((countData?.opened_count / countData?.total_sent_count) * 100).toFixed(2)}%
                     </EuiText>
                   </EuiFlexItem>
                   <EuiFlexItem>
@@ -151,7 +216,7 @@ const CampaignGeneralDetails = () => {
                 <EuiFlexGrid columns={2}>
                   <EuiFlexItem>
                     <EuiText color="primary">
-                      {(countData?.clicked_count / countData?.opened_count * 100).toFixed(2)}%
+                      {((countData?.clicked_count / countData?.opened_count) * 100).toFixed(2)}%
                     </EuiText>
                   </EuiFlexItem>
                   <EuiFlexItem>
@@ -183,7 +248,7 @@ const CampaignGeneralDetails = () => {
                   key="item-1"
                   icon="indexOpen"
                   size="s"
-                  onClick={closeRetargetPopover}
+                  onClick={() => showConfirm("opened")}
                   disabled={data.kind != "email"}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -195,7 +260,7 @@ const CampaignGeneralDetails = () => {
                   key="item-2"
                   icon="indexOpen"
                   size="s"
-                  onClick={closeRetargetPopover}
+                  onClick={() => showConfirm("not_opened")}
                   disabled={data.kind != "email"}
                 >
                   <div
@@ -206,10 +271,10 @@ const CampaignGeneralDetails = () => {
                   </div>
                 </EuiContextMenuItem>
                 <EuiContextMenuItem
-                  key="item-1"
+                  key="item-3"
                   icon="indexOpen"
                   size="s"
-                  onClick={closeRetargetPopover}
+                  onClick={() => showConfirm("clicked")}
                   disabled={data.kind != "email"}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -218,10 +283,10 @@ const CampaignGeneralDetails = () => {
                   </div>
                 </EuiContextMenuItem>
                 <EuiContextMenuItem
-                  key="item-2"
+                  key="item-4"
                   icon="indexOpen"
                   size="s"
-                  onClick={closeRetargetPopover}
+                  onClick={() => showConfirm("not-clicked")}
                   disabled={data.kind != "email"}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
