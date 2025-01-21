@@ -62,9 +62,9 @@ const CampaignGeneralDetails = () => {
 
   const segmentTypes = Object.freeze({
     opened: "Нээсэн харилцагчид",
-    "not-opened": "Нээгээгүй харилцагчид",
+    "not_opened": "Нээгээгүй харилцагчид",
     clicked: "Дарсан харилцагчид",
-    "not-clicked": "Дараагүй харилцагчид",
+    "not_clicked": "Дараагүй харилцагчид",
   });
 
   const createSegment = async (e) => {
@@ -286,7 +286,7 @@ const CampaignGeneralDetails = () => {
                   key="item-4"
                   icon="indexOpen"
                   size="s"
-                  onClick={() => showConfirm("not-clicked")}
+                  onClick={() => showConfirm("not_clicked")}
                   disabled={data.kind != "email"}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
