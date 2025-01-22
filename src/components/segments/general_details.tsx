@@ -237,6 +237,19 @@ const GeneralDetails = () => {
                             </pre>
                           </EuiCodeBlock>
                         )}
+                        {data?.type === "retarget" && (
+                          <EuiFlexGroup gutterSize="s">
+                            <EuiFlexItem grow={false}>
+                              <EuiExpression description={''} value={`${Object.keys(data?.condition)[0].toUpperCase()} = TRUE`} />
+                            </EuiFlexItem>
+                            <EuiFlexItem grow={false}>
+                              <EuiExpression description={'AND'} value={'CAMPAIGN_ID'} />
+                            </EuiFlexItem>
+                            <EuiFlexItem>
+                              <EuiExpression description='IS' value={data?.retarget_template_id} />
+                            </EuiFlexItem>
+                          </EuiFlexGroup>
+                        )}
                       </EuiFlexItem>
                     </>
                   </EuiFlexGroup>

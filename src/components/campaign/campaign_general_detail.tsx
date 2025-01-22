@@ -61,10 +61,10 @@ const CampaignGeneralDetails = () => {
   };
 
   const segmentTypes = Object.freeze({
-    opened: "Нээсэн харилцагчид",
-    "not_opened": "Нээгээгүй харилцагчид",
-    clicked: "Дарсан харилцагчид",
-    "not_clicked": "Дараагүй харилцагчид",
+    opened: "Нээсэн",
+    "not_opened": "Нээгээгүй",
+    clicked: "Линк дарсан",
+    "not_clicked": "Линк дараагүй",
   });
 
   const createSegment = async (e) => {
@@ -108,7 +108,7 @@ const CampaignGeneralDetails = () => {
       {isConfirmOpen && (
         <EuiConfirmModal
           style={{ width: 600 }}
-          title={`Сонгосон: ${segmentTypes[chosenSegmentType]}`}
+          title={`Ретаргет`}
           onCancel={() => {
             setIsConfirmOpen(false);
           }}
@@ -116,9 +116,10 @@ const CampaignGeneralDetails = () => {
           cancelButtonText="Болих"
           confirmButtonText="Сегмент үүсгэх"
           defaultFocusedButton="confirm"
+          confirmButtonDisabled={isCreateSegmentRetargetMutating}
           isLoading={isCreateSegmentRetargetMutating}
         >
-          <p>Та тухайн харилцагддагаас сегмент үүсгэх гэж байна. Та итгэлтэй байна уу?</p>
+          <p>Та <b>{segmentTypes[chosenSegmentType]}</b> харилцагчдаар сегмент үүсгэх гэж байна. Та итгэлтэй байна уу?</p>
         </EuiConfirmModal>
       )}
 
@@ -252,7 +253,7 @@ const CampaignGeneralDetails = () => {
                   disabled={data.kind != "email"}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Нээсэн харилцагчид</span>
+                    <span>Нээсэн</span>
                     <span>(~{countData?.opened_count})</span>
                   </div>
                 </EuiContextMenuItem>
@@ -266,7 +267,7 @@ const CampaignGeneralDetails = () => {
                   <div
                     style={{ display: "flex", justifyContent: "space-between", minWidth: "200px" }}
                   >
-                    <span>Нээгээгүй харилцагчид</span>
+                    <span>Нээгээгүй</span>
                     <span>(~{countData?.total_sent_count - countData?.opened_count})</span>
                   </div>
                 </EuiContextMenuItem>
@@ -278,7 +279,7 @@ const CampaignGeneralDetails = () => {
                   disabled={data.kind != "email"}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Дарсан харилцагчид</span>
+                    <span>Линк дарсан</span>
                     <span>(~{countData?.clicked_count})</span>
                   </div>
                 </EuiContextMenuItem>
@@ -290,7 +291,7 @@ const CampaignGeneralDetails = () => {
                   disabled={data.kind != "email"}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Дараагүй харилцагчид</span>
+                    <span>Линк дараагүй</span>
                     <span>(~{countData?.total_sent_count - countData?.clicked_count})</span>
                   </div>
                 </EuiContextMenuItem>

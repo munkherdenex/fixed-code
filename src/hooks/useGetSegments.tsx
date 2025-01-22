@@ -15,6 +15,7 @@ export interface Segment {
   updated_by: number | null;
   condition: string;
   status: string;
+  retarget_template_id: number | null;
 }
 
 export interface SegmentResponse {
