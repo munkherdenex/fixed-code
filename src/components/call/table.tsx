@@ -15,8 +15,9 @@ import { PAGINATION_CHOOSES } from "../../constants";
 import { Template } from "../../hooks/useGetTemplates";
 import { isNumber } from "../../utils/helper";
 import { useTranslations } from "next-intl";
-import useSWR from 'swr';
-import contactLogApi from '../../api/contact_log';
+import useSWR from "swr";
+import contactLogApi from "../../api/contact_log";
+import CallDetailFlyout from "./call_detail_flyout";
 
 const Table = () => {
   const router = useRouter();
@@ -32,6 +33,8 @@ const Table = () => {
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
   const [pageSize, setPageSize] = useState(queryPageSize);
   const [filter, setFilter] = useState(queryFilter);
+  const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
+  const [selectedCall, setSelectedCall] = useState(null);
 
   const pagination = {
     pageIndex,
@@ -40,23 +43,24 @@ const Table = () => {
   };
 
   //TODO: create api request
-  const { data, isLoading } = useSWR([], async (path) => {
-    contactLogApi.getCalls();
-  });
-  const mutate = () => {};
+  const { data, isLoading, mutate } = useSWR("/crm/calls/", contactLogApi.getCalls);
 
   const columns: Array<EuiBasicTableColumn<Template>> = [
     {
-      field: "Phone",
+      field: "call_id",
+      name: "Call ID",
+    },
+    {
+      field: "customer_id",
+      name: "Customer ID",
+    },
+    {
+      field: "call_date",
+      name: "Call Date",
+    },
+    {
+      field: "phone",
       name: "Phone",
-    },
-    {
-      field: "Date",
-      name: "Date",
-    },
-    {
-      field: "State",
-      name: "State",
     },
   ];
 
@@ -81,12 +85,17 @@ const Table = () => {
     }
   };
 
+  const handleRowClick = (template: Template) => {
+    setIsFlyoutVisible(true);
+    setSelectedCall(template);
+  };
+
   const getRowProps = (template: Template) => {
     const { id } = template;
     return {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
-      onClick: () => router.push(`/dashboards/cdp/campaign/info/${id}`),
+      onClick: () => handleRowClick(template),
     };
   };
 
@@ -123,59 +132,69 @@ const Table = () => {
   }
 
   return (
-    <EuiFlexGroup direction="column">
-      <EuiFlexItem>
-        <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="flexEnd">
-          <EuiFlexItem grow={false}>
-            <EuiFlexGrid columns={3}>
-              <EuiFlexItem grow={false}>
-                <EuiFieldSearch
-                  defaultValue={searchValue}
-                  onSearch={onSearch}
-                  placeholder={translate("search")}
-                />
-              </EuiFlexItem>
-            </EuiFlexGrid>
-          </EuiFlexItem>
-          <EuiFlexItem grow={false}>
-            <EuiButtonIcon
-              display="base"
-              iconType="refresh"
-              size="s"
-              isLoading={isLoading}
-              onClick={() => mutate()}
+    <>
+      {isFlyoutVisible && (
+        <CallDetailFlyout
+          setIsFlyoutVisible={setIsFlyoutVisible}
+          selectedCall={selectedCall}
+          mutate={mutate}
+        />
+      )}
+
+      <EuiFlexGroup direction="column">
+        <EuiFlexItem>
+          <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="flexEnd">
+            <EuiFlexItem grow={false}>
+              <EuiFlexGrid columns={3}>
+                <EuiFlexItem grow={false}>
+                  <EuiFieldSearch
+                    defaultValue={searchValue}
+                    onSearch={onSearch}
+                    placeholder={translate("search")}
+                  />
+                </EuiFlexItem>
+              </EuiFlexGrid>
+            </EuiFlexItem>
+            <EuiFlexItem grow={false}>
+              <EuiButtonIcon
+                display="base"
+                iconType="refresh"
+                size="s"
+                isLoading={isLoading}
+                onClick={() => mutate()}
+              />
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiFlexItem>
+        <EuiFlexItem>
+          {isLoading ? (
+            <div>{translate("loading")}</div>
+          ) : (
+            <EuiBasicTable
+              tableCaption="Campaign table"
+              items={data?.results || []}
+              columns={columns}
+              rowProps={getRowProps}
+              cellProps={getCellProps}
+              pagination={
+                data?.total_count > pageSize
+                  ? {
+                      ...pagination,
+                      totalItemCount: data?.total_count || 0,
+                      showPerPageOptions: true,
+                    }
+                  : {
+                      totalItemCount: 0,
+                      pageSize: 0,
+                      pageIndex: 0,
+                    }
+              }
+              onChange={onTableChange}
             />
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </EuiFlexItem>
-      <EuiFlexItem>
-        {isLoading ? (
-          <div>{translate("loading")}</div>
-        ) : (
-          <EuiBasicTable
-            tableCaption="Campaign table"
-            items={data?.results || []}
-            columns={columns}
-            rowProps={getRowProps}
-            cellProps={getCellProps}
-            pagination={
-              data?.total_count > pageSize
-                ? {
-                    ...pagination,
-                    totalItemCount: data?.total_count || 0,
-                    showPerPageOptions: true,
-                  }
-                : {
-                    totalItemCount: 0,
-                    pageSize: 0,
-                    pageIndex: 0,
-                  }
-            }
-            onChange={onTableChange}
-          />
-        )}
-      </EuiFlexItem>
-    </EuiFlexGroup>
+          )}
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </>
   );
 };
 
