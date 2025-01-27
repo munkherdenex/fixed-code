@@ -118,11 +118,12 @@ const CreateTicketTemplate = () => {
   };
 
   const addChoice = () => {
+    const newChoice = { id: choiceIds(), value: "valueX", text: "Шинэ сонголт" };
     const oldItem = items.find((item) => item.id === currentItem.id);
     if (oldItem.type == "choice") {
       if (!oldItem.config.choices) oldItem.config.choices = [];
 
-      oldItem.config.choices.push({ id: choiceIds(), value: "valueX", text: "Шинэ сонголт" });
+      oldItem.config.choices.push(newChoice);
     }
     setItems([...items]);
   };
@@ -145,7 +146,6 @@ const CreateTicketTemplate = () => {
               ...item.config,
               choices: item.config.choices.map((choice) => {
                 if (choice.id === option.id) {
-                  console.log("got it here1", choice);
                   return { ...choice, text: value };
                 }
                 return choice;
@@ -157,12 +157,27 @@ const CreateTicketTemplate = () => {
       }),
     );
 
-    setTimeout(() => {
-      // Important: use setTimeout to ensure re-render is complete
-      if (inputRefs.current[option.id]) {
-        inputRefs.current[option.id].focus();
-      }
-    }, 0);
+    setCurrentItem((oldItem) => {
+      return {
+        ...oldItem,
+        config: {
+          ...oldItem.config,
+          choices: oldItem.config.choices.map((choice) => {
+            if (choice.id === option.id) {
+              return { ...choice, text: value };
+            }
+            return choice;
+          }),
+        },
+      };
+    })
+
+    // setTimeout(() => {
+    //   // Important: use setTimeout to ensure re-render is complete
+    //   if (inputRefs.current[option.id]) {
+    //     inputRefs.current[option.id].focus();
+    //   }
+    // }, 0);
   };
 
   const setOptionValue = (option, value) => {
@@ -325,7 +340,7 @@ const CreateTicketTemplate = () => {
                                             compressed
                                             placeholder="Нэр"
                                             value={option.text}
-                                            inputRef={(el) => (inputRefs.current[option.id] = el)}
+                                            inputRef={(el) => (inputRefs.current[option.id] = el?.input)}
                                             onChange={(e) => {
                                               setOptionName(option, e.target.value);
                                             }}
