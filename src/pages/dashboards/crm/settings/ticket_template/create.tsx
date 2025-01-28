@@ -1,4 +1,5 @@
 import {
+  EuiBadge,
   EuiButton,
   EuiButtonIcon,
   EuiDatePicker,
@@ -11,18 +12,20 @@ import {
   EuiFormRow,
   EuiPanel,
   EuiSelect,
+  EuiSelectable,
   EuiSpacer,
   EuiSwitch,
-  EuiText,
   EuiTextArea,
+  EuiTitle,
   htmlIdGenerator,
 } from "@elastic/eui";
 import { css } from "@emotion/react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 const editorRowStyle = css`
   cursor: pointer;
   border: 2px dashed white;
+  position: relative;
 
   &: hover {
     background-color: rgba(255, 255, 0, 0.2);
@@ -37,6 +40,18 @@ const editorRowStyle = css`
     width: 100%;
     height: 100%;
     color: white;
+  }
+`;
+
+const removeButtonStyle = css`
+  position: absolute;
+  top: -4px;
+  right: -28px;
+  cursor: pointer;
+  display: none;
+
+  .selected & {
+    display: block;
   }
 `;
 
@@ -83,7 +98,6 @@ const CreateTicketTemplate = () => {
   const [items, setItems] = useState([]);
   const [currentItem, setCurrentItem] = useState(null);
   const choiceIds = htmlIdGenerator("choice");
-  const inputRefs = useRef({});
 
   const addItem = (item) => {
     const newItem = {
@@ -96,12 +110,20 @@ const CreateTicketTemplate = () => {
       },
     };
     switch (item.type) {
+      case "text": {
+        newItem.config.isMultiline = false;
+      }break;
+      case "number": {
+        newItem.config.min = 0;
+        newItem.config.max = 100;
+        newItem.config.step = 1;
+      } break;
       case "choice": {
         newItem.config.choices = [
           { id: choiceIds(), value: "option1", text: "Сонголт 1" },
           { id: choiceIds(), value: "option2", text: "Сонголт 2" },
         ];
-      }
+      } break;
     }
     setItems([...items, newItem]);
     setCurrentItem(newItem);
@@ -170,14 +192,7 @@ const CreateTicketTemplate = () => {
           }),
         },
       };
-    })
-
-    // setTimeout(() => {
-    //   // Important: use setTimeout to ensure re-render is complete
-    //   if (inputRefs.current[option.id]) {
-    //     inputRefs.current[option.id].focus();
-    //   }
-    // }, 0);
+    });
   };
 
   const setOptionValue = (option, value) => {
@@ -200,15 +215,40 @@ const CreateTicketTemplate = () => {
         return item;
       }),
     );
+
+    setCurrentItem((oldItem) => {
+      return {
+        ...oldItem,
+        config: {
+          ...oldItem.config,
+          choices: oldItem.config.choices.map((choice) => {
+            if (choice.id === option.id) {
+              return { ...choice, value: value };
+            }
+            return choice;
+          }),
+        },
+      };
+    });
+  };
+
+  const removeItem = (item) => {
+    setItems(items.filter((i) => i.id !== item.id));
   };
 
   const getComponent = (item) => {
     switch (item.type) {
       case "text":
+        if (item.config?.isMultiline) {
+          return <EuiTextArea />;
+        }
         return <EuiFieldText />;
       case "number":
-        return <EuiFieldNumber />;
+        return <EuiFieldNumber min={item.config?.min} max={item.config?.max} step={item.config?.step}/>;
       case "choice":
+        if (item.config?.isMultiple) {
+          return <EuiSelectable options={item.config?.choices} />;
+        }
         return <EuiSelect options={item.config?.choices} />;
       case "boolean":
         return <EuiSwitch label="Switch" checked={false} onChange={() => {}} />;
@@ -229,7 +269,15 @@ const CreateTicketTemplate = () => {
           </>
         );
       case "emotion":
-        return <EuiButtonIcon iconType={"faceHappy"} />;
+        return (
+          <>
+            <EuiButtonIcon display='base' size="m" iconType={"faceSad"} color="danger" />
+            <EuiButtonIcon display='base' size="m" iconType={"faceSad"} color="warning" />
+            <EuiButtonIcon display='base' size="m" iconType={"faceNeutral"} color="text" />
+            <EuiButtonIcon display='base' size="m" iconType={"faceHappy"} color="primary" />
+            <EuiButtonIcon display='base' size="m" iconType={"faceHappy"} color="success" />
+          </>
+        );
       default:
         return <EuiFieldText name={item.name} />;
     }
@@ -248,7 +296,17 @@ const CreateTicketTemplate = () => {
         css={editorRowStyle}
         className={currentItem == item ? "selected" : ""}
       >
-        {getComponent(item)}
+        <>
+          {getComponent(item)}
+          <EuiButtonIcon
+            css={removeButtonStyle}
+            iconType="cross"
+            aria-label="Remove"
+            color="danger"
+            display="base"
+            onClick={() => removeItem(item)}
+          />
+        </>
       </EuiFormRow>
     );
   });
@@ -284,7 +342,7 @@ const CreateTicketTemplate = () => {
               {currentItem && (
                 <EuiFlexItem grow={false}>
                   <EuiFormRow label={"Төрөл"}>
-                    <EuiText>{currentItem.type}</EuiText>
+                    <EuiBadge color="hollow">{currentItem.type}</EuiBadge>
                   </EuiFormRow>
                   <EuiFormRow label={"Нэр"}>
                     <EuiFieldText
@@ -317,7 +375,7 @@ const CreateTicketTemplate = () => {
                       }}
                     />
                   </EuiFormRow>
-                  {currentItem.type == 'choice' && (
+                  {currentItem.type == "number" && (
                     <>
                       <EuiSpacer size="m" />
                       <EuiFlexItem grow={false}>
@@ -327,7 +385,75 @@ const CreateTicketTemplate = () => {
                           hasShadow={false}
                           paddingSize="none"
                         >
-                          <EuiText size="s">Сонголтууд</EuiText>
+                          <EuiFormRow display="columnCompressed" label="Хамгийн бага утга">
+                            <EuiFieldNumber
+                              compressed
+                              value={currentItem.config?.min || false}
+                              onChange={(e) => {
+                                changePropery("min", e.target.value);
+                              }}
+                            />
+                          </EuiFormRow>
+                          <EuiFormRow display="columnCompressed" label="Хамгийн их утга">
+                            <EuiFieldNumber
+                              compressed
+                              value={currentItem.config?.max || false}
+                              onChange={(e) => {
+                                changePropery("max", e.target.value);
+                              }}
+                            />
+                          </EuiFormRow>
+                          <EuiFormRow display="columnCompressed" label="Алхам">
+                            <EuiFieldNumber
+                              compressed
+                              value={currentItem.config?.step || false}
+                              onChange={(e) => {
+                                changePropery("step", e.target.value);
+                              }}
+                            />
+                          </EuiFormRow>
+                        </EuiPanel>
+                      </EuiFlexItem>
+                    </>
+                  )}
+                  {currentItem.type == "text" && (
+                    <>
+                      <EuiSpacer size="m" />
+                      <EuiFlexItem grow={false}>
+                        <EuiPanel
+                          color="subdued"
+                          hasBorder={false}
+                          hasShadow={false}
+                          paddingSize="none"
+                        >
+                          <EuiFormRow display="columnCompressed" label="Урт текст">
+                            <EuiSwitch
+                              showLabel={false}
+                              label="Autoscaling"
+                              checked={currentItem.config?.isMultiline || false}
+                              onChange={(e) => {
+                                changePropery("isMultiline", e.target.checked);
+                              }}
+                              compressed
+                            />
+                          </EuiFormRow>
+                        </EuiPanel>
+                      </EuiFlexItem>
+                    </>
+                  )}
+                  {currentItem.type == "choice" && (
+                    <>
+                      <EuiSpacer size="m" />
+                      <EuiFlexItem grow={false}>
+                        <EuiPanel
+                          color="subdued"
+                          hasBorder={false}
+                          hasShadow={false}
+                          paddingSize="none"
+                        >
+                          <EuiTitle size="xxxs">
+                            <span>Сонголтууд</span>
+                          </EuiTitle>
                           <EuiFlexGroup direction="column" gutterSize="s">
                             {currentItem.config?.choices &&
                               currentItem.config?.choices.map((option) => {
@@ -340,7 +466,6 @@ const CreateTicketTemplate = () => {
                                             compressed
                                             placeholder="Нэр"
                                             value={option.text}
-                                            inputRef={(el) => (inputRefs.current[option.id] = el?.input)}
                                             onChange={(e) => {
                                               setOptionName(option, e.target.value);
                                             }}
@@ -354,7 +479,7 @@ const CreateTicketTemplate = () => {
                                             placeholder="Утга"
                                             value={option.value}
                                             onChange={(e) => {
-                                              // setOptionValue(option, e.target.value);
+                                              setOptionValue(option, e.target.value);
                                             }}
                                           />
                                         </EuiFormRow>
@@ -385,6 +510,7 @@ const CreateTicketTemplate = () => {
               <EuiFlexItem grow={false}>
                 <EuiButton
                   onClick={() => {
+                    setCurrentItem(null);
                     console.log(items);
                   }}
                 >
