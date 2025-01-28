@@ -14,7 +14,7 @@ export interface CRMTicketTemplate {
   team_id: number;
   is_active: boolean;
   is_system_template: boolean;
-  field_templates: [
+  fields: [
     {
       id: 0;
       name: "string";

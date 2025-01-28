@@ -19,11 +19,12 @@ import TemplateTable from "../../../../../components/crm/template/table";
 import DashboardCRMLayout from "../../../../../layouts/dashboard_crm";
 import useCreateCRMTemplate from "../../../../../hooks/useCreateCRMTemplate";
 import { addToast } from "../../../../../components/toast";
+import TicketTemplateEditor from '../../../../../components/ticket_template/editor';
 
 const schema = yup
   .object({
     title: yup.string().required(""),
-    description: yup.string().required(""),
+    description: yup.string(),
   })
   .required();
 
@@ -32,6 +33,7 @@ type FormData = yup.InferType<typeof schema>;
 const CreateTemplateFlyout = () => {
   const { trigger, isMutating } = useCreateCRMTemplate();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
+  const [newTemplate, setNewTemplate] = useState(null);
 
   const simpleFlyoutTitleId = useGeneratedHtmlId();
 
@@ -47,13 +49,14 @@ const CreateTemplateFlyout = () => {
     try {
       const response = await trigger({
         name: data?.title,
-        desaturate: data?.description,
+        description: data?.description,
       });
       addToast({
         id: "success",
         title: "Successfully created",
         color: "success",
       });
+      setNewTemplate(response);
     } catch (e) {
       console.error(e);
     }
@@ -69,6 +72,7 @@ const CreateTemplateFlyout = () => {
           ownFocus
           onClose={() => setIsFlyoutVisible(false)}
           aria-labelledby={simpleFlyoutTitleId}
+          size={newTemplate ? "l": "s"}
         >
           <EuiFlyoutHeader hasBorder>
             <EuiTitle size="m">
@@ -76,7 +80,7 @@ const CreateTemplateFlyout = () => {
             </EuiTitle>
           </EuiFlyoutHeader>
           <EuiFlyoutBody>
-            <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+            { !newTemplate && <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
               <EuiFormRow
                 label="Title"
                 isInvalid={!!errors.title?.message}
@@ -122,7 +126,10 @@ const CreateTemplateFlyout = () => {
                   Create
                 </EuiButton>
               </EuiFormRow>
-            </EuiForm>
+            </EuiForm> }
+            {
+              newTemplate && <TicketTemplateEditor initialTicketTemplate={newTemplate} />
+            }
           </EuiFlyoutBody>
         </EuiFlyout>
       )}
