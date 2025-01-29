@@ -8,7 +8,9 @@ import {
   EuiForm,
   EuiFormRow,
   EuiSelect,
+  EuiSkeletonText,
   EuiSpacer,
+  EuiText,
   EuiTextArea,
   EuiTitle,
 } from "@elastic/eui";
@@ -16,9 +18,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import useSWR from "swr";
 import * as yup from "yup";
-
-const statusOptions = [{ value: "template 1", text: "template 1" }];
+import ticketTemplateApi from "../../api/ticket_template";
 
 const schema = yup
   .object({
@@ -33,109 +35,75 @@ type FormData = yup.InferType<typeof schema>;
 const CreateTicketFlyout = () => {
   const router = useRouter();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
+  const [selectedType, setSelectedType] = useState(null);
 
   const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
+    data: compactList,
+    error,
+    isLoading,
+  } = useSWR("/crm/ticket/", async (path) => {
+    try {
+      const response = await ticketTemplateApi.getCompactList(true);
+      const result = response.results.map((item) => {
+        if (selectedType == null) setSelectedType(item.id);
+        return {
+          text: item.name,
+          value: item.id,
+        };
+      });
+      return result;
+    } catch (e) {
+      console.error(e);
+    }
   });
 
-  function onSubmit(data: FormData) {
-    console.log(data);
-  }
+  const {
+    data: selectedTicket,
+    error: selectedTicketError,
+    isLoading: selectedTicketLoading,
+  } = useSWR(
+    selectedType ? `/crm/ticket/${selectedType}/` : null,
+    async (path) => {
+      return ticketTemplateApi.getTemplateById(selectedType);
+    },
+  );
+
+  const ticketTypeChanged = (e) => {
+    setSelectedType(e.target.value);
+  };
 
   return (
     <div>
-      <EuiButton onClick={() => setIsFlyoutVisible(true)}>Add ticket</EuiButton>
+      <EuiButton onClick={() => setIsFlyoutVisible(true)}>Тикет үүсгэх</EuiButton>
       {isFlyoutVisible && (
         <EuiFlyout ownFocus onClose={() => setIsFlyoutVisible(false)}>
           <EuiFlyoutHeader hasBorder>
             <EuiTitle size="m">
-              <h2>Add ticket</h2>
+              <h2>Тикет үүсгэх</h2>
             </EuiTitle>
           </EuiFlyoutHeader>
           <EuiFlyoutBody>
-            <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-              {/* TODO: fix this condition */}
-              {true && (
-                <EuiFormRow>
-                  <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
-                    <p>You need to create a template before you can create a ticket.</p>
-                    <EuiButton
-                      onClick={() =>
-                        router.push("/dashboards/cdp/channels", {
-                          query: {
-                            create: true,
-                          },
-                        })
-                      }
-                    >
-                      Create
-                    </EuiButton>
-                  </EuiCallOut>
-                </EuiFormRow>
-              )}
-              <EuiFormRow
-                label="Template"
-                isInvalid={!!errors.status?.message}
-                error={[errors.status?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="status"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiSelect
-                      hasNoInitialSelection
-                      options={statusOptions}
-                      value={value}
-                      onBlur={onBlur}
-                      onChange={onChange}
-                    />
-                  )}
+            <EuiForm>
+              <EuiFormRow label="Төрөл">
+                <EuiSelect
+                  hasNoInitialSelection
+                  options={compactList}
+                  value={selectedType}
+                  onChange={ticketTypeChanged}
                 />
               </EuiFormRow>
-              <EuiFormRow
-                label="Title"
-                isInvalid={!!errors.title?.message}
-                error={[errors.title?.message]}
+
+              <EuiSkeletonText
+                lines={3}
+                size="m"
+                isLoading={selectedTicketLoading}
+                contentAriaLabel="Example text"
               >
-                <Controller
-                  control={control}
-                  name="title"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiFieldText
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.title?.message}
-                      placeholder="Title"
-                      aria-label="email"
-                    />
-                  )}
-                />
-              </EuiFormRow>
-              <EuiFormRow
-                label="Description"
-                isInvalid={!!errors.description?.message}
-                error={[errors.description?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="description"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiTextArea
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.description?.message}
-                      placeholder="description"
-                      aria-label="description"
-                    />
-                  )}
-                />
-              </EuiFormRow>
+                <EuiText size="m">
+                  <pre>{JSON.stringify(selectedTicket)}</pre>
+                </EuiText>
+              </EuiSkeletonText>
+
               <EuiSpacer size="m" />
               <EuiButton type="submit" fill>
                 Create

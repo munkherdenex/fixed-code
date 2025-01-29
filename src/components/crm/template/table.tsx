@@ -32,23 +32,6 @@ import { addToast } from '../../toast';
 const EditTemplateFlyout = ({ isOpen, closeFlyout, template }) => {
   const simpleFlyoutTitleId = useGeneratedHtmlId();
 
-  const onSubmit = async (data: FormData) => {
-    try {
-      // const response = await trigger({
-      //   name: data?.title,
-      //   description: data?.description,
-      // });
-      addToast({
-        id: "success",
-        title: "Successfully updated",
-        color: "success",
-      });
-      // setNewTemplate(response);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   return (
     <div>
       {isOpen && (

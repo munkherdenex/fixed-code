@@ -15,13 +15,16 @@ import {
   EuiSelectable,
   EuiSpacer,
   EuiSwitch,
+  EuiText,
   EuiTextArea,
   EuiTitle,
   htmlIdGenerator,
 } from "@elastic/eui";
 import { css } from "@emotion/react";
 import { useEffect, useState } from "react";
-import { TicketTemplate, TicketTemplateField } from './types';
+import { TicketTemplate, TicketTemplateField } from "./types";
+import ticketTemplateApi from "../../api/ticket_template";
+import { addToast } from "../toast";
 
 const editorRowStyle = css`
   cursor: pointer;
@@ -99,20 +102,25 @@ interface TicketTemplateProps {
   initialTicketTemplate: TicketTemplate;
 }
 
-const TicketTemplateEditor = ({initialTicketTemplate}: TicketTemplateProps) => {
+const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) => {
+  const [templateData, setTemplateData] = useState({});
   const [items, setItems] = useState([]);
   const [currentItem, setCurrentItem] = useState(null);
   const choiceIds = htmlIdGenerator("choice");
 
   useEffect(() => {
-    console.log(initialTicketTemplate);
+    setTemplateData({
+      id: initialTicketTemplate.id,
+      name: initialTicketTemplate.name,
+      description: initialTicketTemplate.description,
+    });
     setItems(initialTicketTemplate.fields || []);
   }, [initialTicketTemplate]);
 
   const addItem = (item) => {
     const newItem: TicketTemplateField = {
       id: items.length + 1,
-      attr_name: "attr_"+item.type+"_"+(items.length+1),
+      attr_name: "attr_" + item.type + "_" + (items.length + 1),
       name: item.name,
       type: item.type,
       config: {
@@ -121,20 +129,26 @@ const TicketTemplateEditor = ({initialTicketTemplate}: TicketTemplateProps) => {
       },
     };
     switch (item.type) {
-      case "text": {
-        newItem.config.isMultiline = false;
-      }break;
-      case "number": {
-        newItem.config.min = 0;
-        newItem.config.max = 100;
-        newItem.config.step = 1;
-      } break;
-      case "choice": {
-        newItem.config.choices = [
-          { id: choiceIds(), value: "option1", text: "Сонголт 1" },
-          { id: choiceIds(), value: "option2", text: "Сонголт 2" },
-        ];
-      } break;
+      case "text":
+        {
+          newItem.config.isMultiline = false;
+        }
+        break;
+      case "number":
+        {
+          newItem.config.min = 0;
+          newItem.config.max = 100;
+          newItem.config.step = 1;
+        }
+        break;
+      case "choice":
+        {
+          newItem.config.choices = [
+            { id: choiceIds(), value: "option1", text: "Сонголт 1" },
+            { id: choiceIds(), value: "option2", text: "Сонголт 2" },
+          ];
+        }
+        break;
     }
     setItems([...items, newItem]);
     setCurrentItem(newItem);
@@ -255,7 +269,9 @@ const TicketTemplateEditor = ({initialTicketTemplate}: TicketTemplateProps) => {
         }
         return <EuiFieldText />;
       case "number":
-        return <EuiFieldNumber min={item.config?.min} max={item.config?.max} step={item.config?.step}/>;
+        return (
+          <EuiFieldNumber min={item.config?.min} max={item.config?.max} step={item.config?.step} />
+        );
       case "choice":
         if (item.config?.isMultiple) {
           return <EuiSelectable options={item.config?.choices} />;
@@ -282,11 +298,11 @@ const TicketTemplateEditor = ({initialTicketTemplate}: TicketTemplateProps) => {
       case "emotion":
         return (
           <>
-            <EuiButtonIcon display='base' size="m" iconType={"faceSad"} color="danger" />
-            <EuiButtonIcon display='base' size="m" iconType={"faceSad"} color="warning" />
-            <EuiButtonIcon display='base' size="m" iconType={"faceNeutral"} color="text" />
-            <EuiButtonIcon display='base' size="m" iconType={"faceHappy"} color="primary" />
-            <EuiButtonIcon display='base' size="m" iconType={"faceHappy"} color="success" />
+            <EuiButtonIcon display="base" size="m" iconType={"faceSad"} color="danger" />
+            <EuiButtonIcon display="base" size="m" iconType={"faceSad"} color="warning" />
+            <EuiButtonIcon display="base" size="m" iconType={"faceNeutral"} color="text" />
+            <EuiButtonIcon display="base" size="m" iconType={"faceHappy"} color="primary" />
+            <EuiButtonIcon display="base" size="m" iconType={"faceHappy"} color="success" />
           </>
         );
       default:
@@ -324,6 +340,10 @@ const TicketTemplateEditor = ({initialTicketTemplate}: TicketTemplateProps) => {
 
   return (
     <>
+      <EuiText>
+        <h1>{templateData.name}</h1>
+        <p>{templateData.description}</p>
+      </EuiText>
       <EuiFlexGroup>
         <EuiFlexItem grow={false}>
           <EuiPanel hasShadow={false}>
@@ -523,6 +543,26 @@ const TicketTemplateEditor = ({initialTicketTemplate}: TicketTemplateProps) => {
                   onClick={() => {
                     setCurrentItem(null);
                     console.log(items);
+                    try {
+                      const response = ticketTemplateApi.update(templateData.id, {
+                        name: templateData.name,
+                        description: templateData.description,
+                        fields: items,
+                      });
+                      addToast({
+                        id: "success",
+                        title: "Successfully updated",
+                        color: "success",
+                      });
+                    } catch (e) {
+                      addToast({
+                        id: "error",
+                        title: "Successfully updated",
+                        text: e.message,
+                        color: "danger",
+                      });
+                      console.error(e);
+                    }
                   }}
                 >
                   Save
