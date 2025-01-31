@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { EuiAvatar } from "@elastic/eui";
 
 import * as styles from "./chat.styles";

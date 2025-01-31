@@ -121,6 +121,7 @@ const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) =>
     const newItem: TicketTemplateField = {
       id: items.length + 1,
       attr_name: "attr_" + item.type + "_" + (items.length + 1),
+      order: items.length + 1,
       name: item.name,
       type: item.type,
       config: {

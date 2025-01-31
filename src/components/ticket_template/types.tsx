@@ -8,6 +8,7 @@ export type TicketTemplate = {
 export type TicketTemplateField = {
   id: number;
   attr_name: string;
+  order: number;
   name: string;
   type: string;
   config: {

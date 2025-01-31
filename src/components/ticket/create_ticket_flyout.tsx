@@ -1,26 +1,23 @@
 import {
   EuiButton,
-  EuiCallOut,
-  EuiFieldText,
   EuiFlyout,
   EuiFlyoutBody,
   EuiFlyoutHeader,
   EuiForm,
   EuiFormRow,
   EuiSelect,
-  EuiSkeletonText,
+  EuiSkeletonRectangle,
   EuiSpacer,
-  EuiText,
-  EuiTextArea,
   EuiTitle,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import useSWR from "swr";
 import * as yup from "yup";
 import ticketTemplateApi from "../../api/ticket_template";
+import getFieldComponent from "../ticket_template/utils";
 
 const schema = yup
   .object({
@@ -32,6 +29,45 @@ const schema = yup
 
 type FormData = yup.InferType<typeof schema>;
 
+const DynamicForm = ({ ticket_template_id, ticket_template }) => {
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data); // Handle form submission
+    return false;
+  };
+
+  return (
+    <EuiForm component='form' onSubmit={handleSubmit(onSubmit)}>
+      {ticket_template &&
+        ticket_template.fields.map((item) => {
+          return (
+            <Controller
+              key={`ctrllr__${item.id}`}
+              control={control}
+              name={item.attr_name}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <EuiFormRow
+                  key={item.id}
+                  label={item.name}
+                  helpText={item.config?.helpText}
+                >
+                  {getFieldComponent(item, register, value, onChange, onBlur)}
+                </EuiFormRow>
+              )}
+            />
+        )
+      })}
+      <EuiButton type="submit">Үүсгэх</EuiButton>
+    </EuiForm>
+  );
+};
+
 const CreateTicketFlyout = () => {
   const router = useRouter();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
@@ -41,10 +77,11 @@ const CreateTicketFlyout = () => {
     data: compactList,
     error,
     isLoading,
+    mutate: loadCompactList,
   } = useSWR("/crm/ticket/", async (path) => {
     try {
       const response = await ticketTemplateApi.getCompactList(true);
-      const result = response.results.map((item) => {
+      const result = response.data.results.map((item) => {
         if (selectedType == null) setSelectedType(item.id);
         return {
           text: item.name,
@@ -61,12 +98,15 @@ const CreateTicketFlyout = () => {
     data: selectedTicket,
     error: selectedTicketError,
     isLoading: selectedTicketLoading,
-  } = useSWR(
-    selectedType ? `/crm/ticket/${selectedType}/` : null,
-    async (path) => {
-      return ticketTemplateApi.getTemplateById(selectedType);
-    },
-  );
+  } = useSWR(selectedType ? `/crm/ticket/${selectedType}/` : null, async (path) => {
+    return ticketTemplateApi.getTemplateById(selectedType);
+  });
+
+  useEffect(() => {
+    if (isFlyoutVisible) {
+      loadCompactList();
+    }
+  }, [isFlyoutVisible, loadCompactList]);
 
   const ticketTypeChanged = (e) => {
     setSelectedType(e.target.value);
@@ -83,32 +123,24 @@ const CreateTicketFlyout = () => {
             </EuiTitle>
           </EuiFlyoutHeader>
           <EuiFlyoutBody>
-            <EuiForm>
-              <EuiFormRow label="Төрөл">
-                <EuiSelect
-                  hasNoInitialSelection
-                  options={compactList}
-                  value={selectedType}
-                  onChange={ticketTypeChanged}
-                />
-              </EuiFormRow>
+            <EuiFormRow label="Төрөл">
+              <EuiSelect
+                hasNoInitialSelection
+                options={compactList}
+                value={selectedType}
+                onChange={ticketTypeChanged}
+              />
+            </EuiFormRow>
 
-              <EuiSkeletonText
-                lines={3}
-                size="m"
-                isLoading={selectedTicketLoading}
-                contentAriaLabel="Example text"
-              >
-                <EuiText size="m">
-                  <pre>{JSON.stringify(selectedTicket)}</pre>
-                </EuiText>
-              </EuiSkeletonText>
+            <EuiSpacer size="m" />
 
-              <EuiSpacer size="m" />
-              <EuiButton type="submit" fill>
-                Create
-              </EuiButton>
-            </EuiForm>
+            <EuiSkeletonRectangle
+              height="100px"
+              width={"100%"}
+              isLoading={isLoading || selectedTicketLoading}
+            >
+              {selectedTicket && <DynamicForm ticket_template_id={selectedType} ticket_template={selectedTicket} /> }
+            </EuiSkeletonRectangle>
           </EuiFlyoutBody>
         </EuiFlyout>
       )}
