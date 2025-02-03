@@ -1,6 +1,5 @@
 import { css } from "@emotion/react";
 
-
 export const chatContainer = css`
   width: 400px;
   margin: 20px auto;
@@ -44,24 +43,24 @@ export const messageTimestamp = css`
   white-space: nowrap;
 `;
 export const messageActions = css`
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    display: flex;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
+  position: absolute;
+  bottom: -20px;
+  right: 5px;
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
 `;
 export const actionButton = css`
-    background-color: transparent;
-    border: none;
-    color: #999;
-    padding: 2px 5px;
-    margin-left: 3px;
-    cursor: pointer;
-    font-size: 12px;
-    &:hover{
-        color: #333;
-    }
+  background-color: transparent;
+  border: none;
+  color: #999;
+  padding: 2px 5px;
+  margin-left: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  &:hover {
+    color: #333;
+  }
 `;
 export const inputArea = css`
   padding: 10px;
