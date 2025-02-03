@@ -429,6 +429,7 @@ const Chat = () => {
                             onBlur={onBlur}
                             isClearable={false}
                             isLoading={isLoading}
+                            isDisabled={!selectedChatId}
                           />
                         )}
                       />
@@ -512,15 +513,16 @@ const Chat = () => {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      disabled={isLoading}
+                      disabled={isLoading || !selectedChatId}
                     />
 
                     <button
                       className="send-button"
                       onClick={handleSendMessage}
-                      disabled={isLoading || !message.trim()}
+                      style={{ opacity: !selectedChatId ? "0.6" : 1, cursor: "auto" }}
+                      disabled={isLoading || !message.trim() || !selectedChatId}
                     >
-                      {isLoading ? "Sending..." : "Send"}
+                      {!selectedChatId ? "Чат сонгоно уу" : isLoading ? "Sending..." : "Send"}
                     </button>
 
                     {/* {errorMessage && <div className="error-message">{errorMessage}</div>} */}
