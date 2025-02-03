@@ -144,7 +144,6 @@ const CallDetailFlyout = ({ setIsFlyoutVisible, selectedCall, mutate }: CallDeta
 
   const createTicket = ticketForm.handleSubmit(async (data: FormData) => {
     try {
-      console.log(data);
       const response = await contactLogApi.createTicket(data);
       if (response) {
         setIsFlyoutVisible(false);

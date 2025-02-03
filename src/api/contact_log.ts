@@ -1,9 +1,13 @@
 import client from "./client";
 
-interface TicketPayload {
+export interface TicketPayload {
   tt_id?: number;
   cl_id?: number;
   at_email?: string;
+}
+export interface ChatSendPayload {
+  psid: number;
+  text: string;
 }
 
 const contactLogApi = {
@@ -17,8 +21,27 @@ const contactLogApi = {
     return response.data;
   },
 
-  getChats: async () => {
-    const response = await client.get(`/crm/fbchat/chat/`);
+  getRootChatLogs: async (limit: number, offset: number) => {
+    const response = await client.get("/crm/fbchat/chat/", { params: { limit, offset } });
+    return response.data;
+  },
+
+  getChatLogs: async (rootId: string, cursor: string) => {
+    const response = await client.get(`/crm/fbchat/chat/${rootId}/`, {
+      params: {
+        cursor,
+      },
+    });
+    return response.data;
+  },
+
+  assignPsidToCustomer: async (payload: any) => {
+    const response = await client.post("/crm/fbchat/psid/", payload);
+    return response.data;
+  },
+
+  sendChat: async (payload: ChatSendPayload) => {
+    const response = await client.post("/crm/fbchat/send/", payload);
     return response.data;
   },
 
