@@ -18,6 +18,8 @@ import useSWR from "swr";
 import * as yup from "yup";
 import ticketTemplateApi from "../../api/ticket_template";
 import getFieldComponent from "../ticket_template/utils";
+import ticketsApi from '../../api/tickets';
+import { addToast } from '../toast';
 
 const schema = yup
   .object({
@@ -30,6 +32,7 @@ const schema = yup
 type FormData = yup.InferType<typeof schema>;
 
 const DynamicForm = ({ ticket_template_id, ticket_template }) => {
+  const [data, setData] = useState(null);
   const {
     register,
     handleSubmit,
@@ -37,13 +40,40 @@ const DynamicForm = ({ ticket_template_id, ticket_template }) => {
     formState: { errors },
   } = useForm();
 
+  // const { mutate : createTicket } = useSWR('/crm/ticket/', (_path) => {
+  //   ticketsApi.create(ticket_template_id, data)
+  // });
+
   const onSubmit = (data) => {
-    console.log(data); // Handle form submission
+    try {
+      console.log(data); // Handle form submission
+      setData(data);
+      const response = ticketsApi.create(ticket_template_id, data)
+      if (response.status == 201) {
+        addToast({
+          id: "success",
+          title: "Үүслээ",
+          color: "success",
+        });
+      } else {
+        addToast({
+          id: "success",
+          title: "Алдаа гарлаа",
+          color: "warning",
+        });
+      }
+    } catch (e) {
+      addToast({
+        id: "success",
+        title: "ERROR",
+        color: "danger",
+      });
+    }
     return false;
   };
 
   return (
-    <EuiForm component='form' onSubmit={handleSubmit(onSubmit)}>
+    <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
       {ticket_template &&
         ticket_template.fields.map((item) => {
           return (
@@ -52,17 +82,13 @@ const DynamicForm = ({ ticket_template_id, ticket_template }) => {
               control={control}
               name={item.attr_name}
               render={({ field: { onChange, onBlur, value } }) => (
-                <EuiFormRow
-                  key={item.id}
-                  label={item.name}
-                  helpText={item.config?.helpText}
-                >
+                <EuiFormRow key={item.id} label={item.name} helpText={item.config?.helpText}>
                   {getFieldComponent(item, register, value, onChange, onBlur)}
                 </EuiFormRow>
               )}
             />
-        )
-      })}
+          );
+        })}
       <EuiButton type="submit">Үүсгэх</EuiButton>
     </EuiForm>
   );
@@ -139,7 +165,9 @@ const CreateTicketFlyout = () => {
               width={"100%"}
               isLoading={isLoading || selectedTicketLoading}
             >
-              {selectedTicket && <DynamicForm ticket_template_id={selectedType} ticket_template={selectedTicket} /> }
+              {selectedTicket && (
+                <DynamicForm ticket_template_id={selectedType} ticket_template={selectedTicket} />
+              )}
             </EuiSkeletonRectangle>
           </EuiFlyoutBody>
         </EuiFlyout>
