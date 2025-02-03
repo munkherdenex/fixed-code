@@ -8,8 +8,13 @@ import {
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiFlyout,
+  EuiFlyoutBody,
+  EuiFlyoutHeader,
   EuiImage,
   EuiTableFieldDataColumnType,
+  EuiTitle,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useLayoutEffect, useState } from "react";
@@ -20,11 +25,46 @@ import useGetCRMTicketTemplate, {
   CRMTicketTemplateResponse,
 } from "../../../hooks/useGetCRMTicketTemplate";
 import { isNumber } from "../../../utils/helper";
+import TicketTemplateEditor from '../../ticket_template/editor';
+import { addToast } from '../../toast';
+
+
+const EditTemplateFlyout = ({ isOpen, closeFlyout, template }) => {
+  const simpleFlyoutTitleId = useGeneratedHtmlId();
+
+  return (
+    <div>
+      {isOpen && (
+        <EuiFlyout
+          ownFocus
+          onClose={() => closeFlyout(false)}
+          aria-labelledby={simpleFlyoutTitleId}
+          size={"l"}
+        >
+          <EuiFlyoutHeader hasBorder>
+            <EuiTitle size="m">
+              <h2 id={simpleFlyoutTitleId}>Update template</h2>
+            </EuiTitle>
+          </EuiFlyoutHeader>
+          <EuiFlyoutBody>
+            {
+              template && <TicketTemplateEditor initialTicketTemplate={template} />
+            }
+          </EuiFlyoutBody>
+        </EuiFlyout>
+      )}
+    </div>
+  );
+};
+
 
 const TemplateTable = () => {
   const router = useRouter();
   const { query } = router;
   const translate = useTranslations();
+
+  const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
+  const [chosenTemplate, setChosenTemplate] = useState(null);
 
   const querySearch = query?.search?.toString() || "";
   const queryFilter = query?.filter?.toString() || "";
@@ -97,7 +137,10 @@ const TemplateTable = () => {
     return {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
-      // onClick: () => router.push(`/dashboards/cdp/campaign/info/${id}`),
+      onClick: () => {
+        setIsFlyoutVisible(true);
+        setChosenTemplate(template);
+      },
     };
   };
 
@@ -153,6 +196,7 @@ const TemplateTable = () => {
   }
 
   return (
+    <>
     <EuiFlexGroup direction="column">
       <EuiFlexItem>
         <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="flexEnd">
@@ -206,6 +250,8 @@ const TemplateTable = () => {
         )}
       </EuiFlexItem>
     </EuiFlexGroup>
+    <EditTemplateFlyout isOpen={isFlyoutVisible} closeFlyout={setIsFlyoutVisible} template={chosenTemplate} />
+    </>
   );
 };
 
