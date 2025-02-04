@@ -11,6 +11,7 @@ import {
   EuiForm,
   EuiFormRow,
   EuiSelect,
+  EuiSwitch,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -84,12 +85,16 @@ const EditChannelFlyot = ({
       const prepared_headers = data?.data?.headers
         ? data?.data?.headers.reduce((a, v) => ({ ...a, [v.key]: v.value }), {})
         : [];
+      const preparedSecure = data?.data?.headers
+        ? data?.data?.headers.reduce((a, v) => ({ ...a, [v.key]: v.secure }), {})
+        : {};
 
       const response = await trigger({
         ...data,
         data: {
           ...data?.data,
           headers: prepared_headers,
+          secure: preparedSecure,
         },
       });
       if (response) {
@@ -320,6 +325,33 @@ const EditChannelFlyot = ({
                                 isInvalid={!!error?.message}
                                 placeholder="value"
                                 aria-label="value"
+                              />
+                            </EuiFormRow>
+                          )}
+                        />
+                      </EuiFlexItem>
+                      <EuiFlexItem grow={false}>
+                        <Controller
+                          key={field.id}
+                          control={control}
+                          name={`data.headers.${index}.secure`}
+                          render={({
+                            field: { onChange, onBlur, value },
+                            fieldState: { error },
+                          }) => (
+                            <EuiFormRow
+                              label="Is secure"
+                              isInvalid={!!error?.message}
+                              error={[error?.message]}
+                            >
+                              <EuiSwitch
+                                id={field.id}
+                                label=""
+                                checked={value}
+                                onBlur={onBlur}
+                                onChange={() => {
+                                  onChange(!value);
+                                }}
                               />
                             </EuiFormRow>
                           )}

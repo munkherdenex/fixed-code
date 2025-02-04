@@ -20,6 +20,7 @@ export const createChannelSchema = yup
               .shape({
                 key: yup.string().notRequired().default(undefined).label("Key"),
                 value: yup.string().notRequired().default(undefined).label("Value"),
+                secure: yup.boolean().notRequired().default(false).label("Is secure"),
               })
               .notRequired()
               .default(undefined)
@@ -40,6 +41,7 @@ export const createChannelSchema = yup
                 yup.object().shape({
                   key: yup.string().required().label("Key"),
                   value: yup.string().required().label("Value"),
+                  secure: yup.boolean().notRequired().default(false).label("Is secure"),
                 }),
               )
               .label("Headers"),
