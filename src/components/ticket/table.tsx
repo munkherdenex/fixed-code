@@ -15,16 +15,18 @@ import { PAGINATION_CHOOSES } from "../../constants";
 import { Template } from "../../hooks/useGetTemplates";
 import { isNumber } from "../../utils/helper";
 import { useTranslations } from "next-intl";
+import useSWR from "swr";
+import ticketApi from "../../api/ticket";
 
 const Table = () => {
   const router = useRouter();
   const { query } = router;
   const translate = useTranslations();
 
-  const querySearch = query?.search?.toString() || "";
-  const queryFilter = query?.filter?.toString() || "";
-  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
-  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
+  const querySearch = query?.search?.toString() || null;
+  const queryFilter = query?.filter?.toString() || null;
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : null;
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : null;
 
   const [searchValue, setSearchValue] = useState(querySearch);
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
@@ -38,11 +40,31 @@ const Table = () => {
   };
 
   //TODO: create api request
-  const data = undefined;
-  const isLoading = false;
-  const mutate = () => {};
+  const { data, isLoading, mutate } = useSWR(
+    ["/crm/ticket/", searchValue, filter, pageIndex, pageSize],
+    () =>
+      ticketApi.getTickets({
+        search: searchValue,
+        filter,
+        pageIndex,
+        pageSize: 10,
+      }),
+  );
 
-  const columns: Array<EuiBasicTableColumn<Template>> = [];
+  const columns: Array<EuiBasicTableColumn<User>> = [
+    {
+      field: "id",
+      name: "ID",
+    },
+    {
+      field: "category",
+      name: "Category",
+    },
+    {
+      field: "status",
+      name: "Status",
+    },
+  ];
 
   const onSearch = (value: string) => {
     setSearchValue(value);
