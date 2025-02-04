@@ -10,16 +10,15 @@ import {
   EuiSpacer,
   EuiTitle,
 } from "@elastic/eui";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
-import { use, useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import useSWR from "swr";
 import * as yup from "yup";
 import ticketTemplateApi from "../../api/ticket_template";
 import getFieldComponent from "../ticket_template/utils";
-import ticketsApi from '../../api/tickets';
 import { addToast } from '../toast';
+import ticketApi from '../../api/ticket';
 
 const schema = yup
   .object({
@@ -48,7 +47,7 @@ const DynamicForm = ({ ticket_template_id, ticket_template }) => {
     try {
       console.log(data); // Handle form submission
       setData(data);
-      const response = ticketsApi.create(ticket_template_id, data)
+      const response = ticketApi.create(ticket_template_id, data)
       if (response.status == 201) {
         addToast({
           id: "success",
