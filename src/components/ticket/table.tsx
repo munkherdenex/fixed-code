@@ -51,7 +51,7 @@ const Table = () => {
       }),
   );
 
-  const columns: Array<EuiBasicTableColumn<User>> = [
+  const columns: Array<EuiBasicTableColumn<any>> = [
     {
       field: "id",
       name: "ID",
@@ -92,7 +92,7 @@ const Table = () => {
     return {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
-      onClick: () => router.push(`/dashboards/cdp/campaign/info/${id}`),
+      onClick: () => router.push(`/dashboards/crm/ticket/${id}`),
     };
   };
 
