@@ -49,7 +49,7 @@ const CustomersSelect = ({ isLoading, isDisabled, onSelect }) => {
 
   return (
     <>
-      <EuiForm component="form" style={{ display: "flex", justifyContent: "end" }}>
+      <EuiForm component="form">
         <EuiFormRow
           isInvalid={
             !!audienceForm.formState.errors.customer?.message ||

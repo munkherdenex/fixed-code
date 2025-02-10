@@ -1,12 +1,15 @@
 import {
   EuiBadge,
   EuiButton,
+  EuiButtonIcon,
   EuiComboBox,
   EuiComboBoxOptionOption,
   EuiDatePicker,
   EuiFieldNumber,
   EuiFieldText,
   EuiFilePicker,
+  EuiFlexGroup,
+  EuiFlexItem,
   EuiSelect,
   EuiSelectable,
   EuiSwitch,
@@ -14,14 +17,15 @@ import {
   EuiTextArea,
 } from "@elastic/eui";
 import { css } from "@emotion/react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
+import useSWR, { mutate } from "swr";
+import ticketApi from "../../api/ticket";
 
 const emotionRowStyle = css`
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 equal columns */
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
   gap: 10px;
-
   & .emotion-button {
     font-size: 2em;
     line-height: 2em;
@@ -30,8 +34,136 @@ const emotionRowStyle = css`
   }
 `;
 
-const EmotionInput = ({ label, onChange, value, ...props }) => {
+const TextInput = ({ item, register, onBlur, onChange, value, ...props }) => {
+  const [value1, setValue] = useState(item.value);
+  const [isEditing, setIsEditing] = useState(false);
+  const onTextChange = (e) => {
+    setValue(e.target.value);
+    onChange(e);
+  };
+  const toggleEdit = () => {
+    setValue(item.value);
+    setIsEditing(!isEditing);
+  };
+  const saveEdit = async () => {
+    try {
+      let payload = {
+        [item.attr_name]: value1,
+      };
+      await ticketApi.update(item.ticket, payload);
+      mutate("/crm/ticket/");
+      setIsEditing(!isEditing);
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+      mutate("/crm/ticket/");
+    }
+  };
+  return (
+    <EuiFlexGroup justifyContent="flexStart" alignItems="center">
+      <EuiFlexItem grow={false}>
+        {isEditing ? (
+          item.config?.isMultiline ? (
+            <EuiTextArea value={item.value} onChange={onTextChange} onBlur={onBlur} />
+          ) : (
+            <EuiFieldText value={item.value} onChange={onTextChange} onBlur={onBlur} />
+          )
+        ) : (
+          <div>{value1 ? value1 : "Null"}</div>
+        )}
+      </EuiFlexItem>
+      <EuiFlexItem grow={false}>
+        <EuiFlexGroup justifyContent="flexEnd">
+          <EuiFlexItem grow={false}>
+            {!isEditing ? (
+              <EuiButtonIcon onClick={toggleEdit} iconType="pencil" aria-label="Edit" />
+            ) : (
+              <EuiButtonIcon onClick={saveEdit} iconType="check" aria-label="Save" />
+            )}
+          </EuiFlexItem>
+          {isEditing && (
+            <EuiFlexItem grow={false}>
+              <EuiButtonIcon
+                onClick={toggleEdit}
+                iconType="error"
+                color="danger"
+                aria-label="cancel"
+              />
+            </EuiFlexItem>
+          )}
+        </EuiFlexGroup>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  );
+};
+
+const NumberInput = ({ item, register, onBlur, onChange, value, ...props }) => {
+  const [value1, setValue] = useState(item.value);
+  const [isEditing, setIsEditing] = useState(false);
+  const onNumberChange = (e) => {
+    setValue(e.target.value);
+    onChange(e);
+  };
+  const toggleEdit = () => {
+    setValue(item.value);
+    setIsEditing(!isEditing);
+  };
+  const saveEdit = async () => {
+    try {
+      let payload = {
+        [item.attr_name]: value1,
+      };
+      await ticketApi.update(item.ticket, payload);
+      mutate("/crm/ticket/");
+      setIsEditing(!isEditing);
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+      mutate("/crm/ticket/");
+    }
+  };
+  return (
+    <EuiFlexGroup justifyContent="flexStart" alignItems="center">
+      <EuiFlexItem grow={isEditing ? true : false}>
+        {isEditing ? (
+          <EuiFieldNumber
+            min={item.config?.min}
+            max={item.config?.max}
+            step={item.config?.step}
+            value={value1}
+            onChange={(e) => onNumberChange(e)}
+            onBlur={onBlur}
+          />
+        ) : (
+          <div>{value1 ? value1 : "Null"}</div>
+        )}
+      </EuiFlexItem>
+      <EuiFlexItem grow={false}>
+        <EuiFlexGroup justifyContent="flexEnd">
+          <EuiFlexItem grow={false}>
+            {!isEditing ? (
+              <EuiButtonIcon onClick={toggleEdit} iconType="pencil" aria-label="Edit" />
+            ) : (
+              <EuiButtonIcon onClick={saveEdit} iconType="check" aria-label="Save" />
+            )}
+          </EuiFlexItem>
+          {isEditing && (
+            <EuiFlexItem grow={false}>
+              <EuiButtonIcon
+                onClick={toggleEdit}
+                iconType="error"
+                color="danger"
+                aria-label="cancel"
+              />
+            </EuiFlexItem>
+          )}
+        </EuiFlexGroup>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  );
+};
+
+const EmotionInput = ({ item, label, onChange, value, ...props }) => {
   const [selectedEmotion, setSelectedEmotion] = useState(value || null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleEmotionSelect = useCallback(
     (emotion) => {
@@ -40,6 +172,24 @@ const EmotionInput = ({ label, onChange, value, ...props }) => {
     },
     [onChange],
   );
+
+  const toggleEdit = () => {
+    setSelectedEmotion(value);
+    setIsEditing(!isEditing);
+  };
+  const saveEdit = async () => {
+    try {
+      let payload = {
+        [item.attr_name]: selectedEmotion,
+      };
+      await ticketApi.update(item.ticket, payload);
+      mutate("/crm/ticket/");
+      setIsEditing(!isEditing);
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+      mutate("/crm/ticket/");
+    }
+  };
 
   const emotions = [
     { name: "Ууртай", emoji: "😠", value: "angry" },
@@ -51,38 +201,195 @@ const EmotionInput = ({ label, onChange, value, ...props }) => {
 
   return (
     <div css={emotionRowStyle}>
-      {emotions.map((emotion) => (
-        <EuiButton
-          key={emotion.value}
-          className={`emotion-button ${selectedEmotion?.value === emotion.value ? "selected" : ""}`}
-          onClick={() => handleEmotionSelect(emotion)}
-          aria-label={emotion.name}
-          fill={selectedEmotion?.value === emotion.value}
-          title={emotion.name}
-        >
-          {emotion.emoji}
-        </EuiButton>
-      ))}
+      <EuiFlexGroup justifyContent="flexStart" alignItems="center">
+        {isEditing ? (
+          <EuiFlexItem grow={false}>
+            {emotions.map((emotion) => (
+              <EuiButton
+                key={emotion.value}
+                className={`emotion-button ${selectedEmotion?.value === emotion.value ? "selected" : ""}`}
+                onClick={() => handleEmotionSelect(emotion)}
+                aria-label={emotion.name}
+                fill={selectedEmotion?.value === emotion.value}
+                title={emotion.name}
+              >
+                {emotion.emoji}
+              </EuiButton>
+            ))}
+            <input type="hidden" value={selectedEmotion?.value} name={props.name} {...props} />
+          </EuiFlexItem>
+        ) : (
+          <EuiFlexItem grow={false}>
+            <EuiButton
+              key={selectedEmotion.value}
+              className={`emotion-button ${selectedEmotion?.value === selectedEmotion.value ? "selected" : ""}`}
+              onClick={() => handleEmotionSelect(selectedEmotion)}
+              aria-label={selectedEmotion.name}
+              fill={selectedEmotion?.value === selectedEmotion.value}
+              title={selectedEmotion.name}
+            >
+              {selectedEmotion.emoji}
+            </EuiButton>
+          </EuiFlexItem>
+        )}
 
-      <input type="hidden" value={selectedEmotion?.value} name={props.name} {...props} />
+        <EuiFlexItem grow={false}>
+          <EuiFlexGroup justifyContent="flexEnd">
+            <EuiFlexItem grow={false}>
+              {!isEditing ? (
+                <EuiButtonIcon onClick={toggleEdit} iconType="pencil" aria-label="Edit" />
+              ) : (
+                <EuiButtonIcon onClick={saveEdit} iconType="check" aria-label="Save" />
+              )}
+            </EuiFlexItem>
+            {isEditing && (
+              <EuiFlexItem grow={false}>
+                <EuiButtonIcon
+                  onClick={toggleEdit}
+                  iconType="error"
+                  color="danger"
+                  aria-label="cancel"
+                />
+              </EuiFlexItem>
+            )}
+          </EuiFlexGroup>
+        </EuiFlexItem>
+      </EuiFlexGroup>
     </div>
+  );
+};
+
+const ComboboxInput = ({ item, register, onBlur, onChange, value, ...props }) => {
+  const [value1, setValue] = useState(value);
+  const [isEditing, setIsEditing] = useState(false);
+  const onSwitchChange = (e) => {
+    setValue(e.target.value);
+    onChange(e.target.value);
+  };
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+  };
+  const saveEdit = async () => {
+    try {
+      let payload = {
+        [item.attr_name]: value1,
+      };
+      await ticketApi.update(item.ticket, payload);
+      mutate("/crm/ticket/");
+      setIsEditing(!isEditing);
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+      mutate("/crm/ticket/");
+    }
+  };
+  return (
+    <EuiFlexGroup justifyContent="flexStart" alignItems="center">
+      <EuiFlexItem grow={false}>
+        {isEditing ? (
+          item.config?.isMultiple ? (
+            <EuiSelectable
+              options={item.config?.choices}
+              value={value1}
+              onChange={(e) => onSwitchChange(e)}
+              onBlur={onBlur}
+            />
+          ) : (
+            <EuiSelect
+              options={item.config?.choices}
+              value={value1}
+              onChange={(e) => onSwitchChange(e)}
+              onBlur={onBlur}
+            />
+          )
+        ) : (
+          <div>{value1 ? value1 : "Null"}</div>
+        )}
+      </EuiFlexItem>
+      <EuiFlexItem grow={false}>
+        <EuiFlexGroup justifyContent="flexEnd">
+          <EuiFlexItem grow={false}>
+            {!isEditing ? (
+              <EuiButtonIcon onClick={toggleEdit} iconType="pencil" aria-label="Edit" />
+            ) : (
+              <EuiButtonIcon onClick={saveEdit} iconType="check" aria-label="Save" />
+            )}
+          </EuiFlexItem>
+          {isEditing && (
+            <EuiFlexItem grow={false}>
+              <EuiButtonIcon
+                onClick={toggleEdit}
+                iconType="error"
+                color="danger"
+                aria-label="cancel"
+              />
+            </EuiFlexItem>
+          )}
+        </EuiFlexGroup>
+      </EuiFlexItem>
+    </EuiFlexGroup>
   );
 };
 
 const SwitchInput = ({ item, register, onBlur, onChange, value, ...props }) => {
   const [value1, setValue] = useState(value);
+  const [isEditing, setIsEditing] = useState(false);
   const onSwitchChange = (e) => {
     setValue(e.target.checked);
     onChange(e.target.checked);
   };
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+  };
+  const saveEdit = async () => {
+    try {
+      let payload = {
+        [item.attr_name]: value1,
+      };
+      await ticketApi.update(item.ticket, payload);
+      mutate("/crm/ticket/");
+      setIsEditing(!isEditing);
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+      mutate("/crm/ticket/");
+    }
+  };
   return (
-    <EuiSwitch
-      {...register(item.attr_name)}
-      showLabel={false}
-      checked={value1}
-      onChange={onSwitchChange}
-      onBlur={onBlur}
-    />
+    <EuiFlexGroup justifyContent="flexStart" alignItems="center">
+      <EuiFlexItem grow={false}>
+        {isEditing ? (
+          <EuiSwitch
+            {...register(item.attr_name)}
+            showLabel={false}
+            checked={value1}
+            onChange={onSwitchChange}
+            onBlur={onBlur}
+          />
+        ) : (
+          <div>{value1 ? "True" : "False"}</div>
+        )}
+      </EuiFlexItem>
+      <EuiFlexItem grow={false}>
+        <EuiFlexGroup justifyContent="flexEnd">
+          <EuiFlexItem grow={false}>
+            {!isEditing ? (
+              <EuiButtonIcon onClick={toggleEdit} iconType="pencil" aria-label="Edit" />
+            ) : (
+              <EuiButtonIcon onClick={saveEdit} iconType="check" aria-label="Save" />
+            )}
+          </EuiFlexItem>
+          {isEditing && (
+            <EuiFlexItem grow={false}>
+              <EuiButtonIcon
+                onClick={toggleEdit}
+                iconType="error"
+                color="danger"
+                aria-label="cancel"
+              />
+            </EuiFlexItem>
+          )}
+        </EuiFlexGroup>
+      </EuiFlexItem>
+    </EuiFlexGroup>
   );
 };
 
@@ -105,22 +412,38 @@ const DateInput = ({ item, register, onBlur, onChange, value, ...props }) => {
 const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props }) => {
   let searchTimeout: NodeJS.Timeout;
   const [value1, setValue] = useState(value);
+  const [prevValue, setPrevValue] = useState(value);
   const [searchValue, setSearchValue] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   const { data: segmentCustomers, isLoading } = useGetCustomers<CustomersResponse>(null, {
     query: searchValue,
-    limit: '5',
+    limit: "5",
   });
 
-  const dataTypeOptions: EuiComboBoxOptionOption[] =
-    segmentCustomers?.results?.map((customer) => {
-      return {
-        label: customer?.email || customer?.phone || customer?.rid,
-        "aria-label": `${customer?.email} ${customer?.phone} ${customer?.rid}`,
-        value: String(customer?.id),
-        append: <EuiBadge>{customer?.phone || customer?.email || customer?.rid}</EuiBadge>,
-      };
-    }) || [];
+  const dataTypeOptions: EuiComboBoxOptionOption[] = useMemo(() => {
+    return (
+      segmentCustomers?.results?.map((customer) => {
+        return {
+          label: customer?.email || customer?.phone || customer?.rid,
+          "aria-label": `${customer?.email} ${customer?.phone} ${customer?.rid}`,
+          value: String(customer?.id),
+          append: <EuiBadge>{customer?.phone || customer?.email || customer?.rid}</EuiBadge>,
+        };
+      }) || []
+    );
+  }, [segmentCustomers?.results]);
+
+  useEffect(() => {
+    const matchingOption = dataTypeOptions.find((option) => option.value === item.value);
+    if (matchingOption) {
+      setValue([matchingOption]);
+    }
+  }, [dataTypeOptions, item.value]);
+
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+  };
 
   const onSearchChange = (value: string) => {
     clearTimeout(searchTimeout);
@@ -129,82 +452,119 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
     }, 500);
   };
 
-  return (
-    <>
-      <EuiComboBox
-        placeholder="Имэйл, утас..."
-        singleSelection={{ asPlainText: true }}
-        options={dataTypeOptions}
-        onChange={(selected) => {
-          setValue(selected);
-          onChange(selected.length > 0 ? selected[0].value : null);
-        }}
-        optionMatcher={({ option, searchValue }) => {
-          return option?.["aria-label"].includes(searchValue);
-        }}
-        selectedOptions={value1}
-        onSearchChange={onSearchChange}
-        onBlur={onBlur}
-        isClearable={false}
-        isLoading={isLoading}
-      />
+  const saveEdit = async () => {
+    try {
+      let payload = {
+        [item.attr_name]: value1[0]?.value,
+      };
+      // console.log(item.ticket);
+      // console.log(payload);
+      await ticketApi.update(item.ticket, payload);
+      mutate("/crm/ticket/");
+      setIsEditing(!isEditing);
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+      mutate("/crm/ticket/");
+    }
+  };
 
-      <input type="hidden" value={value1 && value1[0]?.value} name={item.attr_name} {...props} />
-      {value1 && `Selected : ${ value1[0]?.label } - ${ value1[0]?.value }`}
-    </>
+  return (
+    <EuiFlexGroup justifyContent="flexStart" alignItems="center">
+      <EuiFlexItem grow={false}>
+        {isEditing ? (
+          <>
+            <EuiComboBox
+              placeholder="Имэйл, утас..."
+              singleSelection={{ asPlainText: true }}
+              options={dataTypeOptions}
+              onChange={(selected) => {
+                setPrevValue(value1);
+                setValue(selected);
+                onChange(selected.length > 0 ? selected[0].value : null);
+              }}
+              optionMatcher={({ option, searchValue }) => {
+                return option?.["aria-label"].includes(searchValue);
+              }}
+              selectedOptions={value1}
+              onSearchChange={onSearchChange}
+              onBlur={onBlur}
+              isClearable={false}
+              isLoading={isLoading}
+            />
+
+            <input
+              type="hidden"
+              value={value1 && value1[0]?.value}
+              name={item.attr_name}
+              {...props}
+            />
+            {/* {value1 && `Selected : ${value1[0]?.label} - ${value1[0]?.value}`} */}
+          </>
+        ) : (
+          <EuiText>{value1?.map((opt) => opt.label).join(", ")}</EuiText>
+        )}
+      </EuiFlexItem>
+
+      <EuiFlexItem grow={false}>
+        <EuiFlexGroup justifyContent="flexEnd">
+          <EuiFlexItem grow={false}>
+            {!isEditing ? (
+              <EuiButtonIcon onClick={toggleEdit} iconType="pencil" aria-label="Edit" />
+            ) : (
+              <EuiButtonIcon onClick={saveEdit} iconType="check" aria-label="Save" />
+            )}
+          </EuiFlexItem>
+          {isEditing && (
+            <EuiFlexItem grow={false}>
+              <EuiButtonIcon
+                onClick={toggleEdit}
+                iconType="error"
+                color="danger"
+                aria-label="cancel"
+              />
+            </EuiFlexItem>
+          )}
+        </EuiFlexGroup>
+      </EuiFlexItem>
+    </EuiFlexGroup>
   );
 };
 
 const getFieldComponent = (item, register, value, onChange, onBlur) => {
   switch (item.type) {
     case "text":
-      if (item.config?.isMultiline) {
-        return (
-          <EuiTextArea
-            {...register(item.attr_name)}
-            value={value}
-            onChange={onChange}
-            onBlur={onBlur}
-          />
-        );
-      }
       return (
-        <EuiFieldText
+        <TextInput
+          item={item}
           {...register(item.attr_name)}
-          value={value}
+          min={item.config?.min}
+          max={item.config?.max}
+          step={item.config?.step}
+          value={item.value}
           onChange={onChange}
           onBlur={onBlur}
         />
       );
     case "number":
       return (
-        <EuiFieldNumber
+        <NumberInput
+          item={item}
           {...register(item.attr_name)}
           min={item.config?.min}
           max={item.config?.max}
           step={item.config?.step}
-          value={value}
+          value={item.value}
           onChange={onChange}
           onBlur={onBlur}
         />
       );
     case "choice":
-      if (item.config?.isMultiple) {
-        return (
-          <EuiSelectable
-            {...register(item.attr_name)}
-            options={item.config?.choices}
-            value={value}
-            onChange={onChange}
-            onBlur={onBlur}
-          />
-        );
-      }
       return (
-        <EuiSelect
+        <ComboboxInput
+          item={item}
           {...register(item.attr_name)}
           options={item.config?.choices}
-          value={value}
+          value={item.value}
           onChange={onChange}
           onBlur={onBlur}
         />
@@ -216,7 +576,7 @@ const getFieldComponent = (item, register, value, onChange, onBlur) => {
           item={item}
           showLabel={false}
           checked={false}
-          value={value}
+          value={item.value}
           onChange={onChange}
           onBlur={onBlur}
         />
@@ -225,7 +585,7 @@ const getFieldComponent = (item, register, value, onChange, onBlur) => {
       return (
         <EuiFilePicker
           {...register(item.attr_name)}
-          value={value}
+          value={item.value}
           onChange={onChange}
           onBlur={onBlur}
         />
@@ -235,7 +595,7 @@ const getFieldComponent = (item, register, value, onChange, onBlur) => {
         <DateInput
           item={item}
           register={register}
-          value={value}
+          value={item.value}
           onChange={onChange}
           onBlur={onBlur}
         />
@@ -250,10 +610,23 @@ const getFieldComponent = (item, register, value, onChange, onBlur) => {
       );
     case "customer":
       return (
-        <CustomerSelector item={item} {...register(item.attr_name)} value={value} onChange={onChange} />
+        <CustomerSelector
+          item={item}
+          {...register(item.attr_name)}
+          value={value}
+          onChange={onChange}
+        />
       );
     case "emotion":
-      return <EmotionInput {...register(item.attr_name)} value={value} onChange={onChange} />;
+      return (
+        <EmotionInput
+          item={item}
+          {...register(item.attr_name)}
+          value={item.value}
+          onChange={onChange}
+        />
+      );
+
     default:
       return (
         <EuiText>

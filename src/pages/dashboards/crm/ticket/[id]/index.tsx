@@ -36,6 +36,7 @@ import { Controller, useForm } from "react-hook-form";
 import getFieldComponent from "../../../../../components/ticket_template/utils";
 import { useRef, useState } from "react";
 import CustomersSelect from "../../../../../components/ticket_template/customers_select";
+import ticketTemplateApi from "../../../../../api/ticket_template";
 
 // interface Ticket {
 //   id: string;
@@ -165,6 +166,14 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
 
   const { data, error, isLoading } = useSWR(id ? `${id}` : null, ticketApi.getTicketById);
+  const {
+    data: selectedTicket,
+    error: templateError,
+    isLoading: isTemplateLoading,
+  } = useSWR(
+    data?.ticket_template ? `/crm/ticket/${data.ticket_template}/` : null,
+    data?.ticket_template ? () => ticketTemplateApi.getTemplateById(data.ticket_template) : null,
+  );
 
   if (isLoading) return <div>Loading ticket details...</div>;
 
@@ -240,6 +249,10 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     setSelectedCustomerId(selectedValue);
   };
 
+  const handleInlineEditCombobox = (selectedValue: string) => {
+    console.log("Selected Value:", selectedValue);
+  };
+
   return (
     <DashboardCRMLayout>
       <>
@@ -259,6 +272,8 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                 <EuiFormRow label="Last Updated At" fullWidth>
                   <EuiText>{formatDate(data.updated_at, "dateTime")}</EuiText>
                 </EuiFormRow>
+
+                {/* <EuiFormRow>{InilineEditUtils.}</EuiFormRow> */}
 
                 <EuiHorizontalRule margin="l" />
                 <EuiSpacer size="xl" />
@@ -309,6 +324,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                           key={field.id}
                           label={field.attr_name}
                           helpText={field.config?.helpText}
+                          fullWidth
                         >
                           {getFieldComponent(field, register, value, onChange, onBlur)}
                         </EuiFormRow>
