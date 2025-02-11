@@ -43,31 +43,21 @@ export default class MyDocument extends Document {
   render(): ReactElement {
     const isLocalDev = process.env.NODE_ENV === "development";
 
-    const favicon16Prod = `${pathPrefix}/images/favicon/prod/favicon-16x16.png`;
-    const favicon32Prod = `${pathPrefix}/images/favicon/prod/favicon-32x32.png`;
-    const favicon96Prod = `${pathPrefix}/images/favicon/prod/favicon-96x96.png`;
-    const favicon16Dev = `${pathPrefix}/images/favicon/dev/favicon-16x16.png`;
-    const favicon32Dev = `${pathPrefix}/images/favicon/dev/favicon-32x32.png`;
-    const favicon96Dev = `${pathPrefix}/images/favicon/dev/favicon-96x96.png`;
+    const favicon25 = `${pathPrefix}/images/favicon.png`;
 
     return (
       <Html lang="en">
         <Head>
           <meta
             name="description"
-            content="CRM+CDP: A powerful combination that provides a unified view of customer data, enabling businesses to deliver personalized experiences, optimize marketing efforts, and make data-driven decisions. CDPs aggregate data from various sources, while CRMs focus on managing customer interactions. When integrated, they offer a comprehensive solution for understanding and engaging customers effectively."
+            content="CRM+CDP байгууллагын харилцагчдын бүртгэл хөтлөх, сегментэд хувааж кампанит ажил өрнүүлэх зэрэг үйлдэлтэй систем юм. Мөн дуудалгын төв, чатаар ирсэн болон салбарт ирсэн гомдол зэргийг бүртгэж удирдах боломжтой."
           />
-          <meta property="og:title" content="Elastic UI" />
+          <meta property="og:title" content="CDP+CRM" />
           <meta
             property="og:description"
-            content="CRM+CDP: A powerful combination that provides a unified view of customer data, enabling businesses to deliver personalized experiences, optimize marketing efforts, and make data-driven decisions. CDPs aggregate data from various sources, while CRMs focus on managing customer interactions. When integrated, they offer a comprehensive solution for understanding and engaging customers effectively."
+            content="CRM+CDP байгууллагын харилцагчдын бүртгэл хөтлөх, сегментэд хувааж кампанит ажил өрнүүлэх зэрэг үйлдэлтэй систем юм. Мөн дуудалгын төв, чатаар ирсэн болон салбарт ирсэн гомдол зэргийг бүртгэж удирдах боломжтой."
           />
-          <meta
-            property="og:image"
-            content="https://repository-images.githubusercontent.com/233832487/cddf0ff5-a35f-4380-8912-1c9f365366a8"
-          />
-          <meta property="og:url" content="https://elastic.github.io/next-eui-starter/" />
-          <meta name="twitter:card" content="summary_large_image" />
+          <meta property="og:url" content="https://crm.pocket.mn" />
           <meta name="eui-styles" />
 
           {themeConfig.availableThemes.map((each) => themeLink(each))}
@@ -77,20 +67,8 @@ export default class MyDocument extends Document {
           <link
             rel="icon"
             type="image/png"
-            href={isLocalDev ? favicon16Dev : favicon16Prod}
-            sizes="16x16"
-          />
-          <link
-            rel="icon"
-            type="image/png"
-            href={isLocalDev ? favicon32Dev : favicon32Prod}
-            sizes="32x32"
-          />
-          <link
-            rel="icon"
-            type="image/png"
-            href={isLocalDev ? favicon96Dev : favicon96Prod}
-            sizes="96x96"
+            href={favicon25}
+            sizes="25x25"
           />
           <Script strategy="beforeInteractive" src="/config/env.js"></Script>
         </Head>

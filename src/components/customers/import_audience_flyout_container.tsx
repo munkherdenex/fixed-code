@@ -13,10 +13,10 @@ const ImportAudienceFlyoutContainer = () => {
       <>
         <EuiButton
           onClick={() => setIsImportFlyoutVisible(true)}
-          fill
-          color={"success"}
+          color='accent'
           iconType={"importAction"}
           key="audience-customer"
+          size='s'
         >
           {translate("import")}
         </EuiButton>

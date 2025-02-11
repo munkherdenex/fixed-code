@@ -15,7 +15,6 @@ import { GetStaticProps } from "next/types";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import TemplateTable from "../../../components/crm/template/table";
 import DashboardCRMLayout from "../../../layouts/dashboard_crm";
 import useCreateCRMTemplate from "../../../hooks/useCreateCRMTemplate";
 import { addToast } from "../../../components/toast";

@@ -20,19 +20,20 @@ import {
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
-import DashboardCRMLayout from "../../../../layouts/dashboard_crm";
-import ChatMessage from "../../../../components/chat/chat_message";
-import useGetRootChatLogs from "../../../../hooks/useGetRootChatLogs";
+import DashboardCRMLayout from "@/layouts/dashboard_crm";
+import ChatMessage from "@/components/chat/chat_message";
+import useGetRootChatLogs from "@/hooks/useGetRootChatLogs";
 import useSWRInfinite from "swr/infinite";
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import contactLogApi from "../../../../api/contact_log";
+import contactLogApi from "@/api/contact_log";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import useGetCustomers, { CustomersResponse } from "../../../../hooks/useGetCustomers";
-import { PAGINATION_CHOOSES } from "../../../../constants";
+import useGetCustomers, { CustomersResponse } from "@/hooks/useGetCustomers";
+import { PAGINATION_CHOOSES } from "@/constants";
 import moment from "moment";
+import { GetStaticProps } from 'next/types';
 
 const chatCss = `
   .chat-container {
@@ -535,6 +536,20 @@ const Chat = () => {
       </DashboardCRMLayout>
     </>
   );
+};
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const common = (await import(`../../../../messages/${context.locale}/common.json`)).default;
+  const chat = (await import(`../../../../messages/${context.locale}/chat.json`)).default;
+
+  return {
+    props: {
+      messages: {
+        ...common,
+        ...chat,
+      },
+    },
+  };
 };
 
 export default Chat;

@@ -30,8 +30,20 @@ const Chrome = ({ children }: { children?: React.ReactNode }) => {
         : null,
   });
 
+  const primaryOverrides = {
+    colors: {
+      LIGHT: {
+        accent: '#E33255',
+      },
+      DARK: {
+        accent: '#E33255',
+      },
+    },
+  };
+
   return (
     <EuiProvider
+      modify={primaryOverrides}
       colorMode={colorMode as EuiThemeColorMode}
       cache={{ default: defaultCache, utility: utilityCache }}
     >

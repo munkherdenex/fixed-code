@@ -6,19 +6,15 @@ import CrmSideMenu from "./crm_sidebar_menu";
 const audienceSegmentPaths = [
   {
     path: "/dashboards/crm/ticket",
-    name: "Ticket",
+    name: "Тикет",
   },
   {
     path: "/dashboards/crm/call",
-    name: "Call",
+    name: "Дуудлага",
   },
   {
     path: "/dashboards/crm/chat",
-    name: "Chat",
-  },
-  {
-    path: "/dashboards/crm/data",
-    name: "Data",
+    name: "Чат",
   },
 ];
 
@@ -32,7 +28,30 @@ const CRMSidebar = () => {
 
   const sideNav = [
     {
-      name: "Main menu",
+      name: "Контактууд",
+      id: htmlIdGenerator("customers")(),
+      items: [
+        {
+          name: "Харилцагчид",
+          path: "/dashboards/crm/customer",
+        },
+        {
+          name: "Компани",
+          path: "#k",
+        },
+      ].map((path) => {
+        return {
+          name: path.name,
+          id: htmlIdGenerator(path.name)(),
+          isSelected: router.pathname === path.path,
+          onClick: () => {
+            router.push(path.path);
+          }
+        };
+      }),
+    },
+    {
+      name: "Харицлагчийн үйлчилгээ",
       id: htmlIdGenerator("audience&Segments")(),
       items: audienceSegmentPaths.map((path) => {
         return {
@@ -44,6 +63,52 @@ const CRMSidebar = () => {
           },
         };
       }),
+    },
+    {
+      name: "Борлуулалт",
+      id: htmlIdGenerator("sales")(),
+      items: 
+        [
+          {
+            name: "Лийд",
+            path: "#l",
+          },
+          {
+            name: "Таск",
+            path: "#tt",
+          },
+        ].map((path) => {
+          return {
+            name: path.name,
+            id: htmlIdGenerator(path.name)(),
+            isSelected: router.pathname === path.path,
+            onClick: () => {
+              router.push(path.path);
+            },
+          };
+        })
+      ,
+    },
+    {
+      name: "Тайлан",
+      id: htmlIdGenerator("reports")(),
+      items: 
+        [
+          {
+            name: "Тайлан",
+            path: "#t",
+          },
+        ].map((path) => {
+          return {
+            name: path.name,
+            id: htmlIdGenerator(path.name)(),
+            isSelected: router.pathname === path.path,
+            onClick: () => {
+              router.push(path.path);
+            },
+          };
+        })
+      ,
     },
   ];
 
