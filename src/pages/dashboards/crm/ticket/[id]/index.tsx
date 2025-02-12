@@ -149,6 +149,30 @@ const replyMsg = `Thanks, Tiago for taking a look. :tada:
 I also found something suspicious: [Update.exe](http://my-drive.elastic.co/suspicious-file).
 `;
 
+const transformDataToComments = (results): EuiCommentProps[] => {
+  return results.map((result) => {
+    const { id, type, created_at, created_by, data } = result;
+
+    // Generate a comment message based on the type and changes
+    let message = "";
+    if (type === "update" && data.changes) {
+      const changes = Object.entries(data.changes)
+        .map(([key, value]) => `${key}: ${value.old_value}`)
+        .join(", ");
+      message = `Updated: ${changes}`;
+    } else if (type === "open") {
+      message = "Ticket opened.";
+    }
+
+    return {
+      username: `User ${created_by}`,
+      event: type,
+      timestamp: created_at,
+      children: <p>{message}</p>,
+    };
+  });
+};
+
 const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const errorElementId = useRef(htmlIdGenerator()());
   const flyoutId = useGeneratedHtmlId();
@@ -166,6 +190,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
 
   const { data, error, isLoading } = useSWR(id ? `${id}` : null, ticketApi.getTicketById);
+  const { data: ticketLogs } = useSWR(`${id}/logs/`, ticketApi.getLogsByTicketId);
   const {
     data: selectedTicket,
     error: templateError,
@@ -174,6 +199,12 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     data?.ticket_template ? `/crm/ticket/${data.ticket_template}/` : null,
     data?.ticket_template ? () => ticketTemplateApi.getTemplateById(data.ticket_template) : null,
   );
+
+  if (!ticketLogs) {
+    return <EuiText>No logs found for this ticket.</EuiText>;
+  }
+
+  const ticketComments = transformDataToComments(ticketLogs.results);
 
   if (isLoading) return <div>Loading ticket details...</div>;
 
@@ -249,10 +280,6 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     setSelectedCustomerId(selectedValue);
   };
 
-  const handleInlineEditCombobox = (selectedValue: string) => {
-    console.log("Selected Value:", selectedValue);
-  };
-
   return (
     <DashboardCRMLayout>
       <>
@@ -276,10 +303,12 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                 {/* <EuiFormRow>{InilineEditUtils.}</EuiFormRow> */}
 
                 <EuiHorizontalRule margin="l" />
-                <EuiSpacer size="xl" />
-                <EuiFormRow label="Add Comment" fullWidth>
+                {/* <EuiSpacer size="xl" /> */}
+                <EuiFormRow label="Comments" fullWidth>
                   <EuiCommentList aria-label="Comment system example">
-                    {commentsList}
+                    {/* <div>{JSON.stringify(ticketLogs, null, 2)}</div> */}
+                    <EuiCommentList comments={ticketComments} />
+                    {/* {commentsList} */}
                     <EuiComment username="juana" timelineAvatar={<EuiAvatar name="juana" />}>
                       <EuiMarkdownEditor
                         aria-label="Markdown editor"
@@ -294,6 +323,16 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     </EuiComment>
                   </EuiCommentList>
                 </EuiFormRow>
+                <EuiSpacer size="m" />
+                <EuiFlexGroup justifyContent="flexEnd" responsive={false}>
+                  <EuiFlexItem grow={false}>
+                    <div>
+                      <EuiButton onClick={onAddComment} isLoading={isLoading}>
+                        Add comment
+                      </EuiButton>
+                    </div>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
               </EuiForm>
             </EuiPanel>
           </EuiFlexItem>
