@@ -18,7 +18,11 @@ const ticketApi = {
     return response.data;
   },
   getLogsByTicketId: async (id: string) => {
-    const response = await client.get(`/crm/ticket/${id}`);
+    const response = await client.get(`/crm/ticket/${id}?limit=100`);
+    return response.data;
+  },
+  postCommentOnTicket: async (id, payload) => {
+    const response = await client.post(`/crm/ticket/${id}/comment/`, payload);
     return response.data;
   },
 };
