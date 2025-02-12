@@ -41,7 +41,7 @@ const nextConfig = {
   basePath: pathPrefix,
 
   images: {
-    loader: "custom",
+    loader: "default",
   },
 
   /**

@@ -155,14 +155,15 @@ const CRM = () => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
+  console.log(__dirname)
   const common = (await import(`../../../../../messages/${context.locale}/common.json`)).default;
-  const campaign = (await import(`../../../../../messages/${context.locale}/campaign.json`)).default;
+  const ticket = (await import(`../../../../../messages/${context.locale}/ticket.json`)).default;
 
   return {
     props: {
       messages: {
         ...common,
-        ...campaign,
+        ...ticket,
       },
     },
   };

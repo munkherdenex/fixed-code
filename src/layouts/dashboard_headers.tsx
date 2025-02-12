@@ -1,6 +1,7 @@
 import {
   EuiHeader,
   EuiHeaderLogo,
+  EuiText,
   useGeneratedHtmlId,
   useIsWithinMaxBreakpoint,
 } from "@elastic/eui";
@@ -19,25 +20,24 @@ const DashboardHeaders = () => {
   return (
     <>
       <EuiHeader
-        position="fixed"
         sections={[
           {
             items: [
-              <EuiHeaderLogo
+              largeMaxBreakpoint && leftSectionItems,
+              <ChangeProductButton key={useGeneratedHtmlId()} />,
+              <EuiText
                 key="elastic-logo"
                 iconType="dashboardApp"
                 style={{ cursor: "pointer" }}
                 onClick={() => router.push(`/dashboards/cdp`)}
               >
-                {!largeMaxBreakpoint ? "CDP" : ""}
-              </EuiHeaderLogo>,
-              <TeamSwitcher key={useGeneratedHtmlId()} />,
-              largeMaxBreakpoint && leftSectionItems,
-              <ChangeProductButton key={useGeneratedHtmlId()} />,
+                {!largeMaxBreakpoint ? "Customer data platform (CDP)" : ""}
+              </EuiText>,
             ],
           },
           {
             items: [
+              <TeamSwitcher key={useGeneratedHtmlId()} />,
               <ThemeSwitcher key={useGeneratedHtmlId()} />,
               <HeaderUserMenu key={useGeneratedHtmlId()} />,
             ],

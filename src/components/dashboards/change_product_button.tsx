@@ -31,7 +31,7 @@ const ChangeProductButton = () => {
   const closePopover = () => setIsPopoverOpen(false);
 
   const button = (
-    <EuiButtonIcon size="s" color="text" iconType="apps" onClick={onButtonClick}>
+    <EuiButtonIcon size="m" color="primary" display='empty' iconType="apps" onClick={onButtonClick}>
       Data dashboard
     </EuiButtonIcon>
   );

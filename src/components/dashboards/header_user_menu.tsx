@@ -47,7 +47,7 @@ const HeaderUserMenu = () => {
       aria-label="Account menu"
       onClick={onMenuButtonClick}
     >
-      <EuiAvatar name={name} size="s" />
+      <EuiAvatar name={name} size="s"  />
     </EuiHeaderSectionItemButton>
   );
 

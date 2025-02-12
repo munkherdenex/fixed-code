@@ -31,13 +31,13 @@ const CrmSideMenu = () => {
   const managementPaths = useMemo(() => {
     return [
       {
-        path: "/dashboards/crm/settings/ticket_template",
-        name: "Ticket template",
+        path: "/dashboards/crm/knowledge_base",
+        name: "Мэдлэгийн сан",
         roles: ["admin"],
       },
       {
-        path: "/dashboards/crm/field_template",
-        name: "Field template",
+        path: "/dashboards/crm/settings/ticket_template",
+        name: "Тикетийн тохиргоо",
         roles: ["admin"],
       },
     ];
