@@ -31,7 +31,7 @@ const DashboardHeaders = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => router.push(`/dashboards/cdp`)}
               >
-                {!largeMaxBreakpoint ? "Customer data platform (CDP)" : ""}
+                {!largeMaxBreakpoint ? "CDP" : ""}
               </EuiText>,
             ],
           },

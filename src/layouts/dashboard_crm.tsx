@@ -1,4 +1,12 @@
-import { EuiPageSidebarProps, EuiPageTemplate, useIsWithinMaxBreakpoint } from "@elastic/eui";
+import {
+  EuiPage,
+  EuiPageBody,
+  EuiPageHeader,
+  EuiPageSection,
+  EuiPageSidebar,
+  EuiPageSidebarProps,
+  useIsWithinMaxBreakpoint,
+} from "@elastic/eui";
 import { useRouter } from "next/router";
 import { ReactElement, useContext } from "react";
 import { SWRConfig } from "swr";
@@ -47,21 +55,18 @@ const Content = ({
   if (isCRMEnabled) {
     return (
       <div css={styles.contentWrapper}>
-        <EuiPageTemplate
-          style={{ paddingBlockStart: 48 }}
-          restrictWidth
-          panelled={false}
-          bottomBorder={true}
-          {...rest}
-        >
+        <EuiPage bottomBorder={true} {...rest}>
           {!largeMaxBreakpoint && (
-            <EuiPageTemplate.Sidebar sticky={sidebarSticky || true}>
+            <EuiPageSidebar paddingSize="l" sticky={sidebarSticky || true} hasEmbellish={true}>
               <CRMSidebar />
-            </EuiPageTemplate.Sidebar>
+            </EuiPageSidebar>
           )}
-          {pageHeader && <EuiPageTemplate.Header restrictWidth={false} {...pageHeader} />}
-          <EuiPageTemplate.Section restrictWidth={false}>{children}</EuiPageTemplate.Section>
-        </EuiPageTemplate>
+          <EuiPageBody panelled>
+            <DashboardHeadersCRM />
+            <EuiPageHeader bottomBorder paddingSize="l" {...pageHeader} />
+            <EuiPageSection paddingSize="l">{children}</EuiPageSection>
+          </EuiPageBody>
+        </EuiPage>
       </div>
     );
   }
@@ -101,7 +106,6 @@ const DashboardCRMLayout = ({
       }}
     >
       <div css={styles.mainWrapper}>
-        <DashboardHeadersCRM />
         <Content {...{ sidebar, sidebarSticky, pageHeader, breadCrumb, hideSidebar, ...rest }}>
           {children}
         </Content>

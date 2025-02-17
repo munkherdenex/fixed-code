@@ -3,6 +3,7 @@ import {
   useGeneratedHtmlId,
   EuiHeader,
   EuiHeaderLogo,
+  EuiText,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import ThemeSwitcher from "../components/chrome/theme_switcher";
@@ -19,25 +20,24 @@ const DashboardHeadersCRM = () => {
   return (
     <>
       <EuiHeader
-        position="fixed"
         sections={[
           {
             items: [
-              <EuiHeaderLogo
-                key="elastic-logo"
-                iconType="canvasApp"
-                style={{ cursor: "pointer" }}
-                onClick={() => router.push(`/dashboards/crm`)}
-              >
-                {!largeMaxBreakpoint ? "CRM" : ""}
-              </EuiHeaderLogo>,
-              <TeamSwitcher key={useGeneratedHtmlId()} />,
               largeMaxBreakpoint && leftSectionItems,
               <ChangeProductButton key={useGeneratedHtmlId()} />,
+              <EuiText
+                key="elastic-logo"
+                iconType="dashboardApp"
+                style={{ cursor: "pointer" }}
+                onClick={() => router.push(`/dashboards/cdp`)}
+              >
+                {!largeMaxBreakpoint ? "CRM" : ""}
+              </EuiText>,
             ],
           },
           {
             items: [
+              <TeamSwitcher key={useGeneratedHtmlId()} />,
               <ThemeSwitcher key={useGeneratedHtmlId()} />,
               <HeaderUserMenu key={useGeneratedHtmlId()} />,
             ],

@@ -2,6 +2,7 @@ import { EuiFlexGroup, EuiFlexItem, EuiSideNav, htmlIdGenerator } from "@elastic
 import { useRouter } from "next/router";
 import { useState } from "react";
 import CrmSideMenu from "./crm_sidebar_menu";
+import Image from 'next/image';
 
 const audienceSegmentPaths = [
   {
@@ -46,7 +47,7 @@ const CRMSidebar = () => {
           isSelected: router.pathname === path.path,
           onClick: () => {
             router.push(path.path);
-          }
+          },
         };
       }),
     },
@@ -67,48 +68,44 @@ const CRMSidebar = () => {
     {
       name: "Борлуулалт",
       id: htmlIdGenerator("sales")(),
-      items: 
-        [
-          {
-            name: "Лийд",
-            path: "#l",
+      items: [
+        {
+          name: "Лийд",
+          path: "#l",
+        },
+        {
+          name: "Таск",
+          path: "#tt",
+        },
+      ].map((path) => {
+        return {
+          name: path.name,
+          id: htmlIdGenerator(path.name)(),
+          isSelected: router.pathname === path.path,
+          onClick: () => {
+            router.push(path.path);
           },
-          {
-            name: "Таск",
-            path: "#tt",
-          },
-        ].map((path) => {
-          return {
-            name: path.name,
-            id: htmlIdGenerator(path.name)(),
-            isSelected: router.pathname === path.path,
-            onClick: () => {
-              router.push(path.path);
-            },
-          };
-        })
-      ,
+        };
+      }),
     },
     {
       name: "Тайлан",
       id: htmlIdGenerator("reports")(),
-      items: 
-        [
-          {
-            name: "Тайлан",
-            path: "#t",
+      items: [
+        {
+          name: "Тайлан",
+          path: "#t",
+        },
+      ].map((path) => {
+        return {
+          name: path.name,
+          id: htmlIdGenerator(path.name)(),
+          isSelected: router.pathname === path.path,
+          onClick: () => {
+            router.push(path.path);
           },
-        ].map((path) => {
-          return {
-            name: path.name,
-            id: htmlIdGenerator(path.name)(),
-            isSelected: router.pathname === path.path,
-            onClick: () => {
-              router.push(path.path);
-            },
-          };
-        })
-      ,
+        };
+      }),
     },
   ];
 
@@ -116,6 +113,14 @@ const CRMSidebar = () => {
     <EuiFlexGroup direction="column" justifyContent="spaceBetween" style={{ height: "100%" }}>
       <EuiFlexItem>
         <EuiSideNav
+          heading={
+            <Image
+              src="/images/pocket-logo.png"
+              alt="Pocket logo"
+              width={200 * 0.5}
+              height={57 * 0.5}
+            />
+          }
           aria-label="Menu"
           mobileTitle="Menu"
           toggleOpenOnMobile={() => toggleOpenOnMobile()}
