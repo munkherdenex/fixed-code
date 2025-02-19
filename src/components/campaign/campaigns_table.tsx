@@ -30,6 +30,7 @@ import { badgeColor } from "../../utils/badge_color";
 import { getCampaignIcon, getCampaignStatusIcon, getDataKind, isNumber } from "../../utils/helper";
 import CreateCampaignActionPopover from "./create_campaign_action_popover";
 import { useTranslations } from "next-intl";
+import { Worker } from '@/lib/types';
 
 const options = [
   { value: "", text: "All" },
@@ -163,8 +164,11 @@ const CampaignsTable = () => {
       field: "created_by",
       name: translate("created_by"),
       "data-test-subj": "createdByCell",
+      render: (worker: Worker) => {
+        return worker?.email
+      },
       footer: () => {
-        return <strong>Total: {data?.total_count || 0}</strong>;
+        return <strong>Нийт: {data?.total_count || 0}</strong>;
       },
     },
   ];

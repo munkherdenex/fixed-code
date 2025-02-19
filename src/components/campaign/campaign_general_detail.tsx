@@ -142,14 +142,14 @@ const CampaignGeneralDetails = () => {
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiText textAlign="right">
-              {translate("created")}: {data?.created_by}
+              {translate("created")}: {data?.created_by?.email}
             </EuiText>
             <EuiText textAlign="right" size="s">
               <em>{moment(data?.created_at).format("YYYY-MM-DD LT")}</em>
             </EuiText>
             <hr />
             <EuiText textAlign="right">
-              {translate("updated")}: {data?.updated_by}
+              {translate("updated")}: {data?.updated_by?.email}
             </EuiText>
             <EuiText textAlign="right" size="s">
               <em>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</em>

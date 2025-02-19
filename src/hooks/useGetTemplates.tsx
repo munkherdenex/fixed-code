@@ -2,6 +2,7 @@ import useSWR from "swr";
 import { BASE_URL } from "../constants";
 import { handleResponseNotOk } from "../utils/error_handler";
 import { createParam } from "../utils/createParam";
+import { Worker } from '@/lib/types';
 
 export interface Template {
   id: number;
@@ -20,8 +21,8 @@ export interface Template {
     | "SCHEDULED";
   description: string;
   body: string;
-  created_by: any;
-  updated_by: any;
+  created_by: Worker;
+  updated_by: Worker;
   channel: number;
   aud_count: number;
   start_date?: string | null;

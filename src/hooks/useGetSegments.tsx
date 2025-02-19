@@ -2,17 +2,18 @@ import useSWR from "swr";
 import { BASE_URL } from "../constants";
 import { handleResponseNotOk } from "../utils/error_handler";
 import { createParam } from "../utils/createParam";
+import { Worker } from '@/lib/types';
 
 export interface Segment {
   created_at: string;
-  created_by: number;
+  created_by: Worker | null;
   description: string | null;
   id: number;
   name: string;
   team_id: string | null;
   type: string;
   updated_at: string;
-  updated_by: number | null;
+  updated_by: Worker | null;
   condition: string;
   status: string;
   retarget_template_id: number | null;

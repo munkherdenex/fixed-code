@@ -177,12 +177,12 @@ const GeneralDetails = () => {
                 )}
                 <EuiFlexItem>{audientT("created")} :</EuiFlexItem>
                 <EuiFlexItem>
-                  <div>{data?.created_by}</div>
+                  <div>{data?.created_by?.email}</div>
                   <div>{moment(data?.created_at).format("YYYY-MM-DD LT")}</div>
                 </EuiFlexItem>
                 <EuiFlexItem>{audientT("updated")} :</EuiFlexItem>
                 <EuiFlexItem>
-                  <div>{data?.updated_by}</div>
+                  <div>{data?.updated_by?.email}</div>
                   <div>{moment(data?.updated_at).format("YYYY-MM-DD LT")}</div>
                 </EuiFlexItem>
               </EuiFlexGrid>
