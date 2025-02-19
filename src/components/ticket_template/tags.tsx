@@ -20,7 +20,6 @@ interface Tag {
 }
 
 const TagsManager = () => {
-  //   const [tags, setTags] = useState<Tag[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [newTagColor, setNewTagColor] = useState("#000000");
