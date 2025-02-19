@@ -33,15 +33,11 @@ import { useTranslations } from "next-intl";
 import { Worker } from '@/lib/types';
 
 const options = [
-  { value: "", text: "All" },
-  { value: "DRAFT", text: "DRAFT" },
-  { value: "APPROVED", text: "APPROVED" },
-  { value: "DONE", text: "DONE" },
-  { value: "STOPPED", text: "STOPPED" },
-  { value: "SENT", text: "SENT" },
-  { value: "ERROR", text: "ERROR" },
-  { value: "SCHEDULED", text: "SCHEDULED" },
-  { value: "RECURRING", text: "RECURRING" },
+  { value: "", text: "Бүгд" },
+  { value: "email", text: "Имэйл" },
+  { value: "sms", text: "Мессеж" },
+  { value: "push", text: "PUSH" },
+  { value: "api", text: "API" }
 ];
 
 const CampaignsTable = () => {
@@ -51,6 +47,7 @@ const CampaignsTable = () => {
 
   const querySearch = query?.search?.toString() || "";
   const queryFilter = query?.filter?.toString() || "";
+  const queryKindFilter = query?.kind?.toString() || "";
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1];
 
@@ -58,6 +55,7 @@ const CampaignsTable = () => {
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
   const [pageSize, setPageSize] = useState(queryPageSize);
   const [filter, setFilter] = useState(queryFilter);
+  const [kindFilter, setKindFilter] = useState(queryKindFilter);
 
   const [selectedTabId, setSelectedTabId] = useState("all-tab--id");
 
@@ -94,6 +92,7 @@ const CampaignsTable = () => {
   const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, {
     query: searchValue,
     status: filter,
+    kind: kindFilter,
     offset: `${pageIndex * pageSize}`,
     limit: `${pageSize}`,
   });
@@ -178,9 +177,9 @@ const CampaignsTable = () => {
     router.push({ query: { search: value, filter } });
   };
 
-  const onFilter = (value: string) => {
-    setFilter(value);
-    router.push({ query: { filter: value, search: searchValue } });
+  const onKindFilter = (value: string) => {
+    setKindFilter(value);
+    router.push({ query: { kind: value, search: searchValue } });
   };
 
   const onTableChange = ({ page }: Criteria<Template>) => {
@@ -311,23 +310,11 @@ const CampaignsTable = () => {
               <EuiFlexItem grow={false}>
                 <EuiSelect
                   options={options}
-                  value={filter}
+                  value={kindFilter}
                   onChange={(e) => {
-                    onFilter(e.target.value);
+                    onKindFilter(e.target.value);
                   }}
                 />
-              </EuiFlexItem>
-              <EuiFlexItem grow={false}>
-                <div>
-                  <EuiButton
-                    color="success"
-                    onClick={() => {
-                      onFilter("DONE");
-                    }}
-                  >
-                    {translate("done")}
-                  </EuiButton>
-                </div>
               </EuiFlexItem>
             </EuiFlexGrid>
           </EuiFlexItem>
