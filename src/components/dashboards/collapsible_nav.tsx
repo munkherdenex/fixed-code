@@ -55,41 +55,6 @@ const CollapsibleNav = () => {
     },
   ];
 
-  // const ManagementLinks: EuiPinnableListGroupItemProps[] = [
-  //   {
-  //     label: "Custom attributes",
-  //     onClick: () => {
-  //       router.push(`${pathPrefix}/dashboards/custom_attribute`);
-  //     },
-  //     pinnable: false,
-  //     color: router.pathname === "/dashboards/custom_attribute" ? "primary" : "subdued",
-  //   },
-  //   {
-  //     label: "Channels",
-  //     onClick: () => {
-  //       router.push(`${pathPrefix}/dashboards/channels`);
-  //     },
-  //     pinnable: false,
-  //     color: router.pathname === "/dashboards/channels" ? "primary" : "subdued",
-  //   },
-  //   {
-  //     label: "Team",
-  //     onClick: () => {
-  //       router.push(`${pathPrefix}/dashboards/management`);
-  //     },
-  //     pinnable: false,
-  //     color: router.pathname === "/dashboards/management" ? "primary" : "subdued",
-  //   },
-  //   {
-  //     label: "API keys",
-  //     onClick: () => {
-  //       router.push(`${pathPrefix}/dashboards/management/api-keys`);
-  //     },
-  //     pinnable: false,
-  //     color: router.pathname === "/dashboards/management/api-keys" ? "primary" : "subdued",
-  //   },
-  // ];
-
   const [navIsOpen, setNavIsOpen] = useState(false);
 
   /**

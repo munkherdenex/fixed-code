@@ -258,9 +258,9 @@ const GeneralDetails = () => {
               )}
               <EuiFlexGrid columns={2} responsive={false}>
                 <EuiFlexItem>{translate("created_by")}:</EuiFlexItem>
-                <EuiFlexItem>{data?.created_by}</EuiFlexItem>
+                <EuiFlexItem>{data?.created_by?.email}</EuiFlexItem>
                 <EuiFlexItem>{translate("updated_by")} :</EuiFlexItem>
-                <EuiFlexItem>{data?.updated_by}</EuiFlexItem>
+                <EuiFlexItem>{data?.updated_by?.email}</EuiFlexItem>
                 <EuiFlexItem>{translate("created_at")}:</EuiFlexItem>
                 <EuiFlexItem>{moment(data?.created_at).format("YYYY-MM-DD LT")}</EuiFlexItem>
                 <EuiFlexItem>{translate("updated_at")}:</EuiFlexItem>

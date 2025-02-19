@@ -94,6 +94,7 @@ const CustomersTable = () => {
         field: "created_by",
         name: translate("created-by"),
         mobileOptions: { enlarge: true },
+        render: (worker: {id: BigInteger, email: string}) => worker?.email,
       },
       {
         field: "created_at",

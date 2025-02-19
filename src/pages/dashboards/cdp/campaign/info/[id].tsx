@@ -7,10 +7,6 @@ import DashboardLayout from "../../../../../layouts/dashboard";
 import { CampaignProvider } from "../../../../../store/campaign_store";
 import { GetStaticProps } from "next/types";
 
-const CampaignInfoContent = () => {
-  return <Menu />;
-};
-
 const CampaignInfo = () => {
   const campaignInfoActionsId = useGeneratedHtmlId();
   const translate = useTranslations();
@@ -28,7 +24,7 @@ const CampaignInfo = () => {
             rightSideItems: [<CampaignInfoActions key={campaignInfoActionsId} />],
           }}
         >
-          <CampaignInfoContent />
+          <Menu />
         </DashboardLayout>
       </CampaignProvider>
     </>
