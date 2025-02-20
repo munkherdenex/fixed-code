@@ -29,7 +29,7 @@ const DashboardHeadersCRM = () => {
                 key="elastic-logo"
                 iconType="dashboardApp"
                 style={{ cursor: "pointer" }}
-                onClick={() => router.push(`/dashboards/cdp`)}
+                onClick={() => router.push(`/dashboards/crm`)}
               >
                 {!largeMaxBreakpoint ? "CRM" : ""}
               </EuiText>,

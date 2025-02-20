@@ -1,9 +1,17 @@
 import client from "./client"
 
 const templateApi = {
+  getList: async (limit = 5) => {
+    const response = await client.get('/templates/', { params: { limit: limit } })
+    return response
+  },
   getStatCounts: async (templateId: number) => {
     const response = await client.get(`/templates/${templateId}/counts/`)
     return response.data
+  },
+  getStats: async () => {
+    const response = await client.get('/templates/status_count/')
+    return response
   },
 
   testSend: async (templateId: number, testerIds: number[]) => {

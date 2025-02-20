@@ -21,6 +21,7 @@ export interface Template {
     | "SCHEDULED";
   description: string;
   body: string;
+  email_body: string;
   created_by: Worker;
   updated_by: Worker;
   channel: number;

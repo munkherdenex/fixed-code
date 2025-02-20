@@ -57,7 +57,7 @@ const CampaignsTable = () => {
   const [filter, setFilter] = useState(queryFilter);
   const [kindFilter, setKindFilter] = useState(queryKindFilter);
 
-  const [selectedTabId, setSelectedTabId] = useState("all-tab--id");
+  const [selectedTabId, setSelectedTabId] = useState(query?.tab || "all-tab--id");
 
   const tabs = [
     {

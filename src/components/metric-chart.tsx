@@ -1,8 +1,11 @@
 import { Chart, DARK_THEME, LayoutDirection, LIGHT_THEME, Metric, Settings } from "@elastic/charts";
-import { EuiFlexGroup, EuiFlexItem, EuiPanel, useEuiTheme } from "@elastic/eui";
+import { EuiFlexGroup, EuiFlexItem, EuiPanel, EuiText, useEuiTheme } from "@elastic/eui";
 import { useState } from "react";
 import useGetMetrics, { MetricResponse, MetricType } from "../hooks/useGetMetrics";
 import { commonStyles } from "../styles/global.styles";
+import Link from "next/link";
+import useSWR from 'swr';
+import templateApi from '@/api/template';
 
 const options = [
   { value: "1d", text: "1 day" },
@@ -15,6 +18,10 @@ const MetricChart = () => {
   const { colorMode } = useEuiTheme();
   const cStyles = commonStyles();
   const { data, isLoading } = useGetMetrics<MetricResponse>();
+  const { data: templatesStats } = useSWR('templates_stats', async () => {
+    const res = await templateApi.getStats();
+    return res.data;
+  })
 
   const [metricDay] = useState(options[1].value);
 
@@ -27,13 +34,13 @@ const MetricChart = () => {
 
   const currentData = data?.[metricDay] as MetricType;
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Уншиж байна...</div>;
 
   return (
     <EuiFlexGroup>
       <EuiFlexItem grow={1}>
         <EuiFlexGroup responsive={false}>
-          <EuiFlexItem grow={1}>
+          <EuiFlexItem>
             <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
               <Chart size={{ height: 150 }}>
                 <Settings baseTheme={chartBaseTheme} />
@@ -43,12 +50,29 @@ const MetricChart = () => {
                     [
                       {
                         color: colorMode === "DARK" ? "#1D1E24" : "white",
-                        title: "Audience (API)",
-                        extra: <>Last 24 hour change</>,
+                        title: "API-аар нэмэгдсэн",
+                        subtitle: "Харилцагч",
+                        extra: <>Сүүлийн 24 цагт</>,
                         value: currentData?.customers_created_api,
                         valueFormatter: (v) => formatter.format(v),
                       },
-                    ],
+                      {
+                        color: colorMode === "DARK" ? "#1D1E24" : "white",
+                        title: "WEB-ээр нэмэгдсэн",
+                        subtitle: "Харилцагч",
+                        extra: <>Сүүлийн 24 цагт</>,
+                        value: currentData?.customers_created_web,
+                        valueFormatter: (v) => formatter.format(v),
+                      },
+                      {
+                        color: colorMode === "DARK" ? "#1D1E24" : "white",
+                        title: "Мэдээлэл шинэчлэгдсэн",
+                        subtitle: "Харилцагч",
+                        extra: <>Сүүлийн 24 цагт</>,
+                        value: currentData?.customers_updated,
+                        valueFormatter: (v) => formatter.format(v),
+                      },
+                    ]
                   ]}
                 />
               </Chart>
@@ -63,9 +87,27 @@ const MetricChart = () => {
                   data={[
                     [
                       {
-                        color: colorMode === "DARK" ? "#1D1E24" : "white",
-                        title: "Audience (WEB)",
-                        value: currentData?.customers_created_web,
+                        color: colorMode === "DARK" ? "#1D1E24" : "6ECCB1",
+                        title: "Идэвхтэй",
+                        subtitle: "Мэдэгдэл",
+                        extra: <Link href="/dashboards/cdp/campaign?tab=active-tab--id">Бүдгийг харах</Link>,
+                        value: templatesStats?.active_count,
+                        valueFormatter: (v) => formatter.format(v),
+                      },
+                      {
+                        color: colorMode === "DARK" ? "#1D1E24" : "aliceblue",
+                        title: "Бэлтгэж буй",
+                        subtitle: "Мэдэгдэл",
+                        extra: <Link href="/dashboards/cdp/campaign?tab=draft-tab--id">Бүдгийг харах</Link>,
+                        value: templatesStats?.draft_count,
+                        valueFormatter: (v) => formatter.format(v),
+                      },
+                      {
+                        color: colorMode === "DARK" ? "#1D1E24" : "#ccc",
+                        title: "Батлуулах",
+                        subtitle: "Мэдэгдэл",
+                        extra: <Link href="/dashboards/cdp/campaign?tab=done-tab--id">Бүдгийг харах</Link>,
+                        value: templatesStats?.approve_pending_count,
                         valueFormatter: (v) => formatter.format(v),
                       },
                     ],
@@ -75,60 +117,6 @@ const MetricChart = () => {
             </EuiPanel>
           </EuiFlexItem>
         </EuiFlexGroup>
-      </EuiFlexItem>
-      <EuiFlexItem grow={2}>
-        <EuiPanel paddingSize="none" css={cStyles.overflowHidden}>
-          <Chart size={{ height: 150 }}>
-            <Settings baseTheme={chartBaseTheme} />
-            <Metric
-              id="1"
-              data={[
-                [
-                  {
-                    color: "#3c3c3c",
-                    title: "Campaigns (api)",
-                    // domainMax: customColorsValue,
-                    progressBarDirection: LayoutDirection.Vertical,
-                    value: currentData?.notifications_sent_api,
-                    valueFormatter: (v) => formatter.format(v),
-                  },
-                  {
-                    color: "#FFBDAF",
-                    title: "Campaigns (email)",
-                    // domainMax: customColorsValue,
-                    progressBarDirection: LayoutDirection.Vertical,
-                    value: currentData?.notifications_sent_email,
-                    valueFormatter: (v) => formatter.format(v),
-                  },
-                  {
-                    color: "#6DCCB1",
-                    title: "Campaigns (push)",
-                    // domainMax: customColorsValue,
-                    progressBarDirection: LayoutDirection.Vertical,
-                    value: currentData?.notifications_sent_push,
-                    valueFormatter: (v) => formatter.format(v),
-                  },
-                  {
-                    color: "#a1cbea",
-                    title: "Campaigns (In app)",
-                    // domainMax: customColorsValue,
-                    progressBarDirection: LayoutDirection.Vertical,
-                    value: currentData?.notifications_sent_inapp,
-                    valueFormatter: (v) => formatter.format(v),
-                  },
-                  {
-                    color: "#FFD700",
-                    title: "Campaigns (sms)",
-                    // domainMax: customColorsValue,
-                    progressBarDirection: LayoutDirection.Vertical,
-                    value: currentData?.notifications_sent_sms,
-                    valueFormatter: (v) => formatter.format(v),
-                  },
-                ],
-              ]}
-            />
-          </Chart>
-        </EuiPanel>
       </EuiFlexItem>
     </EuiFlexGroup>
   );
