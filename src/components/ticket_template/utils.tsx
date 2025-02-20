@@ -109,7 +109,7 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
 
   const { data: segmentCustomers, isLoading } = useGetCustomers<CustomersResponse>(null, {
     query: searchValue,
-    limit: '5',
+    limit: "5",
   });
 
   const dataTypeOptions: EuiComboBoxOptionOption[] =
@@ -150,7 +150,7 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
       />
 
       <input type="hidden" value={value1 && value1[0]?.value} name={item.attr_name} {...props} />
-      {value1 && `Selected : ${ value1[0]?.label } - ${ value1[0]?.value }`}
+      {value1 && `Selected : ${value1[0]?.label} - ${value1[0]?.value}`}
     </>
   );
 };
@@ -250,7 +250,12 @@ const getFieldComponent = (item, register, value, onChange, onBlur) => {
       );
     case "customer":
       return (
-        <CustomerSelector item={item} {...register(item.attr_name)} value={value} onChange={onChange} />
+        <CustomerSelector
+          item={item}
+          {...register(item.attr_name)}
+          value={value}
+          onChange={onChange}
+        />
       );
     case "emotion":
       return <EmotionInput {...register(item.attr_name)} value={value} onChange={onChange} />;
