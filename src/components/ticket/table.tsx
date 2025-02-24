@@ -17,6 +17,7 @@ import { isNumber } from "../../utils/helper";
 import { useTranslations } from "next-intl";
 import useSWR from "swr";
 import ticketApi from "../../api/ticket";
+import moment from "moment";
 
 const Table = () => {
   const router = useRouter();
@@ -54,15 +55,30 @@ const Table = () => {
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
       field: "id",
-      name: "ID",
+      name: "Тикет ID",
+      render: (id) => <>{"#" + id}</>,
+    },
+    {
+      field: "assigned_to",
+      name: "Хариуцагч",
     },
     {
       field: "category",
-      name: "Category",
+      name: "Төрөл",
     },
     {
       field: "status",
-      name: "Status",
+      name: "Төлөв",
+      render: (status) => <>{status == "open" ? "Нээлттэй" : "Хаалттай"}</>,
+    },
+    {
+      field: "created_at",
+      name: "Үүсгэсэн огноо",
+      render: (date) => <>{moment(date).format("YYYY-MM-DD HH:MM")}</>,
+    },
+    {
+      field: "created_by",
+      name: "Үүсгэсэн ажилтан",
     },
   ];
 
