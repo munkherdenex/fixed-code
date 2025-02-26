@@ -54,7 +54,7 @@ const DeleteConfirmModal = ({
   return (
     <EuiConfirmModal
       aria-labelledby={modalTitleId}
-      title="Delete campaign?"
+      title="Устгах"
       onCancel={closeModal}
       onConfirm={() => {
         confirmModal();
@@ -65,7 +65,7 @@ const DeleteConfirmModal = ({
       isLoading={isMutating}
       confirmButtonDisabled={deleteConfirmValue.toLowerCase() !== "delete"}
     >
-      <EuiCallOut title="Proceed with caution!" color="warning" iconType="warning">
+      <EuiCallOut title="Анхааруулга" color="warning" iconType="warning">
         <p>{translate("delete_campaign_warning")}</p>
       </EuiCallOut>
       <EuiSpacer />
@@ -165,7 +165,7 @@ const CampaignInfoActions = () => {
               <EuiFlexItem grow={false}>
                 <EuiButton
                   iconType="trash"
-                  aria-label="Delete"
+                  aria-label="Устгах"
                   color="danger"
                   onClick={() => setIsDeleteModalVisible(true)}
                 >
@@ -236,24 +236,23 @@ const CampaignInfoActions = () => {
         <EuiConfirmModal
           aria-labelledby={modalTitleId}
           style={{ width: 600 }}
-          title="Update campaign"
+          title="Батлуулах"
           onCancel={closeModal}
           onConfirm={handleDoneTrigger}
           confirmButtonDisabled={data?.aud_count === 0 && !data?.is_to_all}
-          cancelButtonText="Cancel"
+          cancelButtonText="Болих"
           isLoading={isMutating}
-          confirmButtonText="Confirm"
-          defaultFocusedButton={data?.aud_count === 0 ? "cancel" : "confirm"}
+          confirmButtonText="Илгээе"
+          defaultFocusedButton={data?.is_to_all || data?.aud_count === 0 ? "cancel" : "confirm"}
         >
-          <EuiCallOut title="Warning" color="warning" iconType="warning">
-            <p>Audience must be added to the campaign before marking it as done.</p>
-          </EuiCallOut>
+          {(!data?.is_to_all && data?.aud_count === 0) && <EuiCallOut title="Анхааруулга" color="warning" iconType="warning">
+            <p>Мэдэгдэл илгээхэд заавал харилцагчийн мэдээлэл оруулах шаардлагатай тул харилцагч нэмнэ үү..</p>
+          </EuiCallOut>}
           <EuiSpacer />
-          <p>
-            The campaign will be marked as done, and it has reached an audience of{" "}
-            <strong>{data?.is_to_all ? "all" : data?.aud_count}</strong>. Are you sure you want to
-            continue?
-          </p>
+          {(data?.is_to_all || data?.aud_count > 0) && <p>
+            Менежер баталсны дараа энэ мэдэгдэл{" "}
+            <strong>{data?.is_to_all ? "бүх" : data?.aud_count}</strong> хэрэглэгчрүү илгээгдэх. Та менежерээр батлуулахаар илгээх үү?
+          </p>}
         </EuiConfirmModal>
       )}
       {isRejectModalVisible && isDone && (
