@@ -1,60 +1,94 @@
-import grapesjs, { Editor, ProjectData } from "grapesjs";
+import grapesjs, { Editor, Frame, ICommand, ProjectData } from "grapesjs";
 import GjsEditor from "@grapesjs/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EuiButton } from "@elastic/eui";
 import "grapesjs/dist/css/grapes.min.css";
 import plugin from "grapesjs-blocks-basic";
 
 import { useCampaignContext } from "@/store/campaign_store";
+import TestCampaignFlyout from "./test_campaign_flyout";
+import { useTranslations } from "next-intl";
+import { globalMutate } from '@/utils/globalMutate';
+import mn from '@/messages/grapesjs_mn';
 
-const swv = 'sw-visibility';
-const expt = 'export-template';
-const osm = 'open-sm';
-const otm = 'open-tm';
-const ola = 'open-layers';
-const obl = 'open-blocks';
-const ful = 'fullscreen';
-const prv = 'preview';
+const swv = "sw-visibility";
+const expt = "export-template";
+const osm = "open-sm";
+const otm = "open-tm";
+const ola = "open-layers";
+const obl = "open-blocks";
+const ful = "fullscreen";
+const prv = "preview";
 
 const EmailEditor = () => {
+  const translate = useTranslations();
   const [isViewEmail, setIsViewEmail] = useState(true);
+  const [isTestLayout, setIsTestLayout] = useState(false);
   const { data } = useCampaignContext();
   const [editor, setEditor] = useState(null);
   const onEditor = (editor: Editor) => {
-    console.log("Editor loaded", { editor });
     setEditor(editor);
   };
 
-  let editorData = {};
-  try {
-    editorData = JSON.parse(data?.email_body);
-  } catch {
-    editorData = {};
-  }
+  const closeFlyout = () => {
+    setIsTestLayout(false);
+  };
+
+  const loadOnSave = () => {
+    globalMutate("/api/v1/dj/templates/");
+    setIsViewEmail(true);
+  };
+
+  useEffect(() => {
+    if (editor != null) {
+      editor.on('storage:store', loadOnSave);
+  
+      return () => {
+        editor.off('storage:store', loadOnSave);
+      }
+    }
+  }, [editor])
 
   return (
     <div>
-      <EuiButton onClick={() => {
-        if (isViewEmail) {
-          setIsViewEmail(false)
-        } else {
-          editor.store();
-          setIsViewEmail(true)
-        }
-      }}>
+      <EuiButton
+        size="s"
+        onClick={() => {
+          if (isViewEmail) {
+            setIsViewEmail(false);
+          } else {
+            editor.store();
+          }
+        }}
+      >
         {isViewEmail ? "Засварлах" : "Хадгалах"}
+      </EuiButton>
+      &nbsp;
+      <EuiButton
+        size="s"
+        onClick={() => {
+          setIsTestLayout(true);
+        }}
+      >
+        {translate("test")}
       </EuiButton>
       {isViewEmail && (
         <div
           css={{
             minHeight: "500px",
-            overflow: "auto",
-            padding: "40px",
-            border: "1px dashed #ccc",
             marginTop: "20px",
-          }}
-          dangerouslySetInnerHTML={{ __html: data?.body }}
-        />
+            padding: "40px",
+            width: "100%",
+          }}>
+          <iframe
+            css={{
+              border: 'none',
+              height: "90vh",
+              width: "100%",
+            }}
+            srcDoc={data?.body}
+          />
+        </div>
       )}
       {!isViewEmail && (
         <div
@@ -83,12 +117,24 @@ const EmailEditor = () => {
                   },
                 },
                 onStore: (pData: ProjectData, editor: Editor) => {
-                  const canvas = editor.Canvas.getCanvasView();
-                  if (canvas) {
-                    const bodyHtml = canvas.getFrameView().getBody().innerHTML;
-                    console.log("hml", bodyHtml);
-                    console.log("dat", pData);
-                    return { ...data, body: bodyHtml, email_body: JSON.stringify(pData) };
+                  if (editor) {
+                    const html = editor.getHtml();
+                    const css = editor.getCss();
+                    const fullHtml = `
+                      <!DOCTYPE html>
+                      <html lang="en">
+                      <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>${data.title}</title>
+                        <style>${css}</style>
+                      </head>
+                      <body>
+                        ${html}
+                      </body>
+                      </html>
+                    `;
+                    return { ...data, body: fullHtml, email_body: JSON.stringify(pData) };
                   }
                   return null;
                 },
@@ -98,83 +144,71 @@ const EmailEditor = () => {
               panels: {
                 defaults: [
                   {
-                    id: 'commands',
-                    buttons: [{
-                      id: 'myButton',
-                      label: 'My button',
-                    }, {
-                      id: 'resize',
-                      label: 'Resize',
-                    }],
-                  },
-                  {
-                    id: 'options',
+                    id: "options",
                     buttons: [
                       {
-                        active: true,
                         id: swv,
-                        className: 'fa fa-square-o',
-                        command: 'core:component-outline',
+                        className: "fa fa-square-o",
+                        command: "core:component-outline",
                         context: swv,
-                        attributes: { title: 'View components' },
+                        attributes: { title: "View components" },
                       },
                       {
                         id: prv,
-                        className: 'fa fa-eye',
+                        className: "fa fa-eye",
                         command: prv,
                         context: prv,
-                        attributes: { title: 'Preview' },
+                        attributes: { title: "Preview" },
                       },
                       {
                         id: ful,
-                        className: 'fa fa-arrows-alt',
+                        className: "fa fa-arrows-alt",
                         command: ful,
                         context: ful,
-                        attributes: { title: 'Fullscreen' },
-                      },
-                      {
-                        id: expt,
-                        className: 'fa fa-code',
-                        command: expt,
-                        attributes: { title: 'View code' },
-                      },
+                        attributes: { title: "Fullscreen" },
+                      }
                     ],
                   },
                   {
-                    id: 'views',
+                    id: "views",
                     buttons: [
                       {
                         id: obl,
-                        className: 'fa fa-th-large',
+                        className: "fa fa-th-large",
                         command: obl,
                         active: true,
                         togglable: false,
-                        attributes: { title: 'Open Blocks' },
+                        attributes: { title: "Open Blocks" },
                       },
                       {
                         id: osm,
-                        className: 'fa fa-paint-brush',
+                        className: "fa fa-paint-brush",
                         command: osm,
                         togglable: false,
-                        attributes: { title: 'Open Style Manager' },
+                        attributes: { title: "Open Style Manager" },
                       },
                       {
                         id: ola,
-                        className: 'fa fa-bars',
+                        className: "fa fa-bars",
                         command: ola,
                         togglable: false,
-                        attributes: { title: 'Open Layer Manager' },
+                        attributes: { title: "Open Layer Manager" },
                       },
                     ],
                   },
                 ],
               },
-              projectData: editorData,
+              i18n: {
+                locale: 'mn',
+                detectLocale: false,
+                messages: [mn]
+              },
+              projectData: JSON.parse(data?.email_body) || '',
             }}
-          >
-          </GjsEditor>
+          ></GjsEditor>
         </div>
       )}
+      {isTestLayout && <TestCampaignFlyout closeFlyout={closeFlyout} />}
     </div>
   );
 };

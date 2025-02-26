@@ -51,7 +51,6 @@ const schema = yup
     description: yup.string().label("Description"),
     body: yup
       .string()
-      .required()
       .label("Body")
       .when(["kind"], ([kind], schema) => {
         if (kind === "sms" || kind === "push") return schema.max(160, "Max 160 characters");

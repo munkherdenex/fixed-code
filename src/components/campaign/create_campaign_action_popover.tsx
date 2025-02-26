@@ -25,10 +25,6 @@ const CreateCampaignActionPopover = ({}) => {
 
   const openFlyout = (dataType: string) => {
     if (dataType === "") return;
-    if (dataType === TEMPLATE_DATA_TYPE_OPTIONS[0].value) {
-      router.push(`/dashboards/cdp/campaign/create/email`);
-      return;
-    }
     setDataType(dataType);
     setIsFlyoutVisible(true);
   };

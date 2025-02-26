@@ -7,10 +7,12 @@ const iniitialCampaignState: {
   data: Template | undefined;
   toggleIsToAll: () => void;
   isLoading: boolean;
+  mutate: () => void;
 } = {
   data: undefined,
   toggleIsToAll: undefined,
   isLoading: false,
+  mutate: () => {}
 };
 
 export const campaignContext = createContext(iniitialCampaignState);
@@ -34,6 +36,7 @@ export const CampaignProvider = ({ children }) => {
         data,
         toggleIsToAll,
         isLoading,
+        mutate
       }}
     >
       {children}

@@ -1,6 +1,14 @@
 import { css } from "@emotion/react";
 
 export const globalStyes = css`
+  :root {
+    --gjs-primary-color: #fff;
+    --gjs-secondary-color: #333;
+    --gjs-tertiary-color: #ec5896;
+    --gjs-quaternary-color: #ec5896;
+  }
+
+
   #__next,
   .guideBody {
     min-height: 100%;
@@ -8,6 +16,7 @@ export const globalStyes = css`
     flex-direction: column;
     height: 100%;
   }
+    
 `;
 
 export const commonStyles = () => ({
