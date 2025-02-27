@@ -30,14 +30,14 @@ import { badgeColor } from "../../utils/badge_color";
 import { getCampaignIcon, getCampaignStatusIcon, getDataKind, isNumber } from "../../utils/helper";
 import CreateCampaignActionPopover from "./create_campaign_action_popover";
 import { useTranslations } from "next-intl";
-import { Worker } from '@/lib/types';
+import { Worker } from "@/lib/types";
 
 const options = [
   { value: "", text: "Бүгд" },
   { value: "email", text: "Имэйл" },
   { value: "sms", text: "Мессеж" },
   { value: "push", text: "PUSH" },
-  { value: "api", text: "API" }
+  { value: "api", text: "API" },
 ];
 
 const CampaignsTable = () => {
@@ -148,7 +148,9 @@ const CampaignsTable = () => {
     {
       name: translate("click_rate"),
       render: (template: Template) => {
-        return (template.status == "DRAFT" || template.status == "DONE") ? "-" : Math.random().toFixed(2);
+        return template.status == "DRAFT" || template.status == "DONE"
+          ? "-"
+          : Math.random().toFixed(2);
       },
     },
     {
@@ -164,10 +166,10 @@ const CampaignsTable = () => {
       name: translate("created_by"),
       "data-test-subj": "createdByCell",
       render: (worker: Worker) => {
-        return worker?.email
+        return worker?.email;
       },
       footer: () => {
-        return <strong>Нийт: {data?.total_count || 0}</strong>;
+        return <strong>Нийт мэдэгдэл: {data?.total_count || 0}</strong>;
       },
     },
   ];

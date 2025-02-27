@@ -245,14 +245,22 @@ const CampaignInfoActions = () => {
           confirmButtonText="Илгээе"
           defaultFocusedButton={data?.is_to_all || data?.aud_count === 0 ? "cancel" : "confirm"}
         >
-          {(!data?.is_to_all && data?.aud_count === 0) && <EuiCallOut title="Анхааруулга" color="warning" iconType="warning">
-            <p>Мэдэгдэл илгээхэд заавал харилцагчийн мэдээлэл оруулах шаардлагатай тул харилцагч нэмнэ үү..</p>
-          </EuiCallOut>}
+          {!data?.is_to_all && data?.aud_count === 0 && (
+            <EuiCallOut title="Анхааруулга" color="warning" iconType="warning">
+              <p>
+                Мэдэгдэл илгээхэд заавал харилцагчийн мэдээлэл оруулах шаардлагатай тул харилцагч
+                нэмнэ үү..
+              </p>
+            </EuiCallOut>
+          )}
           <EuiSpacer />
-          {(data?.is_to_all || data?.aud_count > 0) && <p>
-            Менежер баталсны дараа энэ мэдэгдэл{" "}
-            <strong>{data?.is_to_all ? "бүх" : data?.aud_count}</strong> хэрэглэгчрүү илгээгдэх. Та менежерээр батлуулахаар илгээх үү?
-          </p>}
+          {(data?.is_to_all || data?.aud_count > 0) && (
+            <p>
+              Менежер баталсны дараа энэ мэдэгдэл{" "}
+              <strong>{data?.is_to_all ? "бүх" : data?.aud_count}</strong> хэрэглэгчрүү илгээгдэх.
+              Та менежерээр батлуулахаар илгээх үү?
+            </p>
+          )}
         </EuiConfirmModal>
       )}
       {isRejectModalVisible && isDone && (
@@ -283,13 +291,13 @@ const CampaignInfoActions = () => {
           onCancel={closeModal}
           onConfirm={handleApproveTrigger}
           isLoading={isMutating}
-          cancelButtonText="Cancel"
-          confirmButtonText="Confirm"
+          cancelButtonText="Болих"
+          confirmButtonText="Илгээх"
           defaultFocusedButton="confirm"
         >
           <p>
-            The campaign will be marked as approved, and it has reached an audience of{" "}
-            <strong>{data?.aud_count}</strong>. Are you sure you want to continue?
+            Мэдэгдэл илгээх <strong>{data?.aud_count}</strong> харилцагчид мэдэгдэл илгээх гэж
+            байна. Та тухайн үйлдлийг хийхдээ итгэлтэй байна уу.
           </p>
         </EuiConfirmModal>
       )}
@@ -306,7 +314,9 @@ const CampaignInfoActions = () => {
           defaultFocusedButton="confirm"
         />
       )}
-      {isDeleteModalVisible && isDraft && <DeleteConfirmModal setIsModalVisible={setIsDeleteModalVisible} />}
+      {isDeleteModalVisible && isDraft && (
+        <DeleteConfirmModal setIsModalVisible={setIsDeleteModalVisible} />
+      )}
     </>
   );
 };

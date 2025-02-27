@@ -24,11 +24,11 @@ export const QUERY_BUILDER_DEFAULT_FIELD: Field[] = [
 ];
 
 export const TEMPLATE_DATA_TYPE_OPTIONS = [
-  { value: "email", inputDisplay: "Email" },
-  { value: "sms", inputDisplay: "Sms" },
-  { value: "push", inputDisplay: "Push" },
-  { value: "inapp", inputDisplay: "Inapp", disabled: true },
-  { value: "api", inputDisplay: "Api" },
+  { value: "email", inputDisplay: "И-мэйл" },
+  { value: "sms", inputDisplay: "СМС" },
+  { value: "push", inputDisplay: "Push мэдэгдэл" },
+  { value: "inapp", inputDisplay: "In-app мэдэгдэл", disabled: true },
+  { value: "api", inputDisplay: "API" },
 ];
 
 export const CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS = [

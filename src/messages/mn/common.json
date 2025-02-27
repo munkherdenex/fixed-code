@@ -1,4 +1,5 @@
 {
+  "click_rate": "Үзүүлэлт",
   "repeat_password": "Нууц үгийг давтан оруулна уу",
   "old_password": "Хуучин нууц үг",
   "new_password": "Шинэ нууц үг",
@@ -12,7 +13,7 @@
   "custom-attributes": "Харилцагчийн өгөгдөл",
   "loading": "Ачаалж байна",
   "customers": "Харилцагчид",
-  "teams": "Багууд",
+  "teams": "Баг",
   "api_keys": "API түлхүүрүүд",
   "analytics": "Тайлан",
   "refresh": "Шинэчлэх",
@@ -29,7 +30,7 @@
   "custom_attribute": "Харилцагчийн өгөгдөл",
   "name": "Нэр",
   "last_name": "Овог",
-  "team_name": "Багийн нэр",
+  "team_name": "Багийн дэлгэрэнгүй",
   "created_at": "Үүсгэсэн огноо",
   "updated_at": "Шинэчилсэн огноо",
   "update": "Шинэчлэх",
