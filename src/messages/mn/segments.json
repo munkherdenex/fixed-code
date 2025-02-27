@@ -10,10 +10,10 @@
   "the-segment-description": "Сегментийн тодорхойлолт",
   "search-segments": "Сегмент хайх",
   "loading": "Ачааллаж байна...",
-  "dynamic": "Динамик",
+  "dynamic": "Дата суурьтай үүсгэх",
   "dynamic-query-builder": "Нөхцөл үүсгэх",
   "dynamic-segment-description": "Харилцагчийн өгөгдөл дээр тулгуурлан сегмент үүсгэх",
-  "manual-segment-description": "Файл болон текстийн үндсэн дээр гарын авлагын сегмент үүсгээрэй.",
+  "manual-segment-description": "Файл болон текст дээр тулгуурлан сегмент үүсгэх",
   "add-segment": "Үүсгэх",
   "files": "Файлууд",
   "text": "Текст",
@@ -24,7 +24,7 @@
   "delete_segment": "Сегментийг устгах",
   "segment_info": "Сегментийн мэдээлэл",
   "manual": {
-    "title": "Manual",
+    "title": "Файл суурьтай үүсгэх",
     "tour": {
       "upload": "Үзэгчдийн мэдээллийг агуулсан CSV файл байршуулах",
       "file": {

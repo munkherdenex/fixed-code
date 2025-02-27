@@ -210,7 +210,7 @@ export const TeamGeneralInfoTwo = () => {
           }
           description={
             <EuiPanel color="subdued" paddingSize="s">
-              <span>{translate("sub_team")}s</span>
+              <span>{translate("sub_team")}</span>
             </EuiPanel>
           }
           titleSize="xs"

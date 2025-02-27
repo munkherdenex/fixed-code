@@ -27,7 +27,7 @@ const CampaignStatusTable = () => {
       name: translate("title"),
     },
     {
-      name: "Audience sent status",
+      name: "Төлөв",
       render: (template) => {
         return (
           <div>

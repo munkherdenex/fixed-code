@@ -434,13 +434,13 @@ const CampaignInfoActions = () => {
           onCancel={closeModal}
           onConfirm={handleApproveTrigger}
           isLoading={isMutating}
-          cancelButtonText="Cancel"
-          confirmButtonText="Confirm"
+          cancelButtonText="Болих"
+          confirmButtonText="Илгээх"
           defaultFocusedButton="confirm"
         >
           <p>
-            The campaign will be marked as approved, and it has reached an audience of{" "}
-            <strong>{data?.aud_count}</strong>. Are you sure you want to continue?
+            Мэдэгдэл илгээх <strong>{data?.aud_count}</strong> харилцагчид мэдэгдэл илгээх гэж
+            байна. Та тухайн үйлдлийг хийхдээ итгэлтэй байна уу.
           </p>
         </EuiConfirmModal>
       )}

@@ -1,5 +1,6 @@
 import {
   EuiButton,
+  EuiButtonEmpty,
   EuiCard,
   EuiFieldText,
   EuiFlexGroup,
@@ -121,22 +122,32 @@ const Dashboard: FunctionComponent = () => {
                         icon={<EuiIcon size="xxl" type="sqlApp" />}
                         title={translate("dynamic")}
                         description={translate("dynamic-segment-description")}
-                        selectable={{
-                          onClick: () => cardClicked(2),
-                          isSelected: selectedCard === 2,
-                        }}
-                      />
+                      >
+                        <EuiButton
+                          onClick={() => cardClicked(2)}
+                          iconType={selectedCard === 2 ? "check" : undefined}
+                          color={selectedCard === 2 ? "success" : "primary"}
+                          style={{ width: "100%", textAlign: "center" }}
+                        >
+                          {selectedCard === 2 ? "Сонгосон" : "Сонгох"}
+                        </EuiButton>
+                      </EuiCard>
                     </EuiFlexItem>
                     <EuiFlexItem>
                       <EuiCard
                         icon={<EuiIcon size="xxl" type="notebookApp" />}
                         title={translate("manual.title")}
                         description={translate("manual-segment-description")}
-                        selectable={{
-                          onClick: () => cardClicked(3),
-                          isSelected: selectedCard === 3,
-                        }}
-                      />
+                      >
+                        <EuiButton
+                          onClick={() => cardClicked(3)}
+                          iconType={selectedCard === 3 ? "check" : undefined}
+                          color={selectedCard === 3 ? "success" : "primary"}
+                          style={{ width: "100%", textAlign: "center" }}
+                        >
+                          {selectedCard === 3 ? "Сонгосон" : "Сонгох"}
+                        </EuiButton>
+                      </EuiCard>
                     </EuiFlexItem>
                   </EuiFlexGroup>
                 </EuiFlexItem>
@@ -174,7 +185,8 @@ const Dashboard: FunctionComponent = () => {
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const common = (await import(`../../../../../messages/${context.locale}/common.json`)).default;
-  const segments = (await import(`../../../../../messages/${context.locale}/segments.json`)).default;
+  const segments = (await import(`../../../../../messages/${context.locale}/segments.json`))
+    .default;
 
   return {
     props: {

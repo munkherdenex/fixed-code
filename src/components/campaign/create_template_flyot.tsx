@@ -30,7 +30,8 @@ import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 import { useTranslations } from "next-intl";
 
-const bodyHelpText = "Use custom attributes to make data dynamic. {{cf_*}}";
+const bodyHelpText =
+  "Харилцагчийн мэдээллийг эрчимжүүлэхэд илүү уян хатан болгох боломжтой. {{cf_attribute}}";
 
 const BodyInfoToolTip = () => {
   return (
@@ -123,7 +124,7 @@ const CreateTemplateFlyot = ({
       if ((dataType === "sms" || dataType === "push") && IS_POCKET) {
         //TODO: If team is not pocket dont edit data
         preparedData.kind = "api";
-        preparedData.template_id = '{{template_id}}';
+        preparedData.template_id = "{{template_id}}";
         preparedData.body = JSON.stringify({
           type: dataType,
           to: `{{${dataTypeToSwitch(data?.kind)}}}`,
