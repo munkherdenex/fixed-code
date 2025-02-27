@@ -214,8 +214,8 @@ const CreateTemplateFlyot = ({
             </EuiFormRow>
             <EuiFormRow
               label={translate("description")}
-              isInvalid={!!errors.title?.message}
-              error={[errors.title?.message]}
+              isInvalid={!!errors.description?.message}
+              error={[errors.description?.message]}
             >
               <Controller
                 control={control}
@@ -225,7 +225,7 @@ const CreateTemplateFlyot = ({
                     onChange={onChange}
                     value={value}
                     onBlur={onBlur}
-                    isInvalid={!!errors.title?.message}
+                    isInvalid={!!errors.description?.message}
                     style={{ height: "100px" }}
                     placeholder={translate("description")}
                     aria-label={translate("description")}
@@ -260,7 +260,7 @@ const CreateTemplateFlyot = ({
                       onChange={onChange}
                       value={value}
                       onBlur={onBlur}
-                      isInvalid={!!errors.title?.message}
+                      isInvalid={!!errors.body?.message}
                       placeholder={translate("data")}
                       aria-label={translate("data")}
                     />
@@ -274,15 +274,7 @@ const CreateTemplateFlyot = ({
               error={[errors.channel?.message]}
             >
               <EuiFlexGroup alignItems="center">
-                <EuiFlexItem
-                  style={
-                    channelDataOptions.length === 0
-                      ? {
-                          display: "none",
-                        }
-                      : {}
-                  }
-                >
+                <EuiFlexItem>
                   <Controller
                     control={control}
                     name="channel"
@@ -294,7 +286,6 @@ const CreateTemplateFlyot = ({
                         onBlur={onBlur}
                         isInvalid={!!errors.channel?.message}
                         aria-label={translate("channel")}
-                        hasNoInitialSelection
                       />
                     )}
                   />
