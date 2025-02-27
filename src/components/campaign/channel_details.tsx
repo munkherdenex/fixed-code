@@ -14,13 +14,12 @@ import moment from "moment";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { badgeColor } from "../../utils/badge_color";
 import { useCampaignContext } from "../../store/campaign_store";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import ChangeChannelFlyout from "./change_channel_flyout";
 import { useTranslations } from "next-intl";
+import { css } from '@emotion/react';
 
 const ChannelDetails = () => {
-  const router = useRouter();
   const translate = useTranslations();
 
   const { data: templateData } = useCampaignContext();
@@ -32,7 +31,7 @@ const ChannelDetails = () => {
 
   return (
     <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={390}>
-      <EuiFlexGroup direction="column">
+      <EuiFlexGroup css={css`max-width: 600px;`} direction="column">
         <EuiFlexItem>
           <EuiPanel paddingSize="s" color="subdued">
             <EuiFlexGroup alignItems="center" justifyContent="spaceBetween">
@@ -43,7 +42,7 @@ const ChannelDetails = () => {
                 <EuiFlexGroup responsive={false} gutterSize="s">
                   {templateStatus !== "APPROVED" && templateStatus !== "PUBLISHED" && (
                     <EuiFlexItem grow={false}>
-                      <EuiToolTip position="top" content="Menu">
+                      <EuiToolTip position="top" content="Суваг солих">
                         <EuiButtonIcon
                           display="base"
                           color="success"
@@ -54,17 +53,6 @@ const ChannelDetails = () => {
                       </EuiToolTip>
                     </EuiFlexItem>
                   )}
-                  <EuiFlexItem grow={false}>
-                    <EuiToolTip position="top" content="Jump to channel">
-                      <EuiButtonIcon
-                        display="base"
-                        iconType="arrowRight"
-                        aria-label="jump"
-                        color="primary"
-                        onClick={() => router.push(`/dashboards/cdp/channels/info/${data?.id}`)}
-                      />
-                    </EuiToolTip>
-                  </EuiFlexItem>
                 </EuiFlexGroup>
               </EuiFlexItem>
             </EuiFlexGroup>

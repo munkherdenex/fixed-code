@@ -1,30 +1,20 @@
 import {
   EuiBadge,
-  EuiButton,
-  EuiConfirmModal,
-  EuiContextMenuItem,
-  EuiContextMenuPanel,
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
   EuiIcon,
   EuiPanel,
-  EuiPopover,
   EuiText,
   EuiTextColor,
-  useGeneratedHtmlId,
 } from "@elastic/eui";
 import moment from "moment";
 import { useTranslations } from "next-intl";
 import useGetCampaignSuccessErrorCount from "../../hooks/useGetCampaignCount";
-import useCreateSegmentRetarget from "../../hooks/useCreateSegmentRetarget";
 import { useCampaignContext } from "../../store/campaign_store";
 import { badgeColor } from "../../utils/badge_color";
 import { getCampaignIcon, getCampaignStatusIcon, getDataKind } from "../../utils/helper";
 import ReccurenceRuleLayout from "./reccurence_rule_layout";
-import { useState } from "react";
-import { useRouter } from "next/router";
-import { addToast } from "../toast";
 
 const CampaignGeneralDetails = () => {
   const translate = useTranslations();
@@ -35,94 +25,8 @@ const CampaignGeneralDetails = () => {
   const dataKind = getDataKind(data);
   const iconType = getCampaignStatusIcon(data?.start_date != null, data?.is_recurring);
 
-  const [isRetargetPopoverOpen, setRetargetPopover] = useState(false);
-  const customContextMenuPopoverId = useGeneratedHtmlId({
-    prefix: "customContextMenuPopover",
-  });
-  const onRetargetButtonClick = () => {
-    if (data.kind === "sms") return;
-    setRetargetPopover(!isRetargetPopoverOpen);
-  };
-  const closeRetargetPopover = () => {
-    setRetargetPopover(false);
-  };
-
-  const [chosenSegmentType, setChosenSegmentType] = useState(null);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const router = useRouter();
-  const {
-    data: retargetRes,
-    isMutating: isCreateSegmentRetargetMutating,
-    trigger: createSegmentRetarget,
-  } = useCreateSegmentRetarget();
-  const showConfirm = (type: string) => {
-    setChosenSegmentType(type);
-    setIsConfirmOpen(true);
-  };
-
-  const segmentTypes = Object.freeze({
-    opened: "Нээсэн",
-    "not_opened": "Нээгээгүй",
-    clicked: "Линк дарсан",
-    "not_clicked": "Линк дараагүй",
-  });
-
-  const createSegment = async (e) => {
-    e.preventDefault();
-    const templateId = data?.id;
-    try {
-      await createSegmentRetarget({
-        template_id: templateId,
-        retarget_type: chosenSegmentType,
-      });
-      if (retargetRes) {
-        router.push(`/dashboards/cdp/segments/info/${retargetRes.id}`);
-      } else {
-        router.push("/dashboards/cdp/segments");
-      }
-    } catch (error) {
-      addToast({
-        id: "api-keys-success",
-        color: "danger",
-        title: "Error",
-        text: "Алдаа гарлаа!",
-      });
-      console.error("Error creating segment:", error);
-    }
-  };
-
-  const retargetButton = (
-    <EuiButton
-      size="s"
-      iconType="arrowDown"
-      iconSide="right"
-      onClick={onRetargetButtonClick}
-      disabled={data.kind === "sms"}
-    >
-      Ретаргет
-    </EuiButton>
-  );
-
   return (
     <div>
-      {isConfirmOpen && (
-        <EuiConfirmModal
-          style={{ width: 600 }}
-          title={`Ретаргет`}
-          onCancel={() => {
-            setIsConfirmOpen(false);
-          }}
-          onConfirm={createSegment}
-          cancelButtonText="Болих"
-          confirmButtonText="Сегмент үүсгэх"
-          defaultFocusedButton="confirm"
-          confirmButtonDisabled={isCreateSegmentRetargetMutating}
-          isLoading={isCreateSegmentRetargetMutating}
-        >
-          <p>Та <b>{segmentTypes[chosenSegmentType]}</b> харилцагчдаар сегмент үүсгэх гэж байна. Та итгэлтэй байна уу?</p>
-        </EuiConfirmModal>
-      )}
-
       <EuiFlexGroup direction="column">
         <EuiFlexGroup>
           <EuiFlexItem>
@@ -233,72 +137,6 @@ const CampaignGeneralDetails = () => {
             </EuiPanel>
           </EuiFlexItem>
         </EuiFlexGroup>
-
-        <EuiFlexItem>
-          <div>
-            <EuiPopover
-              id={customContextMenuPopoverId}
-              button={retargetButton}
-              isOpen={isRetargetPopoverOpen}
-              closePopover={closeRetargetPopover}
-              panelPaddingSize="none"
-              anchorPosition="downLeft"
-            >
-              <EuiContextMenuPanel>
-                <EuiContextMenuItem
-                  key="item-1"
-                  icon="indexOpen"
-                  size="s"
-                  onClick={() => showConfirm("opened")}
-                  disabled={data.kind != "email"}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Нээсэн</span>
-                    <span>(~{countData?.opened_count})</span>
-                  </div>
-                </EuiContextMenuItem>
-                <EuiContextMenuItem
-                  key="item-2"
-                  icon="indexOpen"
-                  size="s"
-                  onClick={() => showConfirm("not_opened")}
-                  disabled={data.kind != "email"}
-                >
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between", minWidth: "200px" }}
-                  >
-                    <span>Нээгээгүй</span>
-                    <span>(~{countData?.total_sent_count - countData?.opened_count})</span>
-                  </div>
-                </EuiContextMenuItem>
-                <EuiContextMenuItem
-                  key="item-3"
-                  icon="indexOpen"
-                  size="s"
-                  onClick={() => showConfirm("clicked")}
-                  disabled={data.kind != "email"}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Линк дарсан</span>
-                    <span>(~{countData?.clicked_count})</span>
-                  </div>
-                </EuiContextMenuItem>
-                <EuiContextMenuItem
-                  key="item-4"
-                  icon="indexOpen"
-                  size="s"
-                  onClick={() => showConfirm("not_clicked")}
-                  disabled={data.kind != "email"}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>Линк дараагүй</span>
-                    <span>(~{countData?.total_sent_count - countData?.clicked_count})</span>
-                  </div>
-                </EuiContextMenuItem>
-              </EuiContextMenuPanel>
-            </EuiPopover>
-          </div>
-        </EuiFlexItem>
       </EuiFlexGroup>
     </div>
   );

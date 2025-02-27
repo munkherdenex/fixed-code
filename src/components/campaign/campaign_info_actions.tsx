@@ -2,10 +2,13 @@ import {
   EuiButton,
   EuiCallOut,
   EuiConfirmModal,
+  EuiContextMenuItem,
+  EuiContextMenuPanel,
   EuiFieldText,
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
+  EuiPopover,
   EuiSpacer,
   EuiToolTip,
   useGeneratedHtmlId,
@@ -21,6 +24,9 @@ import { globalMutate } from "../../utils/globalMutate";
 import AdminManagerComponent from "../admin_manager_component";
 import { useRouter } from "next/router";
 import useDeleteTemplate from "../../hooks/useDeleteTemplate";
+import useCreateSegmentRetarget from "@/hooks/useCreateSegmentRetarget";
+import { addToast } from "../toast";
+import useGetCampaignSuccessErrorCount from "@/hooks/useGetCampaignCount";
 
 const DeleteConfirmModal = ({
   setIsModalVisible,
@@ -84,12 +90,21 @@ const DeleteConfirmModal = ({
 const CampaignInfoActions = () => {
   const modalTitleId = useGeneratedHtmlId();
   const translate = useTranslations();
+  const router = useRouter();
 
   const { data } = useCampaignContext();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
+  const [chosenSegmentType, setChosenSegmentType] = useState(null);
+  const [isRetargetPopoverOpen, setRetargetPopover] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const {
+    data: retargetRes,
+    isMutating: isCreateSegmentRetargetMutating,
+    trigger: createSegmentRetarget,
+  } = useCreateSegmentRetarget();
 
   const { trigger: rejectTrigger, isMutating: rejectIsLoading } = useUpdateRejectTemplate(data?.id);
   const { trigger: doneTrigger, isMutating: doneIsMutating } = useUpdateDoneTemplate(data?.id);
@@ -97,6 +112,64 @@ const CampaignInfoActions = () => {
   const { trigger: approveTrigger, isMutating: approveIsMutating } = useUpdateApproveTemplate(
     data?.id,
   );
+  const { data: countData } = useGetCampaignSuccessErrorCount(data?.id?.toString());
+
+  const customContextMenuPopoverId = useGeneratedHtmlId({
+    prefix: "customContextMenuPopover",
+  });
+
+  const onRetargetButtonClick = () => {
+    if (data.kind === "sms") return;
+    setRetargetPopover(!isRetargetPopoverOpen);
+  };
+  const closeRetargetPopover = () => {
+    setRetargetPopover(false);
+  };
+  const showConfirm = (type: string) => {
+    setChosenSegmentType(type);
+    setIsConfirmOpen(true);
+  };
+
+  const retargetButton = (
+    <EuiButton
+      iconType="arrowDown"
+      iconSide="right"
+      onClick={onRetargetButtonClick}
+      disabled={data?.kind === "sms"}
+    >
+      Ретаргет
+    </EuiButton>
+  );
+
+  const segmentTypes = Object.freeze({
+    opened: "Нээсэн",
+    not_opened: "Нээгээгүй",
+    clicked: "Линк дарсан",
+    not_clicked: "Линк дараагүй",
+  });
+
+  const createSegment = async (e) => {
+    e.preventDefault();
+    const templateId = data?.id;
+    try {
+      await createSegmentRetarget({
+        template_id: templateId,
+        retarget_type: chosenSegmentType,
+      });
+      if (retargetRes) {
+        router.push(`/dashboards/cdp/segments/info/${retargetRes.id}`);
+      } else {
+        router.push("/dashboards/cdp/segments");
+      }
+    } catch (error) {
+      addToast({
+        id: "create-retager-error",
+        color: "danger",
+        title: "Алдаа",
+        text: error,
+      });
+    }
+  };
 
   const isMutating = doneIsMutating || approveIsMutating || rejectIsLoading || stopIsMutating;
   const isDraft = data?.status === "DRAFT";
@@ -104,6 +177,11 @@ const CampaignInfoActions = () => {
   const isErrored = data?.status === "ERROR";
   const isStopable =
     data?.status === "RECURRING" || data?.status === "SENDING" || data?.status === "SCHEDULED";
+  const isRetargetable =
+    data?.status != "DRAFT" &&
+    data?.status != "DONE" &&
+    data?.status != "APPROVED" &&
+    data?.status != "REJECTED";
 
   const closeModal = () => setIsModalVisible(false);
   const showModal = () => setIsModalVisible(true);
@@ -216,6 +294,71 @@ const CampaignInfoActions = () => {
             </AdminManagerComponent>
           </EuiFlexItem>
         )}
+
+        {isRetargetable && (
+          <EuiPopover
+            id={customContextMenuPopoverId}
+            button={retargetButton}
+            isOpen={isRetargetPopoverOpen}
+            closePopover={closeRetargetPopover}
+            panelPaddingSize="none"
+            anchorPosition="downLeft"
+          >
+            <EuiContextMenuPanel>
+              <EuiContextMenuItem
+                key="item-1"
+                icon="indexOpen"
+                size="s"
+                onClick={() => showConfirm("opened")}
+                disabled={data?.kind != "email"}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>Нээсэн</span>
+                  <span>(~{countData?.opened_count})</span>
+                </div>
+              </EuiContextMenuItem>
+              <EuiContextMenuItem
+                key="item-2"
+                icon="indexOpen"
+                size="s"
+                onClick={() => showConfirm("not_opened")}
+                disabled={data?.kind != "email"}
+              >
+                <div
+                  style={{ display: "flex", justifyContent: "space-between", minWidth: "200px" }}
+                >
+                  <span>Нээгээгүй</span>
+                  <span>(~{countData?.total_sent_count - countData?.opened_count})</span>
+                </div>
+              </EuiContextMenuItem>
+              <EuiContextMenuItem
+                key="item-3"
+                icon="indexOpen"
+                size="s"
+                onClick={() => showConfirm("clicked")}
+                disabled={data?.kind != "email"}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>Линк дарсан</span>
+                  <span>(~{countData?.clicked_count})</span>
+                </div>
+              </EuiContextMenuItem>
+              <EuiContextMenuItem
+                key="item-4"
+                icon="indexOpen"
+                size="s"
+                onClick={() => showConfirm("not_clicked")}
+                disabled={data?.kind != "email"}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>Линк дараагүй</span>
+                  <span>(~{countData?.total_sent_count - countData?.clicked_count})</span>
+                </div>
+              </EuiContextMenuItem>
+            </EuiContextMenuPanel>
+          </EuiPopover>
+        )}
+
         {isStopable && (
           <EuiFlexItem>
             <AdminManagerComponent>
@@ -245,14 +388,22 @@ const CampaignInfoActions = () => {
           confirmButtonText="Илгээе"
           defaultFocusedButton={data?.is_to_all || data?.aud_count === 0 ? "cancel" : "confirm"}
         >
-          {(!data?.is_to_all && data?.aud_count === 0) && <EuiCallOut title="Анхааруулга" color="warning" iconType="warning">
-            <p>Мэдэгдэл илгээхэд заавал харилцагчийн мэдээлэл оруулах шаардлагатай тул харилцагч нэмнэ үү..</p>
-          </EuiCallOut>}
+          {!data?.is_to_all && data?.aud_count === 0 && (
+            <EuiCallOut title="Анхааруулга" color="warning" iconType="warning">
+              <p>
+                Мэдэгдэл илгээхэд заавал харилцагчийн мэдээлэл оруулах шаардлагатай тул харилцагч
+                нэмнэ үү..
+              </p>
+            </EuiCallOut>
+          )}
           <EuiSpacer />
-          {(data?.is_to_all || data?.aud_count > 0) && <p>
-            Менежер баталсны дараа энэ мэдэгдэл{" "}
-            <strong>{data?.is_to_all ? "бүх" : data?.aud_count}</strong> хэрэглэгчрүү илгээгдэх. Та менежерээр батлуулахаар илгээх үү?
-          </p>}
+          {(data?.is_to_all || data?.aud_count > 0) && (
+            <p>
+              Менежер баталсны дараа энэ мэдэгдэл{" "}
+              <strong>{data?.is_to_all ? "бүх" : data?.aud_count}</strong> хэрэглэгчрүү илгээгдэх.
+              Та менежерээр батлуулахаар илгээх үү?
+            </p>
+          )}
         </EuiConfirmModal>
       )}
       {isRejectModalVisible && isDone && (
@@ -306,7 +457,30 @@ const CampaignInfoActions = () => {
           defaultFocusedButton="confirm"
         />
       )}
-      {isDeleteModalVisible && isDraft && <DeleteConfirmModal setIsModalVisible={setIsDeleteModalVisible} />}
+      {isDeleteModalVisible && isDraft && (
+        <DeleteConfirmModal setIsModalVisible={setIsDeleteModalVisible} />
+      )}
+
+      {isConfirmOpen && (
+        <EuiConfirmModal
+          style={{ width: 600 }}
+          title={`Ретаргет`}
+          onCancel={() => {
+            setIsConfirmOpen(false);
+          }}
+          onConfirm={createSegment}
+          cancelButtonText="Болих"
+          confirmButtonText="Сегмент үүсгэх"
+          defaultFocusedButton="confirm"
+          confirmButtonDisabled={isCreateSegmentRetargetMutating}
+          isLoading={isCreateSegmentRetargetMutating}
+        >
+          <p>
+            Та <b>{segmentTypes[chosenSegmentType]}</b> харилцагчдаар сегмент үүсгэх гэж байна. Та
+            итгэлтэй байна уу?
+          </p>
+        </EuiConfirmModal>
+      )}
     </>
   );
 };
