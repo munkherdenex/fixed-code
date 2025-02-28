@@ -241,12 +241,7 @@ const CreateTemplateFlyot = ({
                     defaultValue={channelDataOptions[0]?.value}
                     render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
                       <EuiSelect
-                        onChange={(e) => {
-                          console.log(e);
-                          console.log(value);
-                          console.log(channelDataOptions);
-                          onChange(e);
-                        }}
+                        onChange={onChange}
                         value={value}
                         options={channelDataOptions}
                         onBlur={onBlur}
