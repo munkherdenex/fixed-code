@@ -12,8 +12,8 @@ import {
   EuiIcon,
   EuiSelect,
   EuiTextArea,
+  EuiTextColor,
   EuiTitle,
-  EuiToolTip,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -24,25 +24,11 @@ import { CAMPAIGN_CHANNEL_DATA_TYPE_OPTIONS, IS_POCKET } from "../../constants";
 import useCreateTemplate from "../../hooks/useCreateTemplate";
 import useGetChannels, { Channels } from "../../hooks/useGetChannels";
 import { globalMutate } from "../../utils/globalMutate";
-import { dataTypeSwitch, dataTypeToSwitch } from "../../utils/helper";
+import { dataTypeSwitch, dataTypeToSwitch, getCampaignIcon, getDataKind } from "../../utils/helper";
 import { isJson } from "../../utils/is_json";
-import AceEditorComponent from "./ace_editor";
 import JumpToCreateChannelButton from "./jump_to_create_channel_button";
 import { useTranslations } from "next-intl";
-
-const bodyHelpText =
-  "Харилцагчийн мэдээллийг эрчимжүүлэхэд илүү уян хатан болгох боломжтой. {{cf_attribute}}";
-
-const BodyInfoToolTip = () => {
-  return (
-    <EuiToolTip
-      position="bottom"
-      content="You need to define the custom fields you plan to use. Common custom fields might include {{email}}, {{phone}}, {{cf_company_name}}, {{cf_email}}, etc."
-    >
-      <EuiIcon tabIndex={0} type="questionInCircle" title="Icon with tooltip" />
-    </EuiToolTip>
-  );
-};
+import { badgeColor } from '@/utils/badge_color';
 
 const schema = yup
   .object({
@@ -105,10 +91,6 @@ const CreateTemplateFlyot = ({
         }))
     : [];
 
-  const setAceEditorValue = (value: string) => {
-    setValue("body", value);
-  };
-
   const onSubmit = async (data: FormData) => {
     if (!isJson(watch("body")) && watch("kind") === "api") {
       setError("body", {
@@ -143,11 +125,22 @@ const CreateTemplateFlyot = ({
     }
   };
 
+  const kindIcon = (
+    <span>
+      <EuiIcon
+        aria-label={dataType}
+        type={getCampaignIcon(dataType)}
+        color={badgeColor(dataType)}
+      />{" "}
+      <EuiTextColor color={badgeColor(dataType)}>{dataType.toUpperCase()}</EuiTextColor>
+    </span>
+  );
+
   return (
     <EuiFlyout onClose={closeFlyout}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2>{translate("create_campaign_title", { dataType })}</h2>
+          <h2>{kindIcon} : {translate("create_campaign_title")} </h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
@@ -234,59 +227,32 @@ const CreateTemplateFlyot = ({
                 )}
               />
             </EuiFormRow>
-            {watch("kind") === "api" && (
-              <EuiFormRow
-                label={translate("data")}
-                labelAppend={<BodyInfoToolTip />}
-                helpText={bodyHelpText}
-                isInvalid={!!errors?.body?.message}
-                error={[errors?.body?.message]}
-              >
-                <AceEditorComponent control={control} onChange={setAceEditorValue} />
-              </EuiFormRow>
-            )}
-            {(watch("kind") === "sms" || watch("kind") === "push") && (
-              <EuiFormRow
-                label={translate("data")}
-                labelAppend={<BodyInfoToolTip />}
-                helpText={bodyHelpText}
-                isInvalid={!!errors?.body?.message}
-                error={[errors?.body?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="body"
-                  render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
-                    <EuiTextArea
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.body?.message}
-                      placeholder={translate("data")}
-                      aria-label={translate("data")}
-                    />
-                  )}
-                />
-              </EuiFormRow>
-            )}
             <EuiFormRow
               label={translate("channel")}
               isInvalid={!!errors.channel?.message}
               error={[errors.channel?.message]}
+              helpText={translate("create_campaign_channel_help_text")}
             >
               <EuiFlexGroup alignItems="center">
                 <EuiFlexItem>
                   <Controller
                     control={control}
                     name="channel"
+                    defaultValue={channelDataOptions[0]?.value}
                     render={({ field: { onChange, onBlur, value }, formState: { errors } }) => (
                       <EuiSelect
-                        onChange={onChange}
+                        onChange={(e) => {
+                          console.log(e);
+                          console.log(value);
+                          console.log(channelDataOptions);
+                          onChange(e);
+                        }}
                         value={value}
                         options={channelDataOptions}
                         onBlur={onBlur}
                         isInvalid={!!errors.channel?.message}
                         aria-label={translate("channel")}
+                        hasNoInitialSelection
                       />
                     )}
                   />

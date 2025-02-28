@@ -1,5 +1,4 @@
 import { EuiButton, EuiPopover, EuiContextMenu } from "@elastic/eui";
-import { useRouter } from "next/router";
 import { useState, useCallback, useMemo } from "react";
 import { TEMPLATE_DATA_TYPE_OPTIONS } from "../../constants";
 import { commonStyles } from "../../styles/global.styles";
@@ -7,7 +6,6 @@ import CreateTemplateFlyot from "./create_template_flyot";
 import { useTranslations } from "next-intl";
 
 const CreateCampaignActionPopover = ({}) => {
-  const router = useRouter();
   const common = commonStyles();
   const translate = useTranslations();
 
