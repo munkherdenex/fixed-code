@@ -132,7 +132,7 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
   return (
     <>
       <EuiComboBox
-        placeholder="Имэйл, утас..."
+        placeholder="И-мэйл, утас..."
         singleSelection={{ asPlainText: true }}
         options={dataTypeOptions}
         onChange={(selected) => {

@@ -129,7 +129,7 @@ const Dashboard: FunctionComponent = () => {
                           color={selectedCard === 2 ? "success" : "primary"}
                           style={{ width: "100%", textAlign: "center" }}
                         >
-                          {selectedCard === 2 ? "Сонгосон" : "Сонгох"}
+                          {selectedCard === 2 ? "Сонгогдсон" : "Сонгох"}
                         </EuiButton>
                       </EuiCard>
                     </EuiFlexItem>
@@ -145,7 +145,7 @@ const Dashboard: FunctionComponent = () => {
                           color={selectedCard === 3 ? "success" : "primary"}
                           style={{ width: "100%", textAlign: "center" }}
                         >
-                          {selectedCard === 3 ? "Сонгосон" : "Сонгох"}
+                          {selectedCard === 3 ? "Сонгогдсон" : "Сонгох"}
                         </EuiButton>
                       </EuiCard>
                     </EuiFlexItem>

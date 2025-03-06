@@ -21,7 +21,7 @@ const CampaignStatus = () => {
 
   const preperadData = data
     ? Object.keys(data).map((key) => ({
-        name: key,
+        name: key == "finished" ? "Дуссан" : "Нээлттэй",
         data: data[key],
       }))
     : [];

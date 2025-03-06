@@ -385,7 +385,7 @@ const CampaignInfoActions = () => {
           confirmButtonDisabled={data?.aud_count === 0 && !data?.is_to_all}
           cancelButtonText="Болих"
           isLoading={isMutating}
-          confirmButtonText="Илгээе"
+          confirmButtonText="Илгээх"
           defaultFocusedButton={data?.is_to_all || data?.aud_count === 0 ? "cancel" : "confirm"}
         >
           {!data?.is_to_all && data?.aud_count === 0 && (
@@ -440,7 +440,7 @@ const CampaignInfoActions = () => {
         >
           <p>
             Мэдэгдэл илгээх <strong>{data?.aud_count}</strong> харилцагчид мэдэгдэл илгээх гэж
-            байна. Та тухайн үйлдлийг хийхдээ итгэлтэй байна уу.
+            байна. Та тухайн үйлдлийг хийхдээ итгэлтэй байна уу?
           </p>
         </EuiConfirmModal>
       )}

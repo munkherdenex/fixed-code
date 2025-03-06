@@ -1,13 +1,13 @@
 {
   "sign-in": {
     "title": "Нэвтрэх",
-    "email": "Имэйл",
+    "email": "И-мэйл",
     "password": "Нууц үг",
     "submit": "Нэвтрэх",
     "forgot": "Нууц үг мартсан?",
     "register": "Бүртгүүлэх",
     "login-with-pocket": "Pocket-тай нэвтрэх",
-    "sent-verification-email": "Бид танд баталгаажуулалтын имэйл илгээсэн байна. Та таны имэйл хайж үзнэ үү.",
+    "sent-verification-email": "Бид танд баталгаажуулалтын и-мэйл илгээсэн байна. Та таны и-мэйл хайж үзнэ үү.",
     "sent-verification-email-title": "Verification email sent",
     "forgot-password": "Forgot password"
   },

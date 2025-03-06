@@ -131,7 +131,7 @@ const UpdateCustomerComponent = ({
     <EuiFlyout onClose={() => setIsFlyoutVisible(false)}>
       <EuiFlyoutHeader hasBorder aria-labelledby={flyoutHeadingId}>
         <EuiTitle>
-          <h2 id={flyoutHeadingId}>Update audience</h2>
+          <h2 id={flyoutHeadingId}>Мэдээлэл шинэчлэх</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>

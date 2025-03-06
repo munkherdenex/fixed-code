@@ -34,7 +34,7 @@ import { Worker } from "@/lib/types";
 
 const options = [
   { value: "", text: "Бүгд" },
-  { value: "email", text: "Имэйл" },
+  { value: "email", text: "И-мэйл" },
   { value: "sms", text: "Мессеж" },
   { value: "push", text: "PUSH" },
   { value: "api", text: "API" },
