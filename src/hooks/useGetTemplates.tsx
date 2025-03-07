@@ -2,7 +2,7 @@ import useSWR from "swr";
 import { BASE_URL } from "../constants";
 import { handleResponseNotOk } from "../utils/error_handler";
 import { createParam } from "../utils/createParam";
-import { Worker } from '@/lib/types';
+import { Worker } from "@/lib/types";
 
 export interface Template {
   id: number;
@@ -18,7 +18,8 @@ export interface Template {
     | "ERROR"
     | "SENDING"
     | "RECURRING"
-    | "SCHEDULED";
+    | "SCHEDULED"
+    | "REJECTED";
   description: string;
   body: string;
   email_body: string;

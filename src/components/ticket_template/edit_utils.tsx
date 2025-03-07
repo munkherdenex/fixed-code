@@ -289,7 +289,6 @@ const ComboboxInput = ({ item, register, onBlur, onChange, value, ...props }) =>
           item.config?.isMultiple ? (
             <EuiSelectable
               options={item.config?.choices}
-              value={value1}
               onChange={(e) => onSwitchChange(e)}
               onBlur={onBlur}
             />

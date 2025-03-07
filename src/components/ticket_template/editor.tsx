@@ -31,7 +31,7 @@ const editorRowStyle = css`
   border: 2px dashed white;
   position: relative;
 
-  &: hover {
+  &:hover {
     background-color: rgba(255, 255, 0, 0.2);
   }
 
@@ -40,7 +40,7 @@ const editorRowStyle = css`
     background-color: rgba(255, 255, 0, 0.2);
   }
 
-  & cover {
+  & .cover {
     width: 100%;
     height: 100%;
     color: white;
@@ -102,8 +102,14 @@ interface TicketTemplateProps {
   initialTicketTemplate: TicketTemplate;
 }
 
+interface TemplateData {
+  id: number;
+  name: string;
+  description: string;
+}
+
 const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) => {
-  const [templateData, setTemplateData] = useState({});
+  const [templateData, setTemplateData] = useState<TemplateData | null>(null);
   const [items, setItems] = useState([]);
   const [currentItem, setCurrentItem] = useState(null);
   const choiceIds = htmlIdGenerator("choice");

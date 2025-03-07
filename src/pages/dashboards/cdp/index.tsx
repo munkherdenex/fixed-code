@@ -19,15 +19,19 @@ import { Template } from "@/hooks/useGetTemplates";
 import { getCampaignIcon, getCampaignStatusIcon, getDataKind } from "@/utils/helper";
 import { badgeColor } from "@/utils/badge_color";
 import { useTranslations } from "next-intl";
-import moment from 'moment';
-import { Worker } from '@/lib/types';
-import Link from 'next/link';
+import moment from "moment";
+import { Worker } from "@/lib/types";
+import Link from "next/link";
+
+interface TemplateListResponse {
+  results: any[]; // Replace `any` with the actual type of the items in the array
+}
 
 const Dashboard: FunctionComponent = () => {
   const router = useRouter();
   const translate = useTranslations();
 
-  const [templateListData, setTemplateListData] = useState([]);
+  const [templateListData, setTemplateListData] = useState<TemplateListResponse | null>(null);
 
   useEffect(() => {
     templateApi.getList().then((res) => {
@@ -171,7 +175,7 @@ export async function getStaticProps(context) {
       messages: {
         ...common,
         ...cdp,
-        ...campaign
+        ...campaign,
       },
     },
   };

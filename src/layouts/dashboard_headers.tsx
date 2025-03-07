@@ -27,7 +27,6 @@ const DashboardHeaders = () => {
               <ChangeProductButton key={useGeneratedHtmlId()} />,
               <EuiText
                 key="elastic-logo"
-                iconType="dashboardApp"
                 style={{ cursor: "pointer" }}
                 onClick={() => router.push(`/dashboards/cdp`)}
               >
