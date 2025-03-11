@@ -21,12 +21,16 @@ interface Tag {
   color: string;
 }
 
+interface TagsResponse {
+  results: Tag[];
+}
+
 const TagsManager = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [newTagColor, setNewTagColor] = useState("#000000");
 
-  const { data: tags, mutate, error } = useSWR<Tag[]>("/crm/tag/", () => tagApi.getTags({}));
+  const { data: tags, mutate, error } = useSWR<TagsResponse>("/crm/tag/", () => tagApi.getTags({}));
 
   const onButtonClick = () => setIsPopoverOpen((isPopoverOpen) => !isPopoverOpen);
   const closePopover = () => setIsPopoverOpen(false);
@@ -39,7 +43,7 @@ const TagsManager = () => {
 
     await tagApi.create(newTag);
 
-    mutate("/crm/tag/");
+    mutate();
 
     setNewTagName("");
     setNewTagColor("#000000");
@@ -49,7 +53,7 @@ const TagsManager = () => {
   const handleDeleteTag = async (id: string) => {
     try {
       await tagApi.delete(id);
-      mutate("/crm/tag/");
+      mutate();
     } catch (e) {
       console.log(e);
     }
@@ -74,6 +78,7 @@ const TagsManager = () => {
               iconType="cross"
               iconSide="right"
               iconOnClick={() => handleDeleteTag(tag.id)}
+              iconOnClickAriaLabel="Remove tag" // Add this prop
             >
               {tag.name}
             </EuiBadge>

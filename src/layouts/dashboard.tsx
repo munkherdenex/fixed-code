@@ -1,6 +1,12 @@
-// @ts-nocheck
-
-import { EuiPage, EuiPageBody, EuiPageHeader, EuiPageSection, EuiPageSidebar, EuiPageSidebarProps, EuiPageTemplate, useIsWithinMaxBreakpoint } from "@elastic/eui";
+import {
+  EuiPage,
+  EuiPageBody,
+  EuiPageHeader,
+  EuiPageSection,
+  EuiPageSidebar,
+  EuiPageSidebarProps,
+  useIsWithinMaxBreakpoint,
+} from "@elastic/eui";
 import { useRouter } from "next/router";
 import { ReactElement, useContext } from "react";
 import { SWRConfig } from "swr";
@@ -43,21 +49,16 @@ const Content = ({
   if (isCDPEnabled) {
     return (
       <div css={styles.contentWrapper}>
-        <EuiPage
-          bottomBorder={true}
-          {...rest}
-        >
+        <EuiPage {...rest}>
           {!largeMaxBreakpoint && (
-            <EuiPageSidebar paddingSize='l' sticky={sidebarSticky || true} hasEmbellish={true}>
+            <EuiPageSidebar paddingSize="l" sticky={sidebarSticky || true} hasEmbellish={true}>
               <Sidebar />
             </EuiPageSidebar>
           )}
           <EuiPageBody panelled>
             <DashboardHeaders />
-            <EuiPageHeader bottomBorder paddingSize='l' {...pageHeader} />
-            <EuiPageSection paddingSize='l'>
-              {children}
-            </EuiPageSection>
+            <EuiPageHeader bottomBorder paddingSize="l" {...pageHeader} />
+            <EuiPageSection paddingSize="l">{children}</EuiPageSection>
           </EuiPageBody>
         </EuiPage>
       </div>

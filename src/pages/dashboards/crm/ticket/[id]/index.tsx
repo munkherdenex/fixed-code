@@ -77,6 +77,13 @@ interface Field {
   };
 }
 
+interface ValueType {
+  old_value?: {
+    value?: string;
+    emoji?: string;
+  };
+}
+
 const transformInputLabel = (attrName, template: any): string => {
   if (template) {
     const field = template?.fields.find((field) => field.attr_name === attrName);
@@ -85,7 +92,7 @@ const transformInputLabel = (attrName, template: any): string => {
   return "";
 };
 
-const transformDataToComments = (results: Result[], ticketTemplate: any): EuiCommentProps[] => {
+const transformDataToComments = (results, ticketTemplate: any): EuiCommentProps[] => {
   return results.map((result) => {
     const { id, body, type, created_at, created_by, data } = result;
 
@@ -99,7 +106,8 @@ const transformDataToComments = (results: Result[], ticketTemplate: any): EuiCom
           if (ticketTemplate) {
             const field = ticketTemplate?.fields.find((field) => field.attr_name === key);
             const fieldName = field ? field.name : key;
-            return `"${fieldName}" changed from "${value.old_value && value.old_value.value ? value.old_value.value + " " + value.old_value.emoji : value.old_value}"`;
+            const oldValue = (value as ValueType).old_value;
+            return `"${fieldName}" changed from "${oldValue?.value ? oldValue.value + " " + oldValue.emoji : oldValue}"`;
           }
           return "";
         })

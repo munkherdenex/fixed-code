@@ -3,8 +3,7 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import SideMenu from "./sidebar_menu";
 import { useTranslations } from "next-intl";
-import Image from 'next/image';
-import { css } from '@emotion/react';
+import Image from "next/image";
 
 const Sidebar = () => {
   const router = useRouter();
@@ -66,7 +65,14 @@ const Sidebar = () => {
     <EuiFlexGroup direction="column" justifyContent="spaceBetween" style={{ height: "100%" }}>
       <EuiFlexItem>
         <EuiSideNav
-          heading={<Image src="/images/pocket-logo.png" alt="Pocket logo" width={200*0.5} height={57*0.5} />}
+          heading={
+            <Image
+              src="/images/pocket-logo.png"
+              alt="Pocket logo"
+              width={200 * 0.5}
+              height={57 * 0.5}
+            />
+          }
           aria-label="Menu"
           mobileTitle="Menu"
           toggleOpenOnMobile={() => toggleOpenOnMobile()}

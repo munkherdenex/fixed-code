@@ -286,13 +286,20 @@ const ComboboxInput = ({ item, register, onBlur, onChange, value, ...props }) =>
     <EuiFlexGroup justifyContent="flexStart" alignItems="center">
       <EuiFlexItem grow={false}>
         {isEditing ? (
-          <EuiSelect
-            options={item.config?.choices}
-            multiple={item.config?.isMultiple}
-            value={value1}
-            onChange={(e) => onSwitchChange(e)}
-            onBlur={onBlur}
-          />
+          item.config?.isMultiple ? (
+            <EuiSelectable
+              options={item.config?.choices}
+              onChange={(e) => onSwitchChange(e)}
+              onBlur={onBlur}
+            />
+          ) : (
+            <EuiSelect
+              options={item.config?.choices}
+              value={value1}
+              onChange={(e) => onSwitchChange(e)}
+              onBlur={onBlur}
+            />
+          )
         ) : (
           <div>{value1 ? value1 : "Null"}</div>
         )}

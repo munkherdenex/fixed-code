@@ -2,6 +2,7 @@ import { Product } from "../hooks/useGetAvailableProduct";
 import { TeamsMyProfileResponse } from "../hooks/useGetTeamsMyprofile";
 
 export interface Member {
+  id: number;
   user: {
     email: string;
     fname: string;

@@ -17,8 +17,8 @@ import useSWR from "swr";
 import * as yup from "yup";
 import ticketTemplateApi from "../../api/ticket_template";
 import getFieldComponent from "../ticket_template/utils";
-import { addToast } from '../toast';
-import ticketApi from '../../api/ticket';
+import { addToast } from "../toast";
+import ticketApi from "../../api/ticket";
 
 const schema = yup
   .object({
@@ -43,11 +43,11 @@ const DynamicForm = ({ ticket_template_id, ticket_template }) => {
   //   ticketsApi.create(ticket_template_id, data)
   // });
 
-  const onSubmit =  async (data) => {
+  const onSubmit = async (data) => {
     try {
       console.log(data); // Handle form submission
       setData(data);
-      const response = await ticketApi.create(ticket_template_id, data)
+      const response = await ticketApi.create(ticket_template_id, data);
       if (response.status == 201) {
         addToast({
           id: "success",

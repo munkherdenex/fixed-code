@@ -58,7 +58,7 @@ const Content = ({
   if (isCRMEnabled) {
     return (
       <div css={styles.contentWrapper}>
-        <EuiPage bottomBorder={true} {...rest}>
+        <EuiPage {...rest}>
           {!largeMaxBreakpoint && (
             <EuiPageSidebar paddingSize="l" sticky={sidebarSticky || true} hasEmbellish={true}>
               <CRMSidebar />

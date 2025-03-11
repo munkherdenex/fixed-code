@@ -13,17 +13,17 @@ import * as yup from "yup";
 import * as styles from "./chat.styles";
 import { useState } from "react";
 
-const messageBuble = {
-  display: 'flex',
-  flexDirection: 'column',
-  minWidth: 'fit-content',
-  paddingLeft: '10px',
+const messageBuble: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  minWidth: "fit-content",
+  paddingLeft: "10px",
 };
 
-const popeye = {
-  position: 'absolute',
-  right: '-25px',
-  top: '15px',
+const popeye: React.CSSProperties = {
+  position: "absolute",
+  right: "-25px",
+  top: "15px",
 };
 
 const ticketSchema = yup
@@ -94,12 +94,12 @@ const ChatMessage = ({ id, name, isToMe = false, message, timestamp = "now" }) =
       css={[styles.messageBubble, isToMe ? styles.userMessage : styles.otherMessage]}
       onMouseEnter={(e) => {
         if (isToMe) {
-          e.currentTarget.querySelector(".message-actions").style.opacity = 1;
+          (e.currentTarget.querySelector(".message-actions") as HTMLDivElement).style.opacity = "1";
         }
       }}
       onMouseLeave={(e) => {
         if (isToMe) {
-          e.currentTarget.querySelector(".message-actions").style.opacity = 0;
+          (e.currentTarget.querySelector(".message-actions") as HTMLDivElement).style.opacity = "0";
         }
       }}
     >
