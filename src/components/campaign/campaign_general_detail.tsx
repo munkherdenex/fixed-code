@@ -4,6 +4,8 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiIcon,
+  EuiInlineEditText,
+  EuiInlineEditTitle,
   EuiPanel,
   EuiText,
   EuiTextColor,
@@ -15,24 +17,49 @@ import { useCampaignContext } from "../../store/campaign_store";
 import { badgeColor } from "../../utils/badge_color";
 import { getCampaignIcon, getCampaignStatusIcon, getDataKind } from "../../utils/helper";
 import ReccurenceRuleLayout from "./reccurence_rule_layout";
+import templateApi from "@/api/template";
+import { css } from "@emotion/react";
+
+const titleStyle = css`
+  .euiTitle {
+    line-height: 1.5em;
+  }
+
+  .euiFieldText {
+    height: 1.5em;
+  }
+
+  margin-bottom: 1em;
+`;
 
 const CampaignGeneralDetails = () => {
   const translate = useTranslations();
-  const { data } = useCampaignContext();
+  const { data, mutate } = useCampaignContext();
   const { data: countData } = useGetCampaignSuccessErrorCount(data?.id?.toString());
 
   //INFO: This is a workaround to get the kind of the template becaouse of POCKET
   const dataKind = getDataKind(data);
   const iconType = getCampaignStatusIcon(data?.start_date != null, data?.is_recurring);
 
+  const updateTitle = async (value) => {
+    await templateApi.update(data?.id, { ...data, title: value });
+    mutate();
+  };
+
   return (
     <div>
       <EuiFlexGroup direction="column">
         <EuiFlexGroup>
           <EuiFlexItem>
-            <EuiText>
-              <h1>{data?.title}</h1>
-            </EuiText>
+            <EuiInlineEditTitle
+              heading="h3"
+              size="l"
+              inputAriaLabel="Гарчиг солих"
+              defaultValue={data?.title}
+              onSave={updateTitle}
+              isReadOnly={data?.status !== "DRAFT"}
+              css={titleStyle}
+            />
             <EuiText>
               <EuiIcon
                 aria-label={dataKind}

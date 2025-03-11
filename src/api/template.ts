@@ -14,6 +14,13 @@ const templateApi = {
     return response
   },
 
+  update: async (templateId: number, data: Object) => {
+    const response = await client.put(`/templates/${templateId}/`, {
+      ...data
+    })
+    return response
+  },
+
   testSend: async (templateId: number, testerIds: number[]) => {
     const response = await client.post('/templates/test_send/', {
       template_id: templateId,
