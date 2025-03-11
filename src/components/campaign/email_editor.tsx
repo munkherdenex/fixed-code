@@ -12,7 +12,6 @@ import { globalMutate } from '@/utils/globalMutate';
 import mn from '@/messages/grapesjs_mn';
 
 const swv = "sw-visibility";
-const expt = "export-template";
 const osm = "open-sm";
 const otm = "open-tm";
 const ola = "open-layers";
@@ -150,6 +149,7 @@ const EmailEditor = () => {
                         id: swv,
                         className: "fa fa-square-o",
                         command: "core:component-outline",
+                        active: true,
                         context: swv,
                         attributes: { title: "View components" },
                       },
@@ -178,30 +178,35 @@ const EmailEditor = () => {
                         command: obl,
                         active: true,
                         togglable: false,
-                        attributes: { title: "Open Blocks" },
+                        attributes: { title: "Шинэ блок нэмэх" },
                       },
                       {
                         id: osm,
                         className: "fa fa-paint-brush",
                         command: osm,
                         togglable: false,
-                        attributes: { title: "Open Style Manager" },
+                        attributes: { title: "Загварын тохиргоо" },
                       },
                       {
                         id: ola,
                         className: "fa fa-bars",
                         command: ola,
                         togglable: false,
-                        attributes: { title: "Open Layer Manager" },
+                        attributes: { title: "Сонгох" },
+                      },
+                      {
+                        id: otm,
+                        className: "fa fa-gear",
+                        active: true,
+                        command: otm,
+                        togglable: false,
                       },
                     ],
                   },
                 ],
               },
               i18n: {
-                locale: 'mn',
                 detectLocale: false,
-                messages: [mn]
               },
               projectData: JSON.parse(data?.email_body) || '',
             }}
