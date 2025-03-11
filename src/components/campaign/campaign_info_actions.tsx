@@ -178,9 +178,7 @@ const CampaignInfoActions = () => {
   const isStopable =
     data?.status === "RECURRING" || data?.status === "SENDING" || data?.status === "SCHEDULED";
   const isRetargetable =
-    data?.status != "DRAFT" &&
-    data?.status != "DONE" &&
-    data?.status != "APPROVED";
+    data?.status != "DRAFT" && data?.status != "DONE" && data?.status != "APPROVED";
 
   const closeModal = () => setIsModalVisible(false);
   const showModal = () => setIsModalVisible(true);
@@ -378,7 +376,7 @@ const CampaignInfoActions = () => {
         <EuiConfirmModal
           aria-labelledby={modalTitleId}
           style={{ width: 600 }}
-          title="Батлуулах"
+          title="Мэдээлэл батлуулах"
           onCancel={closeModal}
           onConfirm={handleDoneTrigger}
           confirmButtonDisabled={data?.aud_count === 0 && !data?.is_to_all}
@@ -399,7 +397,7 @@ const CampaignInfoActions = () => {
           {(data?.is_to_all || data?.aud_count > 0) && (
             <p>
               Менежер баталсны дараа энэ мэдэгдэл{" "}
-              <strong>{data?.is_to_all ? "бүх" : data?.aud_count}</strong> хэрэглэгчрүү илгээгдэх.
+              <strong>{data?.is_to_all ? "бүх" : data?.aud_count}</strong> хэрэглэгчрүү илгээгдэнэ.
               Та менежерээр батлуулахаар илгээх үү?
             </p>
           )}
@@ -411,25 +409,25 @@ const CampaignInfoActions = () => {
           style={{ width: 600 }}
           onCancel={() => setIsRejectModalVisible(false)}
           onConfirm={handleRejectTrigger}
-          title="Update campaign"
+          title="Мэдэгдэл илгээх"
           buttonColor="danger"
           isLoading={isMutating}
-          cancelButtonText="Cancel"
-          confirmButtonText="Reject"
+          cancelButtonText="Болих"
+          confirmButtonText="Татгалзах"
           defaultFocusedButton="confirm"
         >
-          <EuiCallOut title="Warning" color="warning" iconType="warning">
-            <p>This campaign will be rejected</p>
+          <EuiCallOut title="Анхааруулга" color="warning" iconType="warning">
+            <p>Энэ мэдэгдлийг илгээхээс татгалзаж байна.</p>
           </EuiCallOut>
           <EuiSpacer />
-          <p>The campaign will be marked as DRAFT.</p>
+          <p>Энэ мэдэгдэл DRAFT төлөвт хадгалагдана.</p>
         </EuiConfirmModal>
       )}
       {isModalVisible && isDone && (
         <EuiConfirmModal
           aria-labelledby={modalTitleId}
           style={{ width: 600 }}
-          title="Update campaign"
+          title="Мэдэгдэл илгээх"
           onCancel={closeModal}
           onConfirm={handleApproveTrigger}
           isLoading={isMutating}
@@ -438,8 +436,8 @@ const CampaignInfoActions = () => {
           defaultFocusedButton="confirm"
         >
           <p>
-            Мэдэгдэл илгээх <strong>{data?.aud_count}</strong> харилцагчид мэдэгдэл илгээх гэж
-            байна. Та тухайн үйлдлийг хийхдээ итгэлтэй байна уу?
+            Бүх харилцагчдад мэдэгдэл илгээх гэж байна. Та тухайн үйлдлийг хийхдээ итгэлтэй байна
+            уу?
           </p>
         </EuiConfirmModal>
       )}
