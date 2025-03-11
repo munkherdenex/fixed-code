@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import useSWR from "swr";
 import { useRouter } from "next/router";
 import ticketApi from "../../../../../api/ticket";

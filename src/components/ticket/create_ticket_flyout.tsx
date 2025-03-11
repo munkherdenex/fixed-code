@@ -43,11 +43,11 @@ const DynamicForm = ({ ticket_template_id, ticket_template }) => {
   //   ticketsApi.create(ticket_template_id, data)
   // });
 
-  const onSubmit = (data) => {
+  const onSubmit =  async (data) => {
     try {
       console.log(data); // Handle form submission
       setData(data);
-      const response = ticketApi.create(ticket_template_id, data)
+      const response = await ticketApi.create(ticket_template_id, data)
       if (response.status == 201) {
         addToast({
           id: "success",

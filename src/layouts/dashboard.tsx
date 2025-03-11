@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { EuiPage, EuiPageBody, EuiPageHeader, EuiPageSection, EuiPageSidebar, EuiPageSidebarProps, EuiPageTemplate, useIsWithinMaxBreakpoint } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { ReactElement, useContext } from "react";

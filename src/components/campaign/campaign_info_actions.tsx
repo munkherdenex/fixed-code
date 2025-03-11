@@ -180,8 +180,7 @@ const CampaignInfoActions = () => {
   const isRetargetable =
     data?.status != "DRAFT" &&
     data?.status != "DONE" &&
-    data?.status != "APPROVED" &&
-    data?.status != "REJECTED";
+    data?.status != "APPROVED";
 
   const closeModal = () => setIsModalVisible(false);
   const showModal = () => setIsModalVisible(true);

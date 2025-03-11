@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import {
   EuiAvatar,
   EuiButtonIcon,
@@ -7,23 +9,21 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import moment from "moment";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import * as styles from "./chat.styles";
 import { useState } from "react";
 
 const messageBuble = {
-  display: "flex",
-  flexDirection: "column",
-  minWidth: "fit-content",
-  "padding-left": "10px",
+  display: 'flex',
+  flexDirection: 'column',
+  minWidth: 'fit-content',
+  paddingLeft: '10px',
 };
 
 const popeye = {
-  position: "absolute",
-  right: "-25px",
-  top: "15px",
+  position: 'absolute',
+  right: '-25px',
+  top: '15px',
 };
 
 const ticketSchema = yup

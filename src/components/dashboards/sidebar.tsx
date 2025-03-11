@@ -1,4 +1,4 @@
-import { EuiFlexGroup, EuiFlexItem, EuiIcon, EuiSideNav, htmlIdGenerator } from "@elastic/eui";
+import { EuiFlexGroup, EuiFlexItem, EuiIcon, EuiSideNav, EuiSideNavItemType, htmlIdGenerator } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import SideMenu from "./sidebar_menu";
@@ -46,7 +46,9 @@ const Sidebar = () => {
     setisSideNavOpenOnMobile(!isSideNavOpenOnMobile);
   };
 
-  const sideNav = [{
+  const sideNav: EuiSideNavItemType<Object>[] = [{
+    id: htmlIdGenerator('root')(),
+    name: '',
     items: audienceSegmentPaths.map((path) => {
       return {
         name: path.name,

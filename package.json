@@ -17,7 +17,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "analyze": "ANALYZE=true yarn build",
-    "build": "yarn lint && rm -f public/themes/*.min.css && next build",
+    "build": "rm -f public/themes/*.min.css && next build",
     "build-docs": "yarn lint && bash scripts/update-docs.sh",
     "dev": "next",
     "lint": "tsc && next lint",

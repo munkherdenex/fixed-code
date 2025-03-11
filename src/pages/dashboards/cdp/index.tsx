@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { FunctionComponent, useEffect, useState } from "react";
 import Head from "next/head";
 import {

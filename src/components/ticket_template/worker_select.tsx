@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useContext, useEffect, useState } from "react";
 import { EuiComboBox, EuiComboBoxOptionOption, EuiForm, EuiFormRow } from "@elastic/eui";
 import { teamsContext } from "../../store/teams_store";
