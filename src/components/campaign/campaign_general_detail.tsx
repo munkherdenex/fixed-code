@@ -105,7 +105,11 @@ const CampaignGeneralDetails = () => {
         <EuiFlexGroup>
           <EuiFlexItem>
             <EuiPanel hasBorder={true}>
-              <h3>Sent</h3>
+              <EuiFlexGrid columns={3}>
+                <EuiFlexItem>Нийт илгээсэн харилцагчийн тоо</EuiFlexItem>
+                <EuiFlexItem>Амжилттай</EuiFlexItem>
+                <EuiFlexItem>Амжилтгүй</EuiFlexItem>
+              </EuiFlexGrid>
               <EuiFlexGrid columns={3}>
                 <EuiFlexItem>
                   <EuiText>{data?.aud_count}</EuiText>
