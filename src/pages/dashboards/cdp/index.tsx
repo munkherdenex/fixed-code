@@ -113,7 +113,7 @@ const Dashboard: FunctionComponent = () => {
         return worker?.email;
       },
       footer: () => {
-        return <Link href="/dashboards/cdp/campaign">Бүдгийг үзэх</Link>;
+        return <Link href="/dashboards/cdp/campaign">Бүгдийг үзэх</Link>;
       },
     },
   ];
@@ -153,7 +153,7 @@ const Dashboard: FunctionComponent = () => {
               <h3>Мэдэгдэл</h3>
             </EuiText>
             <EuiBasicTable
-              tableCaption="Demo of EuiBasicTable"
+              tableCaption="CDP"
               items={templateListData?.results || []}
               rowHeader="firstName"
               columns={columns}
