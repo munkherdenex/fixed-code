@@ -29,16 +29,12 @@ const CRMSidebar = () => {
 
   const sideNav = [
     {
-      name: "Контактууд",
+      name: "Харилцагчид",
       id: htmlIdGenerator("customers")(),
       items: [
         {
           name: "Харилцагчид",
           path: "/dashboards/crm/customer",
-        },
-        {
-          name: "Компани",
-          path: "#k",
         },
       ].map((path) => {
         return {
@@ -55,29 +51,6 @@ const CRMSidebar = () => {
       name: "Харицлагчийн үйлчилгээ",
       id: htmlIdGenerator("audience&Segments")(),
       items: audienceSegmentPaths.map((path) => {
-        return {
-          name: path.name,
-          id: htmlIdGenerator(path.name)(),
-          isSelected: router.pathname === path.path,
-          onClick: () => {
-            router.push(path.path);
-          },
-        };
-      }),
-    },
-    {
-      name: "Борлуулалт",
-      id: htmlIdGenerator("sales")(),
-      items: [
-        {
-          name: "Лийд",
-          path: "#l",
-        },
-        {
-          name: "Таск",
-          path: "#tt",
-        },
-      ].map((path) => {
         return {
           name: path.name,
           id: htmlIdGenerator(path.name)(),
