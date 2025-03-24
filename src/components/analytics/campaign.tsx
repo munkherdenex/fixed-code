@@ -1,17 +1,15 @@
 import {
   Axis,
+  BarSeries,
   Chart,
   DARK_THEME,
   LIGHT_THEME,
-  LineSeries,
   Position,
   ScaleType,
   Settings,
 } from "@elastic/charts";
 import {
-  EuiButton,
-  EuiDatePicker,
-  EuiDatePickerRange,
+  EuiButtonGroup,
   EuiFlexGroup,
   EuiFlexItem,
   EuiPanel,
@@ -22,8 +20,9 @@ import {
 } from "@elastic/eui";
 import moment from "moment";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import useGetCustomerAnalytics from "../../hooks/useGetCustomerAnalytics";
 import { useTranslations } from "next-intl";
+import analyticsApi from "@/api/analytics";
+import { dateFormat, generateChartIntervals } from "@/utils/chart_utils";
 
 const Campaign = () => {
   const translate = useTranslations();
@@ -31,50 +30,64 @@ const Campaign = () => {
   const isDarkTheme = colorMode === "DARK";
   const chartBaseTheme = isDarkTheme ? DARK_THEME : LIGHT_THEME;
 
-  const minDate = useMemo(() => moment("2024-12-1"), []);
-  const maxDate = useMemo(() => moment(), []);
-
-  const { data, isMutating, trigger } = useGetCustomerAnalytics();
-
+  const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState(moment().subtract(1, "weeks"));
-  const [endDate, setEndDate] = useState(maxDate);
+  const [dataInterval, setDataInterval] = useState("1d");
 
-  const isInvalid = startDate >= endDate || startDate < minDate || endDate > maxDate;
-
-  const refresh = useCallback(async () => {
-    if (isInvalid) return;
-    try {
-      const start = moment.duration(startDate.diff(endDate));
-      const end = moment.duration(endDate.diff(moment()));
-      await trigger({
-        start: `${Math.ceil(start.asDays())}d`,
-        stop: `${Math.ceil(end.asDays())}d`,
-        window: "1d",
-        log_types: [
-          "api_called",
-          "api_interacted",
-          "email_sent",
-          "email_opened",
-          "email_link_clicked",
-          "email_unsubscribed",
-          "push_notif_clicked",
-          "sms_link_clicked",
-        ],
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }, [endDate, isInvalid, startDate, trigger]);
+  const [templatesData, setTemplatesData] = useState(null);
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    analyticsApi
+      .getForTemplate({
+        start: dateFormat(startDate, true),
+        group_by_kind: true,
+      })
+      .then((res) => {
+        setTemplatesData(res.data);
+      })
+      .finally(() => setIsLoading(false));
+  }, [startDate]);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    loadData();
+  }, [loadData]);
 
-  const sortedData =
-    (data &&
-      Array.isArray(data) &&
-      data?.sort((a, b) => (moment(a._start).isAfter(b._start) ? 1 : 0))) ||
-    [];
+  const chartRangeX = useMemo(() => {
+    if (templatesData) {
+      const start = moment(templatesData?.current_range["start"]);
+      const end = moment(templatesData?.current_range["end"]);
+      const window = templatesData?.current_range["window"];
+
+      return generateChartIntervals(start, end, window);
+    }
+    return [];
+  }, [templatesData]);
+
+  const chartData = useMemo(() => {
+    if (templatesData && Array.isArray(templatesData?.data)) {
+      const window = templatesData?.current_range["window"];
+      return templatesData?.data.map((item) => {
+        return { ...item, _time: dateFormat(item._time, window != "1h") };
+      });
+    }
+    return [];
+  }, [templatesData]);
+
+  useEffect(() => {
+    switch (dataInterval) {
+      case "1d":
+        setStartDate(moment().startOf("day").subtract(1, "days"));
+        break;
+      case "7d":
+        setStartDate(moment().startOf("day").subtract(7, "days"));
+        break;
+      case "1m":
+        setStartDate(moment().startOf("day").subtract(1, "months"));
+        break;
+      default:
+        break;
+    }
+  }, [dataInterval]);
 
   return (
     <>
@@ -85,49 +98,35 @@ const Campaign = () => {
           </EuiText>
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
-          <EuiFlexGroup>
+          <EuiFlexGroup alignItems="baseline">
             <EuiFlexItem>
-              <EuiDatePickerRange
-                isInvalid={isInvalid}
-                startDateControl={
-                  <EuiDatePicker
-                    selected={startDate}
-                    onChange={(date) => date && setStartDate(date)}
-                    startDate={startDate}
-                    endDate={endDate}
-                    minDate={minDate}
-                    maxDate={endDate}
-                    aria-label="Start date"
-                    showTimeSelect
-                  />
-                }
-                endDateControl={
-                  <EuiDatePicker
-                    selected={endDate}
-                    onChange={(date) => date && setEndDate(date)}
-                    startDate={startDate}
-                    endDate={endDate}
-                    minDate={startDate}
-                    maxDate={maxDate}
-                    aria-label="End date"
-                    showTimeSelect
-                  />
-                }
-              />
+              <EuiText>{startDate.format("YYYY-MM-DD")}-аас</EuiText>
             </EuiFlexItem>
-            <EuiFlexItem grow={false}>
-              <EuiButton fill iconType="refresh" onClick={() => refresh()}>
-                {translate("refresh")}
-              </EuiButton>
+            <EuiFlexItem>
+              <EuiButtonGroup
+                legend="Truncation type"
+                idSelected={dataInterval}
+                onChange={(id) => setDataInterval(id)}
+                options={[
+                  { id: "1d", label: "1 өдөр" },
+                  { id: "7d", label: "7 хоног" },
+                  { id: "1m", label: "1 сар" },
+                ]}
+              />
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="s" />
       <EuiPanel hasBorder>
-        <EuiSkeletonRectangle isLoading={isMutating} width="100%" height={500}>
+        <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={500}>
           <Chart size={["100%", 500]}>
-            <Settings baseTheme={chartBaseTheme} showLegend legendPosition={Position.Top} />
+            <Settings
+              baseTheme={chartBaseTheme}
+              showLegend
+              legendPosition={Position.Right}
+              xDomain={chartRangeX}
+            />
             <Axis id="count" title="Count" position={Position.Left} />
             <Axis
               id="time"
@@ -135,14 +134,14 @@ const Campaign = () => {
               position={Position.Bottom}
               tickFormat={(tickValue) => moment(tickValue).format("l")}
             />
-            <LineSeries
+            <BarSeries
               id="bars"
               xScaleType={ScaleType.Time}
               stackAccessors={["true"]}
-              splitSeriesAccessors={["log_type"]}
-              xAccessor="_start"
+              splitSeriesAccessors={["kind"]}
+              xAccessor="_time"
               yAccessors={["_value"]}
-              data={sortedData}
+              data={chartData}
               displayValueSettings={{ showValueLabel: true }}
             />
           </Chart>

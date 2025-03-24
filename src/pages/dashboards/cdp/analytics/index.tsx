@@ -1,5 +1,4 @@
 import {
-  EuiAccordion,
   EuiFlexGrid,
   EuiFlexItem,
   EuiPanel,
@@ -16,7 +15,6 @@ import { useTranslations } from "next-intl";
 
 const Analytics = () => {
   const translate = useTranslations();
-  const simpleAccordionId = useGeneratedHtmlId({ prefix: "simpleAccordion" });
 
   return (
     <>
@@ -29,36 +27,18 @@ const Analytics = () => {
           iconType: "reportingApp",
         }}
       >
-        <div>
-          <EuiAccordion
-            id={simpleAccordionId}
-            buttonContent={translate("customer-analytics")}
-            initialIsOpen
-          >
-            <EuiPanel color="transparent">
-              <Customer />
-            </EuiPanel>
-          </EuiAccordion>
-          <EuiSpacer size="l" />
-          <EuiAccordion
-            id={simpleAccordionId}
-            buttonContent={translate("campaign-analytics")}
-            initialIsOpen
-          >
-            <EuiPanel color="transparent">
-              <Campaign />
-              <EuiSpacer size="s" />
-              <EuiFlexGrid columns={2}>
-                <EuiFlexItem>
-                  <CampaignStatus />
-                </EuiFlexItem>
-                <EuiFlexItem>
-                  <CampaignStatusTable />
-                </EuiFlexItem>
-              </EuiFlexGrid>
-            </EuiPanel>
-          </EuiAccordion>
-        </div>
+        <Customer />
+        <EuiSpacer size="l" />
+        <Campaign />
+        <EuiSpacer size="l" />
+        <EuiFlexGrid columns={2} gutterSize='l'>
+          <EuiFlexItem>
+            <CampaignStatus />
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <CampaignStatusTable />
+          </EuiFlexItem>
+        </EuiFlexGrid>
       </DashboardLayout>
     </>
   );

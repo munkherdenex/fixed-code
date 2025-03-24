@@ -1,9 +1,8 @@
-import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSpacer } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
 import { useTranslations } from "next-intl";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import GeneralDetails from "../../../../../components/customers/general_details";
-import Graph from "../../../../../components/customers/graph";
 import Overview from "../../../../../components/customers/overview";
 import Total from "../../../../../components/customers/total";
 import DashboardLayout from "../../../../../layouts/dashboard";
@@ -54,8 +53,6 @@ const Info = () => {
                 <EuiFlexGroup direction="column">
                   <EuiFlexItem grow={false}>
                     <EuiPanel>
-                      <Graph />
-                      <EuiSpacer />
                       <Total />
                     </EuiPanel>
                   </EuiFlexItem>
