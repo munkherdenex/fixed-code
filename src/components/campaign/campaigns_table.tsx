@@ -146,11 +146,11 @@ const CampaignsTable = () => {
       },
     },
     {
-      name: translate("click_rate"),
+      name: translate("click_count"),
       render: (template: Template) => {
         return template.status == "DRAFT" || template.status == "DONE"
           ? "-"
-          : Math.random().toFixed(2);
+          : template.click_count;
       },
     },
     {

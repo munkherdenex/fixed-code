@@ -27,6 +27,8 @@ export interface Template {
   updated_by: Worker;
   channel: number;
   aud_count: number;
+  open_count: number;
+  click_count: number;
   start_date?: string | null;
   end_date?: string | null;
   is_recurring?: boolean;

@@ -73,5 +73,7 @@
   "draft": "Бэлтгэж буй",
   "active": "Идэвхтэй",
   "stopped": "Дууссан",
-  "all_customer": "Бүх харилцагч"
+  "all_customer": "Бүх харилцагч",
+  "open_count": "Нээсэн тоо",
+  "click_count": "Дарсан тоо"
 }

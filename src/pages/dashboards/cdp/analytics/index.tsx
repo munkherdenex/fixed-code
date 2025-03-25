@@ -22,13 +22,15 @@ const Analytics = () => {
           iconType: "reportingApp",
         }}
       >
-        <Campaign />
-        <EuiSpacer size="l" />
-        <CampaignActions />
-        <EuiSpacer size="l" />
-        <CampaignStatusTable />
-        <EuiSpacer size="l" />
-        <Customer />
+        <div>
+          <Campaign />
+          <EuiSpacer size="l" />
+          <CampaignActions />
+          <EuiSpacer size="l" />
+          <CampaignStatusTable />
+          <EuiSpacer size="l" />
+          <Customer />
+        </div>
       </DashboardLayout>
     </>
   );
