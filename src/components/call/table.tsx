@@ -50,20 +50,24 @@ const Table = () => {
 
   const columns: Array<EuiBasicTableColumn<Template>> = [
     {
-      field: "call_id",
-      name: "Call ID",
-    },
-    {
-      field: "customer_id",
-      name: "Customer ID",
+      field: "phone",
+      name: "Дугаар",
     },
     {
       field: "call_date",
-      name: "Call Date",
+      name: "Залгасан огноо",
     },
     {
-      field: "phone",
-      name: "Phone",
+      field: "call_state",
+      name: "Дуудлагын төлөв",
+    },
+    {
+      field: "call_agent",
+      name: "Agent",
+    },
+    {
+      field: "call_type",
+      name: "In/Out",
     },
   ];
 

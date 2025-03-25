@@ -1,86 +1,100 @@
+// @ts-nocheck
+
 import { EuiFlexGroup, EuiFlexItem, EuiSideNav, htmlIdGenerator } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import CrmSideMenu from "./crm_sidebar_menu";
-import Image from 'next/image';
-
-const audienceSegmentPaths = [
-  {
-    path: "/dashboards/crm/ticket",
-    name: "Тикет",
-  },
-  {
-    path: "/dashboards/crm/call",
-    name: "Дуудлага",
-  },
-  {
-    path: "/dashboards/crm/chat",
-    name: "Чат",
-  },
-];
+import Image from "next/image";
+import { teamsContext } from "@/store/teams_store";
 
 const CRMSidebar = () => {
   const router = useRouter();
   const [isSideNavOpenOnMobile, setisSideNavOpenOnMobile] = useState(false);
+  const { isCRMCallEnabled, isCRMChatEnabled, isCRMTicketEnabled } = useContext(teamsContext);
+  const audienceSegmentPaths = useMemo(() => {
+    return [
+      {
+        path: "/dashboards/crm/ticket",
+        name: "Тикет",
+        disabled: !isCRMTicketEnabled,
+      },
+      {
+        path: "/dashboards/crm/call",
+        name: "Дуудлага",
+        disabled: !isCRMCallEnabled,
+      },
+      {
+        path: "/dashboards/crm/chat",
+        name: "Чат",
+        disabled: !isCRMChatEnabled,
+      },
+    ];
+  }, [isCRMTicketEnabled, isCRMCallEnabled, isCRMChatEnabled]);
 
   const toggleOpenOnMobile = () => {
     setisSideNavOpenOnMobile(!isSideNavOpenOnMobile);
   };
 
-  const sideNav = [
-    {
-      name: "Харилцагчид",
-      id: htmlIdGenerator("customers")(),
-      items: [
-        {
-          name: "Харилцагчид",
-          path: "/dashboards/crm/customer",
-        },
-      ].map((path) => {
-        return {
-          name: path.name,
-          id: htmlIdGenerator(path.name)(),
-          isSelected: router.pathname === path.path,
-          onClick: () => {
-            router.push(path.path);
+  const sideNav = useMemo(() => {
+    return [
+      {
+        name: "Харилцагчид",
+        id: htmlIdGenerator("customers")(),
+        items: [
+          {
+            name: "Харилцагчид",
+            path: "/dashboards/crm/customer",
           },
-        };
-      }),
-    },
-    {
-      name: "Харицлагчийн үйлчилгээ",
-      id: htmlIdGenerator("audience&Segments")(),
-      items: audienceSegmentPaths.map((path) => {
-        return {
-          name: path.name,
-          id: htmlIdGenerator(path.name)(),
-          isSelected: router.pathname === path.path,
-          onClick: () => {
-            router.push(path.path);
+        ].map((path) => {
+          return {
+            name: path.name,
+            id: htmlIdGenerator(path.name)(),
+            isSelected: router.pathname === path.path,
+            onClick: () => {
+              router.push(path.path);
+            },
+          };
+        }),
+      },
+      {
+        name: "Харицлагчийн үйлчилгээ",
+        id: htmlIdGenerator("audience&Segments")(),
+        items: audienceSegmentPaths.map((path) => {
+          if (path.disabled) {
+            return {};
+          }
+          return {
+            name: path.name,
+            id: htmlIdGenerator(path.name)(),
+            isSelected: router.pathname === path.path,
+            disabled: path.disabled,
+            onClick: () => {
+              router.push(path.path);
+            },
+          };
+        }),
+      },
+      {
+        name: "Тайлан",
+        id: htmlIdGenerator("reports")(),
+        items: [
+          {
+            name: "Тайлан",
+            path: "#t",
           },
-        };
-      }),
-    },
-    {
-      name: "Тайлан",
-      id: htmlIdGenerator("reports")(),
-      items: [
-        {
-          name: "Тайлан",
-          path: "#t",
-        },
-      ].map((path) => {
-        return {
-          name: path.name,
-          id: htmlIdGenerator(path.name)(),
-          isSelected: router.pathname === path.path,
-          onClick: () => {
-            router.push(path.path);
-          },
-        };
-      }),
-    },
-  ];
+        ].map((path) => {
+          return {
+            name: path.name,
+            id: htmlIdGenerator(path.name)(),
+            isSelected: router.pathname === path.path,
+            onClick: () => {
+              router.push(path.path);
+            },
+          };
+        }),
+      },
+    ];
+  }, [audienceSegmentPaths, router]);
 
   return (
     <EuiFlexGroup direction="column" justifyContent="spaceBetween" style={{ height: "100%" }}>

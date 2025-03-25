@@ -1,133 +1,6 @@
-import {
-  EuiButton,
-  EuiFieldText,
-  EuiFlyout,
-  EuiFlyoutBody,
-  EuiFlyoutHeader,
-  EuiForm,
-  EuiFormRow,
-  EuiTextArea,
-  EuiTitle,
-  useGeneratedHtmlId,
-} from "@elastic/eui";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { GetStaticProps } from "next/types";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import * as yup from "yup";
 import DashboardCRMLayout from "../../../layouts/dashboard_crm";
-import useCreateCRMTemplate from "../../../hooks/useCreateCRMTemplate";
-import { addToast } from "../../../components/toast";
-
-const schema = yup
-  .object({
-    title: yup.string().required(""),
-    description: yup.string().required(""),
-  })
-  .required();
-
-type FormData = yup.InferType<typeof schema>;
-
-const CreateTemplateFlyout = () => {
-  const { trigger, isMutating } = useCreateCRMTemplate();
-  const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
-
-  const simpleFlyoutTitleId = useGeneratedHtmlId();
-
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
-
-  const onSubmit = async (data: FormData) => {
-    try {
-      const response = await trigger({
-        name: data?.title,
-        desaturate: data?.description,
-      });
-      addToast({
-        id: "success",
-        title: "Successfully created",
-        color: "success",
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  return (
-    <div>
-      <EuiButton key="sdf" onClick={() => setIsFlyoutVisible(true)}>
-        Create template
-      </EuiButton>
-      {isFlyoutVisible && (
-        <EuiFlyout
-          ownFocus
-          onClose={() => setIsFlyoutVisible(false)}
-          aria-labelledby={simpleFlyoutTitleId}
-        >
-          <EuiFlyoutHeader hasBorder>
-            <EuiTitle size="m">
-              <h2 id={simpleFlyoutTitleId}>Create template</h2>
-            </EuiTitle>
-          </EuiFlyoutHeader>
-          <EuiFlyoutBody>
-            <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-              <EuiFormRow
-                label="Title"
-                isInvalid={!!errors.title?.message}
-                error={[errors.title?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="title"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiFieldText
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.title?.message}
-                      placeholder="title"
-                      aria-label="title"
-                    />
-                  )}
-                />
-              </EuiFormRow>
-              <EuiFormRow
-                label="Description"
-                isInvalid={!!errors.description?.message}
-                error={[errors.description?.message]}
-              >
-                <Controller
-                  control={control}
-                  name="description"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <EuiTextArea
-                      onChange={onChange}
-                      value={value}
-                      onBlur={onBlur}
-                      isInvalid={!!errors.description?.message}
-                      placeholder="Description"
-                      aria-label="Description"
-                    />
-                  )}
-                />
-              </EuiFormRow>
-              <EuiFormRow>
-                <EuiButton type="submit" isLoading={isMutating} fill>
-                  Create
-                </EuiButton>
-              </EuiFormRow>
-            </EuiForm>
-          </EuiFlyoutBody>
-        </EuiFlyout>
-      )}
-    </div>
-  );
-};
+import { EuiText } from '@elastic/eui';
 
 const CRM = () => {
   return (
@@ -135,11 +8,18 @@ const CRM = () => {
       <DashboardCRMLayout
         pageHeader={{
           pageTitle: "CRM dashboard",
-          rightSideItems: [<CreateTemplateFlyout key="dfgaiogvao" />],
         }}
       >
         <div>
-          CRM main screen here!
+          <EuiText>
+            <h3>Энэ хэсэгт харуулах зүйлс</h3>
+
+            <ul>
+              <li>Нээлттэй тикетүүд</li>
+              <li>Дуудлагын түүх</li>
+              <li>Чатны түүх</li>
+            </ul>
+          </EuiText>
         </div>
       </DashboardCRMLayout>
     </>

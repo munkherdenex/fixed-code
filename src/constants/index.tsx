@@ -76,4 +76,33 @@ export const TEAM_PRODUCTS: FrontProduct[] = [
     icon: "canvasApp",
     selected: false,
   },
+  {
+    name: "CRM-Ticket",
+    title: "CRM-Ticket",
+    description:
+      "The campaign is a marketing initiative that you want to send to your audience. It can be a newsletter, a promotion, or a survey.",
+    link: `/dashboards/crm`,
+    icon: "canvasApp",
+    selected: false,
+  },
+
+  {
+    name: "CRM-Call",
+    title: "CRM-Call",
+    description:
+      "The campaign is a marketing initiative that you want to send to your audience. It can be a newsletter, a promotion, or a survey.",
+    link: `/dashboards/crm`,
+    icon: "canvasApp",
+    selected: false,
+  },
+
+  {
+    name: "CRM-Chat",
+    title: "CRM-Chat",
+    description:
+      "The campaign is a marketing initiative that you want to send to your audience. It can be a newsletter, a promotion, or a survey.",
+    link: `/dashboards/crm`,
+    icon: "canvasApp",
+    selected: false,
+  },
 ];

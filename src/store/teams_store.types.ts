@@ -40,4 +40,7 @@ export interface Initial_Teams_Type {
   isAccountActive: boolean;
   isCDPEnabled?: boolean;
   isCRMEnabled?: boolean;
+  isCRMTicketEnabled?: boolean;
+  isCRMCallEnabled?: boolean;
+  isCRMChatEnabled?: boolean;
 }

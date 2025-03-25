@@ -22,9 +22,15 @@ import moment from "moment";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import analyticsApi from "@/api/analytics";
-import { dateFormat, generateChartIntervals, groupBy } from "@/utils/chart_utils";
+import {
+  dateFormat,
+  generateChartIntervals,
+  getMeasurementName,
+  groupBy,
+} from "@/utils/chart_utils";
+import Campaign from "./campaign";
 
-const Campaign = () => {
+const CampaignActions = () => {
   const translate = useTranslations();
   const { colorMode } = useEuiTheme();
   const isDarkTheme = colorMode === "DARK";
@@ -56,8 +62,8 @@ const Campaign = () => {
       .getForTemplate({
         start: dateFormat(startDate1, true),
         interval: dataInterval,
-        group_by_kind: true,
-        measurement: ["sends"].join(","),
+        kind: "email",
+        measurement: ["sends","email_opened", "email_link_clicked", "email_unsubscribed"].join(","),
       })
       .then((res) => {
         setTemplatesData(res.data);
@@ -87,10 +93,11 @@ const Campaign = () => {
         return {
           ...item,
           _time: dateFormat(item._time, window != "1h"),
-          kind: item.kind.toUpperCase(),
+          _measurement: getMeasurementName(item._measurement),
         };
       });
-      return groupBy(t, "kind");
+      console.log(t)
+      return t;
     }
     return [];
   }, [templatesData]);
@@ -100,7 +107,7 @@ const Campaign = () => {
       <EuiFlexGroup>
         <EuiFlexItem>
           <EuiText grow={false}>
-            <h2>Илгээсэн мэдэгдлүүд /төрлөөр/</h2>
+            <h2>Имэйл /нээсэн, дарсан, unsubscribe хийсэн/</h2>
           </EuiText>
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
@@ -135,18 +142,15 @@ const Campaign = () => {
             />
             <Axis id="count" title="Count" position={Position.Left} />
             <Axis id="time" title="Time" position={Position.Bottom} />
-            {chartData &&
-              Object.keys(chartData).map((key, index) => (
-                <BarSeries
-                  key={`kind-chart-${key}`}
-                  id={`${key}`}
-                  xScaleType={ScaleType.Time}
-                  xAccessor="_time"
-                  yAccessors={["_value"]}
-                  data={chartData[key]}
-                  displayValueSettings={{ showValueLabel: true }}
-                />
-              ))}
+            <BarSeries
+              id={`BarSeries`}
+              xScaleType={ScaleType.Time}
+              splitSeriesAccessors={["_measurement"]}
+              xAccessor="_time"
+              yAccessors={["_value"]}
+              data={chartData}
+              displayValueSettings={{ showValueLabel: true }}
+            />
           </Chart>
         </EuiSkeletonRectangle>
       </EuiPanel>
@@ -154,4 +158,4 @@ const Campaign = () => {
   );
 };
 
-export default Campaign;
+export default CampaignActions;

@@ -1,10 +1,4 @@
-import {
-  EuiFlexGrid,
-  EuiFlexItem,
-  EuiPanel,
-  EuiSpacer,
-  useGeneratedHtmlId,
-} from "@elastic/eui";
+import { EuiFlexGrid, EuiFlexItem, EuiPanel, EuiSpacer, useGeneratedHtmlId } from "@elastic/eui";
 import Head from "next/head";
 import DashboardLayout from "../../../../layouts/dashboard";
 import Customer from "../../../../components/analytics/customer";
@@ -12,6 +6,7 @@ import Campaign from "../../../../components/analytics/campaign";
 import CampaignStatus from "../../../../components/analytics/campaign_status";
 import CampaignStatusTable from "../../../../components/analytics/campaign_status_table";
 import { useTranslations } from "next-intl";
+import CampaignActions from "@/components/analytics/campaign_actions";
 
 const Analytics = () => {
   const translate = useTranslations();
@@ -27,18 +22,13 @@ const Analytics = () => {
           iconType: "reportingApp",
         }}
       >
-        <Customer />
-        <EuiSpacer size="l" />
         <Campaign />
         <EuiSpacer size="l" />
-        <EuiFlexGrid columns={2} gutterSize='l'>
-          <EuiFlexItem>
-            <CampaignStatus />
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <CampaignStatusTable />
-          </EuiFlexItem>
-        </EuiFlexGrid>
+        <CampaignActions />
+        <EuiSpacer size="l" />
+        <CampaignStatusTable />
+        <EuiSpacer size="l" />
+        <Customer />
       </DashboardLayout>
     </>
   );

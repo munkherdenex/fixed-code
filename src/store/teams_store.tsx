@@ -23,6 +23,9 @@ const initial_teams_state: Initial_Teams_Type = {
   isAccountActive: false,
   isCDPEnabled: false,
   isCRMEnabled: false,
+  isCRMTicketEnabled: false,
+  isCRMCallEnabled: false,
+  isCRMChatEnabled: false,
 };
 
 export const teamsContext = createContext(initial_teams_state);
@@ -59,7 +62,10 @@ export const TeamsProvider = ({ children }) => {
   const isMember = myProfile?.role === "member";
   const isAccountActive = myProfile?.status === "active";
   const isCDPEnabled = !!products?.find((product) => product?.name === "CDP");
-  const isCRMEnabled = !!products?.find((product) => product?.name === "CRM");
+  const isCRMEnabled = !!products?.find((product) => product?.name.startsWith("CRM"));
+  const isCRMTicketEnabled = !!products?.find((product) => product?.name === "CRM-Ticket");
+  const isCRMCallEnabled = !!products?.find((product) => product?.name === "CRM-Call");
+  const isCRMChatEnabled = !!products?.find((product) => product?.name === "CRM-Chat");
 
   const changeCurrentTeam = useCallback(
     async (teamId: number) => {
@@ -161,6 +167,9 @@ export const TeamsProvider = ({ children }) => {
         isAccountActive,
         isCDPEnabled,
         isCRMEnabled,
+        isCRMTicketEnabled,
+        isCRMCallEnabled,
+        isCRMChatEnabled
       }}
     >
       {isGlobalLoading && router.pathname.includes("dashboards") ? <GlobalLoading /> : children}

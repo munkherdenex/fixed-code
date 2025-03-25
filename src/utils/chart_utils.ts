@@ -2,12 +2,24 @@
 
 import moment, { unitOfTime } from 'moment';
 
+const measurementNames = {
+  "customer_create": "Бүртгэсэн",
+  "customer_update": "Шинэчилсэн",
+  "sends": "Илгээсэн",
+  "email_opened": "Имэйл нээсэн",
+  "email_link_clicked": "Имэйлийн линк дарсан",
+  "email_unsubscribed": "Имэйлээс unsubscribe хийсэн"
+}
+export const getMeasurementName = (name) => {
+  return measurementNames.hasOwnProperty(name) ? measurementNames[name] : name;
+}
+
 export const dateFormat = (date, onlyDate = false) => {
   if (date == null) return null;
   if (onlyDate) {
-    return moment(date).zone("UTC+8").format("YYYY-MM-DD");
+    return moment(date).format("YYYY-MM-DD");
   }
-  return moment(date).zone("UTC+8").minute(0).second(0).format("YYYY-MM-DD HH:mm");
+  return moment(date).minute(0).second(0).format("YYYY-MM-DD HH:mm");
 };
 
 export const guessWindow = (interval) => {
@@ -24,16 +36,18 @@ export const guessWindow = (interval) => {
 }
 
 export function generateChartIntervals(start, end, window) {
-  const startDate = moment(start).zone("UTC+8").hour(0).minute(0).second(0);
-  const endDate = moment(end).zone("UTC+8").hour(0).minute(0).second(0);
+  const startDate = moment(start).hour(0).minute(0).second(0);
+  const endDate = moment(end).hour(0).minute(0).second(0);
   const values = [];
 
   if (!startDate.isValid() || !endDate.isValid()) {
-    return "Invalid date format.";
+    console.error("Invalid date format.");
+    return [];
   }
 
   if (endDate.isBefore(startDate)) {
-    return "End date must be after start date.";
+    console.error("End date must be after start date.");
+    return [];
   }
 
   //  ['1d', '7d', '1m', '1y']

@@ -1,5 +1,6 @@
 import {
   Axis,
+  BarSeries,
   Chart,
   DARK_THEME,
   LIGHT_THEME,
@@ -10,6 +11,7 @@ import {
 } from "@elastic/charts";
 import {
   EuiButtonGroup,
+  EuiCheckboxGroup,
   EuiFlexGroup,
   EuiFlexItem,
   EuiPanel,
@@ -20,10 +22,10 @@ import {
   useEuiTheme,
 } from "@elastic/eui";
 import moment from "moment";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import analyticsApi from "@/api/analytics";
-import { dateFormat } from '@/utils/chart_utils';
+import { dateFormat, generateChartIntervals, getMeasurementName } from "@/utils/chart_utils";
 
 const Customer = () => {
   const translate = useTranslations();
@@ -51,7 +53,7 @@ const Customer = () => {
       default:
         break;
     }
-    setStartDate(startDate1)
+    setStartDate(startDate1);
     analyticsApi
       .getForCustomer({
         start: dateFormat(startDate1, true),
@@ -67,11 +69,26 @@ const Customer = () => {
     loadData();
   }, [loadData]);
 
-  const customColors = {
-    colors: {
-      vizColors: euiPaletteForStatus(4),
-    },
-  };
+  const chartRangeX = useMemo(() => {
+    if (customerData) {
+      const start = moment(customerData?.current_range["start"]);
+      const end = moment(customerData?.current_range["end"]);
+      const window = customerData?.current_range["window"];
+
+      return generateChartIntervals(start, end, window);
+    }
+    return [];
+  }, [customerData]);
+
+  const chartData = useMemo(() => {
+    if (customerData && Array.isArray(customerData?.data)) {
+      const window = customerData?.current_range["window"];
+      return customerData?.data.map((item) => {
+        return { ...item, _time: dateFormat(item._time, window != "1h"), _measurement: getMeasurementName(item._measurement) };
+      });
+    }
+    return [];
+  }, [customerData]);
 
   return (
     <>
@@ -102,35 +119,34 @@ const Customer = () => {
         </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="s" />
-      <EuiPanel hasBorder>
-        <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={500}>
-          <Chart size={["100%", 500]}>
-            <Settings
-              baseTheme={chartBaseTheme}
-              theme={customColors}
-              showLegend
-              legendPosition={Position.Top}
-            />
-            <Axis id="count" title="Count" position={Position.Left} />
-            <Axis
-              id="time"
-              title="Time"
-              position={Position.Bottom}
-              tickFormat={(tickValue) => moment(tickValue).format("YYYY-MM-DD LT")}
-            />
-            <LineSeries
-              id="bars"
-              xScaleType={ScaleType.Time}
-              stackAccessors={["true"]}
-              splitSeriesAccessors={["log_type"]}
-              xAccessor="_time"
-              yAccessors={["_value"]}
-              data={customerData}
-              displayValueSettings={{ showValueLabel: true }}
-            />
-          </Chart>
-        </EuiSkeletonRectangle>
-      </EuiPanel>
+      <EuiFlexGroup>
+        <EuiFlexItem>
+          <EuiPanel hasBorder>
+            <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={500}>
+              <Chart size={["100%", 500]}>
+                <Settings
+                  baseTheme={chartBaseTheme}
+                  showLegend
+                  legendPosition={Position.Top}
+                  xDomain={chartRangeX}
+                />
+                <Axis id="count" title="Count" position={Position.Left} />
+                <Axis id="time" title="Time" position={Position.Bottom} />
+                <BarSeries
+                  id="bars"
+                  xScaleType={ScaleType.Time}
+                  stackAccessors={["true"]}
+                  splitSeriesAccessors={["_measurement"]}
+                  xAccessor="_time"
+                  yAccessors={["_value"]}
+                  data={chartData}
+                  displayValueSettings={{ showValueLabel: true }}
+                />
+              </Chart>
+            </EuiSkeletonRectangle>
+          </EuiPanel>
+        </EuiFlexItem>
+      </EuiFlexGroup>
     </>
   );
 };
