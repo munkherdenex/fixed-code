@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { EuiFlexGroup, EuiFlexItem, EuiSideNav, htmlIdGenerator } from "@elastic/eui";
+import { EuiFlexGroup, EuiFlexItem, EuiIcon, EuiSideNav, htmlIdGenerator } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useContext, useMemo, useState } from "react";
 import CrmSideMenu from "./crm_sidebar_menu";
@@ -15,17 +15,20 @@ const CRMSidebar = () => {
     return [
       {
         path: "/dashboards/crm/ticket",
+        icon: <EuiIcon type="documents" />,
         name: "Тикет",
         disabled: !isCRMTicketEnabled,
       },
       {
         path: "/dashboards/crm/call",
         name: "Дуудлага",
+        icon: <EuiIcon type="inputOutput" />,
         disabled: !isCRMCallEnabled,
       },
       {
         path: "/dashboards/crm/chat",
         name: "Чат",
+        icon: <EuiIcon type="apmTrace" />,
         disabled: !isCRMChatEnabled,
       },
     ];
@@ -58,7 +61,7 @@ const CRMSidebar = () => {
       },
       {
         name: "Харицлагчийн үйлчилгээ",
-        id: htmlIdGenerator("audience&Segments")(),
+        id: htmlIdGenerator("ticketsAndContactLogs")(),
         items: audienceSegmentPaths.map((path) => {
           if (path.disabled) {
             return {};
@@ -67,6 +70,7 @@ const CRMSidebar = () => {
             name: path.name,
             id: htmlIdGenerator(path.name)(),
             isSelected: router.pathname === path.path,
+            icon: path.icon,
             disabled: path.disabled,
             onClick: () => {
               router.push(path.path);

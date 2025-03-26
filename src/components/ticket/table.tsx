@@ -7,10 +7,12 @@ import {
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiTab,
   EuiTableFieldDataColumnType,
+  EuiTabs,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import { Template } from "../../hooks/useGetTemplates";
 import { isNumber } from "../../utils/helper";
@@ -18,6 +20,7 @@ import { useTranslations } from "next-intl";
 import useSWR from "swr";
 import ticketApi from "../../api/ticket";
 import moment from "moment";
+import ticketTemplateApi from "@/api/ticket_template";
 
 const Table = () => {
   const router = useRouter();
@@ -34,6 +37,44 @@ const Table = () => {
   const [pageSize, setPageSize] = useState(queryPageSize);
   const [filter, setFilter] = useState(queryFilter);
 
+  const [selectedTabId, setSelectedTabId] = useState(query?.tab || "all-tab--id");
+  const [tabs, setTabs] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      const tabsData = await ticketTemplateApi.getTicketTabs()
+      if (Array.isArray(tabsData)) {
+        tabsData.reverse().push({
+          name: "Бүх",
+          id: 0,
+        });
+        setTabs(tabsData.reverse().map((tab) => ({ id: `tab--${tab.id}`, name: tab.name })));
+        setSelectedTabId("tab--0");
+      }
+    }
+    fetchData();
+  }, []);
+
+  const onSelectedTabChanged = (tab: any) => {
+    setSelectedTabId(tab.id);
+  };
+
+  const renderTabs = () => {
+    if (!tabs) return;
+
+    if (Array.isArray(tabs)) {
+      return tabs.map((tab, index) => (
+        <EuiTab
+          key={index}
+          onClick={() => onSelectedTabChanged(tab)}
+          isSelected={tab.id === selectedTabId}
+        >
+          {tab.name}
+        </EuiTab>
+      ));
+    }
+  };
+
   const pagination = {
     pageIndex,
     pageSize,
@@ -47,8 +88,8 @@ const Table = () => {
       ticketApi.getTickets({
         search: searchValue,
         filter,
-        pageIndex,
-        pageSize: 10,
+        offset: pageIndex,
+        limit: pageSize,
       }),
   );
 
@@ -171,6 +212,7 @@ const Table = () => {
         </EuiFlexGroup>
       </EuiFlexItem>
       <EuiFlexItem>
+        <EuiTabs>{renderTabs()}</EuiTabs>
         {isLoading ? (
           <div>{translate("loading")}</div>
         ) : (
