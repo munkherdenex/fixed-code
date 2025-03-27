@@ -32,6 +32,11 @@
     "url": "https://github.com/elastic/next-eui-starter/issues"
   },
   "dependencies": {
+    "@editorjs/editorjs": "^2.30.8",
+    "@editorjs/embed": "^2.7.6",
+    "@editorjs/header": "^2.8.8",
+    "@editorjs/list": "^2.0.6",
+    "@editorjs/paragraph": "^2.11.7",
     "@elastic/charts": "^66.1.1",
     "@elastic/eui": "^95.4.0",
     "@emotion/cache": "^11.13.1",
