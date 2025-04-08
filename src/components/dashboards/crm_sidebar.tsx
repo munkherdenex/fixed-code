@@ -45,7 +45,7 @@ const CRMSidebar = () => {
         id: htmlIdGenerator("customers")(),
         items: [
           {
-            name: "Харилцагчид",
+            name: "Хэрэглэгчийн түүх",
             path: "/dashboards/crm/customer",
           },
         ].map((path) => {

@@ -8,9 +8,12 @@ import {
   EuiFieldSearch,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiFormRow,
   EuiImage,
+  EuiSelect,
   EuiTableFieldDataColumnType,
   EuiTextColor,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -24,6 +27,11 @@ import { useTranslations } from "next-intl";
 const pathPrefix = process.env.PATH_PREFIX;
 
 const CustomersTable = () => {
+  const options = [
+    { value: "phone", text: "Утасны дугаар" },
+    { value: "email", text: "И-мэйл" },
+  ];
+
   const translate = useTranslations();
   const router = useRouter();
   const { query } = router;
@@ -32,9 +40,12 @@ const CustomersTable = () => {
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
 
+  const [selectValue, setSelectValue] = useState(options[0].value);
   const [searchValue, setSearchValue] = useState(querySearch);
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
   const [pageSize, setPageSize] = useState(queryPageSize);
+
+  const basicSelectId = useGeneratedHtmlId({ prefix: "basicSelect" });
 
   const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, {
     query: searchValue,
@@ -56,6 +67,20 @@ const CustomersTable = () => {
   const columns = useMemo(
     (): Array<EuiBasicTableColumn<CustomersType>> => [
       {
+        field: "last_name",
+        name: translate("last_name"),
+        render: (email: CustomersType["last_name"]) => (
+          <>{email ? email : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
+        field: "name",
+        name: translate("name"),
+        render: (email: CustomersType["name"]) => (
+          <>{email ? email : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
         field: "email",
         name: translate("email"),
         render: (email: CustomersType["email"]) => (
@@ -69,45 +94,45 @@ const CustomersTable = () => {
           <>{phone ? phone : <EuiTextColor color="subdued">None</EuiTextColor>}</>
         ),
       },
-      {
-        field: "rid",
-        name: translate("rid"),
-        render: (rid: CustomersType["rid"]) => (
-          <>{rid ? rid : <EuiTextColor color="subdued">None</EuiTextColor>}</>
-        ),
-      },
-      {
-        field: "source",
-        name: translate("source"),
-        render: (source: CustomersType["source"]) => (
-          <EuiBadge
-            iconType={
-              source === "web" ? "logoWebhook" : source === "import" ? "importAction" : "apps"
-            }
-            color={source === "web" ? "hollow" : ""}
-          >
-            {source}
-          </EuiBadge>
-        ),
-      },
-      {
-        field: "created_by",
-        name: translate("created-by"),
-        mobileOptions: { enlarge: true },
-        render: (worker: {id: BigInteger, email: string}) => worker?.email,
-      },
-      {
-        field: "created_at",
-        name: translate("created-at"),
-        align: "right",
-        render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
-        footer: () => (
-          <strong>
-            {translate("total-audience")}: {data?.total_count || 0}
-          </strong>
-        ),
-        mobileOptions: { enlarge: true },
-      },
+      // {
+      //   field: "rid",
+      //   name: translate("rid"),
+      //   render: (rid: CustomersType["rid"]) => (
+      //     <>{rid ? rid : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+      //   ),
+      // },
+      // {
+      //   field: "source",
+      //   name: translate("source"),
+      //   render: (source: CustomersType["source"]) => (
+      //     <EuiBadge
+      //       iconType={
+      //         source === "web" ? "logoWebhook" : source === "import" ? "importAction" : "apps"
+      //       }
+      //       color={source === "web" ? "hollow" : ""}
+      //     >
+      //       {source}
+      //     </EuiBadge>
+      //   ),
+      // },
+      // {
+      //   field: "created_by",
+      //   name: translate("created-by"),
+      //   mobileOptions: { enlarge: true },
+      //   render: (worker: { id: BigInteger; email: string }) => worker?.email,
+      // },
+      // {
+      //   field: "created_at",
+      //   name: translate("created-at"),
+      //   align: "right",
+      //   render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
+      //   footer: () => (
+      //     <strong>
+      //       {translate("total-audience")}: {data?.total_count || 0}
+      //     </strong>
+      //   ),
+      //   mobileOptions: { enlarge: true },
+      // },
     ],
     [data?.total_count, translate],
   );
@@ -182,11 +207,37 @@ const CustomersTable = () => {
           gutterSize="s"
         >
           <EuiFlexItem grow={false}>
-            <EuiFieldSearch
-              defaultValue={searchValue}
-              onSearch={onSearchEmailAddress}
-              placeholder={translate("search-audience")}
-            />
+            <EuiFlexGroup
+              responsive={false}
+              justifyContent="spaceBetween"
+              alignItems="flexEnd"
+              gutterSize="s"
+            >
+              <EuiFlexItem grow={false}>
+                <EuiFormRow label="Хайх талбар">
+                  <EuiSelect
+                    id={basicSelectId}
+                    options={options}
+                    value={selectValue}
+                    onChange={(e) => setSelectValue(e.target.value)}
+                    aria-label="Хайлт хийх төрөл"
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiFormRow hasEmptyLabelSpace>
+                  <EuiFieldSearch
+                    defaultValue={searchValue}
+                    onSearch={onSearchEmailAddress}
+                    placeholder={
+                      selectValue == "phone"
+                        ? translate("search-audience-phone")
+                        : translate("search-audience-email")
+                    }
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+            </EuiFlexGroup>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             <EuiButtonIcon
