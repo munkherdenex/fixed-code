@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   EuiTreeView,
   EuiIcon,
@@ -9,48 +9,15 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiText,
+  EuiBadge,
 } from "@elastic/eui";
 import "@elastic/eui/dist/eui_theme_light.css"; // Or dark theme
 import { css } from "@emotion/react";
+import knowledgeApi from "@/api/knowledge";
 
 const myCss = css`{
-  .euiTreeView__node .pageTreeViewRow {
-    position: relative;
-    /* Ensure it stretches, overriding potential EUI inline styles if necessary */
+  .euiTreeView__nodeLabel {
     width: 100% !important;
-    display: block; /* Override default display if needed */
-  }
-
-  /* Style the container for the main node content (icon/text) */
-  .pageTreeViewRow__content {
-    display: flex;
-    align-items: center;
-    /* Add padding to the right to prevent overlap with absolute buttons */
-    /* Adjust this value based on the widest the button container gets */
-    padding-right: 70px; /* Approx width for 2 small buttons + spacing */
-  }
-
-
-  /* Style the absolutely positioned button container */
-  .pageTreeViewRow__actions {
-    position: absolute;
-    right: 8px; /* Adjust spacing from the edge */
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1; /* Ensure buttons are above other content */
-    display: flex; /* Use flex for internal button alignment */
-    align-items: center;
-    gap: 4px; /* Use gap for spacing between buttons */
-
-    /* Optional: Background for debugging or ensuring clicks */
-    /* background-color: rgba(255, 0, 0, 0.1); */
-  }
-
-  /* Ensure the placeholder for the add button takes up space */
-  .pageTreeViewRow__actionPlaceholder {
-    width: 24px; /* Match EuiButtonIcon size='s' width */
-    height: 24px; /* Match EuiButtonIcon size='s' height */
-    flex-shrink: 0; /* Prevent shrinking */
   }
 }`;
 
@@ -92,7 +59,6 @@ const initialPageData = [
   {
     id: "home",
     name: "Homepage",
-    iconType: "home",
     children: [
       { id: "home-about", name: "About Us", iconType: "document" },
       { id: "home-contact", name: "Contact", iconType: "document" },
@@ -101,13 +67,11 @@ const initialPageData = [
   {
     id: "products",
     name: "Products",
-    iconType: "folderClosed",
     children: [
       { id: "products-widget", name: "Widget Pro", iconType: "document" },
       {
         id: "products-gadget",
         name: "Gadget Plus",
-        iconType: "folderClosed",
         children: [
           { id: "gadget-specs", name: "Specifications", iconType: "document" },
           { id: "gadget-reviews", name: "Reviews", iconType: "document" },
@@ -118,17 +82,42 @@ const initialPageData = [
   {
     id: "services",
     name: "Services",
-    iconType: "folderClosed",
   },
 ];
 
 // --- The Component ---
-const PageTreeView = () => {
+const PageTreeView = ({ selectedItemId, onSelectItem }) => {
   const [treeItems, setTreeItems] = useState(initialPageData);
+  const [activeItemIds, setActiveItemIds] = useState<string[]>([]);
   const [expandedIds, setExpandedIds] = useState({});
   // State specifically for the *currently open* popover
   const [activePopoverId, setActivePopoverId] = useState(null);
   const [hoveredNodeId, setHoveredNodeId] = useState(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      await knowledgeApi.getList({}).then((res) => {
+        const parsedResults = res.results.map((item) => {
+          let parsedBody = {};
+          try {
+            if (typeof item.body === "string") {
+              parsedBody = JSON.parse(item.body);
+            }
+          } catch (error) {
+            console.error(`Failed to parse body: ${item.body}:`, error);
+            parsedBody = {}; // Fallback to an empty object
+          }
+          return {
+            ...item,
+            body: parsedBody,
+          };
+        });
+        setTreeItems(parsedResults);
+      });
+    };
+
+    loadData();
+  }, []);
 
   // --- Context Menu Handlers ---
   const openPopover = (nodeId) => {
@@ -138,6 +127,10 @@ const PageTreeView = () => {
   const closePopover = () => {
     setActivePopoverId(null); // Clear the active popover ID
   };
+
+  useEffect(() => {
+    setActiveItemIds(selectedItemId ? [selectedItemId] : []);
+  }, [selectedItemId]);
 
   // --- Action Handlers (ensure they close popover) ---
   const handleRename = (nodeId) => {
@@ -200,6 +193,13 @@ const PageTreeView = () => {
     }
   };
 
+  const handleSelect = (node) => {
+    const selectedNode = findNodeById(treeItems, node.id);
+    if (selectedNode) {
+      onSelectItem(selectedNode); // Pass the full node object up
+    }
+  };
+
   // --- Tree Expansion Handler ---
   const handleExpansion = useCallback(
     (nodeId) => {
@@ -223,19 +223,20 @@ const PageTreeView = () => {
 
   // --- Map Data to EuiTreeView Format ---
   const displayNodes = useMemo(() => {
-    const mapNodes = (nodes) => {
+    const mapNodes = (nodes, level = 0) => {
       return nodes.map((node) => {
         // Determine icon
         let icon;
         const isExpanded = !!expandedIds[node.id]; // Use consistent expansion check
         if (node.children && node.children.length > 0) {
           icon = <EuiIcon type={isExpanded ? "folderOpen" : "folderClosed"} />;
-        } else if (node.iconType) {
-          icon = <EuiIcon type={node.iconType} />;
+        } else {
+          icon = <EuiIcon type={"document"} />;
         }
 
         const isPopoverOpen = activePopoverId === node.id; // Check if *this* node's popover should be open
         const isHovered = hoveredNodeId === node.id;
+        const isSelected = selectedItemId === node.id;
 
         // --- Custom Label Component ---
         const customLabel = (
@@ -247,18 +248,26 @@ const PageTreeView = () => {
             className="pageTreeViewRow"
             onMouseEnter={() => setHoveredNodeId(node.id)}
             onMouseLeave={() => setHoveredNodeId(null)}
-            style={{ width: "100%" }}
+            onClick={() => handleSelect(node)}
+            style={{
+              borderRadius: "5px",
+              width: "100%",
+              paddingLeft: `${0.7 * level}em`,
+            }}
           >
             {/* Grow=true pushes buttons to the right */}
             <EuiFlexItem grow={true}>
-              <EuiFlexGroup alignItems='flexEnd'>
+              <EuiFlexGroup gutterSize='xs' alignItems="flexStart" style={{ color: isSelected ? "black" : "grey" }}>
                 <EuiFlexItem grow={false}>{icon}</EuiFlexItem>
                 <EuiFlexItem grow={false}>
-                  <EuiText size="s" title={node.name}>
-                    {" "}
-                    {/* Add title for long names */}
-                    {node.name}
+                  <EuiText size="s" title={node.title}>
+                    {node.title}
                   </EuiText>
+                </EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                  <EuiBadge color={node.status === "published" ? "success" : "hollow"} style={{ marginLeft: "8px" }}>
+                    {node.status === "published" ? "Published" : "Draft"}
+                  </EuiBadge>
                 </EuiFlexItem>
               </EuiFlexGroup>
             </EuiFlexItem>
@@ -274,7 +283,7 @@ const PageTreeView = () => {
                       isHovered && (
                         <EuiButtonIcon
                           iconType="boxesHorizontal"
-                          aria-label={`Actions for ${node.name}`}
+                          aria-label={`Actions for ${node.title}`}
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent tree node click
                             openPopover(node.id);
@@ -323,8 +332,8 @@ const PageTreeView = () => {
                   {isHovered && (
                     <EuiButtonIcon
                       iconType="plusInCircle"
-                      aria-label={`Add subpage to ${node.name}`}
-                      title={`Add subpage to ${node.name}`}
+                      aria-label={`Add subpage to ${node.title}`}
+                      title={`Add subpage to ${node.title}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleAddSubpage(node.id);
@@ -348,23 +357,21 @@ const PageTreeView = () => {
           label: customLabel,
           isExpanded: isExpanded, // Pass expansion state
           // Using `onExpansion` prop on EuiTreeView is preferred over `callback` for expansion control
-          children: node.children ? mapNodes(node.children) : undefined,
+          children: node.children ? mapNodes(node.children, level + 1) : undefined,
         };
       });
     };
 
     // Update dependencies for useMemo
     return mapNodes(treeItems);
-  }, [treeItems, expandedIds, activePopoverId, hoveredNodeId, handleExpansion]); // Added activePopoverId
+  }, [treeItems, expandedIds, activePopoverId, hoveredNodeId, selectedItemId, handleExpansion]); // Added activePopoverId
 
   return (
     <EuiTreeView
       items={displayNodes}
       aria-label="Page Structure Tree View"
-      // Control expansion via state using the onExpansion callback
-      onExpansion={({ node }) => handleExpansion(node.id)}
-      // No need for `expandByDefault` if controlling state
       display="default"
+      css={myCss}
     />
   );
 };

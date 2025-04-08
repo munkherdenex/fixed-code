@@ -5,15 +5,20 @@ import React, { useEffect, useRef, memo } from "react";
 import EditorJS, { OutputData } from "@editorjs/editorjs";
 import { EDITOR_TOOLS } from "@/lib/editorjs-tools";
 import { editorjsI18nMn } from "@/lib/editorjs-i18n-mn"; // <--- Import the translations
+import { EuiInlineEditTitle, EuiText } from "@elastic/eui";
 
 interface EditorProps {
+  initialTitle?: string;
   data?: OutputData;
-  onChange: (data: OutputData) => void;
+  onChange: (title: string, data: OutputData) => void;
   holder: string;
 }
 
-const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
+const Editor: React.FC<EditorProps> = ({ initialTitle, data, onChange, holder }) => {
   const editorInstanceRef = useRef<EditorJS | null>(null);
+  const isReadyRef = useRef(false);
+  const internalChangeRef = useRef(false);
+  const [title, setTitle] = React.useState(initialTitle || "Гарчиггүй "); // Add state for the title
 
   useEffect(() => {
     if (typeof window !== "undefined" && !editorInstanceRef.current) {
@@ -34,15 +39,20 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
         // -----------------------------------
 
         async onChange(api, event) {
+          if (!isReadyRef.current) return;
+
           const savedData = await api.saver.save();
-          onChange(savedData);
+          internalChangeRef.current = true;
+          onChange(title, savedData);
         },
 
         onReady: () => {
           console.log("Editor.js is ready to work!");
+          isReadyRef.current = true;
+          editorInstanceRef.current = editor;
+          internalChangeRef.current = false;
         },
       });
-      editorInstanceRef.current = editor;
     }
 
     return () => {
@@ -57,9 +67,78 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [holder]); // Keep dependencies minimal
+  }, [title, holder, onChange]); // Keep dependencies minimal
 
-  return <div id={holder} />;
+  // Effect for handling EXTERNAL data updates (when the `data` prop changes)
+  useEffect(() => {
+    setTitle(initialTitle || "Гарчиггүй ");
+
+    if (internalChangeRef.current) {
+      internalChangeRef.current = false;
+      return ;
+    }
+
+    // Ensure the editor instance exists, is ready, and the data prop is actually defined
+    if (editorInstanceRef.current && isReadyRef.current && data) {
+      // Check if the editor is ready using its promise-based API
+      editorInstanceRef.current.isReady
+        .then(() => {
+          // Optional: Deep compare data with current editor state if needed
+          // to prevent rendering identical data, but often render is idempotent enough.
+          // const currentData = await editorInstanceRef.current.save();
+          // if (JSON.stringify(currentData) !== JSON.stringify(data)) { ... }
+
+          console.log(`External data changed for [${holder}], rendering new data.`);
+          // Render the new data. This clears existing content and adds the new blocks.
+          editorInstanceRef.current?.render(data).catch((error) => {
+            editorInstanceRef.current?.render({
+              blocks: [
+                {
+                  type: "paragraph",
+                  data: {
+                    text: `Error during editor.isReady check or render for [${holder}]: ${error}`,
+                  },
+                },
+              ],
+            });
+          });
+        })
+        .catch((error) => {
+          editorInstanceRef.current?.render({
+            blocks: [
+              {
+                type: "paragraph",
+                data: {
+                  text: `Error during editor.isReady check or render for [${holder}]: ${error}`,
+                },
+              },
+            ],
+          });
+          // console.error(`Error during editor.isReady check or render for [${holder}]:`, error);
+          return null;
+        });
+    }
+    // This effect specifically reacts to changes in the `data` prop
+  }, [initialTitle, holder, data]); // Dependency array includes 'data'
+
+  return (
+    <div style={{
+      border: "1px solid #d3dff8",
+      borderRadius: "4px",
+      padding: "10px",
+      minHeight: "200px",
+    }}>
+      <EuiInlineEditTitle
+        heading="h2"
+        size="m"
+        defaultValue={title}
+        onSave={(newTitle) => setTitle(newTitle)}
+        inputAriaLabel="Гарчиг бичих"
+        placeholder="Гарчиг"
+      />
+      <div id={holder}></div>
+    </div>
+  );
 };
 
 export default memo(Editor);
