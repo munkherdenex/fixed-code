@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { createContext, useContext } from "react";
 import useGetCustomers, { CustomersType } from "../hooks/useGetCustomers";
 
-const iniitialAudienceState: {
+const initialAudienceState: {
   data: CustomersType | undefined;
   isLoading: boolean;
 } = {
@@ -10,7 +10,7 @@ const iniitialAudienceState: {
   isLoading: false,
 };
 
-export const audienceContext = createContext(iniitialAudienceState);
+export const audienceContext = createContext(initialAudienceState);
 
 export const useAudienceContext = () => {
   return useContext(audienceContext);

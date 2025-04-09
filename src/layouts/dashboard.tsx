@@ -30,7 +30,7 @@ const Content = ({
   pageHeader?: any;
   children: ReactElement;
   sidebar?: ReactElement;
-  breadCrumb?: ReactElement;
+  breadCrumb?: any;
   hideSidebar?: boolean;
   sidebarSticky?: EuiPageSidebarProps["sticky"];
 }) => {
@@ -57,7 +57,7 @@ const Content = ({
           )}
           <EuiPageBody panelled>
             <DashboardHeaders />
-            <EuiPageHeader bottomBorder paddingSize="l" {...pageHeader} />
+            <EuiPageHeader bottomBorder paddingSize="l" {...pageHeader} breadcrumbs={breadCrumb} />
             <EuiPageSection paddingSize="l">{children}</EuiPageSection>
           </EuiPageBody>
         </EuiPage>
@@ -78,7 +78,7 @@ const DashboardLayout = ({
   pageHeader?: any;
   children: ReactElement;
   sidebar?: ReactElement;
-  breadCrumb?: ReactElement;
+  breadCrumb?: any;
   hideSidebar?: boolean;
   sidebarSticky?: EuiPageSidebarProps["sticky"];
 }) => {
