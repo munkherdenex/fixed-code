@@ -12,6 +12,8 @@ export interface CustomersType {
   customer_data: CustomerDataType;
   currency: string;
   rid: string;
+  name: string;
+  last_name: string;
   phone: string;
   email: string;
   created_at: Date;

@@ -81,6 +81,8 @@
   "search_param": "{param} хайх",
   "test_users": "Тестийн харилцагчид",
   "search-audience": "И-мэйл эсвэл утсаар хайх",
+  "search-audience-email": "И-мэйлээр хайх",
+  "search-audience-phone": "Утсаар хайх",
   "view": "Үзэх",
   "home": "Нүүр"
 }

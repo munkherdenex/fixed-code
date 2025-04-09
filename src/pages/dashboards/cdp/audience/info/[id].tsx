@@ -1,4 +1,4 @@
-import { EuiBreadcrumbs, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
+import { EuiBreadcrumbs, EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
 import { useTranslations } from "next-intl";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -8,6 +8,7 @@ import Total from "../../../../../components/customers/total";
 import DashboardLayout from "../../../../../layouts/dashboard";
 import { AudienceProvider } from "../../../../../store/audience_store";
 import { GetStaticProps } from "next/types";
+import { size } from "@elastic/eui/src/themes/amsterdam/global_styling/variables/_size";
 
 const Info = () => {
   const router = useRouter();
@@ -16,33 +17,38 @@ const Info = () => {
   return (
     <>
       <Head>
-        <title>{translate("audience-info")}</title>
+        <title>{translate("audience-info-details")}</title>
       </Head>
       <AudienceProvider>
         <DashboardLayout
           pageHeader={{
-            pageTitle: translate("audience-info"),
-            iconType: "usersRolesApp",
+            pageTitle: translate("audience-info-details"),
           }}
-          breadCrumb={
-            <EuiBreadcrumbs
-              breadcrumbs={[
-                {
-                  text: "Dashboards",
-                  onClick: () => router.push("/dashboards"),
-                },
-                {
-                  text: "Audience",
-                  onClick: () => router.push("/dashboards/cdp/audience"),
-                },
-                {
-                  text: "Info",
-                },
-              ]}
-              truncate={false}
-              aria-label="Audience info breadCrumb"
-            />
-          }
+          breadCrumb={[
+            {
+              text: (
+                <>
+                  <EuiButtonIcon
+                    display="base"
+                    iconType="arrowLeft"
+                    size="s"
+                    color="text"
+                    aria-label="back"
+                  />
+                </>
+              ),
+              color: "primary",
+              "aria-current": false,
+              onClick: () => router.push("/dashboards/crm/customer"),
+            },
+            {
+              text: "Хэрэглэгчийн түүх",
+              onClick: () => router.push("/dashboards/crm/customer"),
+            },
+            {
+              text: "Хэрэглэгчийн түүх дэлгэрэнгүй",
+            },
+          ]}
         >
           <>
             <EuiFlexGroup>
@@ -52,9 +58,7 @@ const Info = () => {
               <EuiFlexItem grow={7}>
                 <EuiFlexGroup direction="column">
                   <EuiFlexItem grow={false}>
-                    <EuiPanel>
-                      <Total />
-                    </EuiPanel>
+                    <Total />
                   </EuiFlexItem>
                   <EuiFlexItem grow={false}>
                     <Overview />
