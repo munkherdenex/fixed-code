@@ -62,6 +62,26 @@ const ticketTemplateApi = {
       },
       
     ]
+  },
+
+  getPriorities: async () => {
+    const response = await client.get(`/crm/priority/`)
+    return response.data
+  },
+
+  createPriority: async (data) => {
+    const response = await client.post(`/crm/priority/`, data);
+    return response.data;
+  },
+
+  editPriority: async (priorityId: number, data: object) => {
+    const response = await client.put(`/crm/priority/${priorityId}/`, data)
+    return response.data
+  },
+
+  deletePriority: async (priorityId: number) => {
+    const response = await client.delete(`/crm/priority/${priorityId}/`)
+    return response.data
   }
 }
 

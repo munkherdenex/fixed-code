@@ -28,8 +28,8 @@ const CrmSideMenu = () => {
     prefix: "customContextMenuPopover",
   });
 
-  const managementPaths = useMemo(() => {
-    return [
+  const managementPaths = useMemo(
+    () => [
       {
         path: "/dashboards/crm/knowledge_base",
         name: "Мэдлэгийн сан",
@@ -40,8 +40,9 @@ const CrmSideMenu = () => {
         name: "Тикетийн тохиргоо",
         roles: ["admin"],
       },
-    ];
-  }, [translate]);
+    ],
+    [],
+  );
 
   const managementPathsFiltered = useMemo(
     () =>

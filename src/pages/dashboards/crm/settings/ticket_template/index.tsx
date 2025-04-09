@@ -20,6 +20,7 @@ import DashboardCRMLayout from "../../../../../layouts/dashboard_crm";
 import useCreateCRMTemplate from "../../../../../hooks/useCreateCRMTemplate";
 import { addToast } from "../../../../../components/toast";
 import TicketTemplateEditor from '../../../../../components/ticket_template/editor';
+import { NestedLayout } from '../layout';
 
 const schema = yup
   .object({
@@ -140,7 +141,7 @@ const CreateTemplateFlyout = () => {
 const CRM = () => {
   return (
     <>
-      <DashboardCRMLayout
+      <NestedLayout
         pageHeader={{
           pageTitle: "Тикетийн загвар",
           rightSideItems: [<CreateTemplateFlyout key="dfgaiogvao" />],
@@ -149,7 +150,7 @@ const CRM = () => {
         <div>
           <TemplateTable />
         </div>
-      </DashboardCRMLayout>
+      </NestedLayout>
     </>
   );
 };

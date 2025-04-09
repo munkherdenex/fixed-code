@@ -117,6 +117,8 @@ const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) =>
   const choiceIds = htmlIdGenerator("choice");
 
   useEffect(() => {
+    if (initialTicketTemplate == null) return;
+
     setTemplateData({
       id: initialTicketTemplate.id,
       name: initialTicketTemplate.name,
@@ -350,8 +352,8 @@ const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) =>
   return (
     <>
       <EuiText>
-        <h1>{templateData.name}</h1>
-        <p>{templateData.description}</p>
+        <h1>{templateData && templateData.name}</h1>
+        <p>{templateData && templateData.description}</p>
       </EuiText>
       <EuiFlexGroup>
         <EuiFlexItem grow={false}>

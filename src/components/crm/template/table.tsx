@@ -138,8 +138,8 @@ const TemplateTable = () => {
       "data-test-subj": `row-${id}`,
       className: "customRowClass",
       onClick: () => {
-        setIsFlyoutVisible(true);
         setChosenTemplate(template);
+        setIsFlyoutVisible(true);
       },
     };
   };
@@ -198,30 +198,6 @@ const TemplateTable = () => {
   return (
     <>
     <EuiFlexGroup direction="column">
-      <EuiFlexItem>
-        <EuiFlexGroup responsive={false} justifyContent="spaceBetween" alignItems="flexEnd">
-          <EuiFlexItem grow={false}>
-            <EuiFlexGrid columns={3}>
-              <EuiFlexItem grow={false}>
-                <EuiFieldSearch
-                  defaultValue={searchValue}
-                  onSearch={onSearch}
-                  placeholder={translate("search_campaign")}
-                />
-              </EuiFlexItem>
-            </EuiFlexGrid>
-          </EuiFlexItem>
-          <EuiFlexItem grow={false}>
-            <EuiButtonIcon
-              display="base"
-              iconType="refresh"
-              size="s"
-              isLoading={isLoading}
-              onClick={() => mutate()}
-            />
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </EuiFlexItem>
       <EuiFlexItem>
         {isLoading ? (
           <div>{translate("loading")}</div>
