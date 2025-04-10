@@ -1,4 +1,4 @@
-import { EuiBreadcrumbs, EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiPanel } from "@elastic/eui";
+import { EuiButtonIcon, EuiFlexGroup, EuiFlexItem } from "@elastic/eui";
 import { useTranslations } from "next-intl";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -8,7 +8,6 @@ import Total from "../../../../../components/customers/total";
 import DashboardLayout from "../../../../../layouts/dashboard";
 import { AudienceProvider } from "../../../../../store/audience_store";
 import { GetStaticProps } from "next/types";
-import { size } from "@elastic/eui/src/themes/amsterdam/global_styling/variables/_size";
 
 const Info = () => {
   const router = useRouter();
@@ -39,7 +38,7 @@ const Info = () => {
               ),
               color: "primary",
               "aria-current": false,
-              onClick: () => router.push("/dashboards/crm/customer"),
+              onClick: () => router.back(),
             },
             {
               text: "Хэрэглэгчийн түүх",

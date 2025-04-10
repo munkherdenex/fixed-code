@@ -29,21 +29,15 @@ const CustomersDashboard = () => {
             <ImportAudienceFlyoutContainer key={importAudienceFlyoutContainerId} />,
           ],
         }}
-        breadCrumb={
-          <EuiBreadcrumbs
-            breadcrumbs={[
-              {
-                text: "Dashboards",
-                onClick: () => router.push(`${pathPrefix}/dashboards`),
-              },
-              {
-                text: "Audience",
-              },
-            ]}
-            truncate={false}
-            aria-label="Customer info breadCrumb"
-          />
-        }
+        breadCrumb={[
+          {
+            text: "Dashboards",
+            onClick: () => router.push(`${pathPrefix}/dashboards`),
+          },
+          {
+            text: "Audience",
+          },
+        ]}
       >
         <div>
           <CustomersTable />
