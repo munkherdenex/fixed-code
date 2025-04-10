@@ -13,6 +13,7 @@ export interface CRMTicketTemplate {
   updated_by: number;
   team_id: number;
   is_active: boolean;
+  has_priority: boolean;
   is_system_template: boolean;
   fields: [
     {

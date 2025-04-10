@@ -1,6 +1,8 @@
 export type TicketTemplate = {
   id: number;
   name: string;
+  has_priority: boolean;
+  is_active?: boolean;
   description?: string;
   fields?: TicketTemplateField[];
 };

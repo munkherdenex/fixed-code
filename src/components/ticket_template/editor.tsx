@@ -1,4 +1,4 @@
-// @ts-nocheck
+// Remove @ts-nocheck to enable TypeScript checking
 
 import {
   EuiBadge,
@@ -12,6 +12,7 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
+  EuiInlineEditTitle,
   EuiPanel,
   EuiSelect,
   EuiSelectable,
@@ -23,7 +24,7 @@ import {
   htmlIdGenerator,
 } from "@elastic/eui";
 import { css } from "@emotion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useImperativeHandle } from "react";
 import { TicketTemplate, TicketTemplateField } from "./types";
 import ticketTemplateApi from "../../api/ticket_template";
 import { addToast } from "../toast";
@@ -102,18 +103,22 @@ const fields = [
 
 interface TicketTemplateProps {
   initialTicketTemplate: TicketTemplate;
+  onChange: CallableFunction;
 }
 
 interface TemplateData {
   id: number;
   name: string;
   description: string;
+  is_active: boolean;
+  has_priority: boolean;
 }
 
-const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) => {
+const TicketTemplateEditor = ({ initialTicketTemplate, onChange }: TicketTemplateProps) => {
   const [templateData, setTemplateData] = useState<TemplateData | null>(null);
   const [items, setItems] = useState([]);
   const [currentItem, setCurrentItem] = useState(null);
+  const [titleError, setTitleError] = useState(false);
   const choiceIds = htmlIdGenerator("choice");
 
   useEffect(() => {
@@ -123,9 +128,17 @@ const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) =>
       id: initialTicketTemplate.id,
       name: initialTicketTemplate.name,
       description: initialTicketTemplate.description,
+      is_active: initialTicketTemplate.is_active,
+      has_priority: initialTicketTemplate.has_priority,
     });
     setItems(initialTicketTemplate.fields || []);
   }, [initialTicketTemplate]);
+
+  useEffect(() => {
+    if (onChange && templateData && items) {
+      onChange(templateData, items); // Notify parent about changes
+    }
+  }, [templateData, items, onChange]);
 
   const addItem = (item) => {
     const newItem: TicketTemplateField = {
@@ -270,6 +283,7 @@ const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) =>
 
   const removeItem = (item) => {
     setItems(items.filter((i) => i.id !== item.id));
+    setCurrentItem(null);
   };
 
   const getComponent = (item) => {
@@ -327,7 +341,9 @@ const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) =>
         key={item.name + Math.random()}
         label={item.name}
         onClick={() => {
-          setCurrentItem(item);
+          if (currentItem != item) {
+            setCurrentItem(item);
+          }
         }}
         aria-required={item.config?.isRequired}
         helpText={item.config?.helpText}
@@ -351,10 +367,91 @@ const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) =>
 
   return (
     <>
-      <EuiText>
-        <h1>{templateData && templateData.name}</h1>
-        <p>{templateData && templateData.description}</p>
-      </EuiText>
+      <EuiFlexItem grow={1}>
+        <EuiPanel hasShadow={false}>
+          {templateData && (
+            <EuiInlineEditTitle
+              heading="h1"
+              inputAriaLabel="Тикетийн нэр бичих"
+              defaultValue={templateData.name}
+              isInvalid={titleError}
+              onSave={(value: string) => {
+                if (value != null && value.length > 2 && templateData.name != value) {
+                  setTemplateData((prev) => ({
+                    ...prev,
+                    name: value,
+                  }));
+                  setTitleError(false)
+                } else {
+                  setTitleError(true)
+                  addToast({
+                    id: Math.random()+"__key",
+                    title: "Алдаа",
+                    color: "danger",
+                    text: "Тикетийн нэр 2 тэмдэгтээс урт байх ёстой.",
+                  });
+                  return false;
+                }
+              }}
+            />
+          )}
+        </EuiPanel>
+      </EuiFlexItem>
+      <EuiFlexGroup
+        css={css`
+          margin-bottom: 15px;
+        `}
+      >
+        <EuiFlexItem grow={1}>
+          <EuiPanel hasShadow={false}>
+            <EuiFormRow label="Тайлбар" fullWidth>
+              <EuiTextArea
+                fullWidth
+                value={templateData?.description || ""}
+                rows={3}
+                onChange={(e) =>
+                  setTemplateData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+              />
+            </EuiFormRow>
+          </EuiPanel>
+        </EuiFlexItem>
+        <EuiFlexItem grow={1}>
+          <EuiPanel hasShadow={false}>
+            <EuiFormRow label="Идэвхитэй эсэх">
+              <EuiSwitch
+                label="Идэвхитэй эсэх"
+                checked={templateData?.is_active || false}
+                color="primary"
+                onChange={(e) => {
+                  setTemplateData((prev) => ({
+                    ...prev,
+                    is_active: e.target.checked,
+                  }));
+                }}
+              />
+            </EuiFormRow>
+            <EuiFormRow
+              label="Чухлын зэрэг ашиглах эсэх"
+              helpText=<EuiText size="xs">Чухлын зэргийн тохиргоог хажуу цэснээс харна уу.</EuiText>
+            >
+              <EuiSwitch
+                label="Чухлын зэрэг ашиглах эсэх"
+                checked={templateData?.has_priority || false}
+                onChange={(e) => {
+                  setTemplateData((prev) => ({
+                    ...prev,
+                    has_priority: e.target.checked,
+                  }));
+                }}
+              />
+            </EuiFormRow>
+          </EuiPanel>
+        </EuiFlexItem>
+      </EuiFlexGroup>
       <EuiFlexGroup>
         <EuiFlexItem grow={false}>
           <EuiPanel hasShadow={false}>
@@ -548,37 +645,6 @@ const TicketTemplateEditor = ({ initialTicketTemplate }: TicketTemplateProps) =>
                   )}
                 </EuiFlexItem>
               )}
-
-              <EuiFlexItem grow={false}>
-                <EuiButton
-                  onClick={() => {
-                    setCurrentItem(null);
-                    console.log(items);
-                    try {
-                      const response = ticketTemplateApi.update(templateData.id, {
-                        name: templateData.name,
-                        description: templateData.description,
-                        fields: items,
-                      });
-                      addToast({
-                        id: "success",
-                        title: "Successfully updated",
-                        color: "success",
-                      });
-                    } catch (e) {
-                      addToast({
-                        id: "error",
-                        title: "Successfully updated",
-                        text: e.message,
-                        color: "danger",
-                      });
-                      console.error(e);
-                    }
-                  }}
-                >
-                  Save
-                </EuiButton>
-              </EuiFlexItem>
             </EuiFlexGroup>
           </EuiPanel>
         </EuiFlexItem>

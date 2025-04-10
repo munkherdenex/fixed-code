@@ -2,22 +2,22 @@ import {
   Criteria,
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiButtonIcon,
+  EuiButton,
+  EuiButtonEmpty,
   EuiEmptyPrompt,
   EuiFieldSearch,
-  EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
   EuiFlyout,
   EuiFlyoutBody,
+  EuiFlyoutFooter,
   EuiFlyoutHeader,
   EuiImage,
-  EuiTableFieldDataColumnType,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { PAGINATION_CHOOSES } from "../../../constants";
 import useGetCRMTicketTemplate, {
@@ -25,155 +25,142 @@ import useGetCRMTicketTemplate, {
   CRMTicketTemplateResponse,
 } from "../../../hooks/useGetCRMTicketTemplate";
 import { isNumber } from "../../../utils/helper";
-import TicketTemplateEditor from '../../ticket_template/editor';
-import { addToast } from '../../toast';
-
+import TicketTemplateEditor from "../../ticket_template/editor";
+import { addToast } from '@/components/toast';
+import ticketTemplateApi from '@/api/ticket_template';
 
 const EditTemplateFlyout = ({ isOpen, closeFlyout, template }) => {
   const simpleFlyoutTitleId = useGeneratedHtmlId();
+  const [templateData, setTemplateData] = useState(template);
+  const [items, setItems] = useState(template?.fields || []);
+
+  const handleSave = async () => {
+    console.log("Saving template...");
+    try {
+      await ticketTemplateApi.update(templateData.id, {
+        name: templateData.name,
+        description: templateData.description,
+        has_priority: templateData.has_priority,
+        is_active: templateData.is_active,
+        fields: items,
+      });
+      addToast({
+        id: "success",
+        title: "Амжилттай хадгаллаа",
+        color: "success",
+      });
+    } catch (e) {
+      addToast({
+        id: "error",
+        title: "Хадгалахад алдаа гарлаа",
+        text: e.message,
+        color: "danger",
+      });
+      console.error(e);
+    }
+    closeFlyout();
+  };
 
   return (
-    <div>
-      {isOpen && (
-        <EuiFlyout
-          ownFocus
-          onClose={() => closeFlyout(false)}
-          aria-labelledby={simpleFlyoutTitleId}
-          size={"l"}
-        >
-          <EuiFlyoutHeader hasBorder>
-            <EuiTitle size="m">
-              <h2 id={simpleFlyoutTitleId}>Update template</h2>
-            </EuiTitle>
-          </EuiFlyoutHeader>
-          <EuiFlyoutBody>
-            {
-              template && <TicketTemplateEditor initialTicketTemplate={template} />
-            }
-          </EuiFlyoutBody>
-        </EuiFlyout>
-      )}
-    </div>
+    isOpen && (
+      <EuiFlyout
+        ownFocus
+        onClose={() => closeFlyout()}
+        aria-labelledby={simpleFlyoutTitleId}
+        size="l"
+      >
+        <EuiFlyoutBody>
+          {template && (
+            <TicketTemplateEditor
+              onChange={(updatedTemplateData, updatedItems) => {
+                setTemplateData(updatedTemplateData);
+                setItems(updatedItems);
+              }}
+              initialTicketTemplate={template}
+            />
+          )}
+        </EuiFlyoutBody>
+        <EuiFlyoutFooter>
+          <EuiFlexGroup justifyContent="spaceBetween">
+            <EuiFlexItem grow={false}>
+              <EuiButtonEmpty iconType="cross" onClick={() => {closeFlyout()}} flush="left">
+                Хаах
+              </EuiButtonEmpty>
+            </EuiFlexItem>
+            <EuiFlexItem grow={false}>
+              <EuiButton onClick={handleSave} fill>
+                Хадгалах
+              </EuiButton>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiFlyoutFooter>
+      </EuiFlyout>
+    )
   );
 };
-
 
 const TemplateTable = () => {
   const router = useRouter();
   const { query } = router;
   const translate = useTranslations();
 
+  const [state, setState] = useState({
+    searchValue: query?.search?.toString() || "",
+    filter: query?.filter?.toString() || "",
+    pageIndex: isNumber(query?.pageIndex) ? +query?.pageIndex : 0,
+    pageSize: isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0],
+  });
+
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
   const [chosenTemplate, setChosenTemplate] = useState(null);
 
-  const querySearch = query?.search?.toString() || "";
-  const queryFilter = query?.filter?.toString() || "";
-  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
-  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
+  const { searchValue, filter, pageIndex, pageSize } = state;
 
-  const [searchValue, setSearchValue] = useState(querySearch);
-  const [pageIndex, setPageIndex] = useState(queryPageIndex);
-  const [pageSize, setPageSize] = useState(queryPageSize);
-  const [filter, setFilter] = useState(queryFilter);
+  const { data, isLoading } = useGetCRMTicketTemplate<CRMTicketTemplateResponse>(undefined, {
+    query: searchValue,
+    filter,
+    offset: `${pageIndex * pageSize}`,
+    limit: `${pageSize}`,
+  });
 
-  const pagination = {
-    pageIndex,
-    pageSize,
-    pageSizeOptions: PAGINATION_CHOOSES,
+  const updateQueryParams = (newParams) => {
+    router.push({ query: { ...query, ...newParams } });
+    setState((prev) => ({ ...prev, ...newParams }));
   };
 
-  const { data, isLoading, mutate } = useGetCRMTicketTemplate<CRMTicketTemplateResponse>(
-    undefined,
-    {
-      query: searchValue,
-      filter: filter,
-      offset: `${pageIndex * pageSize}`,
-      limit: `${pageSize}`,
-    },
-  );
-
-  const columns: Array<EuiBasicTableColumn<CRMTicketTemplate>> = [
-    {
-      field: "name",
-      name: "Нэр",
-    },
-    {
-      field: "description",
-      name: "Тайлбар",
-    },
-    {
-      field: "is_active",
-      name: "Идэвхтэй эсэх",
-    },
-    {
-      field: "updated_at",
-      name: "Өөрчилсөн огноо",
-    }
-  ];
-
-  const onSearch = (value: string) => {
-    setSearchValue(value);
-    router.push({ query: { search: value, filter } });
-  };
+  const onSearch = (value) => updateQueryParams({ search: value, pageIndex: 0 });
 
   const onTableChange = ({ page }: Criteria<CRMTicketTemplate>) => {
     if (page) {
       const { index: newPageIndex, size: newPageSize } = page;
-      router.push({
-        query: {
-          pageIndex: newPageIndex,
-          pageSize: newPageSize,
-          filter: filter,
-          search: searchValue,
-        },
-      });
-      setPageIndex(newPageIndex);
-      setPageSize(newPageSize);
+      updateQueryParams({ pageIndex: newPageIndex, pageSize: newPageSize });
     }
   };
 
-  const getRowProps = (template: CRMTicketTemplate) => {
-    const { id } = template;
-    return {
-      "data-test-subj": `row-${id}`,
-      className: "customRowClass",
-      onClick: () => {
-        setChosenTemplate(template);
-        setIsFlyoutVisible(true);
-      },
-    };
-  };
+  const getRowProps = (template: CRMTicketTemplate) => ({
+    "data-test-subj": `row-${template.id}`,
+    className: "customRowClass",
+    onClick: () => {
+      setChosenTemplate(template);
+      setIsFlyoutVisible(true);
+    },
+  });
 
-  const getCellProps = (
-    template: CRMTicketTemplate,
-    column: EuiTableFieldDataColumnType<CRMTicketTemplate>,
-  ) => {
-    const { id } = template;
-    const { field } = column;
+  const getCellProps = (template: CRMTicketTemplate, column) => ({
+    className: "customCellClass",
+    "data-test-subj": `cell-${template.id}-${String(column.field)}`,
+    textOnly: true,
+  });
 
-    return {
-      className: "customCellClass",
-      "data-test-subj": `cell-${id}-${String(field)}`,
-      textOnly: true,
-    };
-  };
-
-  // Condensed useEffect logic to update states when query parameters change
   useLayoutEffect(() => {
-    if (querySearch !== searchValue) {
-      setSearchValue(querySearch);
-    }
-    if (queryFilter !== filter) {
-      setFilter(queryFilter);
-    }
-    if (queryPageIndex !== pageIndex) {
-      setPageIndex(queryPageIndex);
-    }
-    if (queryPageSize !== pageSize) {
-      setPageSize(queryPageSize);
-    }
+    setState({
+      searchValue: query?.search?.toString() || "",
+      filter: query?.filter?.toString() || "",
+      pageIndex: isNumber(query?.pageIndex) ? +query?.pageIndex : 0,
+      pageSize: isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2],
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryPageIndex, queryPageSize, querySearch, queryFilter]);
+  }, [query]);
 
   if (isLoading) {
     return <div>{translate("loading")}</div>;
@@ -183,27 +170,35 @@ const TemplateTable = () => {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
-        title={<h2>Create your campaign</h2>}
+        title={<h2>Тикетийн загвараа үүсгээрэй</h2>}
         layout="horizontal"
         color="plain"
-        body={
-          <>
-            <p>{translate("the_campaign_description")}</p>
-          </>
-        }
+        body={<p>Загвар бүр өөр өөр талбартай байж болно.</p>}
       />
     );
   }
 
+  const columns: Array<EuiBasicTableColumn<CRMTicketTemplate>> = [
+    { field: "name", name: translate("name") },
+    { field: "description", name: translate("description") },
+    { field: "is_active", name: translate("is_active") },
+    { field: "updated_at", name: translate("updated_at") },
+  ];
+
   return (
     <>
-    <EuiFlexGroup direction="column">
-      <EuiFlexItem>
-        {isLoading ? (
-          <div>{translate("loading")}</div>
-        ) : (
+      <EuiFlexGroup direction="column">
+        <EuiFlexItem>
+          <EuiFieldSearch
+            placeholder={translate("search")}
+            value={searchValue}
+            onChange={(e) => onSearch(e.target.value)}
+            isClearable
+          />
+        </EuiFlexItem>
+        <EuiFlexItem>
           <EuiBasicTable
-            tableCaption="Campaign table"
+            tableCaption={translate("campaign_table")}
             items={data?.results || []}
             columns={columns}
             rowProps={getRowProps}
@@ -211,22 +206,23 @@ const TemplateTable = () => {
             pagination={
               data?.total_count > pageSize
                 ? {
-                    ...pagination,
+                    pageIndex,
+                    pageSize,
+                    pageSizeOptions: PAGINATION_CHOOSES,
                     totalItemCount: data?.total_count || 0,
                     showPerPageOptions: true,
                   }
-                : {
-                    totalItemCount: 0,
-                    pageSize: 0,
-                    pageIndex: 0,
-                  }
+                : undefined
             }
             onChange={onTableChange}
           />
-        )}
-      </EuiFlexItem>
-    </EuiFlexGroup>
-    <EditTemplateFlyout isOpen={isFlyoutVisible} closeFlyout={setIsFlyoutVisible} template={chosenTemplate} />
+        </EuiFlexItem>
+      </EuiFlexGroup>
+      <EditTemplateFlyout
+        isOpen={isFlyoutVisible}
+        closeFlyout={() => {setIsFlyoutVisible(false)}}
+        template={chosenTemplate}
+      />
     </>
   );
 };
