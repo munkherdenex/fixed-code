@@ -19,6 +19,7 @@ import {
 import { useAudienceContext } from "../../store/audience_store";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import useGetAnalytics from "@/hooks/useGetAnalytics";
 
 const Total = () => {
   const compressedToggleButtonGroupPrefix = useGeneratedHtmlId({
@@ -37,8 +38,6 @@ const Total = () => {
   const [toggleCompressedIdSelected, setToggleCompressedIdSelected] = useState(
     `${compressedToggleButtonGroupPrefix}__1`,
   );
-
-  const { data, isLoading } = useAudienceContext();
 
   const toggleButtonsCompressed = [
     {
@@ -59,46 +58,40 @@ const Total = () => {
     },
   ];
 
-  const totalData2 = [
+  const periodMap = {
+    [`${compressedToggleButtonGroupPrefix}__0`]: "7d", // 7 days
+    [`${compressedToggleButtonGroupPrefix}__1`]: "1m", // 1 month
+    [`${compressedToggleButtonGroupPrefix}__2`]: "3m", // 3 months
+    [`${compressedToggleButtonGroupPrefix}__3`]: "1y", // 1 year
+  };
+
+  const selectedPeriod = periodMap[toggleCompressedIdSelected] || "1y";
+
+  const { analyticsData, isAnalyticsLoading, analyticsError, refreshAnalytics } =
+    useGetAnalytics(selectedPeriod);
+
+  // const { data, isLoading } = useAudienceContext();
+
+  const emptyArr = [
     {
-      color: "#F1D86F",
       title: "Нийт илгээсэн тоо",
-      value: +data?.total_sent,
-      domainMax: +data?.total_sent,
-      valueFormatter: (v: number) => `${v}`,
-      progressBarDirection: LayoutDirection.Vertical,
+      value: 0,
     },
     {
-      color: "#6ECCB1",
       title: "Нээсэн тоо",
-      value: +data?.total_unique_opens,
-      domainMax: +data?.total_sent,
-      valueFormatter: (v: number) => `${v}`,
-      progressBarDirection: LayoutDirection.Vertical,
+      value: 0,
     },
     {
-      color: "#6A5F31",
       title: "Нээсэн үзүүлэлт",
-      value: +data?.open_rate,
-      domainMax: 100,
-      valueFormatter: (v: number) => `${v}%`,
-      progressBarDirection: LayoutDirection.Vertical,
+      value: 0,
     },
     {
-      color: "#1B5583",
       title: "Дарагдсан үзүүлэлт",
-      value: +data?.click_rate,
-      domainMax: 100,
-      valueFormatter: (v: number) => `${v}%`,
-      progressBarDirection: LayoutDirection.Vertical,
+      value: 0,
     },
     {
-      color: "#FF7E62",
       title: "Нийт дарсан тоо",
-      value: +data?.total_clicks,
-      domainMax: +data?.total_sent,
-      valueFormatter: (v: number) => `${v}`,
-      progressBarDirection: LayoutDirection.Vertical,
+      value: 0,
     },
   ];
 
@@ -131,7 +124,8 @@ const Total = () => {
               title="Autosave"
               iconType="refresh"
               color="primary"
-              onClick={() => {}}
+              isLoading={isAnalyticsLoading}
+              onClick={() => refreshAnalytics()}
             />
           </EuiFlexItem>
         </EuiFlexGroup>
@@ -143,23 +137,41 @@ const Total = () => {
           </EuiTextColor>
         </EuiText>
         <EuiFlexGroup>
-          {totalData2.map((item) => (
-            <EuiFlexItem key={item.value}>
-              <EuiCard
-                textAlign="left"
-                title={item.title}
-                titleSize="xs"
-                display="subdued"
-                footer={
-                  <EuiFlexGroup justifyContent="flexEnd">
-                    <EuiFlexItem grow={false}>
-                      <div style={card}>{item.value}</div>
-                    </EuiFlexItem>
-                  </EuiFlexGroup>
-                }
-              ></EuiCard>
-            </EuiFlexItem>
-          ))}
+          {analyticsData?.data.length > 0
+            ? analyticsData.data.map((item) => (
+                <EuiFlexItem key={item.value}>
+                  <EuiCard
+                    textAlign="left"
+                    title={item.title}
+                    titleSize="xs"
+                    display="subdued"
+                    footer={
+                      <EuiFlexGroup justifyContent="flexEnd">
+                        <EuiFlexItem grow={false}>
+                          <div style={card}>{item.value}</div>
+                        </EuiFlexItem>
+                      </EuiFlexGroup>
+                    }
+                  ></EuiCard>
+                </EuiFlexItem>
+              ))
+            : emptyArr.map((item) => (
+                <EuiFlexItem key={item.value}>
+                  <EuiCard
+                    textAlign="left"
+                    title={item.title}
+                    titleSize="xs"
+                    display="subdued"
+                    footer={
+                      <EuiFlexGroup justifyContent="flexEnd">
+                        <EuiFlexItem grow={false}>
+                          <div style={card}>{item.value}</div>
+                        </EuiFlexItem>
+                      </EuiFlexGroup>
+                    }
+                  ></EuiCard>
+                </EuiFlexItem>
+              ))}
         </EuiFlexGroup>
         {/* <EuiPanel paddingSize="none" hasBorder style={{ overflow: "hidden" }}>
         <Chart size={{ height: largeMaxBreakpoint ? 100 : 150 }}>
