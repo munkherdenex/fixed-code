@@ -25,6 +25,14 @@ import { addToast } from "../../../../../components/toast";
 import TicketTemplateEditor from "../../../../../components/ticket_template/editor";
 import { NestedLayout } from "../layout";
 import ticketTemplateApi from "@/api/ticket_template";
+import useGetCRMTicketTemplate, {
+  CRMTicketTemplate,
+  CRMTicketTemplateResponse,
+} from "@/hooks/useGetCRMTicketTemplate";
+import { TicketTemplate } from "@/components/ticket_template/types";
+import { useRouter } from "next/router";
+import { isNumber } from "@/utils/helper";
+import { PAGINATION_CHOOSES } from "@/constants";
 
 const schema = yup
   .object({
@@ -36,11 +44,29 @@ const schema = yup
 type FormData = yup.InferType<typeof schema>;
 
 const CreateTemplateFlyout = () => {
+  const router = useRouter();
+  const { query } = router;
+
   const { trigger, isMutating } = useCreateCRMTemplate();
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
-  const [newTemplate, setNewTemplate] = useState(null);
-  const [createdTemplate, setCreatedTemplate] = useState(null);
+  const [newTemplate, setNewTemplate] = useState<TicketTemplate | null>(null);
+  const [createdTemplate, setCreatedTemplate] = useState<CRMTicketTemplate | null>(null);
   const [fields, setFields] = useState([]);
+
+  const [state, setState] = useState({
+    searchValue: query?.search?.toString() || "",
+    filter: query?.filter?.toString() || "",
+    pageIndex: isNumber(query?.pageIndex) ? +query?.pageIndex : 0,
+    pageSize: isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0],
+  });
+
+  const { searchValue, filter, pageIndex, pageSize } = state;
+  const { mutate } = useGetCRMTicketTemplate<CRMTicketTemplateResponse>(undefined, {
+    query: searchValue,
+    filter,
+    offset: `${pageIndex * pageSize}`,
+    limit: `${pageSize}`,
+  });
 
   const simpleFlyoutTitleId = useGeneratedHtmlId();
 
@@ -48,35 +74,47 @@ const CreateTemplateFlyout = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
 
   const onSubmit = async (data: FormData) => {
     try {
+      // API call to create the template
       const response = await trigger({
         name: data?.title,
         description: data?.description,
       });
+
+      mutate();
+
       addToast({
         id: "success",
         title: "Амжилттай үүсгэлээ",
         color: "success",
       });
+
       setNewTemplate(response);
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      addToast({
+        id: "error",
+        title: "Үүсгэхэд алдаа гарлаа",
+        text: e?.message || "Алдаа гарлаа",
+        color: "danger",
+      });
     }
   };
 
   useEffect(() => {
     if (!isFlyoutVisible) {
       setNewTemplate(null);
-      setFields([]);
+      setFields([]); // Reset fields only when necessary
     }
   }, [isFlyoutVisible]);
 
   const handleSave = async () => {
+    if (!createdTemplate) return;
+
     try {
       await ticketTemplateApi.update(createdTemplate.id, {
         name: createdTemplate.name,
@@ -85,20 +123,22 @@ const CreateTemplateFlyout = () => {
         is_active: createdTemplate.is_active,
         fields: fields,
       });
+
       addToast({
         id: "success",
         title: "Амжилттай хадгаллаа",
         color: "success",
       });
-    } catch (e) {
+    } catch (e: any) {
       addToast({
         id: "error",
         title: "Хадгалахад алдаа гарлаа",
-        text: e.message,
+        text: e?.message || "Алдаа гарлаа",
         color: "danger",
       });
       console.error(e);
     }
+
     setIsFlyoutVisible(false);
   };
 

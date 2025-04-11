@@ -1,8 +1,14 @@
 import client from "./client"
 
 const ticketTemplateApi = {
+  getList: async (params) => {
+    const response = await client.get(`/crm/ticket/template/`, {
+      params: { ...params }
+    })
+    return response.data;
+  },
+
   getCompactList: async (is_active: boolean) => {
-    await new Promise(resolve => setTimeout(resolve, 2000));
     const response = await client.get(`/crm/ticket/template/`, {
       params: { 'compact': true, 'is_active': is_active, limit: 20 }
     })
@@ -60,7 +66,7 @@ const ticketTemplateApi = {
         name: "Лавлагаа",
         id: 22
       },
-      
+
     ]
   },
 

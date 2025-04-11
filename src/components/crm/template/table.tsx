@@ -26,17 +26,24 @@ import useGetCRMTicketTemplate, {
 } from "../../../hooks/useGetCRMTicketTemplate";
 import { isNumber } from "../../../utils/helper";
 import TicketTemplateEditor from "../../ticket_template/editor";
-import { addToast } from '@/components/toast';
-import ticketTemplateApi from '@/api/ticket_template';
+import { addToast } from "@/components/toast";
+import ticketTemplateApi from "@/api/ticket_template";
 
-const EditTemplateFlyout = ({ isOpen, closeFlyout, template }) => {
+const EditTemplateFlyout = ({ isOpen, closeFlyout, template, mutateTemplates }) => {
   const simpleFlyoutTitleId = useGeneratedHtmlId();
   const [templateData, setTemplateData] = useState(template);
   const [items, setItems] = useState(template?.fields || []);
 
   const handleSave = async () => {
-    console.log("Saving template...");
     try {
+      mutateTemplates((currentData) => {
+        return {
+          ...currentData,
+          results: currentData.results.map((t) =>
+            t.id === templateData.id ? { ...templateData, fields: items } : t,
+          ),
+        };
+      }, false);
       await ticketTemplateApi.update(templateData.id, {
         name: templateData.name,
         description: templateData.description,
@@ -49,6 +56,8 @@ const EditTemplateFlyout = ({ isOpen, closeFlyout, template }) => {
         title: "Амжилттай хадгаллаа",
         color: "success",
       });
+
+      mutateTemplates();
     } catch (e) {
       addToast({
         id: "error",
@@ -57,6 +66,8 @@ const EditTemplateFlyout = ({ isOpen, closeFlyout, template }) => {
         color: "danger",
       });
       console.error(e);
+
+      mutateTemplates();
     }
     closeFlyout();
   };
@@ -83,7 +94,13 @@ const EditTemplateFlyout = ({ isOpen, closeFlyout, template }) => {
         <EuiFlyoutFooter>
           <EuiFlexGroup justifyContent="spaceBetween">
             <EuiFlexItem grow={false}>
-              <EuiButtonEmpty iconType="cross" onClick={() => {closeFlyout()}} flush="left">
+              <EuiButtonEmpty
+                iconType="cross"
+                onClick={() => {
+                  closeFlyout();
+                }}
+                flush="left"
+              >
                 Хаах
               </EuiButtonEmpty>
             </EuiFlexItem>
@@ -116,12 +133,15 @@ const TemplateTable = () => {
 
   const { searchValue, filter, pageIndex, pageSize } = state;
 
-  const { data, isLoading } = useGetCRMTicketTemplate<CRMTicketTemplateResponse>(undefined, {
-    query: searchValue,
-    filter,
-    offset: `${pageIndex * pageSize}`,
-    limit: `${pageSize}`,
-  });
+  const { data, isLoading, mutate } = useGetCRMTicketTemplate<CRMTicketTemplateResponse>(
+    undefined,
+    {
+      query: searchValue,
+      filter,
+      offset: `${pageIndex * pageSize}`,
+      limit: `${pageSize}`,
+    },
+  );
 
   const updateQueryParams = (newParams) => {
     router.push({ query: { ...query, ...newParams } });
@@ -220,8 +240,11 @@ const TemplateTable = () => {
       </EuiFlexGroup>
       <EditTemplateFlyout
         isOpen={isFlyoutVisible}
-        closeFlyout={() => {setIsFlyoutVisible(false)}}
+        closeFlyout={() => {
+          setIsFlyoutVisible(false);
+        }}
         template={chosenTemplate}
+        mutateTemplates={mutate}
       />
     </>
   );
