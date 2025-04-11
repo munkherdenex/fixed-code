@@ -254,7 +254,7 @@ const CRM = () => {
     <>
       <NestedLayout
         pageHeader={{
-          pageTitle: "Тикетийн загвар",
+          pageTitle: "Тикетийн категори",
           rightSideItems: [<CreateTemplateFlyout key="dfgaiogvao" />],
         }}
       >

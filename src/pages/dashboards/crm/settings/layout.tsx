@@ -3,10 +3,10 @@
 
 import DashboardCRMLayout from "@/layouts/dashboard_crm";
 import { EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSideNav } from "@elastic/eui";
-import { css } from '@emotion/react';
-import { useRouter } from 'next/router';
+import { css } from "@emotion/react";
+import { useRouter } from "next/router";
 
-export function NestedLayout({ children, pageHeader }) {
+export function NestedLayout({ children, pageHeader }: { children: React.ReactNode; pageHeader?: any }) {
   const router = useRouter();
   const currentPath = router.pathname;
 
@@ -26,16 +26,22 @@ export function NestedLayout({ children, pageHeader }) {
                   id: "settings",
                   items: [
                     {
-                      name: "Тикетийн төрөл",
+                      name: "Тикетийн категори",
                       id: "templates",
                       href: "/dashboards/crm/settings/ticket_template",
-                      isSelected: currentPath == "/dashboards/crm/settings/ticket_template"
+                      isSelected: currentPath == "/dashboards/crm/settings/ticket_template",
                     },
                     {
                       name: "Чухлын зэрэг",
                       id: "integrations",
                       href: "/dashboards/crm/settings/ticket_priority",
-                      isSelected: currentPath == "/dashboards/crm/settings/ticket_priority"
+                      isSelected: currentPath == "/dashboards/crm/settings/ticket_priority",
+                    },
+                    {
+                      name: "Тикетийн төрөл",
+                      id: "integrations",
+                      href: "/dashboards/crm/settings/ticket_tags",
+                      isSelected: currentPath == "/dashboards/crm/settings/ticket_tags",
                     },
                   ],
                 },
@@ -44,9 +50,7 @@ export function NestedLayout({ children, pageHeader }) {
           </EuiPanel>
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiPanel>
-            {children}
-          </EuiPanel>
+          <EuiPanel>{children}</EuiPanel>
         </EuiFlexItem>
       </EuiFlexGroup>
     </DashboardCRMLayout>

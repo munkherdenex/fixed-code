@@ -103,7 +103,7 @@ const fields = [
 
 interface TicketTemplateProps {
   initialTicketTemplate: TicketTemplate;
-  onChange: CallableFunction;
+  onChange?: CallableFunction;
 }
 
 interface TemplateData {
