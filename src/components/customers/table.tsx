@@ -17,7 +17,7 @@ import {
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/useGetCustomers";
 import { isNumber } from "../../utils/helper";
@@ -36,7 +36,7 @@ const CustomersTable = () => {
   const router = useRouter();
   const { query } = router;
 
-  const querySearch = query?.search?.toString() || "";
+  const querySearch = Object.values(query)[0] || "";
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
 
@@ -48,7 +48,7 @@ const CustomersTable = () => {
   const basicSelectId = useGeneratedHtmlId({ prefix: "basicSelect" });
 
   const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, {
-    query: searchValue,
+    ...query,
     limit: `${pageSize}`,
     offset: `${pageIndex * pageSize}`,
   });
@@ -150,7 +150,11 @@ const CustomersTable = () => {
 
   const onSearchEmailAddress = (value: string) => {
     setSearchValue(value);
-    router.push({ query: { search: value } });
+    router.push({
+      query: {
+        [selectValue === "phone" ? "phone" : "email"]: value,
+      },
+    });
   };
 
   const getRowProps = (customer: CustomersType) => ({
