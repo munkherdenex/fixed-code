@@ -4,6 +4,7 @@ import {
   EuiBasicTableColumn,
   EuiButton,
   EuiButtonEmpty,
+  EuiConfirmModal,
   EuiEmptyPrompt,
   EuiFieldSearch,
   EuiFlexGroup,
@@ -17,17 +18,18 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useLayoutEffect, useState, useRef } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { PAGINATION_CHOOSES } from "../../../constants";
 import useGetCRMTicketTemplate, {
   CRMTicketTemplate,
   CRMTicketTemplateResponse,
 } from "../../../hooks/useGetCRMTicketTemplate";
-import { isNumber } from "../../../utils/helper";
+import { formatDate, isNumber } from "../../../utils/helper";
 import TicketTemplateEditor from "../../ticket_template/editor";
 import { addToast } from "@/components/toast";
 import ticketTemplateApi from "@/api/ticket_template";
+import moment from 'moment';
 
 const EditTemplateFlyout = ({ isOpen, closeFlyout, template, mutateTemplates }) => {
   const simpleFlyoutTitleId = useGeneratedHtmlId();
@@ -129,7 +131,9 @@ const TemplateTable = () => {
   });
 
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
-  const [chosenTemplate, setChosenTemplate] = useState(null);
+  const [chosenTemplate, setChosenTemplate] = useState<CRMTicketTemplate | null>(null);
+  const [isConfirmVisible, setIsConfirmVisible] = useState(false); // Confirmation modal state
+  const [templateToDelete, setTemplateToDelete] = useState<CRMTicketTemplate | null>(null); // Template to delete
 
   const { searchValue, filter, pageIndex, pageSize } = state;
 
@@ -157,20 +161,43 @@ const TemplateTable = () => {
     }
   };
 
-  const getRowProps = (template: CRMTicketTemplate) => ({
-    "data-test-subj": `row-${template.id}`,
-    className: "customRowClass",
-    onClick: () => {
-      setChosenTemplate(template);
-      setIsFlyoutVisible(true);
-    },
-  });
+  const handleEdit = (template: CRMTicketTemplate) => {
+    setChosenTemplate(template);
+    setIsFlyoutVisible(true);
+  };
 
-  const getCellProps = (template: CRMTicketTemplate, column) => ({
-    className: "customCellClass",
-    "data-test-subj": `cell-${template.id}-${String(column.field)}`,
-    textOnly: true,
-  });
+  const showDeleteConfirmation = (template: CRMTicketTemplate) => {
+    setTemplateToDelete(template);
+    setIsConfirmVisible(true);
+  };
+
+  const closeDeleteConfirmation = () => {
+    setIsConfirmVisible(false);
+    setTemplateToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!templateToDelete) return;
+
+    try {
+      await ticketTemplateApi.delete(templateToDelete.id);
+      mutate();
+      addToast({
+        id: "success",
+        title: "Амжилттай устгалаа",
+        color: "success",
+      });
+    } catch (error) {
+      addToast({
+        id: "error",
+        title: "Устгахад алдаа гарлаа",
+        text: error.message || "Алдаа гарлаа",
+        color: "danger",
+      });
+    } finally {
+      closeDeleteConfirmation();
+    }
+  };
 
   useLayoutEffect(() => {
     setState({
@@ -202,7 +229,31 @@ const TemplateTable = () => {
     { field: "name", name: translate("name") },
     { field: "description", name: translate("description") },
     { field: "is_active", name: translate("is_active") },
-    { field: "updated_at", name: translate("updated_at") },
+    {
+      field: "updated_at",
+      name: translate("updated_at"),
+      render: (date: string) => formatDate(date),
+    },
+    {
+      name: "Үйлдлүүд",
+      actions: [
+        {
+          name: "Засах",
+          description: "Загварыг засах",
+          icon: "pencil",
+          type: "icon",
+          onClick: handleEdit,
+        },
+        {
+          name: "Устгах",
+          description: "Загварыг устгах",
+          icon: "trash",
+          type: "icon",
+          color: "danger",
+          onClick: showDeleteConfirmation,
+        },
+      ],
+    },
   ];
 
   return (
@@ -221,8 +272,6 @@ const TemplateTable = () => {
             tableCaption={translate("campaign_table")}
             items={data?.results || []}
             columns={columns}
-            rowProps={getRowProps}
-            cellProps={getCellProps}
             pagination={
               data?.total_count > pageSize
                 ? {
@@ -246,6 +295,19 @@ const TemplateTable = () => {
         template={chosenTemplate}
         mutateTemplates={mutate}
       />
+      {isConfirmVisible && (
+        <EuiConfirmModal
+          title="Загварыг устгах"
+          onCancel={closeDeleteConfirmation}
+          onConfirm={confirmDelete}
+          cancelButtonText="Болих"
+          confirmButtonText="Устгах"
+          buttonColor="danger"
+          defaultFocusedButton="confirm"
+        >
+          <p>Та энэ загварыг устгахдаа итгэлтэй байна уу?</p>
+        </EuiConfirmModal>
+      )}
     </>
   );
 };

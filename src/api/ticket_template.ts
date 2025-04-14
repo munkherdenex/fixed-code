@@ -26,6 +26,11 @@ const ticketTemplateApi = {
     return response.data;
   },
 
+  delete: async (templateId: number) => {
+    const response = await client.delete(`/crm/ticket/template/${templateId}/`);
+    return response.data;
+  },
+
   getTicketTabs: async () => {
     // const response = await client.get(`/crm/ticket/template/tabs/`)
     // return response.data

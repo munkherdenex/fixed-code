@@ -74,6 +74,7 @@ const CreateTemplateFlyout = () => {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
@@ -95,6 +96,8 @@ const CreateTemplateFlyout = () => {
       });
 
       setNewTemplate(response);
+
+      reset();
     } catch (e: any) {
       addToast({
         id: "error",

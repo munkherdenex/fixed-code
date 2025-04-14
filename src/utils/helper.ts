@@ -1,4 +1,4 @@
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import { RuleGroupType, RuleValidator, ValidationResult } from "react-querybuilder";
 import { RRule } from "rrule";
 import { IS_POCKET } from "../constants";
@@ -244,6 +244,10 @@ export const extendWeekDays = (weekDays: string[]) => {
   if (!weekDays) return [];
 
   return weekDays?.map((day) => days[day]);
+};
+
+export const formatDate = (date: string | Date, format: string = "YYYY-MM-DD HH:mm:ss") => {
+  return moment(date).format(format);
 };
 
 export const getMonthDays = (selectedDays: Moment[]) => {
