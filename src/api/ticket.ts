@@ -9,6 +9,10 @@ const ticketApi = {
     const response = await client.put(`/crm/ticket/${id}/`, payload);
     return response;
   },
+  close: async (id, payload) => {
+    const response = await client.post(`/crm/ticket/${id}/close`, payload);
+    return response;
+  },
   getTickets: async (params: any) => {
     const response = await client.get("/crm/ticket/", { params });
     return response.data;
@@ -23,6 +27,10 @@ const ticketApi = {
   },
   postCommentOnTicket: async (id, payload) => {
     const response = await client.post(`/crm/ticket/${id}/comment/`, payload);
+    return response.data;
+  },
+  getPriorityList: async () => {
+    const response = await client.get(`/crm/priority/`);
     return response.data;
   },
 };
