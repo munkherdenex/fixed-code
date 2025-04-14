@@ -21,6 +21,11 @@ const contactLogApi = {
     return response.data;
   },
 
+  getCallById: async (id) => {
+    const response = await client.get(`/crm/calls/${id}`);
+    return response.data;
+  },
+
   getRootChatLogs: async (limit: number, offset: number) => {
     const response = await client.get("/crm/fbchat/chat/", { params: { limit, offset } });
     return response.data;

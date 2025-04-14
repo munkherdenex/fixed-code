@@ -24,6 +24,20 @@ import contactLogApi from "../../api/contact_log";
 import CallDetailFlyout from "./call_detail_flyout";
 import { css } from "@emotion/react";
 
+
+export const callStateOptions = [
+  { label: "Дуудаж байна", value: "start" },
+  { label: "Харилцаж байна...", value: "answered" },
+  { label: "Дууссан", value: "end" },
+  { label: "Хэрэглэгч тасласан", value: "user_abandoned" },
+  { label: "Дуудах цаг дууссан", value: "call_timeout" },
+];
+
+export const callTypeOptions = [
+  { label: "Ирсэн дуудлага", value: "inbound" },
+  { label: "Гарсан дуудлага", value: "outbound" },
+];
+
 const Table = () => {
   const router = useRouter();
   const { query } = router;
@@ -53,19 +67,6 @@ const Table = () => {
   const { data, isLoading, mutate } = useSWR(["/crm/calls/", queryState], () =>
     contactLogApi.getCalls(queryState),
   );
-
-  const callStateOptions = [
-    { label: "Дуудаж байна", value: "start" },
-    { label: "Харилцаж байна...", value: "answered" },
-    { label: "Дууссан", value: "end" },
-    { label: "Хэрэглэгч тасласан", value: "user_abandoned" },
-    { label: "Дуудах цаг дууссан", value: "call_timeout" },
-  ];
-
-  const callTypeOptions = [
-    { label: "Ирсэн дуудлага", value: "inbound" },
-    { label: "Гарсан дуудлага", value: "outbound" },
-  ];
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
