@@ -16,8 +16,8 @@ const contactLogApi = {
     return response.data;
   },
 
-  getCalls: async () => {
-    const response = await client.get("/crm/calls/");
+  getCalls: async (params) => {
+    const response = await client.get("/crm/calls/", { params });
     return response.data;
   },
 
