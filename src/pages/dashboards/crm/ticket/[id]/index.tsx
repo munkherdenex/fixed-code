@@ -613,16 +613,16 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                       <EuiFlexItem grow={false}>
                         <EuiFlexGroup wrap responsive={false} gutterSize="xs">
                           {data?.tags.map((tag) => (
-                            <EuiFlexItem grow={false} key={tag}>
-                              <EuiBadge color={tag}>{tag}</EuiBadge>
+                            <EuiFlexItem grow={false} key={tag.id}>
+                              <EuiBadge color={tag.color}>{tag.name}</EuiBadge>
                             </EuiFlexItem>
                           ))}
                         </EuiFlexGroup>
                       </EuiFlexItem>
-                      <EuiSpacer size="m" />
                     </EuiFlexGroup>
                   ) : null}
                   {/* Хэрэглэгчийн мэдээлэл */}
+                  <EuiSpacer size="m" />
                   <EuiFlexItem grow={false}>
                     <div>
                       <span style={{ color: "red" }}>*</span>
