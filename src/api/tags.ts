@@ -23,6 +23,10 @@ const tagApi = {
     const response = await client.get(`/crm/tag/${id}/`);
     return response.data;
   },
+  updateTagById: async (tagObject: Tag) => {
+    const response = await client.put(`/crm/tag/${tagObject.id}/`, tagObject);
+    return response.data;
+  },
 };
 
 export default tagApi;

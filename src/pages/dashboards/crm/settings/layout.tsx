@@ -17,8 +17,10 @@ export function NestedLayout({ children, pageHeader }: { children: React.ReactNo
           <EuiPanel color="subdued" hasBorder>
             <EuiSideNav
               css={css`
-                min-height: 500px;
-                min-width: 180px;
+                @media (min-width: 1000px) {
+                  min-height: 500px;
+                  min-width: 180px;
+                }
               `}
               items={[
                 {

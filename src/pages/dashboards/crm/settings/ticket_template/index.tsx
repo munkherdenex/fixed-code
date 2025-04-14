@@ -16,7 +16,7 @@ import {
 } from "@elastic/eui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { GetStaticProps } from "next/types";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import TemplateTable from "../../../../../components/crm/template/table";
@@ -114,6 +114,16 @@ const CreateTemplateFlyout = () => {
       setFields([]); // Reset fields only when necessary
     }
   }, [isFlyoutVisible]);
+
+  useLayoutEffect(() => {
+      setState({
+        searchValue: query?.search?.toString() || "",
+        filter: query?.filter?.toString() || "",
+        pageIndex: isNumber(query?.pageIndex) ? +query?.pageIndex : 0,
+        pageSize: isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2],
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [query]);
 
   const handleSave = async () => {
     if (!createdTemplate) return;

@@ -89,7 +89,7 @@ const TicketTags = () => {
     try {
       if (isEditing && currentTag) {
         // Update tag
-        await tagApi.create({
+        await tagApi.updateTagById({
           id: currentTag.id,
           name,
           color,
