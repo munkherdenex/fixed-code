@@ -23,7 +23,7 @@ import useSWR from "swr";
 import contactLogApi from "../../api/contact_log";
 import CallDetailFlyout from "./call_detail_flyout";
 import { css } from "@emotion/react";
-import { CallStateBadge } from './call_state_badge';
+import { call_stateBadge } from './call_state_badge';
 
 
 export const callStateOptions = [
@@ -48,8 +48,8 @@ const Table = () => {
   const initialQueryState = {
     search: query?.search?.toString() || "",
     filter: query?.filter?.toString() || "",
-    callState: query?.callState?.toString() || "",
-    callType: query?.callType?.toString() || "",
+    call_state: query?.call_state?.toString() || "",
+    call_type: query?.call_type?.toString() || "",
     date: query?.date ? moment(query?.date) : null,
     offset: isNumber(query?.offset) ? +query?.offset : 0,
     limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[0],
@@ -95,8 +95,8 @@ const Table = () => {
     {
       field: "call_state",
       name: "Дуудлагын төлөв",
-      render: (callState: string) => (
-        <CallStateBadge callState={callState} />
+      render: (call_state: string) => (
+        <call_stateBadge call_state={call_state} />
       ),
     },
     {
@@ -139,20 +139,20 @@ const Table = () => {
     textOnly: true,
   });
 
-  const onCallStateChange = (selectedOptions: any[]) => {
+  const oncall_stateChange = (selectedOptions: any[]) => {
     const updatedQueryState = {
       ...queryState,
-      callState: selectedOptions.length > 0 ? selectedOptions[0].value : "",
+      call_state: selectedOptions.length > 0 ? selectedOptions[0].value : "",
       offset: 0,
     };
     setQueryState(updatedQueryState);
     router.push({ query: updatedQueryState });
   };
 
-  const onCallTypeChange = (selectedOptions: any[]) => {
+  const oncall_typeChange = (selectedOptions: any[]) => {
     const updatedQueryState = {
       ...queryState,
-      callType: selectedOptions.length > 0 ? selectedOptions[0].value : "",
+      call_type: selectedOptions.length > 0 ? selectedOptions[0].value : "",
       offset: 0,
     };
     setQueryState(updatedQueryState);
@@ -169,8 +169,8 @@ const Table = () => {
     const updatedQueryState = {
       search: query?.search?.toString() || "",
       filter: query?.filter?.toString() || "",
-      callState: query?.callState?.toString() || "",
-      callType: query?.callType?.toString() || "",
+      call_state: query?.call_state?.toString() || "",
+      call_type: query?.call_type?.toString() || "",
       date: query?.date ? moment(query?.date) : null,
       offset: isNumber(query?.offset) ? +query?.offset : 0,
       limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[2],
@@ -209,11 +209,11 @@ const Table = () => {
                 singleSelection={{ asPlainText: true }}
                 options={callStateOptions}
                 selectedOptions={
-                  queryState.callState
-                    ? callStateOptions.filter((option) => option.value === queryState.callState)
+                  queryState.call_state
+                    ? callStateOptions.filter((option) => option.value === queryState.call_state)
                     : []
                 }
-                onChange={onCallStateChange}
+                onChange={oncall_stateChange}
               />
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
@@ -222,11 +222,11 @@ const Table = () => {
                 singleSelection={{ asPlainText: true }}
                 options={callTypeOptions}
                 selectedOptions={
-                  queryState.callType
-                    ? callTypeOptions.filter((option) => option.value === queryState.callType)
+                  queryState.call_type
+                    ? callTypeOptions.filter((option) => option.value === queryState.call_type)
                     : []
                 }
-                onChange={onCallTypeChange}
+                onChange={oncall_typeChange}
               />
             </EuiFlexItem>
             <EuiFlexItem grow={false}>

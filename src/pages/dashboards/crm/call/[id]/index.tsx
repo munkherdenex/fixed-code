@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Criteria,
@@ -6,6 +6,7 @@ import {
   EuiBasicTable,
   EuiBasicTableColumn,
   EuiBreadcrumbs,
+  EuiButton,
   EuiButtonIcon,
   EuiDescriptionList,
   EuiEmptyPrompt,
@@ -19,6 +20,7 @@ import {
   EuiSpacer,
   EuiSplitPanel,
   EuiText,
+  EuiTextArea,
 } from "@elastic/eui";
 import contactLogApi from "@/api/contact_log";
 import { addToast } from "@/components/toast";
@@ -29,7 +31,9 @@ import useSWR from "swr";
 import moment from "moment";
 import { PAGINATION_CHOOSES } from "@/constants";
 import { formatDate } from "@/utils/helper";
-import { CallStateBadge } from '@/components/call/call_state_badge';
+import { CallStateBadge } from "@/components/call/call_state_badge";
+import CustomerPanel from "@/components/customer/customer_panel";
+import TicketCreatePanel from "@/components/ticket/ticket_create_panel";
 
 const CallDetailsPage = () => {
   const router = useRouter();
@@ -38,31 +42,27 @@ const CallDetailsPage = () => {
   const [callDetails, setCallDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const appendQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.append(name, value);
-
-      return params.toString();
-    },
-    [searchParams],
+  const queryState = useMemo(
+    () => ({
+      search: callDetails ? callDetails.phone : "",
+      filter: searchParams.get("filter") || "",
+      callState: searchParams.get("callState") || "",
+      callType: searchParams.get("callType") || "",
+      date: searchParams.get("date") ? moment(searchParams.get("date")) : null,
+      offset: parseInt(searchParams.get("offset") || "0", 10),
+      limit: parseInt(searchParams.get("limit") || PAGINATION_CHOOSES[0].toString(), 10),
+    }),
+    [callDetails, searchParams],
   );
 
-  const queryState = {
-    search: searchParams.get("search") || "99999999999",
-    filter: searchParams.get("filter") || "",
-    callState: searchParams.get("callState") || "",
-    callType: searchParams.get("callType") || "",
-    date: searchParams.get("date") ? moment(searchParams.get("date")) : null,
-    offset: parseInt(searchParams.get("offset") || "0", 10),
-    limit: parseInt(searchParams.get("limit") || PAGINATION_CHOOSES[0].toString(), 10),
-  };
-
-  const pagination = {
-    pageIndex: queryState.offset,
-    pageSize: queryState.limit,
-    pageSizeOptions: PAGINATION_CHOOSES,
-  };
+  const pagination = useMemo(
+    () => ({
+      pageIndex: queryState.offset,
+      pageSize: queryState.limit,
+      pageSizeOptions: PAGINATION_CHOOSES,
+    }),
+    [queryState.offset, queryState.limit],
+  );
 
   const {
     data: callHistory,
@@ -98,7 +98,6 @@ const CallDetailsPage = () => {
       const updatedParams = new URLSearchParams(searchParams.toString());
       updatedParams.set("offset", page.index.toString());
       updatedParams.set("limit", page.size.toString());
-      console.log(updatedParams);
       router.replace(`/dashboards/crm/call/${id}?${updatedParams.toString()}`);
     }
   };
@@ -133,16 +132,19 @@ const CallDetailsPage = () => {
 
   const details = [
     { title: "Утасны дугаар", description: callDetails.phone },
-    { title: "Дуудлагын төлөв", description: <CallStateBadge callState={callDetails.call_state} /> },
+    {
+      title: "Дуудлагын төлөв",
+      description: <CallStateBadge callState={callDetails.call_state} />,
+    },
     { title: "Дуудлагын төрөл", description: callDetails.call_type },
-    { title: "Дуудлага авсан ажилтан", description: callDetails.call_agent || "Хоосон" },
+    { title: "Дуудлага авсан ажилтан", description: callDetails.call_agent || "-" },
     { title: "Залгасан огноо", description: callDetails.call_date },
-    { title: "Үргэлжлэх хугацаа", description: `${callDetails.duration || 0} секунд` },
+    { title: "Үргэлжлэх хугацаа", description: `${callDetails.call_duration || 0} секунд` },
   ];
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
-      field: "created_at",
+      field: "call_date",
       name: "Огноо",
       dataType: "date",
       render: (phone: string, row: any) => (
@@ -164,14 +166,20 @@ const CallDetailsPage = () => {
       field: "call_duration",
       name: "Үргэлжлэх хугацаа",
     },
+    // {
+    //   field: "call_state",
+    //   name: "Төлөв",
+    //   render: (state: string) => <CallStateBadge callState={state} />,
+    // },
     {
-      field: "call_state",
-      name: "Төлөв",
-      render: (state: string) => <CallStateBadge callState={state} />,
-    },
-    {
-      field: "action",
       name: "Үйлдэл",
+      render: (item: any) => (
+        <EuiButtonIcon
+          iconType="eye"
+          aria-label="Харах"
+          onClick={() => router.push(`/dashboards/crm/call/${item.id}`)}
+        />
+      ),
     },
   ];
 
@@ -211,14 +219,14 @@ const CallDetailsPage = () => {
               <EuiSplitPanel.Inner color="subdued" paddingSize="m">
                 Дуудлагын мэдээлэл
               </EuiSplitPanel.Inner>
-              <EuiPanel hasShadow={false}>
+              <EuiPanel hasShadow={false} borderRadius="none">
                 <EuiDescriptionList listItems={details} type="column" columnGutterSize="m" />
               </EuiPanel>
             </EuiSplitPanel.Outer>
 
             <EuiSpacer />
 
-            <EuiSplitPanel.Outer>
+            <EuiSplitPanel.Outer hasShadow={false} hasBorder>
               <EuiSplitPanel.Inner color="subdued" paddingSize="m">
                 Холбогдсон түүх
               </EuiSplitPanel.Inner>
@@ -253,6 +261,50 @@ const CallDetailsPage = () => {
                 </EuiSkeletonRectangle>
               </EuiPanel>
             </EuiSplitPanel.Outer>
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiSplitPanel.Outer hasShadow={false} hasBorder>
+              <EuiSplitPanel.Inner color="subdued">Тэмдэглэл</EuiSplitPanel.Inner>
+              <EuiPanel paddingSize='s'>
+                <EuiFlexGroup direction="column" gutterSize='xs'>
+                  <EuiFlexItem>
+                    <EuiTextArea
+                      fullWidth
+                      rows={3}
+                      placeholder="Ярилцсан агуулгыг оруулна уу"
+                      value={callDetails.body || ""}
+                      onChange={(e) => {
+                        setCallDetails((prev) => ({
+                          ...prev,
+                          body: e.target.value,
+                        }));
+                      }}
+                    />
+                  </EuiFlexItem>
+                  <EuiFlexItem>
+                    <EuiButton
+                      iconType="save"
+                      aria-label="Хадгалах"
+                      onClick={() => {
+                        // Save logic here
+                        addToast({
+                          id: "success",
+                          title: "Амжилттай хадгаллаа",
+                          color: "success",
+                        });
+                      }}
+                    >
+                      Хадгалах
+                    </EuiButton>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiPanel>
+            </EuiSplitPanel.Outer>
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <CustomerPanel customerId={callDetails.customer_id ? callDetails.customer_id : 233} />
+            <EuiSpacer size="m" />
+            <TicketCreatePanel ticketId={callDetails.ticketId} callLog={callDetails} />
           </EuiFlexItem>
         </EuiFlexGrid>
       </>
