@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useCallback, useEffect, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Criteria,
+  EuiBadge,
   EuiBasicTable,
   EuiBasicTableColumn,
   EuiBreadcrumbs,
@@ -14,6 +15,7 @@ import {
   EuiIcon,
   EuiLoadingSpinner,
   EuiPanel,
+  EuiSkeletonRectangle,
   EuiSpacer,
   EuiSplitPanel,
   EuiText,
@@ -25,27 +27,37 @@ import { callTypeOptions } from "@/components/call/table";
 import { css } from "@emotion/react";
 import useSWR from "swr";
 import moment from "moment";
-import { isNumber } from "@/utils/helper";
 import { PAGINATION_CHOOSES } from "@/constants";
+import { formatDate } from "@/utils/helper";
+import { CallStateBadge } from '@/components/call/call_state_badge';
 
 const CallDetailsPage = () => {
   const router = useRouter();
-  const { query } = router;
-  const { id } = query; // Read the [id] parameter from the URL
+  const searchParams = useSearchParams(); // Use Next.js useSearchParams hook
+  const { id } = useParams(); // Get the `id` parameter from the URL
   const [callDetails, setCallDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const initialQueryState = {
-    search: "99999999999",
-    filter: query?.filter?.toString() || "",
-    callState: query?.callState?.toString() || "",
-    callType: query?.callType?.toString() || "",
-    date: query?.date ? moment(query?.date) : null,
-    offset: isNumber(query?.offset) ? +query?.offset : 0,
-    limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[0],
+  const appendQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.append(name, value);
+
+      return params.toString();
+    },
+    [searchParams],
+  );
+
+  const queryState = {
+    search: searchParams.get("search") || "99999999999",
+    filter: searchParams.get("filter") || "",
+    callState: searchParams.get("callState") || "",
+    callType: searchParams.get("callType") || "",
+    date: searchParams.get("date") ? moment(searchParams.get("date")) : null,
+    offset: parseInt(searchParams.get("offset") || "0", 10),
+    limit: parseInt(searchParams.get("limit") || PAGINATION_CHOOSES[0].toString(), 10),
   };
 
-  const [queryState, setQueryState] = useState(initialQueryState);
   const pagination = {
     pageIndex: queryState.offset,
     pageSize: queryState.limit,
@@ -64,10 +76,6 @@ const CallDetailsPage = () => {
         setIsLoading(true);
         const data = await contactLogApi.getCallById(id);
         setCallDetails(data);
-        setQueryState((prevState) => ({
-          ...prevState,
-          search: data.phone || prevState.search,
-        }));
       } catch (error) {
         addToast({
           id: "error",
@@ -84,6 +92,16 @@ const CallDetailsPage = () => {
       fetchCallDetails();
     }
   }, [id]);
+
+  const onTableChange = ({ page }: Criteria<any>) => {
+    if (page) {
+      const updatedParams = new URLSearchParams(searchParams.toString());
+      updatedParams.set("offset", page.index.toString());
+      updatedParams.set("limit", page.size.toString());
+      console.log(updatedParams);
+      router.replace(`/dashboards/crm/call/${id}?${updatedParams.toString()}`);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -115,7 +133,7 @@ const CallDetailsPage = () => {
 
   const details = [
     { title: "Утасны дугаар", description: callDetails.phone },
-    { title: "Дуудлагын төлөв", description: callDetails.call_state },
+    { title: "Дуудлагын төлөв", description: <CallStateBadge callState={callDetails.call_state} /> },
     { title: "Дуудлагын төрөл", description: callDetails.call_type },
     { title: "Дуудлага авсан ажилтан", description: callDetails.call_agent || "Хоосон" },
     { title: "Залгасан огноо", description: callDetails.call_date },
@@ -124,7 +142,7 @@ const CallDetailsPage = () => {
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
-      field: "timestamp",
+      field: "created_at",
       name: "Огноо",
       dataType: "date",
       render: (phone: string, row: any) => (
@@ -138,31 +156,24 @@ const CallDetailsPage = () => {
             color={row.call_type === "inbound" ? "success" : "danger"}
             type={row.call_type === "inbound" ? "sortDown" : "sortUp"}
           />
-          {phone}
+          {formatDate(phone)}
         </span>
       ),
     },
     {
       field: "call_duration",
-      name: "",
+      name: "Үргэлжлэх хугацаа",
+    },
+    {
+      field: "call_state",
+      name: "Төлөв",
+      render: (state: string) => <CallStateBadge callState={state} />,
     },
     {
       field: "action",
       name: "Үйлдэл",
     },
   ];
-
-  const onTableChange = ({ page }: Criteria<any>) => {
-      if (page) {
-        const updatedQueryState = {
-          ...queryState,
-          offset: page.index,
-          limit: page.size,
-        };
-        setQueryState(updatedQueryState);
-        router.push({ query: updatedQueryState });
-      }
-    };
 
   return (
     <DashboardCRMLayout
@@ -212,26 +223,34 @@ const CallDetailsPage = () => {
                 Холбогдсон түүх
               </EuiSplitPanel.Inner>
               <EuiPanel hasShadow={false}>
-                {!callHistory && (
-                  <EuiEmptyPrompt
-                    iconType="logoSolution"
-                    title={<h2>Your title</h2>}
-                    body={<p>Content</p>}
-                  />
-                )}
-                {callHistory && (
-                  <EuiBasicTable
-                    items={callHistory.results}
-                    columns={columns}
-                    tableLayout="auto"
-                    pagination={{
-                      ...pagination,
-                      totalItemCount: callHistory?.total_count || 0,
-                      showPerPageOptions: false,
-                    }}
-                    onChange={onTableChange}
-                  />
-                )}
+                <EuiSkeletonRectangle
+                  isLoading={isLoadingHistory}
+                  contentAriaLabel="Demo skeleton card"
+                  width={500}
+                  height={300}
+                  borderRadius="m"
+                >
+                  {!callHistory && (
+                    <EuiEmptyPrompt
+                      iconType="logoSolution"
+                      title={<h2>Холбогдсон түүх байхгүй</h2>}
+                      body={<p>Энэ дуудлагын холбогдсон түүх олдсонгүй.</p>}
+                    />
+                  )}
+                  {callHistory && (
+                    <EuiBasicTable
+                      items={callHistory.results}
+                      columns={columns}
+                      tableLayout="auto"
+                      pagination={{
+                        ...pagination,
+                        totalItemCount: callHistory?.total_count || 0,
+                        showPerPageOptions: false,
+                      }}
+                      onChange={onTableChange}
+                    />
+                  )}
+                </EuiSkeletonRectangle>
               </EuiPanel>
             </EuiSplitPanel.Outer>
           </EuiFlexItem>

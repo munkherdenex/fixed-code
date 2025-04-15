@@ -23,6 +23,7 @@ import useSWR from "swr";
 import contactLogApi from "../../api/contact_log";
 import CallDetailFlyout from "./call_detail_flyout";
 import { css } from "@emotion/react";
+import { CallStateBadge } from './call_state_badge';
 
 
 export const callStateOptions = [
@@ -95,27 +96,7 @@ const Table = () => {
       field: "call_state",
       name: "Дуудлагын төлөв",
       render: (callState: string) => (
-        <EuiBadge
-          color={"hollow"}
-          iconType="dot"
-          css={
-            callState === "answered"
-              ? css`
-                  animation: glow 2s infinite;
-                  @keyframes glow {
-                    0% {
-                      background-color: rgba(0, 255, 0, 0);
-                    }
-                    50% {
-                      background-color: rgba(0, 255, 0, 0.5);
-                    }
-                  }
-                `
-              : undefined
-          }
-        >
-          {callStateOptions.find((option) => option.value === callState)?.label || callState}
-        </EuiBadge>
+        <CallStateBadge callState={callState} />
       ),
     },
     {
@@ -143,8 +124,7 @@ const Table = () => {
   };
 
   const handleRowClick = (call: any) => {
-    setIsFlyoutVisible(true);
-    setSelectedCall(call);
+    router.push(`/dashboards/crm/call/${call.id}`);
   };
 
   const getRowProps = (call: any) => ({
