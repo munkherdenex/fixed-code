@@ -24,6 +24,7 @@ import {
   EuiInlineEditTitle,
   EuiMarkdownEditor,
   EuiMarkdownFormat,
+  EuiConfirmModal,
   EuiModal,
   EuiModalBody,
   EuiModalFooter,
@@ -33,21 +34,28 @@ import {
   EuiPageBody,
   EuiPageHeader,
   EuiPageHeaderSection,
+  EuiEmptyButton,
+  EuiSplitPanel,
   EuiPanel,
+  EuiSelect,
+  EuiTab,
   EuiPopover,
   EuiSpacer,
   EuiSwitch,
   EuiText,
   EuiTextArea,
+  EuiFormControlLayout,
   EuiTitle,
   formatDate,
   htmlIdGenerator,
   useGeneratedHtmlId,
+  EuiTabs,
+  EuiIcon,
 } from "@elastic/eui";
 import DashboardCRMLayout from "../../../../../layouts/dashboard_crm";
 import { Controller, useForm } from "react-hook-form";
 import getFieldComponentEdit from "../../../../../components/ticket_template/edit_utils";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ticketTemplateApi from "../../../../../api/ticket_template";
 import moment from "moment";
 import WorkersSelect from "../../../../../components/ticket_template/worker_select";
@@ -151,16 +159,46 @@ const statusOptions = [
 ];
 
 const TicketDetailPage = ({ params }: { params: { id: string } }) => {
+  const tabs = [
+    {
+      id: "cobalt--id",
+      name: "Түүх",
+    },
+  ];
+
+  const needCallBackOptions = [
+    { value: false, text: "Үгүй" },
+    { value: true, text: "Тийм" },
+  ];
+  const [selectedTabId, setSelectedTabId] = useState("cobalt--id");
+  const selectedTabContent = useMemo(() => {
+    return tabs.find((obj) => obj.id === selectedTabId)?.content;
+  }, [selectedTabId]);
+
+  const onSelectedTabChanged = (id: string) => {
+    setSelectedTabId(id);
+  };
+
   const [ticketTitle, setTicketTitle] = useState("");
   const [ticketDescription, setTicketDescription] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
+  const [ticketCloseDescription, setTicketCloseDescription] = useState("");
   const [value, setValue] = useState("");
   const [selectedOptions, setSelected] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isTicketCloseModalVisible, setIsTicketCloseModalVisible] = useState(false);
+  const [isEditConfirmModalVisible, setIsEditConfirmModalVisible] = useState(false);
+  const [isPriorityAdded, setIsPriorityAdded] = useState(false);
+  const [needsCallbackValue, setNeedsCallbackValue] = useState(false);
+  const [priorityOptions, setPriorityOptions] = useState([]);
+  const [priorityList, setPriorityList] = useState([]);
+  const [selectedPriority, setSelectedPriority] = useState(null);
+  const [selectedPriorityDuration, setSelectedPriorityDuration] = useState(null);
   const errorElementId = useRef(htmlIdGenerator()());
   const modalFormId = useGeneratedHtmlId({ prefix: "modalForm" });
   const modalTitleId = useGeneratedHtmlId();
+  const editConfirmModalTitleId = useGeneratedHtmlId();
   const router = useRouter();
   const { id } = router.query;
   const {
@@ -266,6 +304,10 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     setSelected(status ? [status] : []);
   };
 
+  const closeTicketCloseModal = () => {
+    setIsTicketCloseModalVisible(false);
+  };
+
   const saveEdit = async () => {
     try {
       let payload = {
@@ -319,6 +361,60 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     setTicketDescription(e.target.value);
   };
 
+  const onNeedsCallbackChange = (e) => {
+    setNeedsCallbackValue(e.target.value);
+  };
+
+  const addPriority = async () => {
+    try {
+      setIsPriorityAdded(true);
+      let { results } = await ticketApi.getPriorityList();
+      setPriorityList(results);
+      const transformedData = results.map((item) => ({
+        value: item.name,
+        text: item.name,
+      }));
+      setPriorityOptions(transformedData);
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+    }
+  };
+
+  const onChangePriority = (e) => {
+    setSelectedPriority(e.target.value);
+    let obj = priorityList.find((val) => val.name == e.target.value);
+
+    let d = obj.duration;
+    var h = Math.floor(d / 3600);
+    var m = Math.floor((d % 3600) / 60);
+    var hDisplay = h > 0 ? h + " цаг" : "";
+    var mDisplay = m > 0 ? m + " минут" : "";
+    let result = hDisplay + mDisplay;
+    setSelectedPriorityDuration(result);
+  };
+
+  const closeTicket = async () => {
+    try {
+      let payload = {
+        body: ticketCloseDescription,
+      };
+      await ticketApi.close(id, payload);
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+    }
+  };
+
+  const editTicket = async () => {
+    try {
+      let payload = {
+        body: ticketCloseDescription,
+      };
+      await ticketApi.update(id, payload);
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+    }
+  };
+
   const badge = (
     <EuiBadge
       iconType="arrowDown"
@@ -349,120 +445,484 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     </div>
   );
 
-  return (
-    <DashboardCRMLayout>
+  const HeaderChildren = () => {
+    return (
       <>
-        <EuiFlexGroup>
-          <EuiFlexItem grow={2}>
-            <EuiPanel paddingSize="l">
-              {isModalVisible && (
-                <EuiModal
-                  aria-labelledby={modalTitleId}
-                  onClose={closeModal}
-                  initialFocus="[name=popswitch]"
-                >
-                  <EuiModalHeader>
-                    <EuiModalHeaderTitle id={modalTitleId}>
-                      {selectedOptions[0].label}
-                    </EuiModalHeaderTitle>
-                  </EuiModalHeader>
+        <EuiBadge color="hollow">{"Тикет: #" + data?.id}</EuiBadge>
+        <EuiBadge color="success" iconType="dot">
+          {data?.status == "open" ? "Нээлттэй" : "Хаалттай"}
+        </EuiBadge>
+      </>
+    );
+  };
 
-                  <EuiModalBody>
+  return (
+    <DashboardCRMLayout
+      headerChildren={<HeaderChildren />}
+      pageHeader={{
+        pageTitle: data?.title || "Тикетийн гарчиг",
+      }}
+      breadCrumb={[
+        {
+          text: (
+            <>
+              <EuiButtonIcon
+                display="base"
+                iconType="arrowLeft"
+                size="s"
+                color="text"
+                aria-label="back"
+              />
+            </>
+          ),
+          color: "primary",
+          "aria-current": false,
+          onClick: () => router.back(),
+        },
+        {
+          text: "Тикет",
+          onClick: () => router.push("/dashboards/crm/ticket"),
+        },
+        {
+          text: "Тикет дэлгэрэнгүй",
+        },
+      ]}
+      rightSideItem={
+        <EuiButton
+          fill
+          key="test value"
+          iconType="crossInCircle"
+          color="text"
+          onClick={() => {
+            setIsTicketCloseModalVisible(true);
+          }}
+        >
+          Тикет хаах
+        </EuiButton>
+      }
+    >
+      <>
+        {isTicketCloseModalVisible && (
+          <EuiModal aria-labelledby={modalTitleId} onClose={closeTicketCloseModal}>
+            <EuiModalHeader>
+              <EuiModalHeaderTitle>Тикет хаах</EuiModalHeaderTitle>
+            </EuiModalHeader>
+
+            <EuiModalBody>
+              <strong>Тайлбар</strong>
+              <EuiTextArea
+                placeholder="Тикет хаах тайлбараа бичнэ үү."
+                aria-label="Ticket close description area"
+                value={ticketCloseDescription}
+                onChange={(e) => setTicketCloseDescription(e.target.value)}
+              />
+            </EuiModalBody>
+
+            <EuiModalFooter>
+              <EuiButtonEmpty onClick={closeTicketCloseModal}>Болих</EuiButtonEmpty>
+              <EuiButton type="submit" form={modalFormId} onClick={closeTicket} fill>
+                Хаах
+              </EuiButton>
+            </EuiModalFooter>
+          </EuiModal>
+        )}
+        {isEditConfirmModalVisible && (
+          <EuiConfirmModal
+            aria-labelledby={editConfirmModalTitleId}
+            style={{ width: 600 }}
+            title="Тикет хадгалах?"
+            titleProps={{ id: editConfirmModalTitleId }}
+            onCancel={() => setIsEditConfirmModalVisible(false)}
+            onConfirm={editTicket}
+            cancelButtonText="Болих"
+            confirmButtonText="Хадгалах"
+            defaultFocusedButton="confirm"
+          ></EuiConfirmModal>
+        )}
+        <EuiFlexGroup>
+          <EuiFlexItem>
+            <EuiSplitPanel.Outer>
+              <EuiFlexGroup direction="column" gutterSize="none">
+                <EuiFlexItem>
+                  <EuiSplitPanel.Inner color="subdued" paddingSize="m">
+                    <EuiFlexItem grow={2}>
+                      <EuiFlexItem grow={false}>
+                        <strong>Ерөнхий мэдээлэл</strong>
+                      </EuiFlexItem>
+                    </EuiFlexItem>
+                  </EuiSplitPanel.Inner>
+                </EuiFlexItem>
+                <EuiPanel paddingSize="l">
+                  {isModalVisible && (
+                    <EuiModal
+                      aria-labelledby={modalTitleId}
+                      onClose={closeModal}
+                      initialFocus="[name=popswitch]"
+                    >
+                      <EuiModalHeader>
+                        <EuiModalHeaderTitle id={modalTitleId}>
+                          {selectedOptions[0].label}
+                        </EuiModalHeaderTitle>
+                      </EuiModalHeader>
+
+                      <EuiModalBody>
+                        <EuiMarkdownEditor
+                          aria-label="Markdown editor"
+                          aria-describedby={errorElementId.current}
+                          placeholder="Add a comment..."
+                          value={commentText}
+                          onChange={setCommentText}
+                          readOnly={isLoading}
+                          height={400}
+                          initialViewMode="editing"
+                          markdownFormatProps={{ textSize: "s" }}
+                        />
+                      </EuiModalBody>
+
+                      <EuiModalFooter>
+                        <EuiButtonEmpty onClick={closeModal}>Cancel</EuiButtonEmpty>
+
+                        <EuiButton type="submit" form={modalFormId} onClick={saveEdit} fill>
+                          Save
+                        </EuiButton>
+                      </EuiModalFooter>
+                    </EuiModal>
+                  )}
+                  {/* Категори */}
+                  <EuiFlexGroup justifyContent="flexStart" alignItems="flexStart">
+                    <EuiFlexItem grow={false}>
+                      <div>
+                        <span style={{ color: "red" }}>*</span>
+                        <strong>Категори</strong>
+                      </div>
+                    </EuiFlexItem>
+                    <EuiFlexItem grow={false}>
+                      <span style={{ color: "red" }}>{data?.category}</span>
+                    </EuiFlexItem>
+                  </EuiFlexGroup>
+                  <EuiSpacer size="m" />
+                  {/* Төрөл */}
+                  {data?.tags.length > 0 ? (
+                    <EuiFlexGroup justifyContent="flexStart" alignItems="flexStart">
+                      <EuiFlexItem grow={false}>
+                        <div>
+                          <span style={{ color: "red" }}>*</span>
+                          <strong>Төрөл</strong>
+                        </div>
+                      </EuiFlexItem>
+                      <EuiFlexItem grow={false}>
+                        <EuiFlexGroup wrap responsive={false} gutterSize="xs">
+                          {data?.tags.map((tag) => (
+                            <EuiFlexItem grow={false} key={tag.id}>
+                              <EuiBadge color={tag.color}>{tag.name}</EuiBadge>
+                            </EuiFlexItem>
+                          ))}
+                        </EuiFlexGroup>
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
+                  ) : null}
+                  {/* Хэрэглэгчийн мэдээлэл */}
+                  <EuiSpacer size="m" />
+                  <EuiFlexItem grow={false}>
+                    <div>
+                      <span style={{ color: "red" }}>*</span>
+                      <strong>Хэрэглэгчийн мэдээлэл</strong>
+                    </div>
+                  </EuiFlexItem>
+                  <EuiSpacer size="xs" />
+                  <EuiSelect
+                    fullWidth={true}
+                    value={value}
+                    onChange={(e) => onChange(e)}
+                    aria-label="Use aria labels when no actual label is in use"
+                  />
+                  <EuiSpacer size="m" />
+                  {/* Холбогдсон суваг */}
+                  <EuiFlexItem grow={false}>
+                    <div>
+                      <span style={{ color: "red" }}>*</span>
+                      <strong>Холбогдсон суваг</strong>
+                    </div>
+                  </EuiFlexItem>
+                  <EuiSpacer size="xs" />
+                  <EuiSelect
+                    fullWidth={true}
+                    value={value}
+                    onChange={(e) => onChange(e)}
+                    aria-label="Use aria labels when no actual label is in use"
+                  />
+                  <EuiSpacer size="m" />
+                  {/* Эргэн холбогдох */}
+                  <EuiFlexItem grow={false}>
+                    <div>
+                      <span style={{ color: "red" }}>*</span>
+                      <strong>Эргэн холбогдох</strong>
+                    </div>
+                  </EuiFlexItem>
+                  <EuiSpacer size="xs" />
+                  <EuiSelect
+                    options={needCallBackOptions}
+                    value={needsCallbackValue}
+                    onChange={(e) => onNeedsCallbackChange(e)}
+                    fullWidth={true}
+                    aria-label="Use aria labels when no actual label is in use"
+                  />
+                  <EuiSpacer size="m" />
+                  {/* Хариуцах нэгж */}
+                  <EuiFlexItem grow={false}>
+                    <div>
+                      <strong>Хариуцах нэгж/ажилтан</strong>
+                    </div>
+                  </EuiFlexItem>
+                  <EuiSpacer size="xs" />
+                  <EuiSelect
+                    fullWidth={true}
+                    options={needCallBackOptions}
+                    value={value}
+                    onChange={(e) => onNeedsCallbackChange(e)}
+                    aria-label="Use aria labels when no actual label is in use"
+                  />
+                  {data?.category == "Санал хүсэлт" || data?.category == "Гомдол" ? (
+                    <>
+                      {!isPriorityAdded ? (
+                        <>
+                          <EuiSpacer size="m" />
+                          <EuiFlexGroup justifyContent="flexEnd">
+                            <EuiButtonEmpty
+                              size="s"
+                              onClick={() => {
+                                addPriority();
+                              }}
+                              iconType="plusInCircle"
+                            >
+                              Чухлын зэрэг нэмэх
+                            </EuiButtonEmpty>
+                          </EuiFlexGroup>
+                        </>
+                      ) : (
+                        <>
+                          <EuiSpacer size="m" />
+                          <EuiFlexItem grow={false}>
+                            <div>
+                              <strong>Чухлын зэрэг</strong>
+                            </div>
+                          </EuiFlexItem>
+                          <EuiSelect
+                            fullWidth={true}
+                            options={priorityOptions}
+                            value={selectedPriority}
+                            onChange={(e) => onChangePriority(e)}
+                            aria-label="Use aria labels when no actual label is in use"
+                          />
+                          {selectedPriorityDuration && (
+                            <>
+                              <EuiSpacer size="m" />
+                              <EuiFlexItem grow={false}>
+                                <div>
+                                  <strong>Шийдвэрлэх хугацаа</strong>
+                                </div>
+                              </EuiFlexItem>
+                              <EuiFormControlLayout icon="clock" fullWidth={true}>
+                                <EuiFieldText
+                                  type="search"
+                                  controlOnly
+                                  value={selectedPriorityDuration}
+                                  aria-label="Selected priority duration value"
+                                  disabled={true}
+                                  readOnly={true}
+                                  fullWidth={true}
+                                />
+                              </EuiFormControlLayout>
+                            </>
+
+                            // <EuiFieldNumber
+                            //   fullWidth={true}
+                            //   options={[]}
+                            //   value={selectedPriorityDuration}
+                            //   disabled={true}
+                            // />
+                          )}
+                        </>
+                      )}
+                    </>
+                  ) : null}
+
+                  {/* Save/Edit Button */}
+                  <EuiSpacer size="m" />
+                  <EuiFlexGroup justifyContent="flexEnd">
+                    <EuiButton
+                      color="success"
+                      fill={true}
+                      iconType="save"
+                      onClick={() => setIsEditConfirmModalVisible(true)}
+                    >
+                      Хадгалах
+                    </EuiButton>
+                  </EuiFlexGroup>
+
+                  {/* Тайлбар */}
+                  {/* <EuiFlexItem grow={false}>
+                  <strong>Тайлбар</strong>
+                </EuiFlexItem>
+                <EuiTextArea
+                  fullWidth={true}
+                  placeholder="Placeholder text"
+                  aria-label="Use aria labels when no actual label is in use"
+                  value={value}
+                  onChange={(e) => onChange(e)}
+                />
+                <EuiSpacer size="m" /> */}
+                  {/* Шалгуулах кэйс */}
+                  {/* <EuiFlexItem grow={false}>
+                  <div>
+                    <strong>Шалгуулах кэйс</strong>
+                  </div>
+                </EuiFlexItem>
+                <EuiSpacer size="xs" />
+                <EuiSelect
+                  fullWidth={true}
+                  value={value}
+                  onChange={(e) => onChange(e)}
+                  aria-label="Use aria labels when no actual label is in use"
+                />
+                <EuiSpacer size="m" /> */}
+                  {/* Шиидвэрлэх хугацаа */}
+                  {/* <EuiFlexItem grow={false}>
+                  <div>
+                    <strong>Шиидвэрлэх хугацаа </strong>
+                  </div>
+                </EuiFlexItem>
+                <EuiSpacer size="xs" />
+                <EuiSelect
+                  fullWidth={true}
+                  value={value}
+                  onChange={(e) => onChange(e)}
+                  aria-label="Use aria labels when no actual label is in use"
+                />
+                <EuiSpacer size="m" /> */}
+                  {/* <EuiSpacer size="m" />
+                  <EuiTitle size="s">
+                    <h4>Тикет: #{id}</h4>
+                  </EuiTitle>
+                  <EuiSpacer size="s" />
+                  <EuiInlineEditTitle
+                    inputAriaLabel="Edit ticket title"
+                    heading="h1"
+                    value={ticketTitle}
+                    onSave={ticketTitleOnSave}
+                    onChange={ticketTitleOnChange}
+                    onCancel={(previousValue) => {
+                      setTicketTitle(previousValue);
+                    }}
+                  />
+                  <EuiSpacer size="s" />
+                  <EuiInlineEditText
+                    inputAriaLabel="Edit ticket description"
+                    value={ticketDescription}
+                    onSave={ticketDescriptionOnSave}
+                    onChange={ticketDescriptionOnChange}
+                    onCancel={(previousValue) => {
+                      setTicketTitle(previousValue);
+                    }}
+                  />
+                  <TagsManager /> */}
+                </EuiPanel>
+              </EuiFlexGroup>
+            </EuiSplitPanel.Outer>
+          </EuiFlexItem>
+          {/* Bonus Fields */}
+          {data.fields.length > 0 ? (
+            <EuiFlexItem>
+              <EuiSplitPanel.Outer>
+                <EuiFlexGroup direction="column" gutterSize="none">
+                  <EuiFlexItem>
+                    <EuiSplitPanel.Inner color="subdued" paddingSize="m">
+                      <EuiFlexItem grow={1}>
+                        <EuiFlexItem grow={false}>
+                          <strong>Нэмэлт мэдээлэл</strong>
+                        </EuiFlexItem>
+                      </EuiFlexItem>
+                    </EuiSplitPanel.Inner>
+                  </EuiFlexItem>
+                  <EuiPanel paddingSize="l">
+                    <EuiFlexItem>
+                      {data.fields.map((field: Field) => {
+                        return (
+                          <Controller
+                            key={`ctrllr__${field.id}`}
+                            control={control}
+                            name={field.attr_name}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                              <EuiFormRow
+                                key={field.id}
+                                label={transformInputLabel(field.attr_name, ticketTemplate)}
+                                helpText={field.config?.helpText}
+                                fullWidth
+                              >
+                                {getFieldComponentEdit(field, register, value, onChange, onBlur)}
+                              </EuiFormRow>
+                            )}
+                          />
+                        );
+                      })}
+                    </EuiFlexItem>
+                  </EuiPanel>
+                </EuiFlexGroup>
+              </EuiSplitPanel.Outer>
+            </EuiFlexItem>
+          ) : null}
+          {/* Right-Side */}
+          <EuiFlexItem>
+            <EuiForm component="div">
+              <EuiTabs>
+                {tabs.map((tab, index) => (
+                  <EuiTab
+                    key={index}
+                    href={tab.href}
+                    onClick={() => onSelectedTabChanged(tab.id)}
+                    isSelected={tab.id === selectedTabId}
+                    disabled={tab.disabled}
+                    prepend={tab.prepend}
+                    append={tab.append}
+                  >
+                    {tab.name}
+                  </EuiTab>
+                ))}
+              </EuiTabs>
+              <EuiSpacer size="m" />
+              <EuiFormRow fullWidth>
+                <EuiCommentList comments={ticketComments} aria-label="Comment system">
+                  <EuiComment username="You" timelineAvatar={<EuiAvatar name="You" />}>
                     <EuiMarkdownEditor
                       aria-label="Markdown editor"
                       aria-describedby={errorElementId.current}
                       placeholder="Add a comment..."
-                      value={commentText}
-                      onChange={setCommentText}
+                      value={editorValue}
+                      onChange={setEditorValue}
                       readOnly={isLoading}
-                      height={400}
                       initialViewMode="editing"
                       markdownFormatProps={{ textSize: "s" }}
                     />
-                  </EuiModalBody>
-
-                  <EuiModalFooter>
-                    <EuiButtonEmpty onClick={closeModal}>Cancel</EuiButtonEmpty>
-
-                    <EuiButton type="submit" form={modalFormId} onClick={saveEdit} fill>
-                      Save
+                  </EuiComment>
+                </EuiCommentList>
+              </EuiFormRow>
+              <EuiSpacer size="m" />
+              {/* <EuiFlexGroup justifyContent="flexEnd" responsive={false}>
+                <EuiFlexItem grow={false}>
+                  <div>
+                    <EuiButton
+                      onClick={() => onAddComment}
+                      isLoading={isLoading}
+                      aria-label="comment Add"
+                      isDisabled={editorValue == ""}
+                    >
+                      Add comment
                     </EuiButton>
-                  </EuiModalFooter>
-                </EuiModal>
-              )}
-              {/* Ticket name and description will be added */}
-              {/* Ticket Id haruulna: #47*/}
-              <EuiTitle size="s">
-                <h4>Тикет: #{id}</h4>
-              </EuiTitle>
-              <EuiSpacer size="s" />
-              <EuiInlineEditTitle
-                inputAriaLabel="Edit ticket title"
-                heading="h1"
-                value={ticketTitle}
-                onSave={ticketTitleOnSave}
-                onChange={ticketTitleOnChange}
-                onCancel={(previousValue) => {
-                  setTicketTitle(previousValue);
-                }}
-              />
-              <EuiSpacer size="s" />
-              <EuiInlineEditText
-                inputAriaLabel="Edit ticket description"
-                value={ticketDescription}
-                onSave={ticketDescriptionOnSave}
-                onChange={ticketDescriptionOnChange}
-                onCancel={(previousValue) => {
-                  setTicketTitle(previousValue);
-                }}
-              />
-              <TagsManager />
-              {/* <EuiTitle size="l">
-                <h1>{data ? ticketTemplate.title : ""}</h1>
-              </EuiTitle>
-              <EuiTitle size="s">
-                <div>{ticketTemplate ? ticketTemplate.description : ""}</div>
-              </EuiTitle> */}
-              <EuiForm component="div">
-                <EuiHorizontalRule margin="l" />
-                <EuiFormRow label="Comments" fullWidth>
-                  <EuiCommentList comments={ticketComments} aria-label="Comment system">
-                    <EuiComment username="You" timelineAvatar={<EuiAvatar name="You" />}>
-                      <EuiMarkdownEditor
-                        aria-label="Markdown editor"
-                        aria-describedby={errorElementId.current}
-                        placeholder="Add a comment..."
-                        value={editorValue}
-                        onChange={setEditorValue}
-                        readOnly={isLoading}
-                        initialViewMode="editing"
-                        markdownFormatProps={{ textSize: "s" }}
-                      />
-                    </EuiComment>
-                  </EuiCommentList>
-                </EuiFormRow>
-                <EuiSpacer size="m" />
-                <EuiFlexGroup justifyContent="flexEnd" responsive={false}>
-                  <EuiFlexItem grow={false}>
-                    <div>
-                      <EuiButton
-                        onClick={() => onAddComment}
-                        isLoading={isLoading}
-                        aria-label="comment Add"
-                        isDisabled={editorValue == ""}
-                      >
-                        Add comment
-                      </EuiButton>
-                    </div>
-                  </EuiFlexItem>
-                </EuiFlexGroup>
-              </EuiForm>
-            </EuiPanel>
-          </EuiFlexItem>
-
-          {/* Right-Side */}
-          <EuiFlexItem>
-            <EuiPanel paddingSize="l">
+                  </div>
+                </EuiFlexItem>
+              </EuiFlexGroup> */}
+            </EuiForm>
+            {/* <EuiPanel paddingSize="l">
               <EuiFlexGroup direction="row" justifyContent="flexStart" alignItems="center">
                 <EuiFlexItem grow={false}>
                   <WorkersSelect
@@ -488,7 +948,6 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                 <EuiFormRow label="Төрөл" fullWidth>
                   <EuiText>{data.category}</EuiText>
                 </EuiFormRow>
-                {/* Label mongoloor */}
                 <EuiFormRow label="Үүссэн огноо" fullWidth>
                   <EuiText>{formatDate(data.created_at, "dateTime")}</EuiText>
                 </EuiFormRow>
@@ -519,7 +978,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                   );
                 })}
               </EuiFlexItem>
-            </EuiPanel>
+            </EuiPanel> */}
           </EuiFlexItem>
         </EuiFlexGroup>
       </>

@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-
 import {
   EuiPage,
+  EuiButton,
   EuiPageBody,
   EuiPageHeader,
   EuiPageSection,
@@ -22,8 +22,11 @@ import { authContext } from "../store/auth_store";
 import { teamsContext } from "../store/teams_store";
 import { dashboardsLayoutStyles } from "./dashboard.styles";
 import DashboardHeadersCRM from "./dashboard_headers_crm";
+import TagsManager from "@/components/ticket_template/tags";
 
 const Content = ({
+  rightSideItem,
+  headerChildren,
   children,
   sidebar,
   sidebarSticky,
@@ -33,9 +36,11 @@ const Content = ({
   ...rest
 }: {
   pageHeader?: any;
+  rightSideItem?: ReactElement;
+  headerChildren: ReactElement;
   children: ReactElement;
   sidebar?: ReactElement;
-  breadCrumb?: ReactElement;
+  breadCrumb?: any;
   hideSidebar?: boolean;
   sidebarSticky?: EuiPageSidebarProps["sticky"];
 }) => {
@@ -66,7 +71,15 @@ const Content = ({
           )}
           <EuiPageBody panelled>
             <DashboardHeadersCRM />
-            <EuiPageHeader bottomBorder paddingSize="l" {...pageHeader} />
+            <EuiPageHeader
+              bottomBorder
+              paddingSize="l"
+              {...pageHeader}
+              breadcrumbs={breadCrumb}
+              rightSideItems={[rightSideItem]}
+            >
+              {headerChildren}
+            </EuiPageHeader>
             <EuiPageSection paddingSize="l">{children}</EuiPageSection>
           </EuiPageBody>
         </EuiPage>
@@ -76,6 +89,8 @@ const Content = ({
 };
 
 const DashboardCRMLayout = ({
+  rightSideItem,
+  headerChildren,
   children,
   sidebar,
   sidebarSticky,
@@ -85,9 +100,11 @@ const DashboardCRMLayout = ({
   ...rest
 }: {
   pageHeader?: any;
+  rightSideItem?: ReactElement;
+  headerChildren?: ReactElement;
   children: ReactElement;
   sidebar?: ReactElement;
-  breadCrumb?: ReactElement;
+  breadCrumb?: any;
   hideSidebar?: boolean;
   sidebarSticky?: EuiPageSidebarProps["sticky"];
 }) => {
@@ -109,7 +126,18 @@ const DashboardCRMLayout = ({
       }}
     >
       <div css={styles.mainWrapper}>
-        <Content {...{ sidebar, sidebarSticky, pageHeader, breadCrumb, hideSidebar, ...rest }}>
+        <Content
+          {...{
+            rightSideItem,
+            headerChildren,
+            sidebar,
+            sidebarSticky,
+            pageHeader,
+            breadCrumb,
+            hideSidebar,
+            ...rest,
+          }}
+        >
           {children}
         </Content>
       </div>
