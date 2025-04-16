@@ -34,13 +34,26 @@ import { formatDate } from "@/utils/helper";
 import { CallStateBadge } from "@/components/call/call_state_badge";
 import CustomerPanel from "@/components/customer/customer_panel";
 import TicketCreatePanel from "@/components/ticket/ticket_create_panel";
+import ticketApi from "@/api/ticket";
 
 const CallDetailsPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams(); // Use Next.js useSearchParams hook
-  const { id } = useParams(); // Get the `id` parameter from the URL
-  const [callDetails, setCallDetails] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { id } = useParams(); // Get the `call_id` parameter from the URL
+
+  const {
+    data: callDetails,
+    isLoading,
+    mutate: mutateCallDetail,
+  } = useSWR(`/crm/calls/${id}`, () => contactLogApi.getCallByCallId(id));
+
+  const [noteBody, setNoteBody] = useState(callDetails?.body || "");
+
+  useEffect(() => {
+    if (callDetails?.body !== undefined) {
+      setNoteBody(callDetails.body);
+    }
+  }, [callDetails]);
 
   const queryState = useMemo(
     () => ({
@@ -64,34 +77,27 @@ const CallDetailsPage = () => {
     [queryState.offset, queryState.limit],
   );
 
-  const {
-    data: callHistory,
-    isLoading: isLoadingHistory,
-    mutate,
-  } = useSWR(["/crm/calls/", queryState], () => contactLogApi.getCalls(queryState));
+  const { data: callHistory, isLoading: isLoadingHistory } = useSWR(
+    queryState.search ? ["/crm/calls/", queryState] : null,
+    () => (queryState.search ? contactLogApi.getCalls(queryState) : null),
+  );
 
-  useEffect(() => {
-    const fetchCallDetails = async () => {
-      try {
-        setIsLoading(true);
-        const data = await contactLogApi.getCallById(id);
-        setCallDetails(data);
-      } catch (error) {
-        addToast({
-          id: "error",
-          title: "Дэлгэрэнгүй мэдээлэл авахад алдаа гарлаа",
-          text: error.message || "Алдаа гарлаа",
-          color: "danger",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const { data: contactLogTickets, isLoading: isLoadingTickets } = useSWR(
+    callDetails ? ["/crm/ticket/", callDetails.id] : null,
+    () => (callDetails ? ticketApi.getTickets({ cl_id: callDetails.id }) : null),
+  );
 
-    if (id) {
-      fetchCallDetails();
+  const updateBody = useCallback(async () => {
+    try {
+      console.debug(">> ", callDetails.id, noteBody);
+      const updatedData = await contactLogApi.updateContactLogById(callDetails.id, noteBody);
+      mutateCallDetail((prev) => ({ ...prev, body: noteBody }), false);
+      return updatedData;
+    } catch (error) {
+      console.error("Failed to update note:", error);
+      throw error;
     }
-  }, [id]);
+  }, [callDetails, noteBody, mutateCallDetail]);
 
   const onTableChange = ({ page }: Criteria<any>) => {
     if (page) {
@@ -165,6 +171,7 @@ const CallDetailsPage = () => {
     {
       field: "call_duration",
       name: "Үргэлжлэх хугацаа",
+      render: (duration: number) => `${duration || 0} секунд`,
     },
     // {
     //   field: "call_state",
@@ -177,7 +184,7 @@ const CallDetailsPage = () => {
         <EuiButtonIcon
           iconType="eye"
           aria-label="Харах"
-          onClick={() => router.push(`/dashboards/crm/call/${item.id}`)}
+          onClick={() => router.push(`/dashboards/crm/call/${item.call_id}`)}
         />
       ),
     },
@@ -265,19 +272,16 @@ const CallDetailsPage = () => {
           <EuiFlexItem>
             <EuiSplitPanel.Outer hasShadow={false} hasBorder>
               <EuiSplitPanel.Inner color="subdued">Тэмдэглэл</EuiSplitPanel.Inner>
-              <EuiPanel paddingSize='s'>
-                <EuiFlexGroup direction="column" gutterSize='xs'>
+              <EuiPanel paddingSize="s">
+                <EuiFlexGroup direction="column" gutterSize="xs">
                   <EuiFlexItem>
                     <EuiTextArea
                       fullWidth
                       rows={3}
                       placeholder="Ярилцсан агуулгыг оруулна уу"
-                      value={callDetails.body || ""}
+                      value={noteBody}
                       onChange={(e) => {
-                        setCallDetails((prev) => ({
-                          ...prev,
-                          body: e.target.value,
-                        }));
+                        setNoteBody(e.target.value);
                       }}
                     />
                   </EuiFlexItem>
@@ -285,13 +289,24 @@ const CallDetailsPage = () => {
                     <EuiButton
                       iconType="save"
                       aria-label="Хадгалах"
-                      onClick={() => {
-                        // Save logic here
-                        addToast({
-                          id: "success",
-                          title: "Амжилттай хадгаллаа",
-                          color: "success",
-                        });
+                      disabled={isLoading}
+                      onClick={async () => {
+                        try {
+                          updateBody();
+
+                          addToast({
+                            id: "success",
+                            title: "Амжилттай хадгаллаа",
+                            color: "success",
+                          });
+                        } catch (error) {
+                          addToast({
+                            id: "error",
+                            title: "Алдаа гарлаа",
+                            color: "danger",
+                          });
+                          console.error("Failed to update note:", error);
+                        }
                       }}
                     >
                       Хадгалах
@@ -304,7 +319,51 @@ const CallDetailsPage = () => {
           <EuiFlexItem>
             <CustomerPanel customerId={callDetails.customer_id ? callDetails.customer_id : 233} />
             <EuiSpacer size="m" />
-            <TicketCreatePanel ticketId={callDetails.ticketId} callLog={callDetails} />
+            <EuiSkeletonRectangle isLoading={isLoadingTickets} height={200} width={500}>
+              {contactLogTickets && contactLogTickets?.total_count > 0 && (
+                <EuiSplitPanel.Outer hasShadow={false} hasBorder>
+                  <EuiSplitPanel.Inner color="subdued" paddingSize="m">
+                    <EuiFlexGroup alignItems="center">
+                      <EuiFlexItem>Тикетийн мэдээлэл</EuiFlexItem>
+                      <EuiFlexItem grow={false}>
+                        <EuiButton
+                          size="s"
+                          href={`/dashboards/crm/ticket/${contactLogTickets.results[0]?.id}`}
+                          target="_blank"
+                        >
+                          Тикет руу очих
+                        </EuiButton>
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
+                  </EuiSplitPanel.Inner>
+                  <EuiPanel>
+                    <EuiDescriptionList
+                      listItems={[
+                        {
+                          title: "Төрөл",
+                          description: contactLogTickets.results[0]?.category || "-",
+                        },
+                        {
+                          title: "Гарчиг",
+                          description: contactLogTickets.results[0]?.title || "-",
+                        },
+                        {
+                          title: "Агуулга",
+                          description: contactLogTickets.results[0]?.body || "-",
+                        },
+                        {
+                          title: "Төлөв",
+                          description: contactLogTickets.results[0]?.status || "-",
+                        },
+                      ]}
+                    />
+                  </EuiPanel>
+                </EuiSplitPanel.Outer>
+              )}
+              {(!contactLogTickets || contactLogTickets?.total_count == 0) && (
+                <TicketCreatePanel ticketId={callDetails.ticketId} contactLog={callDetails} />
+              )}
+            </EuiSkeletonRectangle>
           </EuiFlexItem>
         </EuiFlexGrid>
       </>

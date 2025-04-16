@@ -23,7 +23,7 @@ import useSWR from "swr";
 import contactLogApi from "../../api/contact_log";
 import CallDetailFlyout from "./call_detail_flyout";
 import { css } from "@emotion/react";
-import { call_stateBadge } from './call_state_badge';
+import { CallStateBadge } from './call_state_badge';
 
 
 export const callStateOptions = [
@@ -96,7 +96,7 @@ const Table = () => {
       field: "call_state",
       name: "Дуудлагын төлөв",
       render: (call_state: string) => (
-        <call_stateBadge call_state={call_state} />
+        <CallStateBadge call_state={call_state} />
       ),
     },
     {
@@ -124,7 +124,7 @@ const Table = () => {
   };
 
   const handleRowClick = (call: any) => {
-    router.push(`/dashboards/crm/call/${call.id}`);
+    router.push(`/dashboards/crm/call/${call.call_id}`);
   };
 
   const getRowProps = (call: any) => ({
