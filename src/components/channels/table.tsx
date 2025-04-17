@@ -43,7 +43,7 @@ const ChannelsTable = () => {
 
   const querySearch = query?.search?.toString() || "";
   const queryFilter = query?.filter?.toString() || "";
-  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
 
   const [searchValue, setSearchValue] = useState(querySearch);
@@ -60,7 +60,7 @@ const ChannelsTable = () => {
   const { data, isLoading, mutate } = useGetChannels<ChannelsResponse>(undefined, {
     filter: filter,
     query: searchValue,
-    offset: `${pageIndex * pageSize}`,
+    offset: `${pageIndex}`,
     limit: `${pageSize}`,
   });
 
@@ -231,7 +231,7 @@ const ChannelsTable = () => {
             rowProps={getRowProps}
             cellProps={getCellProps}
             pagination={
-              data?.total_count > pageSize
+              data?.total_pages > 1
                 ? {
                     ...pagination,
                     totalItemCount: data?.total_count || 0,

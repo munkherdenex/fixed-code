@@ -28,7 +28,7 @@ const Table = () => {
 
   const querySearch = query?.search?.toString() || "";
   const queryFilter = query?.filter?.toString() || "";
-  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0];
 
   const [searchValue, setSearchValue] = useState(querySearch);
@@ -47,7 +47,7 @@ const Table = () => {
     {
       query: searchValue,
       filter: filter,
-      offset: `${pageIndex * pageSize}`,
+      offset: `${pageIndex}`,
       limit: `${pageSize}`,
     },
   );

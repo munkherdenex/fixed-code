@@ -45,7 +45,7 @@ const SegmentAudienceList = () => {
   const { data: segmentData, isLoading: segmentIsLoading } = useSegmentContext();
 
   const [searchValue, setSearchValue] = useState("");
-  const [pageIndex, setPageIndex] = useState(0);
+  const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
@@ -57,7 +57,7 @@ const SegmentAudienceList = () => {
 
   const { data, isLoading, mutate } = useGetSegmentAudienceList<SegmentAudienceResponse>(id, {
     search: searchValue,
-    offset: `${pageIndex * pageSize}`,
+    offset: `${pageIndex}`,
     limit: `${pageSize}`,
   });
   const { trigger, isMutating } = useRerunSegmentAudience(id);

@@ -17,8 +17,8 @@ const CampaignStatusTable = () => {
   const translate = useTranslations();
 
   const { data, isLoading } = useGetCampaignAnalyticsTable({
-    offset: `${0}`,
-    limit: `${10}`,
+    offset: '1',
+    limit: '10',
   });
 
   const columns: Array<EuiBasicTableColumn<Template>> = [

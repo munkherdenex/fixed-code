@@ -7,14 +7,15 @@ import {
   EuiFlyout,
   EuiFlyoutBody,
   EuiFlyoutHeader,
+  EuiIcon,
   EuiPanel,
   EuiSkeletonRectangle,
   EuiSplitPanel,
   EuiTitle,
 } from "@elastic/eui";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useSWR from "swr";
-import GeneralDetails from '../customers/general_details';
+import GeneralDetails from "../customers/general_details";
 
 const CustomerPanel: React.FC<{
   customerId?: number;
@@ -23,16 +24,30 @@ const CustomerPanel: React.FC<{
   rid?: string;
 }> = ({ customerId, phone, email, rid }) => {
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
+  const [customerDetail, setCustomerDetail] = useState(null);
 
   // Use SWR for fetching customer data
   const {
     data: customerData,
     error,
     isLoading,
-  } = useSWR(customerId ? [`/audience/${customerId}`, customerId] : null, async () => {
+  } = useSWR(customerId ? [`/customer/${customerId}`, customerId] : null, async () => {
     const response = await audienceApi.getAudience([null, { id: customerId }]);
     return response;
   });
+
+  const {
+    data: customerDataByPhone,
+    error: errorLoadingByPhone,
+    isLoading: isLoadingByPhone,
+  } = useSWR(!customerId && phone ? [`/customers/?phone=${phone}`, phone] : null, async () => {
+    const response = await audienceApi.getAudiences({ phone: phone });
+    return response;
+  });
+
+  useEffect(() => {
+    setCustomerDetail(customerData || customerDataByPhone?.data?.results[0]);
+  }, [customerData, customerDataByPhone]);
 
   return (
     <EuiSplitPanel.Outer hasShadow={false} hasBorder>
@@ -54,21 +69,21 @@ const CustomerPanel: React.FC<{
               body={<p>Хэрэглэгчийн мэдээллийг ачааллахад алдаа гарлаа.</p>}
             />
           )}
-          {customerData && (
+          {customerDetail && (
             <EuiDescriptionList
               listItems={[
                 {
                   title: "Утасны дугаар",
-                  description: customerData.phone || "Утасны дугаар байхгүй",
+                  description: customerDetail.phone || "Утасны дугаар байхгүй",
                 },
-                { title: "Имэйл", description: customerData.email || "Имэйл байхгүй" },
-                { title: "RID", description: customerData.rid || "RID байхгүй" },
+                { title: "Имэйл", description: customerDetail.email || "Имэйл байхгүй" },
+                { title: "RID", description: customerDetail.rid || "RID байхгүй" },
               ]}
               type="column"
               columnGutterSize="m"
             />
           )}
-          {!customerData && !error && (
+          {!customerDetail && (!error || !errorLoadingByPhone) && (
             <EuiEmptyPrompt
               titleSize="xs"
               iconType="user"
@@ -77,27 +92,12 @@ const CustomerPanel: React.FC<{
           )}
         </EuiPanel>
       </EuiSkeletonRectangle>
-      {customerData && (
+      {customerDetail && (
         <EuiSplitPanel.Inner color="subdued" paddingSize="m">
-          <EuiButton onClick={() => setIsFlyoutVisible(true)} size="s" color="text">
-            Дэлгэрэнгүй
-          </EuiButton>
-          {isFlyoutVisible && (
-            <EuiFlyout
-              onClose={() => setIsFlyoutVisible(false)}
-              size="m"
-              aria-labelledby="customerDetailsFlyout"
-            >
-              <EuiFlyoutHeader hasBorder>
-                <EuiTitle size="m">
-                  <h2 id="customerDetailsFlyout">Хэрэглэгчийн дэлгэрэнгүй мэдээлэл</h2>
-                </EuiTitle>
-              </EuiFlyoutHeader>
-              <EuiFlyoutBody>
-                <GeneralDetails />
-              </EuiFlyoutBody>
-            </EuiFlyout>
-          )}
+          <EuiButtonEmpty href={`/dashboards/cdp/audience/info/${customerDetail.id}`} target="_blank" size="s" color="text">
+            Дэлгэрэнгүй {' '}
+            <EuiIcon type="popout" />
+          </EuiButtonEmpty>
         </EuiSplitPanel.Inner>
       )}
     </EuiSplitPanel.Outer>

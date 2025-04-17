@@ -23,8 +23,7 @@ import useSWR from "swr";
 import contactLogApi from "../../api/contact_log";
 import CallDetailFlyout from "./call_detail_flyout";
 import { css } from "@emotion/react";
-import { CallStateBadge } from './call_state_badge';
-
+import { CallStateBadge } from "./call_state_badge";
 
 export const callStateOptions = [
   { label: "Дуудаж байна", value: "start" },
@@ -51,7 +50,7 @@ const Table = () => {
     call_state: query?.call_state?.toString() || "",
     call_type: query?.call_type?.toString() || "",
     date: query?.date ? moment(query?.date) : null,
-    offset: isNumber(query?.offset) ? +query?.offset : 0,
+    offset: isNumber(query?.offset) ? +query?.offset : 1,
     limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[0],
   };
 
@@ -59,15 +58,9 @@ const Table = () => {
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
   const [selectedCall, setSelectedCall] = useState(null);
 
-  const pagination = {
-    pageIndex: queryState.offset,
-    pageSize: queryState.limit,
-    pageSizeOptions: PAGINATION_CHOOSES,
-  };
-
-  const { data, isLoading, mutate } = useSWR(["/crm/calls/", queryState], () =>
-    contactLogApi.getCalls(queryState),
-  );
+  const { data, isLoading, mutate } = useSWR(["/crm/calls/", queryState], () => {
+    return contactLogApi.getCalls(queryState);
+  });
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
@@ -96,10 +89,8 @@ const Table = () => {
       field: "call_state",
       name: "Дуудлагын төлөв",
       render: (call_state: string) => {
-        return (
-          <CallStateBadge callState={call_state} />
-        )
-      }
+        return <CallStateBadge callState={call_state} />;
+      },
     },
     {
       field: "call_agent",
@@ -108,19 +99,20 @@ const Table = () => {
   ];
 
   const onSearch = (value: string) => {
-    const updatedQueryState = { ...queryState, search: value, offset: 0 };
-    setQueryState(updatedQueryState);
+    const updatedQueryState = { ...queryState, search: value, offset: 1 };
+    // setQueryState(updatedQueryState);
     router.push({ query: updatedQueryState });
   };
 
   const onTableChange = ({ page }: Criteria<any>) => {
+    console.log("tabl page", page)
     if (page) {
       const updatedQueryState = {
         ...queryState,
-        offset: page.index,
+        offset: page.index+1,
         limit: page.size,
       };
-      setQueryState(updatedQueryState);
+      // setQueryState(updatedQueryState);
       router.push({ query: updatedQueryState });
     }
   };
@@ -145,9 +137,9 @@ const Table = () => {
     const updatedQueryState = {
       ...queryState,
       call_state: selectedOptions.length > 0 ? selectedOptions[0].value : "",
-      offset: 0,
+      offset: 1,
     };
-    setQueryState(updatedQueryState);
+    // setQueryState(updatedQueryState);
     router.push({ query: updatedQueryState });
   };
 
@@ -155,15 +147,15 @@ const Table = () => {
     const updatedQueryState = {
       ...queryState,
       call_type: selectedOptions.length > 0 ? selectedOptions[0].value : "",
-      offset: 0,
+      offset: 1,
     };
-    setQueryState(updatedQueryState);
+    // setQueryState(updatedQueryState);
     router.push({ query: updatedQueryState });
   };
 
   const onDateChange = (date: Moment | null) => {
-    const updatedQueryState = { ...queryState, date, offset: 0 };
-    setQueryState(updatedQueryState);
+    const updatedQueryState = { ...queryState, date, offset: 1 };
+    // setQueryState(updatedQueryState);
     router.push({ query: { ...queryState, date: date?.toISOString() || "" } });
   };
 
@@ -174,8 +166,8 @@ const Table = () => {
       call_state: query?.call_state?.toString() || "",
       call_type: query?.call_type?.toString() || "",
       date: query?.date ? moment(query?.date) : null,
-      offset: isNumber(query?.offset) ? +query?.offset : 0,
-      limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[2],
+      offset: isNumber(query?.offset) ? +query?.offset : 1,
+      limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[0],
     };
     setQueryState(updatedQueryState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -197,7 +189,7 @@ const Table = () => {
 
       <EuiFlexGroup direction="column">
         <EuiFlexItem>
-          <EuiFlexGroup responsive={false} gutterSize='s'>
+          <EuiFlexGroup responsive={false} gutterSize="s">
             <EuiFlexItem grow={false}>
               <EuiFieldSearch
                 defaultValue={queryState.search}
@@ -243,7 +235,7 @@ const Table = () => {
                 display="base"
                 iconType="refresh"
                 size="m"
-                isLoading={isLoading}
+                disabled={isLoading}
                 onClick={() => mutate()}
               />
             </EuiFlexItem>
@@ -260,7 +252,9 @@ const Table = () => {
               rowProps={getRowProps}
               cellProps={getCellProps}
               pagination={{
-                ...pagination,
+                pageIndex: queryState.offset-1,
+                pageSize: queryState.limit,
+                pageSizeOptions: PAGINATION_CHOOSES,
                 totalItemCount: data?.total_count || 0,
                 showPerPageOptions: true,
               }}

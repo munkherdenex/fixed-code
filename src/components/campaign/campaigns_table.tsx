@@ -48,7 +48,7 @@ const CampaignsTable = () => {
   const querySearch = query?.search?.toString() || "";
   const queryFilter = query?.filter?.toString() || "";
   const queryKindFilter = query?.kind?.toString() || "";
-  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1];
 
   const [searchValue, setSearchValue] = useState(querySearch);
@@ -84,7 +84,7 @@ const CampaignsTable = () => {
   ];
 
   const pagination = {
-    pageIndex,
+    pageIndex: pageIndex - 1,
     pageSize,
     pageSizeOptions: PAGINATION_CHOOSES,
   };
@@ -93,7 +93,7 @@ const CampaignsTable = () => {
     query: searchValue,
     status: filter,
     kind: kindFilter,
-    offset: `${pageIndex * pageSize}`,
+    offset: `${pageIndex}`,
     limit: `${pageSize}`,
   });
 
@@ -148,9 +148,7 @@ const CampaignsTable = () => {
     {
       name: translate("click_count"),
       render: (template: Template) => {
-        return template.status == "DRAFT" || template.status == "DONE"
-          ? "-"
-          : template.click_count;
+        return template.status == "DRAFT" || template.status == "DONE" ? "-" : template.click_count;
       },
     },
     {
@@ -189,14 +187,14 @@ const CampaignsTable = () => {
       const { index: newPageIndex, size: newPageSize } = page;
       router.push({
         query: {
-          pageIndex: newPageIndex,
+          pageIndex: newPageIndex + 1,
           pageSize: newPageSize,
           filter: filter,
           search: searchValue,
         },
       });
-      setPageIndex(newPageIndex);
-      setPageSize(newPageSize);
+      // setPageIndex(newPageIndex);
+      // setPageSize(newPageSize);
     }
   };
 
@@ -343,7 +341,7 @@ const CampaignsTable = () => {
             rowProps={getRowProps}
             cellProps={getCellProps}
             pagination={
-              data?.total_count > pageSize
+              data?.total_pages > 1
                 ? {
                     ...pagination,
                     totalItemCount: data?.total_count || 0,

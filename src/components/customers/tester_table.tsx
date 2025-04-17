@@ -59,7 +59,7 @@ const TesterCustomersTable = () => {
   const [removingCustomer, setRemovingCustomer] = useState(null);
 
   const querySearch = query?.search?.toString() || "";
-  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
 
   const [searchValue, setSearchValue] = useState(querySearch);
@@ -69,7 +69,7 @@ const TesterCustomersTable = () => {
   const { data, isLoading, isValidating, mutate } = useGetTesterCustomers({
     query: searchValue,
     limit: `${pageSize}`,
-    offset: `${pageIndex * pageSize}`,
+    offset: `${pageIndex}`,
   });
 
   // Memoizing pagination config

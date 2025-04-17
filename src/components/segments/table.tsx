@@ -28,7 +28,7 @@ const SegmentsTable = () => {
   const translate = useTranslations();
 
   const querySearch = query?.search?.toString() || "";
-  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
 
   const [searchValue, setSearchValue] = useState(querySearch);
@@ -42,7 +42,7 @@ const SegmentsTable = () => {
   };
   const { data, isLoading, mutate } = useGetSegments<SegmentResponse>(undefined, {
     query: searchValue,
-    offset: `${pageIndex * pageSize}`,
+    offset: `${pageIndex}`,
     limit: `${pageSize}`,
   });
 

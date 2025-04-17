@@ -62,7 +62,7 @@ const CallDetailsPage = () => {
       callState: searchParams.get("callState") || "",
       callType: searchParams.get("callType") || "",
       date: searchParams.get("date") ? moment(searchParams.get("date")) : null,
-      offset: parseInt(searchParams.get("offset") || "0", 10),
+      offset: parseInt(searchParams.get("offset") || "1", 10),
       limit: parseInt(searchParams.get("limit") || PAGINATION_CHOOSES[0].toString(), 10),
     }),
     [callDetails, searchParams],
@@ -146,6 +146,17 @@ const CallDetailsPage = () => {
     { title: "Дуудлага авсан ажилтан", description: callDetails.call_agent || "-" },
     { title: "Залгасан огноо", description: callDetails.call_date },
     { title: "Үргэлжлэх хугацаа", description: `${callDetails.call_duration || 0} секунд` },
+    {
+      title: "Дуудлагын бичлэг",
+      description: callDetails.call_record_url ? (
+        <audio controls>
+          <source src={callDetails.call_record_url} type="audio/mpeg" />
+          Таны хөтөч аудио тоглуулахыг дэмжихгүй байна.
+        </audio>
+      ) : (
+        "Бичлэг байхгүй"
+      ),
+    },
   ];
 
   const columns: Array<EuiBasicTableColumn<any>> = [
@@ -317,7 +328,7 @@ const CallDetailsPage = () => {
             </EuiSplitPanel.Outer>
           </EuiFlexItem>
           <EuiFlexItem>
-            <CustomerPanel customerId={callDetails.customer_id ? callDetails.customer_id : 233} />
+            <CustomerPanel customerId={callDetails.customer_id ? callDetails.customer_id : null} phone={callDetails.phone} />
             <EuiSpacer size="m" />
             <EuiSkeletonRectangle isLoading={isLoadingTickets} height={200} width={500}>
               {contactLogTickets && contactLogTickets?.total_count > 0 && (

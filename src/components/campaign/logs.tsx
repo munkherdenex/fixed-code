@@ -57,12 +57,12 @@ const Logs: React.FC = () => {
   const router = useRouter();
   const translate = useTranslations();
 
-  const [activePage, setActivePage] = useState(0);
+  const [activePage, setActivePage] = useState(1);
 
   const { data: campaignData } = useCampaignContext();
   const { data, isLoading } = useGetLogs<LogsResponse>({
     template_id: router.query.id as string,
-    offset: `${activePage * LIMIT}`,
+    offset: `${activePage}`,
     limit: `${LIMIT}`,
   });
 
@@ -106,7 +106,7 @@ const Logs: React.FC = () => {
               <EuiFlexItem grow={false}>
                 <EuiPagination
                   aria-label="Campaign logs"
-                  pageCount={Math.ceil(data?.total_count / LIMIT) || 0}
+                  pageCount={data?.total_pages || 0}
                   activePage={activePage}
                   onPageClick={(activePage) => setActivePage(activePage)}
                   compressed

@@ -126,7 +126,7 @@ const TemplateTable = () => {
   const [state, setState] = useState({
     searchValue: query?.search?.toString() || "",
     filter: query?.filter?.toString() || "",
-    pageIndex: isNumber(query?.pageIndex) ? +query?.pageIndex : 0,
+    pageIndex: isNumber(query?.pageIndex) ? +query?.pageIndex : 1,
     pageSize: isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0],
   });
 
@@ -142,7 +142,7 @@ const TemplateTable = () => {
     {
       query: searchValue,
       filter,
-      offset: `${pageIndex * pageSize}`,
+      offset: `${pageIndex}`,
       limit: `${pageSize}`,
     },
   );

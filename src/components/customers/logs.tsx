@@ -21,9 +21,9 @@ const LIMIT = 10;
  */
 const Logs: React.FC = () => {
   const router = useRouter();
-  const [activePage, setActivePage] = useState(0);
+  const [activePage, setActivePage] = useState(1);
   const { data, isLoading } = useGetCustomerLogs<CustomerLogsResponse>(router.query.id, {
-    offset: `${activePage * LIMIT}`,
+    offset: `${activePage}`,
     limit: `${LIMIT}`,
   });
 

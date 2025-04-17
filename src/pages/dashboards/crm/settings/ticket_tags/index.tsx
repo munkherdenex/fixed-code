@@ -29,7 +29,7 @@ const TicketTags = () => {
 
   // Extract query parameters for pagination
   const { query } = router;
-  const initialPageIndex = query.pageIndex ? parseInt(query.pageIndex as string, 10) : 0;
+  const initialPageIndex = query.pageIndex ? parseInt(query.pageIndex as string, 10) : 1;
   const initialPageSize = query.pageSize ? parseInt(query.pageSize as string, 10) : 10;
 
   const [tags, setTags] = useState<Tag[]>([]);
@@ -51,7 +51,7 @@ const TicketTags = () => {
   const fetchTags = React.useCallback(async () => {
     try {
       const { pageIndex, pageSize } = pagination;
-      const offset = pageIndex * pageSize;
+      const offset = pageIndex;
       const limit = pageSize;
 
       const data = await tagApi.getTags({ limit, offset });
