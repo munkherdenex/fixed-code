@@ -30,7 +30,7 @@ const TicketTags = () => {
   // Extract query parameters for pagination
   const { query } = router;
   const initialPageIndex = query.pageIndex ? parseInt(query.pageIndex as string, 10) : 1;
-  const initialPageSize = query.pageSize ? parseInt(query.pageSize as string, 10) : 10;
+  const initialPageSize = query.pageSize ? parseInt(query.pageSize as string, 10) : 5;
 
   const [tags, setTags] = useState<Tag[]>([]);
   const [totalTags, setTotalTags] = useState(0); // Total number of tags for pagination
@@ -44,8 +44,8 @@ const TicketTags = () => {
 
   // Pagination state
   const [pagination, setPagination] = useState({
-    pageIndex: initialPageIndex,
-    pageSize: initialPageSize,
+    pageIndex: 1,
+    pageSize: 3,
   });
 
   const fetchTags = React.useCallback(async () => {
@@ -138,20 +138,19 @@ const TicketTags = () => {
     const { index, size } = page;
 
     // Update query parameters in the URL
-    router.push(
-      {
-        pathname: router.pathname,
-        query: { ...query, pageIndex: index, pageSize: size },
-      },
-      undefined,
-      { shallow: true },
-    );
-
-    setPagination({
-      pageIndex: index,
-      pageSize: size,
+    router.push({
+      pathname: router.pathname,
+      query: { ...query, pageIndex: index, pageSize: size },
     });
   };
+
+  useEffect(() => {
+    const { pageIndex, pageSize } = query;
+    setPagination({
+      pageIndex: pageIndex ? parseInt(pageIndex as string, 10) : 1,
+      pageSize: pageSize ? parseInt(pageSize as string, 10) : 4,
+    });
+  }, [query]);
 
   const columns = [
     {
@@ -199,10 +198,10 @@ const TicketTags = () => {
         items={tags}
         columns={columns}
         pagination={{
-          pageIndex: pagination.pageIndex,
+          pageIndex: pagination.pageIndex - 1,
           pageSize: pagination.pageSize,
           totalItemCount: totalTags,
-          pageSizeOptions: [5, 10, 20],
+          pageSizeOptions: [3, 5, 10, 20],
         }}
         onChange={onTableChange}
       />
