@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import { callStateOptions } from './table';
 
 export const CallStateBadge = ({ callState }: { callState: string }) => {
+  console.log("CS", callState)
   return (
     <EuiBadge
       color={"hollow"}

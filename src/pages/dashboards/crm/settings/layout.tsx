@@ -6,7 +6,7 @@ import { EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSideNav } from "@elastic/eui";
 import { css } from "@emotion/react";
 import { useRouter } from "next/router";
 
-export function NestedLayout({ children, pageHeader }: { children: React.ReactNode; pageHeader?: any }) {
+const  NestedLayout = ({ children, pageHeader }: { children: React.ReactNode; pageHeader?: any }) => {
   const router = useRouter();
   const currentPath = router.pathname;
 
@@ -58,3 +58,5 @@ export function NestedLayout({ children, pageHeader }: { children: React.ReactNo
     </DashboardCRMLayout>
   );
 }
+
+export default NestedLayout;

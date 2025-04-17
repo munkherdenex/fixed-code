@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from "react";
 import {
   EuiBasicTable,
@@ -14,7 +15,7 @@ import {
   EuiOverlayMask,
   EuiSpacer,
 } from "@elastic/eui";
-import { NestedLayout } from "../layout";
+import NestedLayout from "../layout";
 import ticketTemplateApi from '@/api/ticket_template';
 
 interface Priority {

@@ -23,7 +23,7 @@ import TemplateTable from "../../../../../components/crm/template/table";
 import useCreateCRMTemplate from "../../../../../hooks/useCreateCRMTemplate";
 import { addToast } from "../../../../../components/toast";
 import TicketTemplateEditor from "../../../../../components/ticket_template/editor";
-import { NestedLayout } from "../layout";
+import NestedLayout from "../layout";
 import ticketTemplateApi from "@/api/ticket_template";
 import useGetCRMTicketTemplate, {
   CRMTicketTemplate,

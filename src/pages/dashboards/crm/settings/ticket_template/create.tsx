@@ -1,7 +1,7 @@
 import { GetStaticProps } from 'next/types';
 import TicketTemplateEditor from '../../../../../components/ticket_template/editor';
 import { TicketTemplate } from '../../../../../components/ticket_template/types';
-import { NestedLayout } from '../layout';
+import NestedLayout from '../layout';
 
 interface CreateTicketTemplateProps {
   initialTicketTemplate: TicketTemplate;

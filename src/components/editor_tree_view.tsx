@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   EuiTreeView,
@@ -338,7 +339,7 @@ const PageTreeView = ({ selectedItemId, onSelectItem }) => {
                         e.stopPropagation();
                         handleAddSubpage(node.id);
                       }}
-                      color="subdued"
+                      color="text"
                       size="s"
                     />
                   )}

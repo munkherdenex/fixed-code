@@ -95,9 +95,11 @@ const Table = () => {
     {
       field: "call_state",
       name: "Дуудлагын төлөв",
-      render: (call_state: string) => (
-        <CallStateBadge call_state={call_state} />
-      ),
+      render: (call_state: string) => {
+        return (
+          <CallStateBadge callState={call_state} />
+        )
+      }
     },
     {
       field: "call_agent",
