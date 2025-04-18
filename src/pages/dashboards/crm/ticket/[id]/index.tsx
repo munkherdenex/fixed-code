@@ -50,7 +50,9 @@ import {
   htmlIdGenerator,
   useGeneratedHtmlId,
   EuiTabs,
+  EuiColorPicker,
   EuiIcon,
+  EuiFlexGrid,
 } from "@elastic/eui";
 import DashboardCRMLayout from "../../../../../layouts/dashboard_crm";
 import { Controller, useForm } from "react-hook-form";
@@ -60,6 +62,12 @@ import ticketTemplateApi from "../../../../../api/ticket_template";
 import moment from "moment";
 import WorkersSelect from "../../../../../components/ticket_template/worker_select";
 import TagsManager from "../../../../../components/ticket_template/tags";
+import tagApi from "@/api/tags";
+import useTeams from "@/hooks/useTeams";
+import useGetCurrentTeamMembers from "@/hooks/useCurrentTeamMembers";
+import { MembersType, TeamMembersType } from "@/constants/members.types";
+import CustomersSelect from "@/components/ticket_template/customers_select";
+import { addToast } from "@/components/toast";
 
 // interface Ticket {
 //   id: string;
@@ -90,6 +98,16 @@ interface ValueType {
     value?: string;
     emoji?: string;
   };
+}
+
+interface Tag {
+  id: number;
+  name: string;
+  color: string;
+}
+
+interface TagsResponse {
+  results: Tag[];
 }
 
 const transformInputLabel = (attrName, template: any): string => {
@@ -158,30 +176,31 @@ const statusOptions = [
   },
 ];
 
+const tabs = [
+  {
+    id: "cobalt--id",
+    name: "Түүх",
+  },
+];
+
+const needCallBackOptions = [
+  { value: false, text: "Үгүй" },
+  { value: true, text: "Тийм" },
+];
+
+const contactedChannelOptions = [
+  { value: "Дуудлага", text: "Дуудлага" },
+  { value: "Чат", text: "Чат" },
+  { value: "Салбар", text: "Салбар" },
+];
+
 const TicketDetailPage = ({ params }: { params: { id: string } }) => {
-  const tabs = [
-    {
-      id: "cobalt--id",
-      name: "Түүх",
-    },
-  ];
+  const router = useRouter();
+  const { id } = router.query;
 
-  const needCallBackOptions = [
-    { value: false, text: "Үгүй" },
-    { value: true, text: "Тийм" },
-  ];
   const [selectedTabId, setSelectedTabId] = useState("cobalt--id");
-  const selectedTabContent = useMemo(() => {
-    return tabs.find((obj) => obj.id === selectedTabId)?.content;
-  }, [selectedTabId]);
-
-  const onSelectedTabChanged = (id: string) => {
-    setSelectedTabId(id);
-  };
-
-  const [ticketTitle, setTicketTitle] = useState("");
-  const [ticketDescription, setTicketDescription] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isTagAddPopoverOpen, setIsTagAddPopoverOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [ticketCloseDescription, setTicketCloseDescription] = useState("");
   const [value, setValue] = useState("");
@@ -190,17 +209,28 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const [isTicketCloseModalVisible, setIsTicketCloseModalVisible] = useState(false);
   const [isEditConfirmModalVisible, setIsEditConfirmModalVisible] = useState(false);
   const [isPriorityAdded, setIsPriorityAdded] = useState(false);
-  const [needsCallbackValue, setNeedsCallbackValue] = useState(false);
   const [priorityOptions, setPriorityOptions] = useState([]);
   const [priorityList, setPriorityList] = useState([]);
+  const [selectedTag, setSelectedTag] = useState(null);
+  // Form
+  const [ticketTitle, setTicketTitle] = useState("");
+  const [ticketDescription, setTicketDescription] = useState("");
+  const [addedTags, setAddedTags] = useState([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [needsCallbackValue, setNeedsCallbackValue] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
+  const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [selectedPriority, setSelectedPriority] = useState(null);
   const [selectedPriorityDuration, setSelectedPriorityDuration] = useState(null);
+  //
   const errorElementId = useRef(htmlIdGenerator()());
   const modalFormId = useGeneratedHtmlId({ prefix: "modalForm" });
   const modalTitleId = useGeneratedHtmlId();
   const editConfirmModalTitleId = useGeneratedHtmlId();
-  const router = useRouter();
-  const { id } = router.query;
+  const tagSelect = useGeneratedHtmlId();
+
   const {
     register,
     handleSubmit,
@@ -216,11 +246,61 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     isLoading,
     mutate: mutatePage,
   } = useSWR(id ? `${id}` : null, ticketApi.getTicketById);
-  const { data: ticketLogs, mutate } = useSWR(`${id}/logs/`, ticketApi.getLogsByTicketId);
+  const { data: ticketLogs, mutate: mutateLogs } = useSWR(
+    `${id}/logs/`,
+    ticketApi.getLogsByTicketId,
+  );
   const { data: ticketTemplate } = useSWR(
     data?.ticket_template ? `/crm/ticket/${data.ticket_template}/` : null,
     data?.ticket_template ? () => ticketTemplateApi.getTemplateById(data.ticket_template) : null,
   );
+  const {
+    data: systemTags,
+    mutate: mutateTags,
+    error: errorTags,
+  } = useSWR<TagsResponse>("/crm/tag/", () => tagApi.getTags({ limit: 1000 }));
+
+  const { data: teamsList } = useTeams<Teams[]>();
+
+  const {
+    data: teamMembers,
+    isLoading: isMembersLoading,
+    mutateTeamMembers,
+  } = useGetCurrentTeamMembers<TeamMembersType>(selectedTeam);
+
+  const tagsSelectOptions = useMemo(() => {
+    if (!systemTags?.results) {
+      return [];
+    }
+    return systemTags.results.map((tag: Tag) => ({
+      value: tag.id,
+      text: tag.name,
+    }));
+  }, [systemTags]);
+
+  const teamsSelectionOptions = useMemo(() => {
+    if (!teamsList) {
+      return [];
+    }
+    return teamsList.map((team) => ({
+      value: team.id,
+      text: team.name,
+    }));
+  }, [teamsList]);
+
+  const teamsMembersSelectionOptions = useMemo(() => {
+    if (!teamMembers) {
+      return [];
+    }
+    return teamMembers?.members.map((member) => ({
+      value: member.id,
+      text: member?.user?.email,
+    }));
+  }, [teamMembers]);
+
+  const selectedTabContent = useMemo(() => {
+    return tabs.find((obj) => obj.id === selectedTabId)?.content;
+  }, [selectedTabId]);
 
   useEffect(() => {
     if (data && data.title && data.title != "") {
@@ -231,9 +311,8 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
 
     if (data && data.body && data.body != "") {
       setTicketDescription(data.body);
-    } else {
-      setTicketDescription("Тайлбар нэмэх...");
     }
+    // TODO: SET ALL OTHER VALUE HERE
   }, [data]);
 
   if (isLoading) return <div>Loading ticket details...</div>;
@@ -263,6 +342,10 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     ticketTemplate,
   );
 
+  const onSelectedTabChanged = (id: string) => {
+    setSelectedTabId(id);
+  };
+
   const onAddComment = async (comment: string) => {
     try {
       await ticketApi.postCommentOnTicket(id, { comment: editorValue });
@@ -271,6 +354,10 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     } catch (err) {
       console.error("Failed to submit comment:", err);
     }
+  };
+
+  const onCustomerSelect = (value) => {
+    setSelectedCustomerId(value);
   };
 
   const handleWorkerSelect = async (selectedValue: string) => {
@@ -331,6 +418,10 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     setIsPopoverOpen(false);
   };
 
+  const closeTagAddPopover = () => {
+    setIsTagAddPopoverOpen(false);
+  };
+
   const ticketTitleOnSave = async () => {
     try {
       let payload = {
@@ -371,7 +462,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
       let { results } = await ticketApi.getPriorityList();
       setPriorityList(results);
       const transformedData = results.map((item) => ({
-        value: item.name,
+        value: item.id,
         text: item.name,
       }));
       setPriorityOptions(transformedData);
@@ -382,15 +473,65 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
 
   const onChangePriority = (e) => {
     setSelectedPriority(e.target.value);
-    let obj = priorityList.find((val) => val.name == e.target.value);
+    let obj = priorityList.find((val) => val.id == e.target.value);
+    setSelectedPriorityDuration(obj.duration + " минут");
+  };
 
-    let d = obj.duration;
-    var h = Math.floor(d / 3600);
-    var m = Math.floor((d % 3600) / 60);
-    var hDisplay = h > 0 ? h + " цаг" : "";
-    var mDisplay = m > 0 ? m + " минут" : "";
-    let result = hDisplay + mDisplay;
-    setSelectedPriorityDuration(result);
+  const onTagAddButtonClick = () => {
+    if (isTagAddPopoverOpen) {
+      setIsTagAddPopoverOpen(false);
+    } else {
+      setIsTagAddPopoverOpen(true);
+    }
+  };
+
+  const onTagChange = (e) => {
+    if (!addedTags.some((el) => el.value == e.target.value)) {
+      setSelectedTag(e.target.value);
+    }
+
+    const selectedId = e.target.value;
+    // console.log(selectedId);
+    if (!selectedId) {
+      setSelectedTag(null);
+      return;
+    }
+    const foundTag = tagsSelectOptions.find((tag) => tag.value == selectedId);
+    console.log(foundTag);
+    setAddedTags([...addedTags, foundTag]);
+    setIsTagAddPopoverOpen(false);
+  };
+
+  const removeTag = (id) => {
+    const updatedTags = addedTags.filter((tag) => tag.value != id);
+    setAddedTags(updatedTags);
+  };
+
+  const handleTagAdd = () => {
+    const selectedId = selectedTag;
+    console.log(selectedId);
+    if (!selectedId) {
+      setSelectedTag(null);
+      return;
+    }
+    console.log(tagsSelectOptions);
+    const foundTag = tagsSelectOptions.find((tag) => tag.value == selectedId);
+    console.log(foundTag);
+    let arr = addedTags;
+    arr.push(foundTag);
+    setAddedTags(arr || []);
+    // setIsTagAddPopoverOpen(false);
+  };
+
+  const onTeamChange = async (e) => {
+    setSelectedTeamId(e.target.value);
+    let team = teamsList.find((el) => el.id == e.target.value);
+    setSelectedTeam(team || null);
+    await mutateTeamMembers();
+  };
+
+  const onTeamMemberChange = (e) => {
+    setSelectedMemberId(e.target.value);
   };
 
   const closeTicket = async () => {
@@ -407,10 +548,32 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const editTicket = async () => {
     try {
       let payload = {
-        body: ticketCloseDescription,
+        ...(ticketTitle != "" && { title: "Ticket gomdol test" }),
+        ...(ticketDescription != "" && { body: ticketDescription }),
+        ...(addedTags.length > 0 && { tags: addedTags }),
+        ...(selectedCustomerId && { customer: selectedCustomerId }),
+        // ...(selectedChannel && { channel: selectedChannel }),
+        ...(needsCallbackValue && { needs_callback: needsCallbackValue }),
+        ...(selectedTeamId && { assigned_team_id: selectedTeamId }),
+        ...(selectedMemberId && { assigned_to: selectedMemberId }),
+        ...(selectedPriority && { priority_id: selectedPriority }),
       };
-      await ticketApi.update(id, payload);
+      let { status } = await ticketApi.update(id, payload);
+      if (status == "200") {
+        addToast({
+          id: "success",
+          title: "Үүслээ",
+          color: "success",
+        });
+      }
+      setIsEditConfirmModalVisible(false);
     } catch (error) {
+      setIsEditConfirmModalVisible(false);
+      addToast({
+        id: "success",
+        title: "ERROR",
+        color: "danger",
+      });
       console.error("Failed to update ticket:", error);
     }
   };
@@ -443,6 +606,14 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         </EuiButtonEmpty>
       ))}
     </div>
+  );
+
+  const tagAddButton = (
+    <>
+      <EuiButtonEmpty iconType="plusInCircle" color="primary" onClick={onTagAddButtonClick}>
+        Төрөл нэмэх
+      </EuiButtonEmpty>
+    </>
   );
 
   const HeaderChildren = () => {
@@ -481,7 +652,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         },
         {
           text: "Тикет",
-          onClick: () => router.push("/dashboards/crm/ticket"),
+          onClick: () => router.push("/dashboards/crm/ticket?pageIndex=1&pageSize=10"),
         },
         {
           text: "Тикет дэлгэрэнгүй",
@@ -601,28 +772,89 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     </EuiFlexItem>
                   </EuiFlexGroup>
                   <EuiSpacer size="m" />
+                  {/* Тайлбар */}
+                  <EuiFlexItem grow={false}>
+                    <div>
+                      <span style={{ color: "red" }}>*</span>
+                      <strong>Тайлбар</strong>
+                    </div>
+                  </EuiFlexItem>
+                  <EuiSpacer size="xs" />
+                  <EuiTextArea
+                    placeholder="Placeholder text"
+                    value={ticketDescription}
+                    onChange={ticketDescriptionOnChange}
+                  />
+                  <EuiSpacer size="m" />
                   {/* Төрөл */}
+                  <EuiFlexGroup gutterSize="s" alignItems="center" justifyContent="flexStart">
+                    <EuiFlexItem grow={false}>
+                      <div>
+                        <span style={{ color: "red" }}>*</span>
+                        <strong>Төрөл</strong>
+                      </div>
+                    </EuiFlexItem>
+                    {addedTags.length > 0 ? (
+                      <EuiFlexGrid columns={3} gutterSize="s">
+                        {addedTags.map((tag) => (
+                          <EuiFlexItem grow={false} key={tag.value}>
+                            <EuiBadge
+                              iconSide="right"
+                              iconType="cross"
+                              iconOnClick={() => {
+                                removeTag(tag.value);
+                              }}
+                            >
+                              {tag.text}
+                            </EuiBadge>
+                          </EuiFlexItem>
+                        ))}
+                      </EuiFlexGrid>
+                    ) : null}
+                    <EuiPopover
+                      button={tagAddButton}
+                      isOpen={isTagAddPopoverOpen}
+                      closePopover={closeTagAddPopover}
+                    >
+                      <EuiFormRow label="Tag Color">
+                        <EuiSelect
+                          id={tagSelect}
+                          options={tagsSelectOptions}
+                          value={selectedTag}
+                          onChange={onTagChange}
+                          aria-label="Use aria labels when no actual label is in use"
+                        />
+                      </EuiFormRow>
+                      {/* <EuiButton onClick={handleTagAdd} fill>
+                        Add
+                      </EuiButton> */}
+                    </EuiPopover>
+                  </EuiFlexGroup>
+                  <EuiSpacer size="m" />
+                  {/* <TagsManager /> */}
                   {data?.tags.length > 0 ? (
-                    <EuiFlexGroup justifyContent="flexStart" alignItems="flexStart">
-                      <EuiFlexItem grow={false}>
-                        <div>
-                          <span style={{ color: "red" }}>*</span>
-                          <strong>Төрөл</strong>
-                        </div>
-                      </EuiFlexItem>
-                      <EuiFlexItem grow={false}>
-                        <EuiFlexGroup wrap responsive={false} gutterSize="xs">
-                          {data?.tags.map((tag) => (
-                            <EuiFlexItem grow={false} key={tag.id}>
-                              <EuiBadge color={tag.color}>{tag.name}</EuiBadge>
-                            </EuiFlexItem>
-                          ))}
-                        </EuiFlexGroup>
-                      </EuiFlexItem>
-                    </EuiFlexGroup>
+                    <>
+                      <EuiFlexGroup justifyContent="flexStart" alignItems="flexStart">
+                        <EuiFlexItem grow={false}>
+                          <div>
+                            <span style={{ color: "red" }}>*</span>
+                            <strong>Төрөл</strong>
+                          </div>
+                        </EuiFlexItem>
+                        <EuiFlexItem grow={false}>
+                          <EuiFlexGroup wrap responsive={false} gutterSize="xs">
+                            {data?.tags.map((tag) => (
+                              <EuiFlexItem grow={false} key={tag.id}>
+                                <EuiBadge color={tag.color}>{tag.name}</EuiBadge>
+                              </EuiFlexItem>
+                            ))}
+                          </EuiFlexGroup>
+                        </EuiFlexItem>
+                      </EuiFlexGroup>
+                      <EuiSpacer size="m" />
+                    </>
                   ) : null}
                   {/* Хэрэглэгчийн мэдээлэл */}
-                  <EuiSpacer size="m" />
                   <EuiFlexItem grow={false}>
                     <div>
                       <span style={{ color: "red" }}>*</span>
@@ -630,12 +862,13 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     </div>
                   </EuiFlexItem>
                   <EuiSpacer size="xs" />
-                  <EuiSelect
+                  <CustomersSelect onSelect={onCustomerSelect} />
+                  {/* <EuiSelect
                     fullWidth={true}
                     value={value}
                     onChange={(e) => onChange(e)}
                     aria-label="Use aria labels when no actual label is in use"
-                  />
+                  /> */}
                   <EuiSpacer size="m" />
                   {/* Холбогдсон суваг */}
                   <EuiFlexItem grow={false}>
@@ -646,9 +879,13 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                   </EuiFlexItem>
                   <EuiSpacer size="xs" />
                   <EuiSelect
+                    hasNoInitialSelection
                     fullWidth={true}
-                    value={value}
-                    onChange={(e) => onChange(e)}
+                    options={contactedChannelOptions}
+                    value={selectedChannel}
+                    onChange={(e) => {
+                      setSelectedChannel(e.target.value);
+                    }}
                     aria-label="Use aria labels when no actual label is in use"
                   />
                   <EuiSpacer size="m" />
@@ -661,6 +898,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                   </EuiFlexItem>
                   <EuiSpacer size="xs" />
                   <EuiSelect
+                    hasNoInitialSelection
                     options={needCallBackOptions}
                     value={needsCallbackValue}
                     onChange={(e) => onNeedsCallbackChange(e)}
@@ -676,12 +914,33 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                   </EuiFlexItem>
                   <EuiSpacer size="xs" />
                   <EuiSelect
+                    hasNoInitialSelection
                     fullWidth={true}
-                    options={needCallBackOptions}
-                    value={value}
-                    onChange={(e) => onNeedsCallbackChange(e)}
-                    aria-label="Use aria labels when no actual label is in use"
+                    options={teamsSelectionOptions}
+                    value={selectedTeamId}
+                    onChange={(e) => onTeamChange(e)}
+                    aria-label="Хариуцах нэгж"
                   />
+                  {/* Хариуцах ажилтан */}
+                  {selectedTeamId ? (
+                    <>
+                      <EuiSpacer size="m" />
+                      <EuiFlexItem grow={false}>
+                        <div>
+                          <strong>Хариуцах ажилтан</strong>
+                        </div>
+                      </EuiFlexItem>
+                      <EuiSpacer size="xs" />
+                      <EuiSelect
+                        fullWidth={true}
+                        options={teamsMembersSelectionOptions}
+                        value={selectedMemberId}
+                        onChange={(e) => onTeamMemberChange(e)}
+                        aria-label="Use aria labels when no actual label is in use"
+                      />
+                    </>
+                  ) : null}
+                  {/* Чухлын зэрэг */}
                   {data?.category == "Санал хүсэлт" || data?.category == "Гомдол" ? (
                     <>
                       {!isPriorityAdded ? (
@@ -746,8 +1005,8 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                       )}
                     </>
                   ) : null}
-
                   {/* Save/Edit Button */}
+                  {/* <TagsManager /> */}
                   <EuiSpacer size="m" />
                   <EuiFlexGroup justifyContent="flexEnd">
                     <EuiButton
@@ -759,7 +1018,6 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                       Хадгалах
                     </EuiButton>
                   </EuiFlexGroup>
-
                   {/* Тайлбар */}
                   {/* <EuiFlexItem grow={false}>
                   <strong>Тайлбар</strong>

@@ -7,7 +7,7 @@ export default function useGetCurrentTeamMembers<Type>(currentTeam: Teams): {
   data: Type;
   error: any;
   isLoading: boolean;
-  mutate: any;
+  mutateTeamMembers: any;
 } {
   const url = currentTeam?.id ? `/api/v1/teams/${currentTeam?.id}/?members=true` : null;
   const { data, error, isLoading, mutate } = useSWR(url, async (path) => {
@@ -24,6 +24,6 @@ export default function useGetCurrentTeamMembers<Type>(currentTeam: Teams): {
     data: data,
     error,
     isLoading,
-    mutate,
+    mutateTeamMembers: mutate,
   };
 }

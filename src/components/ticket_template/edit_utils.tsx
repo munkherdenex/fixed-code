@@ -221,14 +221,14 @@ const EmotionInput = ({ item, label, onChange, value, ...props }) => {
         ) : (
           <EuiFlexItem grow={false}>
             <EuiButton
-              key={selectedEmotion.value}
-              className={`emotion-button ${selectedEmotion?.value === selectedEmotion.value ? "selected" : ""}`}
+              key={selectedEmotion?.value}
+              className={`emotion-button ${selectedEmotion?.value === selectedEmotion?.value ? "selected" : ""}`}
               onClick={() => handleEmotionSelect(selectedEmotion)}
-              aria-label={selectedEmotion.name}
-              fill={selectedEmotion?.value === selectedEmotion.value}
-              title={selectedEmotion.name}
+              aria-label={selectedEmotion?.name}
+              fill={selectedEmotion?.value === selectedEmotion?.value}
+              title={selectedEmotion?.name}
             >
-              {selectedEmotion.emoji}
+              {selectedEmotion?.emoji}
             </EuiButton>
           </EuiFlexItem>
         )}

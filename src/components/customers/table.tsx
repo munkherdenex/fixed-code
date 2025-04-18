@@ -64,20 +64,20 @@ const CustomersTable = () => {
   );
 
   // Memoizing columns to prevent unnecessary re-renders
-  const columns = useMemo(
-    (): Array<EuiBasicTableColumn<CustomersType>> => [
+  const columns = useMemo((): Array<EuiBasicTableColumn<CustomersType>> => {
+    const baseColumns: Array<EuiBasicTableColumn<CustomersType>> = [
       {
         field: "last_name",
         name: translate("last_name"),
-        render: (email: CustomersType["last_name"]) => (
-          <>{email ? email : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        render: (lastName: CustomersType["last_name"]) => (
+          <>{lastName ? lastName : <EuiTextColor color="subdued">None</EuiTextColor>}</>
         ),
       },
       {
         field: "name",
         name: translate("name"),
-        render: (email: CustomersType["name"]) => (
-          <>{email ? email : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        render: (name: CustomersType["name"]) => (
+          <>{name ? name : <EuiTextColor color="subdued">None</EuiTextColor>}</>
         ),
       },
       {
@@ -94,48 +94,58 @@ const CustomersTable = () => {
           <>{phone ? phone : <EuiTextColor color="subdued">None</EuiTextColor>}</>
         ),
       },
-      // {
-      //   field: "rid",
-      //   name: translate("rid"),
-      //   render: (rid: CustomersType["rid"]) => (
-      //     <>{rid ? rid : <EuiTextColor color="subdued">None</EuiTextColor>}</>
-      //   ),
-      // },
-      // {
-      //   field: "source",
-      //   name: translate("source"),
-      //   render: (source: CustomersType["source"]) => (
-      //     <EuiBadge
-      //       iconType={
-      //         source === "web" ? "logoWebhook" : source === "import" ? "importAction" : "apps"
-      //       }
-      //       color={source === "web" ? "hollow" : ""}
-      //     >
-      //       {source}
-      //     </EuiBadge>
-      //   ),
-      // },
-      // {
-      //   field: "created_by",
-      //   name: translate("created-by"),
-      //   mobileOptions: { enlarge: true },
-      //   render: (worker: { id: BigInteger; email: string }) => worker?.email,
-      // },
-      // {
-      //   field: "created_at",
-      //   name: translate("created-at"),
-      //   align: "right",
-      //   render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
-      //   footer: () => (
-      //     <strong>
-      //       {translate("total-audience")}: {data?.total_count || 0}
-      //     </strong>
-      //   ),
-      //   mobileOptions: { enlarge: true },
-      // },
-    ],
-    [data?.total_count, translate],
-  );
+    ];
+
+    // Define the columns that are shown *only* on specific routes
+    const extraColumns: Array<EuiBasicTableColumn<CustomersType>> = [
+      {
+        field: "rid",
+        name: translate("rid"),
+        render: (rid: CustomersType["rid"]) => (
+          <>{rid ? rid : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
+        field: "source",
+        name: translate("source"),
+        render: (source: CustomersType["source"]) => (
+          <EuiBadge
+            iconType={
+              source === "web" ? "logoWebhook" : source === "import" ? "importAction" : "apps"
+            }
+            color={source === "web" ? "hollow" : ""}
+          >
+            {source}
+          </EuiBadge>
+        ),
+      },
+      {
+        field: "created_by",
+        name: translate("created-by"),
+        mobileOptions: { enlarge: true },
+        render: (worker: { id: BigInteger; email: string }) => worker?.email,
+      },
+      {
+        field: "created_at",
+        name: translate("created-at"),
+        align: "right",
+        render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
+        footer: () => (
+          <strong>
+            {translate("total-audience")}: {data?.total_count || 0}
+          </strong>
+        ),
+        mobileOptions: { enlarge: true },
+      },
+    ];
+    const showAllColumnsPath = "/dashboards/cdp/audience";
+
+    if (router.pathname === showAllColumnsPath) {
+      return [...extraColumns, ...baseColumns];
+    } else {
+      return baseColumns;
+    }
+  }, [router.pathname, data?.total_count, translate]);
 
   const onTableChange = ({ page }: Criteria<CustomersType>) => {
     if (page) {
@@ -159,7 +169,12 @@ const CustomersTable = () => {
 
   const getRowProps = (customer: CustomersType) => ({
     className: "customRowClass",
-    onClick: () => router.push(`${pathPrefix}/dashboards/cdp/audience/info/${customer.id}`),
+    onClick: () =>
+      router.push(
+        router.pathname == "/dashboards/crm/customer"
+          ? `${pathPrefix}/dashboards/crm/customer/info/${customer.id}`
+          : `${pathPrefix}/dashboards/cdp/audience/info/${customer.id}`,
+      ),
   });
 
   const getCellProps = (

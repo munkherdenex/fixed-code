@@ -9,6 +9,7 @@ import {
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiFormControlLayout,
   EuiHorizontalRule,
   EuiSelect,
   EuiSpacer,
@@ -104,7 +105,7 @@ const Table = () => {
   };
 
   const pagination = {
-    pageIndex,
+    pageIndex: pageIndex - 1,
     pageSize,
     pageSizeOptions: PAGINATION_CHOOSES,
   };
@@ -192,6 +193,21 @@ const Table = () => {
     router.push({
       query: {
         search: value,
+        pageIndex: 1,
+        ...(pageSize && { pageSize: 10 }),
+        ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
+        ...(statusFilter && { status: statusFilter }),
+        ...(typeFilter && { tag: typeFilter }),
+        ...(priorityFilter && { priority: priorityFilter }),
+      },
+    });
+  };
+  const clearSearchFilter = () => {
+    setSearchValue(null);
+    router.push({
+      query: {
+        pageIndex: 1,
+        ...(pageSize && { pageSize: 10 }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(statusFilter && { status: statusFilter }),
         ...(typeFilter && { tag: typeFilter }),
@@ -203,11 +219,26 @@ const Table = () => {
     setSearchDateValue(date);
     router.push({
       query: {
+        pageIndex: 1,
         date: moment(date).format("YYYY-MM-DD"),
         ...(searchValue && { description: searchValue }),
         ...(statusFilter && { status: statusFilter }),
         ...(typeFilter && { tag: typeFilter }),
         ...(priorityFilter && { priority: priorityFilter }),
+        ...(pageSize && { pageSize: 10 }),
+      },
+    });
+  };
+  const clearDateFilter = () => {
+    setSearchDateValue(null);
+    router.push({
+      query: {
+        pageIndex: 1,
+        ...(searchValue && { description: searchValue }),
+        ...(statusFilter && { status: statusFilter }),
+        ...(typeFilter && { tag: typeFilter }),
+        ...(priorityFilter && { priority: priorityFilter }),
+        ...(pageSize && { pageSize: 10 }),
       },
     });
   };
@@ -216,6 +247,21 @@ const Table = () => {
     router.push({
       query: {
         tag: type,
+        pageIndex: 1,
+        ...(pageSize && { pageSize: 10 }),
+        ...(searchValue && { description: searchValue }),
+        ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
+        ...(statusFilter && { status: statusFilter }),
+        ...(priorityFilter && { priority: priorityFilter }),
+      },
+    });
+  };
+  const clearTypeFilter = () => {
+    setTypeFilter(null);
+    router.push({
+      query: {
+        pageIndex: 1,
+        ...(pageSize && { pageSize: 10 }),
         ...(searchValue && { description: searchValue }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(statusFilter && { status: statusFilter }),
@@ -228,6 +274,21 @@ const Table = () => {
     router.push({
       query: {
         status,
+        pageIndex: 1,
+        ...(pageSize && { pageSize: 10 }),
+        ...(searchValue && { description: searchValue }),
+        ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
+        ...(priorityFilter && { priority: priorityFilter }),
+        ...(typeFilter && { tag: typeFilter }),
+      },
+    });
+  };
+  const clearStatusFilter = () => {
+    setStatusFilter(null);
+    router.push({
+      query: {
+        pageIndex: 1,
+        ...(pageSize && { pageSize: 10 }),
         ...(searchValue && { description: searchValue }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(priorityFilter && { priority: priorityFilter }),
@@ -240,6 +301,8 @@ const Table = () => {
     router.push({
       query: {
         priority,
+        pageIndex: 1,
+        ...(pageSize && { pageSize: 10 }),
         ...(searchValue && { description: searchValue }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(typeFilter && { tag: typeFilter }),
@@ -247,16 +310,37 @@ const Table = () => {
       },
     });
   };
+  const clearPriorityFilter = () => {
+    setPriorityFilter(null);
+    router.push({
+      query: {
+        pageIndex: 1,
+        ...(pageSize && { pageSize: 10 }),
+        ...(searchValue && { description: searchValue }),
+        ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
+        ...(typeFilter && { tag: typeFilter }),
+        ...(statusFilter && { status: statusFilter }),
+      },
+    });
+  };
+  const clearAllFilters = () => {
+    setSearchValue(null);
+    setSearchDateValue(null);
+    setTypeFilter(null);
+    setStatusFilter(null);
+    setPriorityFilter(null);
+    setPageIndex(0);
+    setPageSize(10);
+    router.push({ query: { pageIndex: 1, ...(pageSize && { pageSize }) } });
+  };
 
   const resultsCount =
     pageSize === 0 ? (
       <strong>All</strong>
     ) : (
       <>
-        <strong>
-          {pageSize * pageIndex + 1}-{pageSize * pageIndex + pageSize}
-        </strong>{" "}
-        of {data}
+        <strong>&nbsp;{data?.total_count}:&nbsp;</strong>
+        {pageSize * pageIndex - 1}-{pageSize * pageIndex + pageSize} харуулж байна.
       </>
     );
 
@@ -265,11 +349,13 @@ const Table = () => {
       const { index: newPageIndex, size: newPageSize } = page;
       router.push({
         query: {
-          pageIndex: newPageIndex,
+          pageIndex: newPageIndex + 1,
           pageSize: newPageSize,
-          filter: filter,
-          search: searchValue,
-          date: moment(searchDateValue).format("YYYY-MM-DD"),
+          ...(searchValue && { description: searchValue }),
+          ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
+          ...(typeFilter && { tag: typeFilter }),
+          ...(statusFilter && { status: statusFilter }),
+          ...(priorityFilter && { priority: priorityFilter }),
         },
       });
       setPageIndex(newPageIndex);
@@ -346,105 +432,170 @@ const Table = () => {
           <EuiFlexItem grow={false}>
             <EuiFlexGroup gutterSize="s">
               <EuiFlexItem>
-                <EuiFieldSearch
-                  defaultValue={searchValue}
-                  onSearch={onSearch}
-                  placeholder={translate("search")}
-                />
+                <EuiFormControlLayout
+                  {...(searchValue
+                    ? {
+                        clear: {
+                          onClick: () => {
+                            clearSearchFilter();
+                          },
+                          "aria-label": "Clear text filter",
+                        },
+                      }
+                    : null)}
+                >
+                  <EuiFieldSearch
+                    defaultValue={searchValue}
+                    onSearch={onSearch}
+                    placeholder={translate("search")}
+                  />
+                </EuiFormControlLayout>
               </EuiFlexItem>
 
               <EuiFlexItem grow={1}>
-                <EuiDatePicker
-                  selected={searchDateValue}
-                  onChange={onDateSearch}
-                  placeholder={translate("date")}
-                />
+                <EuiFormControlLayout
+                  {...(searchDateValue
+                    ? {
+                        clear: {
+                          onClick: () => {
+                            clearDateFilter();
+                          },
+                          "aria-label": "Clear date filter",
+                        },
+                      }
+                    : null)}
+                >
+                  <EuiDatePicker
+                    selected={searchDateValue}
+                    onChange={onDateSearch}
+                    placeholder={translate("date")}
+                  />
+                </EuiFormControlLayout>
               </EuiFlexItem>
               <EuiFlexItem>
-                <EuiSuperSelect
-                  id={byTypeSelectId}
-                  options={[
-                    {
-                      value: "ЗМС",
-                      inputDisplay: "ЗМС",
-                    },
-                    {
-                      value: "Мерчант",
-                      inputDisplay: "Мерчант",
-                    },
-                    {
-                      value: "Зээл",
-                      inputDisplay: "Зээл",
-                    },
-                    {
-                      value: "Аппын заавар",
-                      inputDisplay: "Аппын заавар",
-                    },
-                    {
-                      value: "Бонус оноо",
-                      inputDisplay: "Бонус оноо",
-                    },
-                    {
-                      value: "Систем",
-                      inputDisplay: "Систем",
-                    },
-                    {
-                      value: "Салбарын үйлчилгээ",
-                      inputDisplay: "Салбарын үйлчилгээ",
-                    },
-                    {
-                      value: "Гүйлгээ төлбөр",
-                      inputDisplay: "Гүйлгээ төлбөр",
-                    },
-                    {
-                      value: "Авлага",
-                      inputDisplay: "Авлага",
-                    },
-                  ]}
-                  valueOfSelected={typeFilter}
-                  onChange={onTypeChange}
-                  placeholder={translate("searchByType")}
-                />
+                <EuiFormControlLayout
+                  {...(typeFilter
+                    ? {
+                        clear: {
+                          onClick: () => {
+                            clearTypeFilter();
+                          },
+                          "aria-label": "Clear type filter",
+                        },
+                      }
+                    : null)}
+                >
+                  <EuiSuperSelect
+                    id={byTypeSelectId}
+                    options={[
+                      {
+                        value: "ЗМС",
+                        inputDisplay: "ЗМС",
+                      },
+                      {
+                        value: "Мерчант",
+                        inputDisplay: "Мерчант",
+                      },
+                      {
+                        value: "Зээл",
+                        inputDisplay: "Зээл",
+                      },
+                      {
+                        value: "Аппын заавар",
+                        inputDisplay: "Аппын заавар",
+                      },
+                      {
+                        value: "Бонус оноо",
+                        inputDisplay: "Бонус оноо",
+                      },
+                      {
+                        value: "Систем",
+                        inputDisplay: "Систем",
+                      },
+                      {
+                        value: "Салбарын үйлчилгээ",
+                        inputDisplay: "Салбарын үйлчилгээ",
+                      },
+                      {
+                        value: "Гүйлгээ төлбөр",
+                        inputDisplay: "Гүйлгээ төлбөр",
+                      },
+                      {
+                        value: "Авлага",
+                        inputDisplay: "Авлага",
+                      },
+                    ]}
+                    valueOfSelected={typeFilter}
+                    onChange={onTypeChange}
+                    placeholder={translate("searchByType")}
+                  />
+                </EuiFormControlLayout>
               </EuiFlexItem>
               <EuiFlexItem>
-                <EuiSuperSelect
-                  id={byStatusSelectId}
-                  options={[
-                    {
-                      value: "open",
-                      inputDisplay: "Нээлттэй",
-                    },
-                    {
-                      value: "close",
-                      inputDisplay: "Хаалттай",
-                    },
-                  ]}
-                  valueOfSelected={statusFilter}
-                  onChange={onStatusChange}
-                  placeholder={translate("searchByStatus")}
-                />
+                <EuiFormControlLayout
+                  {...(statusFilter
+                    ? {
+                        clear: {
+                          onClick: () => {
+                            clearStatusFilter();
+                          },
+                          "aria-label": "Clear status filter",
+                        },
+                      }
+                    : null)}
+                >
+                  <EuiSuperSelect
+                    id={byStatusSelectId}
+                    options={[
+                      {
+                        value: "open",
+                        inputDisplay: "Нээлттэй",
+                      },
+                      {
+                        value: "close",
+                        inputDisplay: "Хаалттай",
+                      },
+                    ]}
+                    valueOfSelected={statusFilter}
+                    onChange={onStatusChange}
+                    placeholder={translate("searchByStatus")}
+                  />
+                </EuiFormControlLayout>
               </EuiFlexItem>
               <EuiFlexItem>
-                <EuiSuperSelect
-                  id={byPrioritySelectId}
-                  options={[
-                    {
-                      value: "Хэвийн",
-                      inputDisplay: "Хэвийн",
-                    },
-                    {
-                      value: "Яаралтай",
-                      inputDisplay: "Яаралтай",
-                    },
-                    {
-                      value: "Маш яаралтай",
-                      inputDisplay: "Маш яаралтай",
-                    },
-                  ]}
-                  valueOfSelected={priorityFilter}
-                  onChange={onPriorityChange}
-                  placeholder={translate("searchByPriority")}
-                />
+                <EuiFormControlLayout
+                  {...(priorityFilter
+                    ? {
+                        clear: {
+                          onClick: () => {
+                            clearPriorityFilter();
+                          },
+                          "aria-label": "Clear priority filter",
+                        },
+                      }
+                    : null)}
+                >
+                  <EuiSuperSelect
+                    id={byPrioritySelectId}
+                    options={[
+                      {
+                        value: "Хэвийн",
+                        inputDisplay: "Хэвийн",
+                      },
+                      {
+                        value: "Яаралтай",
+                        inputDisplay: "Яаралтай",
+                      },
+                      {
+                        value: "Маш яаралтай",
+                        inputDisplay: "Маш яаралтай",
+                      },
+                    ]}
+                    valueOfSelected={priorityFilter}
+                    onChange={onPriorityChange}
+                    placeholder={translate("searchByPriority")}
+                  />
+                </EuiFormControlLayout>
               </EuiFlexItem>
             </EuiFlexGroup>
           </EuiFlexItem>
@@ -454,7 +605,7 @@ const Table = () => {
               iconType="refresh"
               size="s"
               isLoading={isLoading}
-              onClick={() => mutate()}
+              onClick={() => clearAllFilters()}
             />
           </EuiFlexItem>
         </EuiFlexGroup>
@@ -468,6 +619,7 @@ const Table = () => {
             <EuiSpacer size="xl" />
             <EuiText size="xs">
               <strong>Нийт</strong>
+              {resultsCount}
             </EuiText>
             <EuiSpacer size="s" />
             <EuiHorizontalRule margin="none" style={{ height: 2 }} />

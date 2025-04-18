@@ -14,7 +14,7 @@ const CRMSidebar = () => {
   const audienceSegmentPaths = useMemo(() => {
     return [
       {
-        path: "/dashboards/crm/ticket",
+        path: "/dashboards/crm/ticket?pageIndex=1&pageSize=10",
         icon: <EuiIcon type="documents" />,
         name: "Тикет",
         disabled: !isCRMTicketEnabled,

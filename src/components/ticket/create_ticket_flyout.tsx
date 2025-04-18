@@ -139,14 +139,6 @@ const CreateTicketFlyout = () => {
 
   return (
     <div>
-      <EuiButton
-        onClick={() => setIsFlyoutVisible(true)}
-        iconType="plusInCircleFilled"
-        color="danger"
-        fill={true}
-      >
-        Тикет үүсгэх
-      </EuiButton>
       {isFlyoutVisible && (
         <EuiFlyout ownFocus onClose={() => setIsFlyoutVisible(false)}>
           <EuiFlyoutHeader hasBorder>
