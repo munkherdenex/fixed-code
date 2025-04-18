@@ -1,9 +1,10 @@
-// app/editor/page.tsx (or app/page.tsx)
+// @ts-nocheck
 "use client"; // This page needs to be a Client Component to manage state
 
 import React, { useState, useCallback } from "react";
 import dynamic from "next/dynamic"; // Import dynamic
 import { OutputData } from "@editorjs/editorjs"; // Import OutputData type
+import Editor from './editor';
 
 
 export default function EditorPage() {

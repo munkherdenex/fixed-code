@@ -37,6 +37,8 @@ export interface CustomersType {
 
 export interface CustomersResponse {
   total_count: number;
+  total_pages: number;
+  current_page: number;
   results: CustomersType[];
 }
 

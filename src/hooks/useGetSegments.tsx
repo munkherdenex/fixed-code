@@ -21,6 +21,8 @@ export interface Segment {
 
 export interface SegmentResponse {
   total_count: number;
+  total_pages: number;
+  current_page: number;
   results: Segment[];
 }
 

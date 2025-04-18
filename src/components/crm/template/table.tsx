@@ -29,7 +29,7 @@ import { formatDate, isNumber } from "../../../utils/helper";
 import TicketTemplateEditor from "../../ticket_template/editor";
 import { addToast } from "@/components/toast";
 import ticketTemplateApi from "@/api/ticket_template";
-import moment from 'moment';
+import moment from "moment";
 
 const EditTemplateFlyout = ({ isOpen, closeFlyout, template, mutateTemplates }) => {
   const simpleFlyoutTitleId = useGeneratedHtmlId();
@@ -126,7 +126,7 @@ const TemplateTable = () => {
   const [state, setState] = useState({
     searchValue: query?.search?.toString() || "",
     filter: query?.filter?.toString() || "",
-    pageIndex: isNumber(query?.pageIndex) ? +query?.pageIndex : 0,
+    pageIndex: isNumber(query?.pageIndex) ? +query?.pageIndex : 1,
     pageSize: isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0],
   });
 
@@ -142,22 +142,20 @@ const TemplateTable = () => {
     {
       query: searchValue,
       filter,
-      offset: `${pageIndex * pageSize}`,
+      offset: `${pageIndex}`,
       limit: `${pageSize}`,
     },
   );
 
   const updateQueryParams = (newParams) => {
     router.push({ query: { ...query, ...newParams } });
-    setState((prev) => ({ ...prev, ...newParams }));
   };
 
-  const onSearch = (value) => updateQueryParams({ search: value, pageIndex: 0 });
+  const onSearch = (value) => updateQueryParams({ search: value, pageIndex: 1 });
 
   const onTableChange = ({ page }: Criteria<CRMTicketTemplate>) => {
     if (page) {
-      const { index: newPageIndex, size: newPageSize } = page;
-      updateQueryParams({ pageIndex: newPageIndex, pageSize: newPageSize });
+      updateQueryParams({ pageIndex: page.index + 1, pageSize: page.size });
     }
   };
 
@@ -203,8 +201,8 @@ const TemplateTable = () => {
     setState({
       searchValue: query?.search?.toString() || "",
       filter: query?.filter?.toString() || "",
-      pageIndex: isNumber(query?.pageIndex) ? +query?.pageIndex : 0,
-      pageSize: isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2],
+      pageIndex: isNumber(query?.pageIndex) ? +query?.pageIndex : 1,
+      pageSize: isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0],
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
@@ -275,7 +273,7 @@ const TemplateTable = () => {
             pagination={
               data?.total_count > pageSize
                 ? {
-                    pageIndex,
+                    pageIndex: pageIndex - 1,
                     pageSize,
                     pageSizeOptions: PAGINATION_CHOOSES,
                     totalItemCount: data?.total_count || 0,

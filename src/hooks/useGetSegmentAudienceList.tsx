@@ -19,6 +19,8 @@ export interface SegmentAudience {
 
 export interface SegmentAudienceResponse {
   total_count: number;
+  total_pages: number;
+  current_page: number;
   results: SegmentAudience[];
 }
 

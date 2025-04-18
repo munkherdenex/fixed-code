@@ -17,6 +17,8 @@ export interface Fields {
 
 export interface FieldsResponse {
   total_count: number;
+  total_pages: number;
+  current_page: number;
   results: Fields[];
 }
 

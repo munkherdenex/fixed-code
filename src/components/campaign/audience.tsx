@@ -29,7 +29,7 @@ const Audience = () => {
   const router = useRouter();
   const translate = useTranslations();
 
-  const [pageIndex, setPageIndex] = useState(0);
+  const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedAudience, setSelectedAudience] = useState<TemplateCustomer>();
@@ -41,7 +41,7 @@ const Audience = () => {
     router.query.id,
     {
       limit: `${pageSize}`,
-      offset: `${pageIndex * pageSize}`,
+      offset: `${pageIndex}`,
     },
   );
   const { trigger, isMutating } = useDeleteTemplateCustomer(router.query.id);

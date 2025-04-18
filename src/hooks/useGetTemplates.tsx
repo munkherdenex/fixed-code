@@ -47,6 +47,8 @@ export interface Template {
 
 export interface TemplateResponse {
   total_count: number;
+  total_pages: number;
+  current_page: number;
   results: Template[];
 }
 

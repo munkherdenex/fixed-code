@@ -22,7 +22,17 @@ const contactLogApi = {
   },
 
   getCallById: async (id) => {
-    const response = await client.get(`/crm/calls/${id}`);
+    const response = await client.get(`/crm/calls/${id}/`);
+    return response.data;
+  },
+
+  getCallByCallId: async (call_id) => {
+    const response = await client.get(`/crm/calls/by_call_id/${call_id}/`);
+    return response.data;
+  },
+
+  updateContactLogById: async (id, body = null, status = 'active') => {
+    const response = await client.put(`/crm/contact_log/${id}/`, { body, status });
     return response.data;
   },
 

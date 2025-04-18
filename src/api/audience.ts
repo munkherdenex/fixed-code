@@ -1,8 +1,9 @@
 import client from "./client"
 
 const audienceApi = {
-  getAudiences: async () => {
-    const response = await client.get('/customers/')
+  getAudiences: async (params = {}) => {
+    console.debug(params);
+    const response = await client.get('/customers/', { params })
     return response
   },
 

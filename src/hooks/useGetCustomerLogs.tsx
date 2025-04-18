@@ -14,6 +14,8 @@ export interface CustomerLogs {
 
 export interface CustomerLogsResponse {
   total_count: number;
+  total_pages: number;
+  current_page: number;
   results: CustomerLogs[];
 }
 

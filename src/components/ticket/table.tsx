@@ -47,8 +47,8 @@ const Table = () => {
   const queryStatusFilter = query?.status?.toString() || null;
   const queryTypeFilter = query?.tag?.toString() || null;
   const queryPriorityFilter = query?.priority?.toString() || null;
-  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : null;
-  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : null;
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : 5;
 
   const [searchValue, setSearchValue] = useState(querySearch);
   const [searchDateValue, setSearchDateValue] = useState(
@@ -358,8 +358,8 @@ const Table = () => {
           ...(priorityFilter && { priority: priorityFilter }),
         },
       });
-      setPageIndex(newPageIndex);
-      setPageSize(newPageSize);
+      // setPageIndex(newPageIndex);
+      // setPageSize(newPageSize);
     }
   };
 
@@ -630,7 +630,7 @@ const Table = () => {
               rowProps={getRowProps}
               cellProps={getCellProps}
               pagination={
-                data?.total_count > pageSize
+                data?.total_pages > 1
                   ? {
                       ...pagination,
                       totalItemCount: data?.total_count || 0,
