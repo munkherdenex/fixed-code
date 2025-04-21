@@ -10,7 +10,7 @@ const ticketApi = {
     return response;
   },
   close: async (id, payload) => {
-    const response = await client.post(`/crm/ticket/${id}/close`, payload);
+    const response = await client.post(`/crm/ticket/${id}/close/`, payload);
     return response;
   },
   getTickets: async (params: any) => {

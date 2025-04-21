@@ -182,7 +182,7 @@ const TicketCreate = () => {
               </EuiFlexItem>
               <EuiFlexItem>
                 <EuiButton type="submit" fill>
-                  Save form
+                  Үүсгэх
                 </EuiButton>
               </EuiFlexItem>
             </EuiFlexGroup>

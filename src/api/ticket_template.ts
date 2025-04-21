@@ -30,48 +30,48 @@ const ticketTemplateApi = {
     return response.data;
   },
 
-  getTicketTabs: async () => {
-    // const response = await client.get(`/crm/ticket/template/tabs/`)
-    // return response.data
+  getTicketTabs: async (params) => {
+    const response = await client.get(`/crm/ticket/template/`, { params });
+    return response.data;
 
-    return [
-      {
-        name: "Лавлагаа",
-        id: 22,
-      },
-      {
-        name: "Санал хүсэлт",
-        id: 2,
-      },
-      {
-        name: "Гомдол",
-        id: 17,
-      },
-      {
-        name: "Алдаа",
-        id: 3,
-      },
-      {
-        name: "Хамтран ажиллах",
-        id: 18,
-      },
-      // {
-      //   name: "Худалдан авалт",
-      //   id: 19,
-      // },
-      // {
-      //   name: "Буцаалт",
-      //   id: 20,
-      // },
-      // {
-      //   name: "санал",
-      //   id: 21,
-      // },
-      // {
-      //   name: "Лавлагаа",
-      //   id: 22,
-      // },
-    ];
+    // return [
+    //   {
+    //     name: "Лавлагаа",
+    //     id: 22,
+    //   },
+    //   {
+    //     name: "Санал хүсэлт",
+    //     id: 2,
+    //   },
+    //   {
+    //     name: "Гомдол",
+    //     id: 17,
+    //   },
+    //   {
+    //     name: "Алдаа",
+    //     id: 3,
+    //   },
+    //   {
+    //     name: "Хамтран ажиллах",
+    //     id: 18,
+    //   },
+    //   {
+    //     name: "Худалдан авалт",
+    //     id: 19,
+    //   },
+    //   {
+    //     name: "Буцаалт",
+    //     id: 20,
+    //   },
+    //   {
+    //     name: "санал",
+    //     id: 21,
+    //   },
+    //   {
+    //     name: "Лавлагаа",
+    //     id: 22,
+    //   },
+    // ];
   },
 
   getPriorities: async () => {

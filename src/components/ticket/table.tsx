@@ -28,8 +28,19 @@ import { isNumber } from "../../utils/helper";
 import { useTranslations } from "next-intl";
 import useSWR from "swr";
 import ticketApi from "../../api/ticket";
+import tagApi from "@/api/tags";
 import moment from "moment";
 import ticketTemplateApi from "@/api/ticket_template";
+
+interface Tag {
+  id: number;
+  name: string;
+  color: string;
+}
+
+interface TagsResponse {
+  results: Tag[];
+}
 
 const Table = () => {
   const options = [
@@ -41,6 +52,7 @@ const Table = () => {
   const { query } = router;
   const translate = useTranslations();
 
+  const queryCategory = query?.category?.toString() || null;
   const querySearch = query?.search?.toString() || null;
   const queryDateSearch = query?.date?.toString() || null;
   const queryFilter = query?.filter?.toString() || null;
@@ -50,6 +62,7 @@ const Table = () => {
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : 5;
 
+  const [ticketCategory, setTicketCategory] = useState(queryCategory);
   const [searchValue, setSearchValue] = useState(querySearch);
   const [searchDateValue, setSearchDateValue] = useState(
     queryDateSearch ? moment(queryDateSearch) : null,
@@ -71,22 +84,19 @@ const Table = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const tabsData = await ticketTemplateApi.getTicketTabs();
-      if (Array.isArray(tabsData)) {
-        tabsData.reverse().push({
+      const tabsData = await ticketTemplateApi.getTicketTabs({ compact: true });
+      const tabs = tabsData?.results;
+      if (Array.isArray(tabs)) {
+        tabs.reverse().push({
           name: "Бүх",
           id: 0,
         });
-        setTabs(tabsData.reverse().map((tab) => ({ id: `tab--${tab.id}`, name: tab.name })));
+        setTabs(tabs.reverse().map((tab) => ({ id: `tab--${tab.id}`, name: tab.name })));
         setSelectedTabId("tab--0");
       }
     }
     fetchData();
   }, []);
-
-  const onSelectedTabChanged = (tab: any) => {
-    setSelectedTabId(tab.id);
-  };
 
   const renderTabs = () => {
     if (!tabs) return;
@@ -114,6 +124,7 @@ const Table = () => {
   const { data, isLoading, mutate } = useSWR(
     [
       "/crm/ticket/",
+      ticketCategory,
       searchValue,
       searchDateValue,
       statusFilter,
@@ -125,6 +136,7 @@ const Table = () => {
     ],
     () =>
       ticketApi.getTickets({
+        ...(ticketCategory && { category: ticketCategory }),
         description: searchValue,
         date: searchDateValue ? searchDateValue.format("YYYY-MM-DD") : null,
         status: statusFilter,
@@ -135,6 +147,22 @@ const Table = () => {
         limit: pageSize,
       }),
   );
+
+  const {
+    data: systemTags,
+    mutate: mutateTags,
+    error: errorTags,
+  } = useSWR<TagsResponse>("/crm/tag/", () => tagApi.getTags({ limit: 1000 }));
+
+  const tagsSelectOptions = useMemo(() => {
+    if (!systemTags?.results) {
+      return [];
+    }
+    return systemTags.results.map((tag: Tag) => ({
+      value: tag.name,
+      inputDisplay: tag.name,
+    }));
+  }, [systemTags]);
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
@@ -188,12 +216,35 @@ const Table = () => {
     },
   ];
 
+  const onSelectedTabChanged = (tab: any) => {
+    setSelectedTabId(tab.id);
+    if (tab.id == "tab--0") {
+      setTicketCategory(null);
+      clearAllFilters();
+    } else {
+      setTicketCategory(tab.name);
+      router.push({
+        query: {
+          pageIndex: 1,
+          ...(tab.id != "tab--0" && { category: tab.name }),
+          ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
+          ...(searchValue && { description: searchValue }),
+          ...(statusFilter && { status: statusFilter }),
+          ...(typeFilter && { tag: typeFilter }),
+          ...(priorityFilter && { priority: priorityFilter }),
+          ...(pageSize && { pageSize: 10 }),
+        },
+      });
+    }
+  };
+
   const onSearch = (value: string) => {
     setSearchValue(value);
     router.push({
       query: {
         search: value,
         pageIndex: 1,
+        ...(ticketCategory && { category: ticketCategory }),
         ...(pageSize && { pageSize: 10 }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(statusFilter && { status: statusFilter }),
@@ -207,6 +258,7 @@ const Table = () => {
     router.push({
       query: {
         pageIndex: 1,
+        ...(ticketCategory && { category: ticketCategory }),
         ...(pageSize && { pageSize: 10 }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(statusFilter && { status: statusFilter }),
@@ -221,6 +273,7 @@ const Table = () => {
       query: {
         pageIndex: 1,
         date: moment(date).format("YYYY-MM-DD"),
+        ...(ticketCategory && { category: ticketCategory }),
         ...(searchValue && { description: searchValue }),
         ...(statusFilter && { status: statusFilter }),
         ...(typeFilter && { tag: typeFilter }),
@@ -235,6 +288,7 @@ const Table = () => {
       query: {
         pageIndex: 1,
         ...(searchValue && { description: searchValue }),
+        ...(ticketCategory && { category: ticketCategory }),
         ...(statusFilter && { status: statusFilter }),
         ...(typeFilter && { tag: typeFilter }),
         ...(priorityFilter && { priority: priorityFilter }),
@@ -249,6 +303,7 @@ const Table = () => {
         tag: type,
         pageIndex: 1,
         ...(pageSize && { pageSize: 10 }),
+        ...(ticketCategory && { category: ticketCategory }),
         ...(searchValue && { description: searchValue }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(statusFilter && { status: statusFilter }),
@@ -261,6 +316,7 @@ const Table = () => {
     router.push({
       query: {
         pageIndex: 1,
+        ...(ticketCategory && { category: ticketCategory }),
         ...(pageSize && { pageSize: 10 }),
         ...(searchValue && { description: searchValue }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
@@ -275,6 +331,7 @@ const Table = () => {
       query: {
         status,
         pageIndex: 1,
+        ...(ticketCategory && { category: ticketCategory }),
         ...(pageSize && { pageSize: 10 }),
         ...(searchValue && { description: searchValue }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
@@ -288,6 +345,7 @@ const Table = () => {
     router.push({
       query: {
         pageIndex: 1,
+        ...(ticketCategory && { category: ticketCategory }),
         ...(pageSize && { pageSize: 10 }),
         ...(searchValue && { description: searchValue }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
@@ -302,6 +360,7 @@ const Table = () => {
       query: {
         priority,
         pageIndex: 1,
+        ...(ticketCategory && { category: ticketCategory }),
         ...(pageSize && { pageSize: 10 }),
         ...(searchValue && { description: searchValue }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
@@ -315,6 +374,7 @@ const Table = () => {
     router.push({
       query: {
         pageIndex: 1,
+        ...(ticketCategory && { category: ticketCategory }),
         ...(pageSize && { pageSize: 10 }),
         ...(searchValue && { description: searchValue }),
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
@@ -324,12 +384,13 @@ const Table = () => {
     });
   };
   const clearAllFilters = () => {
+    setSelectedTabId("tab--0");
     setSearchValue(null);
     setSearchDateValue(null);
     setTypeFilter(null);
     setStatusFilter(null);
     setPriorityFilter(null);
-    setPageIndex(0);
+    setPageIndex(1);
     setPageSize(10);
     router.push({ query: { pageIndex: 1, ...(pageSize && { pageSize }) } });
   };
@@ -351,6 +412,7 @@ const Table = () => {
         query: {
           pageIndex: newPageIndex + 1,
           pageSize: newPageSize,
+          ...(ticketCategory && { category: ticketCategory }),
           ...(searchValue && { description: searchValue }),
           ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
           ...(typeFilter && { tag: typeFilter }),
@@ -487,44 +549,7 @@ const Table = () => {
                 >
                   <EuiSuperSelect
                     id={byTypeSelectId}
-                    options={[
-                      {
-                        value: "ЗМС",
-                        inputDisplay: "ЗМС",
-                      },
-                      {
-                        value: "Мерчант",
-                        inputDisplay: "Мерчант",
-                      },
-                      {
-                        value: "Зээл",
-                        inputDisplay: "Зээл",
-                      },
-                      {
-                        value: "Аппын заавар",
-                        inputDisplay: "Аппын заавар",
-                      },
-                      {
-                        value: "Бонус оноо",
-                        inputDisplay: "Бонус оноо",
-                      },
-                      {
-                        value: "Систем",
-                        inputDisplay: "Систем",
-                      },
-                      {
-                        value: "Салбарын үйлчилгээ",
-                        inputDisplay: "Салбарын үйлчилгээ",
-                      },
-                      {
-                        value: "Гүйлгээ төлбөр",
-                        inputDisplay: "Гүйлгээ төлбөр",
-                      },
-                      {
-                        value: "Авлага",
-                        inputDisplay: "Авлага",
-                      },
-                    ]}
+                    options={tagsSelectOptions}
                     valueOfSelected={typeFilter}
                     onChange={onTypeChange}
                     placeholder={translate("searchByType")}

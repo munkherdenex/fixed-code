@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { EuiBadge, EuiComboBox, EuiComboBoxOptionOption, EuiForm, EuiFormRow } from "@elastic/eui";
 import * as yup from "yup";
@@ -24,11 +24,17 @@ const schema = yup
 
 type AudienceFormData = yup.InferType<typeof schema>;
 
-const CustomersSelect = ({ isLoading, isDisabled, onSelect }) => {
+const CustomersSelect = ({ isLoading, isDisabled, onSelect, initValue }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
+
   const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
     limit: `${PAGINATION_CHOOSES[3]}`,
   });
+
+  useEffect(() => {
+    const customer = segmentCustomers?.results.find((e) => e.id == initValue);
+    setSelectedOptions([customer]);
+  }, [initValue, segmentCustomers?.results]);
 
   const audienceForm = useForm<AudienceFormData>({
     resolver: yupResolver(schema),

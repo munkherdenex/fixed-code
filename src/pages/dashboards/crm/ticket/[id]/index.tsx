@@ -221,7 +221,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const [needsCallbackValue, setNeedsCallbackValue] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
-  const [selectedMemberId, setSelectedMemberId] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
   const [selectedPriority, setSelectedPriority] = useState(null);
   const [selectedPriorityDuration, setSelectedPriorityDuration] = useState(null);
   //
@@ -293,7 +293,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
       return [];
     }
     return teamMembers?.members.map((member) => ({
-      value: member.id,
+      value: member?.user?.email,
       text: member?.user?.email,
     }));
   }, [teamMembers]);
@@ -311,6 +311,26 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
 
     if (data && data.body && data.body != "") {
       setTicketDescription(data.body);
+    }
+
+    if (data && data.customer && data.customer.id) {
+      setSelectedCustomerId(data.customer.id);
+    }
+
+    if (data && data.source && data.source != "") {
+      setSelectedChannel(data.source);
+    }
+
+    if (data && data.needs_callback) {
+      setNeedsCallbackValue(data.needs_callback);
+    }
+
+    if (data && data.assigned_team_id) {
+      setSelectedTeamId(data.assigned_team_id);
+    }
+
+    if (data && data.assigned_to) {
+      setSelectedMember(data.assigned_to);
     }
     // TODO: SET ALL OTHER VALUE HERE
   }, [data]);
@@ -531,20 +551,23 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   };
 
   const onTeamMemberChange = (e) => {
-    setSelectedMemberId(e.target.value);
+    setSelectedMember(e.target.value);
   };
 
   const closeTicket = async () => {
     try {
       let payload = {
-        body: ticketCloseDescription,
+        reason: ticketCloseDescription,
       };
       await ticketApi.close(id, payload);
+      router.push("/dashboards/crm/ticket?pageIndex=1&pageSize=10");
+      router.push();
     } catch (error) {
       console.error("Failed to update ticket:", error);
     }
   };
 
+  // TODO:
   const editTicket = async () => {
     try {
       let payload = {
@@ -553,9 +576,9 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         ...(addedTags.length > 0 && { tags: addedTags }),
         ...(selectedCustomerId && { customer: selectedCustomerId }),
         // ...(selectedChannel && { channel: selectedChannel }),
-        ...(needsCallbackValue && { needs_callback: needsCallbackValue }),
+        ...(needsCallbackValue && { needs_callback: needsCallbackValue == "true" ? true : false }),
         ...(selectedTeamId && { assigned_team_id: selectedTeamId }),
-        ...(selectedMemberId && { assigned_to: selectedMemberId }),
+        ...(selectedMember && { assigned_to: selectedMember }),
         ...(selectedPriority && { priority_id: selectedPriority }),
       };
       let { status } = await ticketApi.update(id, payload);
@@ -862,7 +885,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     </div>
                   </EuiFlexItem>
                   <EuiSpacer size="xs" />
-                  <CustomersSelect onSelect={onCustomerSelect} />
+                  <CustomersSelect onSelect={onCustomerSelect} initValue={selectedCustomerId} />
                   {/* <EuiSelect
                     fullWidth={true}
                     value={value}
@@ -878,7 +901,16 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     </div>
                   </EuiFlexItem>
                   <EuiSpacer size="xs" />
-                  <EuiSelect
+                  <EuiFieldText
+                    type="search"
+                    controlOnly
+                    value={selectedChannel}
+                    aria-label="Selected source duration value"
+                    disabled={true}
+                    readOnly={true}
+                    fullWidth={true}
+                  />
+                  {/* <EuiSelect
                     hasNoInitialSelection
                     fullWidth={true}
                     options={contactedChannelOptions}
@@ -887,7 +919,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                       setSelectedChannel(e.target.value);
                     }}
                     aria-label="Use aria labels when no actual label is in use"
-                  />
+                  /> */}
                   <EuiSpacer size="m" />
                   {/* Эргэн холбогдох */}
                   <EuiFlexItem grow={false}>
@@ -934,7 +966,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                       <EuiSelect
                         fullWidth={true}
                         options={teamsMembersSelectionOptions}
-                        value={selectedMemberId}
+                        value={selectedMember}
                         onChange={(e) => onTeamMemberChange(e)}
                         aria-label="Use aria labels when no actual label is in use"
                       />
