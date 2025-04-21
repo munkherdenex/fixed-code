@@ -23,13 +23,14 @@ import {
 import { useRouter } from "next/router";
 import tagApi, { Tag } from "@/api/tags";
 import NestedLayout from "../layout";
+import useSWR from "swr";
 
 const TicketTags = () => {
   const router = useRouter();
 
   // Extract query parameters for pagination
   const { query } = router;
-  const initialPageIndex = query.pageIndex ? parseInt(query.pageIndex as string, 10) : 1;
+  const initialPageIndex = query.pageIndex ? parseInt(query.pageIndex as string, 10) : 0;
   const initialPageSize = query.pageSize ? parseInt(query.pageSize as string, 10) : 5;
 
   const [tags, setTags] = useState<Tag[]>([]);
@@ -44,28 +45,16 @@ const TicketTags = () => {
 
   // Pagination state
   const [pagination, setPagination] = useState({
-    pageIndex: 1,
-    pageSize: 3,
+    pageIndex: 0,
+    pageSize: 5,
   });
 
-  const fetchTags = React.useCallback(async () => {
-    try {
-      const { pageIndex, pageSize } = pagination;
-      const offset = pageIndex;
-      const limit = pageSize;
-
-      const data = await tagApi.getTags({ limit, offset });
-      setTags(data.results);
-      setTotalTags(data.total_count); // Set total count for pagination
-    } catch (error) {
-      console.error("Error fetching tags:", error);
-    }
-  }, [pagination]);
-
-  // Fetch tags on component mount or pagination change
-  useEffect(() => {
-    fetchTags();
-  }, [fetchTags]);
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    ["ticket/tags", pagination.pageSize, pagination.pageIndex],
+    async ([, limit, offset]) => {
+      return await tagApi.getTags({ limit, offset: offset + 1 });
+    },
+  );
 
   const openModal = (tag?: Tag) => {
     if (tag) {
@@ -90,21 +79,19 @@ const TicketTags = () => {
     try {
       if (isEditing && currentTag) {
         // Update tag
-        await tagApi.updateTagById({
-          id: currentTag.id,
-          name,
-          color,
+        const newTag = await tagApi.updateTagById({
+          ...currentTag,
+          name: name,
+          color: color
         });
-        setTags((prev) =>
-          prev.map((tag) => (tag.id === currentTag.id ? { ...tag, name, color } : tag)),
-        );
+        mutate();
       } else {
         // Create new tag
         const newTag = await tagApi.create({
           name,
           color,
         });
-        setTags((prev) => [...prev, newTag]);
+        mutate();
       }
       closeModal();
     } catch (error) {
@@ -127,7 +114,16 @@ const TicketTags = () => {
 
     try {
       await tagApi.delete(tagToDelete.id);
-      setTags((prev) => prev.filter((tag) => tag.id !== tagToDelete.id));
+      mutate(
+        (currentData) => {
+          if (!currentData) return currentData;
+          return {
+            ...currentData,
+            results: currentData.results.filter((tag) => tag.id !== tagToDelete.id),
+          };
+        },
+        { revalidate: false },
+      );
       closeDeleteConfirmation();
     } catch (error) {
       console.error("Error deleting tag:", error);
@@ -147,8 +143,8 @@ const TicketTags = () => {
   useEffect(() => {
     const { pageIndex, pageSize } = query;
     setPagination({
-      pageIndex: pageIndex ? parseInt(pageIndex as string, 10) : 1,
-      pageSize: pageSize ? parseInt(pageSize as string, 10) : 4,
+      pageIndex: pageIndex ? parseInt(pageIndex as string, 10) : 0,
+      pageSize: pageSize ? parseInt(pageSize as string, 10) : 5,
     });
   }, [query]);
 
@@ -190,19 +186,25 @@ const TicketTags = () => {
     >
       <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
         <EuiFlexItem grow={false}>
-          <EuiButton onClick={() => openModal()}>Төрөл нэмэх</EuiButton>
+          <EuiButton onClick={() => openModal()} disabled={isLoading}>
+            Төрөл нэмэх
+          </EuiButton>
         </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="m" />
       <EuiBasicTable
-        items={tags}
+        items={data ? data?.results : []}
         columns={columns}
-        pagination={{
-          pageIndex: pagination.pageIndex - 1,
-          pageSize: pagination.pageSize,
-          totalItemCount: totalTags,
-          pageSizeOptions: [3, 5, 10, 20],
-        }}
+        pagination={
+          data?.total_pages > 1
+            ? {
+                pageIndex: pagination.pageIndex,
+                pageSize: pagination.pageSize,
+                totalItemCount: data?.total_count,
+                pageSizeOptions: [3, 5, 10, 20],
+              }
+            : null
+        }
         onChange={onTableChange}
       />
       {isModalVisible && (

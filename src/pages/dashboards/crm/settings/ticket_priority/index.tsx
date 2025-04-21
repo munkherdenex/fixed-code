@@ -16,7 +16,7 @@ import {
   EuiSpacer,
 } from "@elastic/eui";
 import NestedLayout from "../layout";
-import ticketTemplateApi from '@/api/ticket_template';
+import ticketTemplateApi from "@/api/ticket_template";
 
 interface Priority {
   id: number;
@@ -66,36 +66,37 @@ const TicketPriority = () => {
 
   const handleSave = () => {
     if (isEditing && currentPriority) {
-      ticketTemplateApi.editPriority(currentPriority.id, { name, duration })
-      .then(() => {
-        setPriorities((prev) =>
-        prev.map((p) =>
-          p.id === currentPriority.id ? { ...p, name, duration } : p
-        )
-        );
-      })
-      .catch((error) => {
-        console.error("Чухлын зэрэг засахад алдаа гарлаа:", error);
-      });
+      ticketTemplateApi
+        .editPriority(currentPriority.id, { name, duration })
+        .then(() => {
+          setPriorities((prev) =>
+            prev.map((p) => (p.id === currentPriority.id ? { ...p, name, duration } : p)),
+          );
+        })
+        .catch((error) => {
+          console.error("Чухлын зэрэг засахад алдаа гарлаа:", error);
+        });
     } else {
-      ticketTemplateApi.createPriority({ name, duration })
-      .then((newPriority) => {
-        setPriorities((prev) => [...prev, newPriority]);
-      })
-      .catch((error) => {
-        console.error("Чухлын зэрэг үүсгэхэд алдаа гарлаа:", error);
-      });
+      ticketTemplateApi
+        .createPriority({ name, duration })
+        .then((newPriority) => {
+          setPriorities((prev) => [...prev, newPriority]);
+        })
+        .catch((error) => {
+          console.error("Чухлын зэрэг үүсгэхэд алдаа гарлаа:", error);
+        });
     }
     closeModal();
   };
 
   const handleDelete = (id: number) => {
-    ticketTemplateApi.deletePriority(id)
+    ticketTemplateApi
+      .deletePriority(id)
       .then(() => {
-      setPriorities((prev) => prev.filter((p) => p.id !== id));
+        setPriorities((prev) => prev.filter((p) => p.id !== id));
       })
       .catch((error) => {
-      console.error("Чухлын зэрэг устгахад алдаа гарлаа:", error);
+        console.error("Чухлын зэрэг устгахад алдаа гарлаа:", error);
       });
   };
 
@@ -138,7 +139,9 @@ const TicketPriority = () => {
     >
       <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
         <EuiFlexItem grow={false}>
-          <EuiButton onClick={() => openModal()}>Чухлын зэрэг нэмэх</EuiButton>
+          <EuiButton onClick={() => openModal()} disabled={priorities?.length >= 5}>
+            Чухлын зэрэг нэмэх
+          </EuiButton>
         </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="m" />
@@ -153,16 +156,10 @@ const TicketPriority = () => {
             </EuiModalHeader>
             <EuiModalBody>
               <EuiFormRow label="Нэр">
-                <EuiFieldText
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+                <EuiFieldText value={name} onChange={(e) => setName(e.target.value)} />
               </EuiFormRow>
               <EuiFormRow label="Хугацаа">
-                <EuiFieldText
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                />
+                <EuiFieldText value={duration} onChange={(e) => setDuration(e.target.value)} />
               </EuiFormRow>
             </EuiModalBody>
             <EuiModalFooter>
