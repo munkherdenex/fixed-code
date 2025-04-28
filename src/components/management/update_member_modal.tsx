@@ -12,7 +12,7 @@ const UpdateMemberModal = ({
   changed_role: string;
 }) => {
   const { currentTeam } = useManagementTeamsContext();
-  const { mutate } = useGetCurrentTeamMembers(currentTeam);
+  const { mutateTeamMembers } = useGetCurrentTeamMembers(currentTeam);
   const { trigger, isMutating } = useUpdateMemberRole(selectMemberId);
 
   const changeMemberRole = async (role: string) => {
@@ -22,7 +22,7 @@ const UpdateMemberModal = ({
       };
       const response = await trigger(preparedData);
       if (response) {
-        mutate();
+        mutateTeamMembers();
         addToast({
           id: "member-success",
           color: "success",

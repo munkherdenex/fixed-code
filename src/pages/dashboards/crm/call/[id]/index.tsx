@@ -70,7 +70,7 @@ const CallDetailsPage = () => {
 
   const pagination = useMemo(
     () => ({
-      pageIndex: queryState.offset,
+      pageIndex: queryState.offset -1,
       pageSize: queryState.limit,
       pageSizeOptions: PAGINATION_CHOOSES,
     }),
@@ -102,7 +102,7 @@ const CallDetailsPage = () => {
   const onTableChange = ({ page }: Criteria<any>) => {
     if (page) {
       const updatedParams = new URLSearchParams(searchParams.toString());
-      updatedParams.set("offset", page.index.toString());
+      updatedParams.set("offset", (page.index + 1).toString());
       updatedParams.set("limit", page.size.toString());
       router.replace(`/dashboards/crm/call/${id}?${updatedParams.toString()}`);
     }

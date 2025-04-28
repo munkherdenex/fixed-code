@@ -14,11 +14,12 @@ import {
   EuiIcon,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import moment, { Moment } from "moment";
 import { PAGINATION_CHOOSES } from "../../constants";
 import { isNumber } from "../../utils/helper";
 import { useTranslations } from "next-intl";
+import { io, Socket } from "socket.io-client";
 import useSWR from "swr";
 import contactLogApi from "../../api/contact_log";
 import CallDetailFlyout from "./call_detail_flyout";
@@ -61,6 +62,37 @@ const Table = () => {
   const { data, isLoading, mutate } = useSWR(["/crm/calls/", queryState], () => {
     return contactLogApi.getCalls(queryState);
   });
+
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const socketServerUrl =
+        process.env.NEXT_PUBLIC_SOCKET_URL || "http://10.0.20.101:9999/socket.io";
+      const socket: Socket = io(socketServerUrl, {});
+
+      socket.on("connect", () => {
+        console.log("Socket.IO connected:", socket.id);
+      });
+
+      socket.on("call_updated", () => {
+        console.log("New call received, mutating SWR data.");
+        mutate(); // Trigger SWR revalidation
+      });
+
+      socket.on("disconnect", (reason) => {
+        console.log("Socket.IO disconnected:", reason);
+      });
+
+      socket.on("connect_error", (error) => {
+        console.error("Socket.IO connection error:", error);
+      });
+
+      return () => {
+        console.log("Disconnecting Socket.IO");
+        socket.disconnect();
+      };
+    }
+  }, [mutate]);
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {

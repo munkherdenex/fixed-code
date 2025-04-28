@@ -52,7 +52,6 @@ const EuiApp: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
-        {/* You can override this in other pages - see index.tsx for an example */}
         <title>DATA</title>
       </Head>
       <Global styles={globalStyes} />
