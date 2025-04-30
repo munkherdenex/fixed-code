@@ -56,6 +56,9 @@ import {
   EuiSelectable,
   EuiInputPopover,
   EuiSuperSelect,
+  EuiListGroup,
+  EuiListGroupItem,
+  EuiEmptyPrompt,
 } from "@elastic/eui";
 import DashboardCRMLayout from "../../../../../layouts/dashboard_crm";
 import { Controller, useForm } from "react-hook-form";
@@ -191,6 +194,10 @@ const tabs = [
     id: "cobalt--id",
     name: "Түүх",
   },
+  {
+    id: "file--id",
+    name: "Файл",
+  },
 ];
 
 const needCallBackOptions = [
@@ -264,6 +271,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     data?.ticket_template ? `/crm/ticket/${data.ticket_template}/` : null,
     data?.ticket_template ? () => ticketTemplateApi.getTemplateById(data.ticket_template) : null,
   );
+  const { data: ticketFiles, mutate: mutateFiles } = useSWR(`${id}/`, ticketApi.getFilesByTicketId);
   // const {
   //   data: systemTags,
   //   mutate: mutateTags,
@@ -557,7 +565,6 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   };
 
   const onTeamChange = (e) => {
-    console.log("onTeamCHange");
     setSelectedMember(null);
     setSelectedTeamId(e.target.value);
     let team = teamsList.find((el) => el.id == e.target.value);
@@ -747,6 +754,22 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         )}
       </EuiSelectable>
     );
+  };
+
+  const renderTabs = () => {
+    return tabs.map((tab, index) => (
+      <EuiTab
+        key={index}
+        href={tab.href}
+        onClick={() => onSelectedTabChanged(tab.id)}
+        isSelected={tab.id === selectedTabId}
+        disabled={tab.disabled}
+        prepend={tab.prepend}
+        append={tab.append}
+      >
+        {tab.name}
+      </EuiTab>
+    ));
   };
 
   return (
@@ -1277,53 +1300,69 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
           {/* Right-Side */}
           <EuiFlexItem>
             <EuiForm component="div">
-              <EuiTabs>
-                {tabs.map((tab, index) => (
-                  <EuiTab
-                    key={index}
-                    href={tab.href}
-                    onClick={() => onSelectedTabChanged(tab.id)}
-                    isSelected={tab.id === selectedTabId}
-                    disabled={tab.disabled}
-                    prepend={tab.prepend}
-                    append={tab.append}
-                  >
-                    {tab.name}
-                  </EuiTab>
-                ))}
-              </EuiTabs>
-              <EuiSpacer size="m" />
-              <EuiFormRow fullWidth>
-                <EuiCommentList comments={ticketComments} aria-label="Comment system">
-                  <EuiComment username="You" timelineAvatar={<EuiAvatar name="You" />}>
-                    <EuiMarkdownEditor
-                      aria-label="Markdown editor"
-                      aria-describedby={errorElementId.current}
-                      placeholder="Add a comment..."
-                      value={editorValue}
-                      onChange={setEditorValue}
-                      readOnly={isLoading}
-                      initialViewMode="editing"
-                      markdownFormatProps={{ textSize: "s" }}
-                    />
-                  </EuiComment>
-                </EuiCommentList>
-              </EuiFormRow>
-              <EuiSpacer size="m" />
-              <EuiFlexGroup justifyContent="flexEnd" responsive={false}>
-                <EuiFlexItem grow={false}>
-                  <div>
-                    <EuiButton
-                      onClick={onAddComment}
-                      isLoading={isLoading}
-                      aria-label="comment Add"
-                      isDisabled={editorValue == ""}
-                    >
-                      Add comment
-                    </EuiButton>
-                  </div>
-                </EuiFlexItem>
-              </EuiFlexGroup>
+              <EuiTabs>{renderTabs()}</EuiTabs>
+              {/* Comment/Logs */}
+              {selectedTabId == "cobalt--id" ? (
+                <>
+                  <EuiSpacer size="m" />
+                  <EuiFormRow fullWidth>
+                    <EuiCommentList comments={ticketComments} aria-label="Comment system">
+                      <EuiComment username="You" timelineAvatar={<EuiAvatar name="You" />}>
+                        <EuiMarkdownEditor
+                          aria-label="Markdown editor"
+                          aria-describedby={errorElementId.current}
+                          placeholder="Add a comment..."
+                          value={editorValue}
+                          onChange={setEditorValue}
+                          readOnly={isLoading}
+                          initialViewMode="editing"
+                          markdownFormatProps={{ textSize: "s" }}
+                        />
+                      </EuiComment>
+                    </EuiCommentList>
+                  </EuiFormRow>
+                  <EuiSpacer size="m" />
+                  <EuiFlexGroup justifyContent="flexEnd" responsive={false}>
+                    <EuiFlexItem grow={false}>
+                      <div>
+                        <EuiButton
+                          onClick={onAddComment}
+                          isLoading={isLoading}
+                          aria-label="comment Add"
+                          isDisabled={editorValue == ""}
+                        >
+                          Add comment
+                        </EuiButton>
+                      </div>
+                    </EuiFlexItem>
+                  </EuiFlexGroup>
+                </>
+              ) : (
+                // Files
+                <>
+                  {ticketFiles?.results.length > 0 ? (
+                    <EuiListGroup flush={flushWidth} bordered={showBorder}>
+                      {ticketFiles?.results.map((e) => (
+                        <EuiListGroupItem
+                          key={e.id}
+                          onClick={() => {}}
+                          label={"File name: " + e.file_name}
+                        />
+                      ))}
+                    </EuiListGroup>
+                  ) : (
+                    <EuiFlexGroup>
+                      <EuiFlexItem>
+                        <EuiEmptyPrompt
+                          iconType="list"
+                          title={<h2>Файл олдсонгүй</h2>}
+                          body={<p>Хэрэглэгч файл хавсаргаагүй байна</p>}
+                        />
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
+                  )}
+                </>
+              )}
             </EuiForm>
             {/* <EuiPanel paddingSize="l">
               <EuiFlexGroup direction="row" justifyContent="flexStart" alignItems="center">

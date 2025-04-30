@@ -40,7 +40,7 @@ const Tickets: React.FC = () => {
           <EuiEmptyPrompt
             iconType="list"
             title={<h2>Тикет олдсонгүй</h2>}
-            body={<p>Хэрэглэгж тикет бүртгээгүй байна</p>}
+            body={<p>Хэрэглэгч тикет бүртгээгүй байна</p>}
           />
         </EuiFlexItem>
       </EuiFlexGroup>
