@@ -53,6 +53,9 @@ import {
   EuiColorPicker,
   EuiIcon,
   EuiFlexGrid,
+  EuiSelectable,
+  EuiInputPopover,
+  EuiSuperSelect,
 } from "@elastic/eui";
 import DashboardCRMLayout from "../../../../../layouts/dashboard_crm";
 import { Controller, useForm } from "react-hook-form";
@@ -142,8 +145,15 @@ const transformDataToComments = (results, ticketTemplate: any): EuiCommentProps[
       event = `Updated: ${changes}`;
       eventColor = "warning";
     } else if (type === "open") {
-      event = `Ticket opened`;
+      event = `Тикет үүссэн`;
       eventColor = "success";
+    } else if (type === "assign" || type === "assign_team") {
+      event = type === "assign" ? `Assigned worker` : "Assigned team";
+      eventColor = "primary";
+    } else if (type === "comment") {
+      event = `Comment`;
+      eventColor = "warning";
+      message = body || "";
     } else {
       message = body || "";
       eventColor = "subdued";
@@ -151,13 +161,13 @@ const transformDataToComments = (results, ticketTemplate: any): EuiCommentProps[
 
     const comment: EuiCommentProps = {
       // created_by will be an object
-      username: `${created_by}`,
+      username: `${created_by.email}`,
       event,
       eventColor,
       timestamp: moment(created_at).format("YYYY-MM-DD LT"),
     };
 
-    if (type !== "update" && type !== "open") {
+    if (type !== "update" && type !== "open" && type !== "assign" && type !== "assign_team") {
       comment.children = <p>{message}</p>;
     }
 
@@ -254,11 +264,11 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     data?.ticket_template ? `/crm/ticket/${data.ticket_template}/` : null,
     data?.ticket_template ? () => ticketTemplateApi.getTemplateById(data.ticket_template) : null,
   );
-  const {
-    data: systemTags,
-    mutate: mutateTags,
-    error: errorTags,
-  } = useSWR<TagsResponse>("/crm/tag/", () => tagApi.getTags({ limit: 1000 }));
+  // const {
+  //   data: systemTags,
+  //   mutate: mutateTags,
+  //   error: errorTags,
+  // } = useSWR<TagsResponse>("/crm/tag/", () => tagApi.getTags({ limit: 1000 }));
 
   const { data: teamsList } = useTeams<Teams[]>();
 
@@ -268,15 +278,15 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     mutateTeamMembers,
   } = useGetCurrentTeamMembers<TeamMembersType>(selectedTeam);
 
-  const tagsSelectOptions = useMemo(() => {
-    if (!systemTags?.results) {
-      return [];
-    }
-    return systemTags.results.map((tag: Tag) => ({
-      value: tag.id,
-      text: tag.name,
-    }));
-  }, [systemTags]);
+  // const tagsSelectOptions = useMemo(() => {
+  //   if (!systemTags?.results) {
+  //     return [];
+  //   }
+  //   return systemTags.results.map((tag: Tag) => ({
+  //     value: tag.id,
+  //     label: tag.name,
+  //   }));
+  // }, [systemTags]);
 
   const teamsSelectionOptions = useMemo(() => {
     if (!teamsList) {
@@ -294,7 +304,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     }
     return teamMembers?.members.map((member) => ({
       value: member?.user?.email,
-      text: member?.user?.email,
+      inputDisplay: member?.user?.email,
     }));
   }, [teamMembers]);
 
@@ -325,15 +335,18 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
       setNeedsCallbackValue(data.needs_callback);
     }
 
-    if (data && data.assigned_team_id) {
+    if (data && data.assigned_team_id && !selectedTeamId) {
       setSelectedTeamId(data.assigned_team_id);
+      let team = teamsList.find((el) => el.id == data.assigned_team_id);
+      setSelectedTeam(team || null);
     }
 
-    if (data && data.assigned_to) {
-      setSelectedMember(data.assigned_to);
+    if (data && data.assigned_to && !selectedMember) {
+      let member = teamMembers?.members.find((el) => el.id == data.assigned_to);
+      setSelectedMember(member?.user?.email);
     }
     // TODO: SET ALL OTHER VALUE HERE
-  }, [data]);
+  }, [data, teamsList, teamMembers, selectedTeamId, selectedMember]);
 
   if (isLoading) return <div>Loading ticket details...</div>;
 
@@ -369,7 +382,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const onAddComment = async (comment: string) => {
     try {
       await ticketApi.postCommentOnTicket(id, { comment: editorValue });
-      mutate();
+      mutateLogs();
       setEditorValue("");
     } catch (err) {
       console.error("Failed to submit comment:", err);
@@ -522,9 +535,11 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     setIsTagAddPopoverOpen(false);
   };
 
-  const removeTag = (id) => {
-    const updatedTags = addedTags.filter((tag) => tag.value != id);
-    setAddedTags(updatedTags);
+  const removeTag = async (tagId) => {
+    await ticketApi.removeTagFromTicket(id, tagId);
+    await mutatePage();
+    // const updatedTags = addedTags.filter((tag) => tag.value != id);
+    // setAddedTags(updatedTags);
   };
 
   const handleTagAdd = () => {
@@ -534,24 +549,24 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
       setSelectedTag(null);
       return;
     }
-    console.log(tagsSelectOptions);
     const foundTag = tagsSelectOptions.find((tag) => tag.value == selectedId);
-    console.log(foundTag);
     let arr = addedTags;
     arr.push(foundTag);
     setAddedTags(arr || []);
     // setIsTagAddPopoverOpen(false);
   };
 
-  const onTeamChange = async (e) => {
+  const onTeamChange = (e) => {
+    console.log("onTeamCHange");
+    setSelectedMember(null);
     setSelectedTeamId(e.target.value);
     let team = teamsList.find((el) => el.id == e.target.value);
     setSelectedTeam(team || null);
-    await mutateTeamMembers();
+    // mutateTeamMembers();
   };
 
-  const onTeamMemberChange = (e) => {
-    setSelectedMember(e.target.value);
+  const onTeamMemberChange = (value) => {
+    setSelectedMember(value);
   };
 
   const closeTicket = async () => {
@@ -574,12 +589,12 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         ...(ticketTitle != "" && { title: "Ticket gomdol test" }),
         ...(ticketDescription != "" && { body: ticketDescription }),
         ...(addedTags.length > 0 && { tags: addedTags }),
-        ...(selectedCustomerId && { customer: selectedCustomerId }),
+        ...(selectedCustomerId && { customer_id: parseInt(selectedCustomerId) }),
         // ...(selectedChannel && { channel: selectedChannel }),
         ...(needsCallbackValue && { needs_callback: needsCallbackValue == "true" ? true : false }),
-        ...(selectedTeamId && { assigned_team_id: selectedTeamId }),
-        ...(selectedMember && { assigned_to: selectedMember }),
-        ...(selectedPriority && { priority_id: selectedPriority }),
+        ...(selectedTeamId && { assigned_team_id: parseInt(selectedTeamId) }),
+        ...(selectedMember && { at_email: selectedMember }),
+        ...(selectedPriority && { priority_id: parseInt(selectedPriority) }),
       };
       let { status } = await ticketApi.update(id, payload);
       if (status == "200") {
@@ -647,6 +662,90 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
           {data?.status == "open" ? "Нээлттэй" : "Хаалттай"}
         </EuiBadge>
       </>
+    );
+  };
+
+  const SelectableInputPopover = ({ emitTagChange }) => {
+    const router = useRouter();
+    const { id } = router.query;
+    const [selectedTag, setSelectedTag] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [inputValue, setInputValue] = useState("");
+    const [isSearching, setIsSearching] = useState(true);
+
+    const handleSaveTag = async (value) => {
+      const newTag = {
+        tag_id: value,
+      };
+      await ticketApi.addTagToTicket(id, newTag);
+      setSelectedTag(null);
+      emitTagChange(true);
+    };
+
+    const {
+      data: systemTags,
+      mutate: mutateTags,
+      error: errorTags,
+    } = useSWR<TagsResponse>("/crm/tag/", () => tagApi.getTags({ limit: 1000 }));
+
+    const tagsSelectOptions = useMemo(() => {
+      if (!systemTags?.results) {
+        return [];
+      }
+      return systemTags.results.map((tag: Tag) => ({
+        value: tag.id,
+        label: tag.name,
+      }));
+    }, [systemTags]);
+
+    return (
+      <EuiSelectable
+        aria-label="Selectable + input popover example"
+        options={tagsSelectOptions}
+        onChange={async (newOptions, event, changedOption) => {
+          await handleSaveTag(changedOption.value);
+          setSelectedTag(changedOption.value);
+          setIsOpen(false);
+          if (changedOption.checked === "on") {
+            setInputValue(changedOption.label);
+            setIsSearching(false);
+          } else {
+            setInputValue("");
+          }
+        }}
+        singleSelection
+        searchable
+        searchProps={{
+          value: inputValue,
+          onChange: (value) => {
+            setInputValue(value);
+            setIsSearching(true);
+          },
+          onKeyDown: (event) => {
+            if (event.key === "Tab") return setIsOpen(false);
+            if (event.key !== "Escape") return setIsOpen(true);
+          },
+          onClick: () => setIsOpen(true),
+          onFocus: () => setIsOpen(true),
+        }}
+        isPreFiltered={isSearching ? false : { highlightSearch: false }} // Shows the full list when not actively typing to search
+        listProps={{
+          css: { ".euiSelectableList__list": { maxBlockSize: 200 } },
+        }}
+      >
+        {(list, search) => (
+          <EuiInputPopover
+            closePopover={() => setIsOpen(false)}
+            disableFocusTrap
+            closeOnScroll
+            isOpen={isOpen}
+            input={search!}
+            panelPaddingSize="none"
+          >
+            {list}
+          </EuiInputPopover>
+        )}
+      </EuiSelectable>
     );
   };
 
@@ -817,53 +916,65 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                         <strong>Төрөл</strong>
                       </div>
                     </EuiFlexItem>
-                    {addedTags.length > 0 ? (
-                      <EuiFlexGrid columns={3} gutterSize="s">
-                        {addedTags.map((tag) => (
-                          <EuiFlexItem grow={false} key={tag.value}>
-                            <EuiBadge
-                              iconSide="right"
-                              iconType="cross"
-                              iconOnClick={() => {
-                                removeTag(tag.value);
-                              }}
-                            >
-                              {tag.text}
-                            </EuiBadge>
-                          </EuiFlexItem>
-                        ))}
-                      </EuiFlexGrid>
-                    ) : null}
-                    <EuiPopover
-                      button={tagAddButton}
-                      isOpen={isTagAddPopoverOpen}
-                      closePopover={closeTagAddPopover}
-                    >
-                      <EuiFormRow label="Tag Color">
-                        <EuiSelect
-                          id={tagSelect}
-                          options={tagsSelectOptions}
-                          value={selectedTag}
-                          onChange={onTagChange}
-                          aria-label="Use aria labels when no actual label is in use"
-                        />
-                      </EuiFormRow>
-                      {/* <EuiButton onClick={handleTagAdd} fill>
-                        Add
-                      </EuiButton> */}
-                    </EuiPopover>
+                    <EuiFlexItem grow={false}>
+                      {
+                        data?.tags.length > 0 ? (
+                          <EuiFlexGrid columns={3} gutterSize="s">
+                            {data?.tags.map((tag) => (
+                              <EuiFlexItem grow={false} key={tag.value}>
+                                <EuiBadge
+                                  iconSide="right"
+                                  iconType="cross"
+                                  iconOnClick={() => {
+                                    removeTag(tag.id);
+                                  }}
+                                  color={tag.color}
+                                >
+                                  {tag.name}
+                                </EuiBadge>
+                              </EuiFlexItem>
+                            ))}
+                          </EuiFlexGrid>
+                        ) : null
+                        // <>
+                        //   <EuiFlexGroup justifyContent="flexStart" alignItems="flexStart">
+                        //     <EuiFlexItem grow={false}>
+                        //       <EuiFlexGroup wrap responsive={false} gutterSize="xs">
+                        //         {data?.tags.map((tag) => (
+                        //           <EuiFlexItem grow={false} key={tag.id}>
+                        //             <EuiBadge color={tag.color}>{tag.name}</EuiBadge>
+                        //           </EuiFlexItem>
+                        //         ))}
+                        //       </EuiFlexGroup>
+                        //     </EuiFlexItem>
+                        //   </EuiFlexGroup>
+                        //   <EuiSpacer size="m" />
+                        // </>
+                      }
+                    </EuiFlexItem>
+
+                    <EuiFlexItem grow={false}>
+                      <EuiPopover
+                        button={tagAddButton}
+                        isOpen={isTagAddPopoverOpen}
+                        closePopover={closeTagAddPopover}
+                      >
+                        <EuiFormRow label="Tag Color">
+                          <SelectableInputPopover
+                            emitTagChange={async () => {
+                              setIsTagAddPopoverOpen(false);
+                              await mutatePage();
+                            }}
+                          />
+                        </EuiFormRow>
+                      </EuiPopover>
+                    </EuiFlexItem>
                   </EuiFlexGroup>
                   <EuiSpacer size="m" />
                   {/* <TagsManager /> */}
-                  {data?.tags.length > 0 ? (
+                  {/* {data?.tags.length > 0 ? (
                     <>
                       <EuiFlexGroup justifyContent="flexStart" alignItems="flexStart">
-                        <EuiFlexItem grow={false}>
-                          <div>
-                            <span style={{ color: "red" }}>*</span>
-                            <strong>Төрөл</strong>
-                          </div>
-                        </EuiFlexItem>
                         <EuiFlexItem grow={false}>
                           <EuiFlexGroup wrap responsive={false} gutterSize="xs">
                             {data?.tags.map((tag) => (
@@ -876,7 +987,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                       </EuiFlexGroup>
                       <EuiSpacer size="m" />
                     </>
-                  ) : null}
+                  ) : null} */}
                   {/* Хэрэглэгчийн мэдээлэл */}
                   <EuiFlexItem grow={false}>
                     <div>
@@ -954,7 +1065,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     aria-label="Хариуцах нэгж"
                   />
                   {/* Хариуцах ажилтан */}
-                  {selectedTeamId ? (
+                  {selectedTeamId && selectedTeam ? (
                     <>
                       <EuiSpacer size="m" />
                       <EuiFlexItem grow={false}>
@@ -963,11 +1074,13 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                         </div>
                       </EuiFlexItem>
                       <EuiSpacer size="xs" />
-                      <EuiSelect
+                      <EuiSuperSelect
                         fullWidth={true}
                         options={teamsMembersSelectionOptions}
-                        value={selectedMember}
-                        onChange={(e) => onTeamMemberChange(e)}
+                        valueOfSelected={selectedMember}
+                        onChange={(e) => {
+                          onTeamMemberChange(e);
+                        }}
                         aria-label="Use aria labels when no actual label is in use"
                       />
                     </>
@@ -1197,11 +1310,11 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                 </EuiCommentList>
               </EuiFormRow>
               <EuiSpacer size="m" />
-              {/* <EuiFlexGroup justifyContent="flexEnd" responsive={false}>
+              <EuiFlexGroup justifyContent="flexEnd" responsive={false}>
                 <EuiFlexItem grow={false}>
                   <div>
                     <EuiButton
-                      onClick={() => onAddComment}
+                      onClick={onAddComment}
                       isLoading={isLoading}
                       aria-label="comment Add"
                       isDisabled={editorValue == ""}
@@ -1210,7 +1323,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     </EuiButton>
                   </div>
                 </EuiFlexItem>
-              </EuiFlexGroup> */}
+              </EuiFlexGroup>
             </EuiForm>
             {/* <EuiPanel paddingSize="l">
               <EuiFlexGroup direction="row" justifyContent="flexStart" alignItems="center">

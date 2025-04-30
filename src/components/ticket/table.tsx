@@ -580,6 +580,10 @@ const Table = () => {
                         value: "close",
                         inputDisplay: "Хаалттай",
                       },
+                      {
+                        value: "processing",
+                        inputDisplay: "Шалгагдаж байгаа",
+                      },
                     ]}
                     valueOfSelected={statusFilter}
                     onChange={onStatusChange}

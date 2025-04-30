@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   EuiButton,
   EuiCheckboxGroup,
@@ -27,6 +27,8 @@ import ticketTemplateApi from "@/api/ticket_template";
 import ticketApi from "@/api/ticket";
 import { addToast } from "@/components/toast";
 import { useForm } from "react-hook-form";
+import useTeams from "@/hooks/useTeams";
+import { Teams } from "@/store/teams_store.types";
 
 const TicketCreate = () => {
   const router = useRouter();
@@ -34,6 +36,7 @@ const TicketCreate = () => {
   const [ticketType, setTicketType] = useState(null);
   const [ticketTitle, setTicketTitle] = useState("");
   const [ticketDescription, setTicketDescription] = useState("");
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [titleError, setTitleError] = useState<string | undefined>(undefined);
   const [typeError, setTypeError] = useState<string | undefined>(undefined);
   const {
@@ -63,6 +66,17 @@ const TicketCreate = () => {
       console.error(e);
     }
   });
+  const { data: teamsList } = useTeams<Teams[]>();
+
+  const teamsSelectionOptions = useMemo(() => {
+    if (!teamsList) {
+      return [];
+    }
+    return teamsList.map((team) => ({
+      value: team.id,
+      text: team.name,
+    }));
+  }, [teamsList]);
 
   // const {
   //   data: selectedTicket,
@@ -82,8 +96,12 @@ const TicketCreate = () => {
     }
 
     try {
-      const response = await ticketApi.create(ticketType, data);
-      console.log(response);
+      let payload = {
+        title: ticketTitle,
+        body: ticketDescription,
+        at_team_id: selectedTeamId,
+      };
+      const response = await ticketApi.create(ticketType, payload);
       if (response.status == 201) {
         addToast({
           id: "success",
@@ -110,6 +128,10 @@ const TicketCreate = () => {
       });
     }
     return false;
+  };
+
+  const onTeamChange = (e) => {
+    setSelectedTeamId(e.target.value);
   };
 
   return (
@@ -170,6 +192,17 @@ const TicketCreate = () => {
                 aria-label="Use aria labels when no actual label is in use"
                 value={ticketDescription}
                 onChange={(e) => setTicketDescription(e.target.value)}
+              />
+            </EuiFormRow>
+
+            <EuiFormRow label="Хариуцах нэгж">
+              <EuiSelect
+                hasNoInitialSelection
+                fullWidth={true}
+                options={teamsSelectionOptions}
+                value={selectedTeamId}
+                onChange={(e) => onTeamChange(e)}
+                aria-label="Хариуцах нэгж"
               />
             </EuiFormRow>
 

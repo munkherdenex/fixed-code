@@ -33,6 +33,14 @@ const ticketApi = {
     const response = await client.get(`/crm/priority/`);
     return response.data;
   },
+  addTagToTicket: async (ticketId, payload) => {
+    const response = await client.post(`/crm/ticket/${ticketId}/tag/`, payload);
+    return response.data;
+  },
+  removeTagFromTicket: async (ticketId, payload) => {
+    const response = await client.delete(`/crm/ticket/${ticketId}/tag/${payload}/`);
+    return response.data;
+  },
 };
 
 export default ticketApi;
