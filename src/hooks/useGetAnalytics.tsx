@@ -24,7 +24,7 @@ export default function useGetAnalytics(
   timePeriod: string,
   queryParams?: { [key: string]: string },
 ) {
-  const preparedQueryParam = createParam({ period: timePeriod, ...queryParams });
+  const preparedQueryParam = createParam({ interval: timePeriod, ...queryParams });
   const path = `/api/v1/dj/analytics-v2/?${preparedQueryParam}`;
 
   const { data, error, isLoading, mutate } = useSWR(path, async (path) => {

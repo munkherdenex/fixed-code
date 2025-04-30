@@ -4,6 +4,7 @@ import {
   EuiButtonGroup,
   EuiButtonIcon,
   EuiCard,
+  EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
   EuiPanel,
@@ -18,7 +19,7 @@ import {
 } from "@elastic/eui";
 import { useAudienceContext } from "../../store/audience_store";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useGetAnalytics from "@/hooks/useGetAnalytics";
 
 const Total = () => {
@@ -42,15 +43,15 @@ const Total = () => {
   const toggleButtonsCompressed = [
     {
       id: `${compressedToggleButtonGroupPrefix}__0`,
-      label: "7 хоног",
+      label: "1 хоног",
     },
     {
       id: `${compressedToggleButtonGroupPrefix}__1`,
-      label: "1 сар",
+      label: "7 хоног",
     },
     {
       id: `${compressedToggleButtonGroupPrefix}__2`,
-      label: "3 сар",
+      label: "1 сар",
     },
     {
       id: `${compressedToggleButtonGroupPrefix}__3`,
@@ -59,18 +60,16 @@ const Total = () => {
   ];
 
   const periodMap = {
-    [`${compressedToggleButtonGroupPrefix}__0`]: "7d", // 7 days
-    [`${compressedToggleButtonGroupPrefix}__1`]: "1m", // 1 month
-    [`${compressedToggleButtonGroupPrefix}__2`]: "3m", // 3 months
-    [`${compressedToggleButtonGroupPrefix}__3`]: "1y", // 1 year
+    [`${compressedToggleButtonGroupPrefix}__0`]: "1d",
+    [`${compressedToggleButtonGroupPrefix}__1`]: "7d",
+    [`${compressedToggleButtonGroupPrefix}__2`]: "1m",
+    [`${compressedToggleButtonGroupPrefix}__3`]: "1y",
   };
 
   const selectedPeriod = periodMap[toggleCompressedIdSelected] || "1y";
 
   const { analyticsData, isAnalyticsLoading, analyticsError, refreshAnalytics } =
     useGetAnalytics(selectedPeriod);
-
-  // const { data, isLoading } = useAudienceContext();
 
   const emptyArr = [
     {
@@ -97,6 +96,66 @@ const Total = () => {
 
   const onChangeCompressed = (optionId) => {
     setToggleCompressedIdSelected(optionId);
+  };
+
+  const renderCards = () => {
+    if (isAnalyticsLoading) {
+      return emptyArr.map((item, index) => (
+        <EuiFlexItem key={`loading-${index}`}>
+          <EuiCard
+            textAlign="left"
+            title={item.title}
+            titleSize="xs"
+            display="subdued"
+            footer={
+              <EuiFlexGroup justifyContent="flexEnd">
+                <EuiFlexItem grow={false}>
+                  <EuiSkeletonRectangle width={60} height={30} />
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            }
+          ></EuiCard>
+        </EuiFlexItem>
+      ));
+    }
+
+    if (analyticsData?.data && analyticsData.data.length > 0) {
+      return analyticsData.data.map((item, index) => (
+        <EuiFlexItem key={`data-${index}-${item._value}`}>
+          <EuiCard
+            textAlign="left"
+            title={item._measurement}
+            titleSize="xs"
+            display="subdued"
+            footer={
+              <EuiFlexGroup justifyContent="flexEnd">
+                <EuiFlexItem grow={false}>
+                  <div style={card}>{item._value}</div>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            }
+          ></EuiCard>
+        </EuiFlexItem>
+      ));
+    }
+
+    return emptyArr.map((item, index) => (
+      <EuiFlexItem key={`empty-${index}`}>
+        <EuiCard
+          textAlign="left"
+          title={item.title}
+          titleSize="xs"
+          display="subdued"
+          footer={
+            <EuiFlexGroup justifyContent="flexEnd">
+              <EuiFlexItem grow={false}>
+                <div style={card}>{item.value}</div>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          }
+        ></EuiCard>
+      </EuiFlexItem>
+    ));
   };
 
   return (
@@ -136,54 +195,7 @@ const Total = () => {
             <EuiSpacer size="xs" />
           </EuiTextColor>
         </EuiText>
-        <EuiFlexGroup>
-          {analyticsData?.data.length > 0
-            ? analyticsData.data.map((item) => (
-                <EuiFlexItem key={item.value}>
-                  <EuiCard
-                    textAlign="left"
-                    title={item.title}
-                    titleSize="xs"
-                    display="subdued"
-                    footer={
-                      <EuiFlexGroup justifyContent="flexEnd">
-                        <EuiFlexItem grow={false}>
-                          <div style={card}>{item.value}</div>
-                        </EuiFlexItem>
-                      </EuiFlexGroup>
-                    }
-                  ></EuiCard>
-                </EuiFlexItem>
-              ))
-            : emptyArr.map((item) => (
-                <EuiFlexItem key={item.value}>
-                  <EuiCard
-                    textAlign="left"
-                    title={item.title}
-                    titleSize="xs"
-                    display="subdued"
-                    footer={
-                      <EuiFlexGroup justifyContent="flexEnd">
-                        <EuiFlexItem grow={false}>
-                          <div style={card}>{item.value}</div>
-                        </EuiFlexItem>
-                      </EuiFlexGroup>
-                    }
-                  ></EuiCard>
-                </EuiFlexItem>
-              ))}
-        </EuiFlexGroup>
-        {/* <EuiPanel paddingSize="none" hasBorder style={{ overflow: "hidden" }}>
-        <Chart size={{ height: largeMaxBreakpoint ? 100 : 150 }}>
-          <Settings
-            baseTheme={chartBaseTheme}
-            rotation={0}
-            showLegend={largeMaxBreakpoint ? false : true}
-            legendPosition={"top"}
-          />
-          <Metric id="1" data={[totalData2]} />
-        </Chart>
-      </EuiPanel> */}
+        <EuiFlexGrid columns={4}>{renderCards()}</EuiFlexGrid>
       </EuiPanel>
     </EuiSplitPanel.Outer>
   );

@@ -1,6 +1,7 @@
 import { EuiPanel, EuiTab, EuiTabs } from "@elastic/eui";
 import { useMemo, useState } from "react";
 import Logs from "./logs";
+import Tickets from "./tickets";
 
 const tabs = [
   {
@@ -10,6 +11,16 @@ const tabs = [
     content: (
       <div id="logs--id">
         <Logs />
+      </div>
+    ),
+  },
+  {
+    id: "ticket--id",
+    name: "Тикет",
+    href: "#ticket--id",
+    content: (
+      <div id="ticket--id">
+        <Tickets />
       </div>
     ),
   },
