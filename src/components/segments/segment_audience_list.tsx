@@ -57,8 +57,8 @@ const SegmentAudienceList = () => {
 
   const { data, isLoading, mutate } = useGetSegmentAudienceList<SegmentAudienceResponse>(id, {
     search: searchValue,
-    offset: `${pageIndex}`,
-    limit: `${pageSize}`,
+    pageIndex: `${pageIndex}`,
+    pageSize: `${pageSize}`,
   });
   const { trigger, isMutating } = useRerunSegmentAudience(id);
 
