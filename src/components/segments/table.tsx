@@ -13,7 +13,7 @@ import {
   EuiTextColor,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import useGetSegments, { Segment, SegmentResponse } from "../../hooks/useGetSegments";
 import { PAGINATION_CHOOSES } from "../../constants";
 import moment from "moment";
@@ -29,22 +29,28 @@ const SegmentsTable = () => {
 
   const querySearch = query?.search?.toString() || "";
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
-  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[0];
 
   const [searchValue, setSearchValue] = useState(querySearch);
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
   const [pageSize, setPageSize] = useState(queryPageSize);
 
-  const pagination = {
-    pageIndex,
-    pageSize,
-    pageSizeOptions: PAGINATION_CHOOSES,
-  };
-  const { data, isLoading, mutate } = useGetSegments<SegmentResponse>(undefined, {
+  const apiParams = useMemo(() => ({
     query: searchValue,
     offset: `${pageIndex}`,
     limit: `${pageSize}`,
-  });
+  }), [searchValue, pageIndex, pageSize]);
+
+  const pagination = useMemo(
+    () => ({
+      pageIndex: pageIndex - 1,
+      pageSize,
+      pageSizeOptions: PAGINATION_CHOOSES,
+    }),
+    [pageIndex, pageSize],
+  );
+
+  const { data, isLoading, mutate } = useGetSegments<SegmentResponse>(undefined, apiParams);
 
   const columns: Array<EuiBasicTableColumn<Segment>> = [
     {
@@ -112,12 +118,13 @@ const SegmentsTable = () => {
 
   const onTableChange = ({ page }: Criteria<Segment>) => {
     if (page) {
-      const { index: newPageIndex, size: newPageSize } = page;
+      const { index, size } = page;
+      const newPageIndex = index + 1;
       router.push({
-        query: { pageIndex: newPageIndex, pageSize: newPageSize, search: searchValue },
+        query: { pageIndex: newPageIndex, pageSize: size, search: searchValue },
       });
       setPageIndex(newPageIndex);
-      setPageSize(newPageSize);
+      setPageSize(size);
     }
   };
 
@@ -155,7 +162,7 @@ const SegmentsTable = () => {
       setPageSize(queryPageSize);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryPageIndex, queryPageSize, querySearch]);
+  }, [query]);
 
   if (isLoading) {
     return <div>{translate("loading")}</div>;
@@ -222,16 +229,8 @@ const SegmentsTable = () => {
             cellProps={getCellProps}
             pagination={
               data?.total_count > pageSize
-                ? {
-                    ...pagination,
-                    totalItemCount: data?.total_count || 0,
-                    showPerPageOptions: true,
-                  }
-                : {
-                    totalItemCount: 0,
-                    pageIndex: 0,
-                    pageSize: 0,
-                  }
+                ? { ...pagination, totalItemCount: data?.total_count || 0, showPerPageOptions: true }
+                : null
             }
             onChange={onTableChange}
           />
