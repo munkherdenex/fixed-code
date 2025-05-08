@@ -17,7 +17,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import moment from "moment";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { PAGINATION_CHOOSES } from "../../constants";
@@ -27,6 +27,7 @@ import useGetSegmentAudienceList, {
 } from "../../hooks/useGetSegmentAudienceList";
 import useRerunSegmentAudience from "../../hooks/useRerunSegmentAudience";
 import { useSegmentContext } from "../../store/segment_store";
+import { isNumber } from "../../utils/helper";
 import { addToast } from "../toast";
 import CreateAudienceSegment from "./add_segments_audience";
 import DeleteSegmentAudience from "./delete_segment_audience";
@@ -44,22 +45,40 @@ const SegmentAudienceList = () => {
 
   const { data: segmentData, isLoading: segmentIsLoading } = useSegmentContext();
 
-  const [searchValue, setSearchValue] = useState("");
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const querySearch = router.query.search?.toString() || "";
+  const queryPageIndex = isNumber(router.query.pageIndex) ? +router.query.pageIndex : 1;
+  const queryPageSize = isNumber(router.query.pageSize) ? +router.query.pageSize : PAGINATION_CHOOSES[0];
+
+  const [searchValue, setSearchValue] = useState(querySearch);
+  const [pageIndex, setPageIndex] = useState(queryPageIndex);
+  const [pageSize, setPageSize] = useState(queryPageSize);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 
-  const pagination = {
-    pageIndex,
-    pageSize,
-    pageSizeOptions: PAGINATION_CHOOSES,
-  };
+  // Explicitly track the relevant query parameters
+  const relevantQueryParams = useMemo(() => {
+    return {
+      search: router.query.search?.toString() || "",
+      pageIndex: isNumber(router.query.pageIndex) ? +router.query.pageIndex : 1,
+      pageSize: isNumber(router.query.pageSize) ? +router.query.pageSize : PAGINATION_CHOOSES[0],
+    };
+  }, [router.query.search, router.query.pageIndex, router.query.pageSize]);
 
-  const { data, isLoading, mutate } = useGetSegmentAudienceList<SegmentAudienceResponse>(id, {
-    search: searchValue,
-    pageIndex: `${pageIndex}`,
-    pageSize: `${pageSize}`,
-  });
+  const apiParams = useMemo(() => ({
+    search: relevantQueryParams.search,
+    limit: `${relevantQueryParams.pageSize}`,
+    offset: `${relevantQueryParams.pageIndex}`,
+  }), [relevantQueryParams]);
+
+  const pagination = useMemo(
+    () => ({
+      pageIndex: pageIndex - 1,
+      pageSize,
+      pageSizeOptions: PAGINATION_CHOOSES,
+    }),
+    [pageIndex, pageSize],
+  );
+
+  const { data, isLoading, mutate } = useGetSegmentAudienceList<SegmentAudienceResponse>(id, apiParams);
   const { trigger, isMutating } = useRerunSegmentAudience(id);
 
   const {
@@ -71,9 +90,11 @@ const SegmentAudienceList = () => {
 
   const onTableChange = ({ page }: Criteria<SegmentAudience>) => {
     if (page) {
-      const { index: pageIndex, size: pageSize } = page;
-      setPageIndex(pageIndex);
-      setPageSize(pageSize);
+      const { index, size } = page;
+      const newPageIndex = index + 1;
+      router.push({
+        query: { ...router.query, pageIndex: newPageIndex, pageSize: size, search: searchValue },
+      });
     }
   };
 
@@ -154,6 +175,9 @@ const SegmentAudienceList = () => {
 
   const onSearchEmailAddress = (value: string) => {
     setSearchValue(value);
+    router.push({ 
+      query: { ...router.query, search: value, pageIndex: 1 } 
+    });
   };
 
   const reRunSegmentAudience = async () => {
@@ -172,6 +196,19 @@ const SegmentAudienceList = () => {
       console.error(error);
     }
   };
+
+  useLayoutEffect(() => {
+    if (querySearch !== searchValue) {
+      setSearchValue(querySearch);
+    }
+    if (queryPageIndex !== pageIndex) {
+      setPageIndex(queryPageIndex);
+    }
+    if (queryPageSize !== pageSize) {
+      setPageSize(queryPageSize);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.query]);
 
   return (
     <>
@@ -236,10 +273,11 @@ const SegmentAudienceList = () => {
               tableLayout="auto"
               items={data?.results || []}
               columns={columns}
-              pagination={{
-                ...pagination,
-                totalItemCount: data?.total_count || 0,
-              }}
+              pagination={
+                data?.total_count > pageSize
+                  ? { ...pagination, totalItemCount: data?.total_count || 0, showPerPageOptions: true }
+                  : null
+              }
               onChange={onTableChange}
             />
           </EuiSkeletonRectangle>
