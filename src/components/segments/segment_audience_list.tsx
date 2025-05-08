@@ -45,7 +45,7 @@ const SegmentAudienceList = () => {
   const { data: segmentData, isLoading: segmentIsLoading } = useSegmentContext();
 
   const [searchValue, setSearchValue] = useState("");
-  const [pageIndex, setPageIndex] = useState(1);
+  const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
 

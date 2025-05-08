@@ -37,8 +37,8 @@ const CustomersTable = () => {
   const { query } = router;
 
   const querySearch = Object.values(query)[0] || "";
-  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
-  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[2];
+  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
+  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1];
 
   const [selectValue, setSelectValue] = useState(options[0].value);
   const [searchValue, setSearchValue] = useState(querySearch);
@@ -49,8 +49,8 @@ const CustomersTable = () => {
 
   const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, {
     ...query,
-    limit: `${pageSize}`,
-    offset: `${pageIndex}`,
+    pageSize: `${pageSize}`,
+    pageIndex: `${pageIndex}`,
   });
 
   // Memoizing pagination config
