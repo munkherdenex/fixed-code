@@ -36,34 +36,30 @@ const CustomersTable = () => {
   const router = useRouter();
   const { query } = router;
 
-  const querySearch = Object.values(query)[0] || "";
-  const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 0;
-  const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1];
-
   const [selectValue, setSelectValue] = useState(options[0].value);
-  const [searchValue, setSearchValue] = useState(querySearch);
-  const [pageIndex, setPageIndex] = useState(queryPageIndex);
-  const [pageSize, setPageSize] = useState(queryPageSize);
+  const [searchValue, setSearchValue] = useState("");
+  const [pageIndex, setPageIndex] = useState(isNumber(query?.pageIndex) ? +query?.pageIndex : 1);
+  const [pageSize, setPageSize] = useState(isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1]);
 
   const basicSelectId = useGeneratedHtmlId({ prefix: "basicSelect" });
 
-  const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, {
+  const apiParams = useMemo(() => ({
     ...query,
-    pageSize: `${pageSize}`,
-    pageIndex: `${pageIndex}`,
-  });
+    limit: `${isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1]}`,
+    offset: `${isNumber(query?.pageIndex) ? +query?.pageIndex : 1}`,
+  }), [query]);
 
-  // Memoizing pagination config
+  const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, apiParams);
+
   const pagination = useMemo(
     () => ({
-      pageIndex,
+      pageIndex: pageIndex - 1,
       pageSize,
       pageSizeOptions: PAGINATION_CHOOSES,
     }),
     [pageIndex, pageSize],
   );
 
-  // Memoizing columns to prevent unnecessary re-renders
   const columns = useMemo((): Array<EuiBasicTableColumn<CustomersType>> => {
     const baseColumns: Array<EuiBasicTableColumn<CustomersType>> = [
       {
@@ -96,7 +92,6 @@ const CustomersTable = () => {
       },
     ];
 
-    // Define the columns that are shown *only* on specific routes
     const extraColumns: Array<EuiBasicTableColumn<CustomersType>> = [
       {
         field: "rid",
@@ -149,12 +144,9 @@ const CustomersTable = () => {
 
   const onTableChange = ({ page }: Criteria<CustomersType>) => {
     if (page) {
-      const { index: newPageIndex, size: newPageSize } = page;
       router.push({
-        query: { pageIndex: newPageIndex, pageSize: newPageSize, search: searchValue },
+        query: { ...query, pageIndex: page.index + 1, pageSize: page.size },
       });
-      setPageIndex(newPageIndex);
-      setPageSize(newPageSize);
     }
   };
 
@@ -162,6 +154,7 @@ const CustomersTable = () => {
     setSearchValue(value);
     router.push({
       query: {
+        ...query,
         [selectValue === "phone" ? "phone" : "email"]: value,
       },
     });
@@ -185,9 +178,12 @@ const CustomersTable = () => {
     textOnly: true,
   });
 
-  // Condensed useEffect logic to update states when query parameters change
   useLayoutEffect(() => {
-    if (querySearch !== searchValue) {
+    const querySearch = `${selectValue === "phone" ? query?.phone : query?.email}`;
+    const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
+    const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1];
+    
+    if (querySearch && querySearch !== searchValue) {
       setSearchValue(querySearch);
     }
     if (queryPageIndex !== pageIndex) {
@@ -197,7 +193,7 @@ const CustomersTable = () => {
       setPageSize(queryPageSize);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryPageIndex, queryPageSize, querySearch]);
+  }, [query]);
 
   if (isLoading) {
     return <div>{translate("loading")}</div>;
