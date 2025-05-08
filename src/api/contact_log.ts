@@ -31,8 +31,12 @@ const contactLogApi = {
     return response.data;
   },
 
-  updateContactLogById: async (id, body = null, status = 'active') => {
-    const response = await client.put(`/crm/contact_log/${id}/`, { body, status });
+  updateContactLogById: async (id, body = null, status = null, sentiment = null) => {
+    const response = await client.put(`/crm/contact_log/${id}/`, { 
+      ...(body !== undefined ? { body } : {}),
+      ...(status !== undefined ? { status } : {}),
+      ...(sentiment !== null ? { sentiment } : {})
+    });
     return response.data;
   },
 

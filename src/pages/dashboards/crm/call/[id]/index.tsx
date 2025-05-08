@@ -35,6 +35,7 @@ import { CallStateBadge } from "@/components/call/call_state_badge";
 import CustomerPanel from "@/components/customer/customer_panel";
 import TicketCreatePanel from "@/components/ticket/ticket_create_panel";
 import ticketApi from "@/api/ticket";
+import SentimentAnalysisPanel from "@/components/call/sentiment_analysis_panel";
 
 const CallDetailsPage = () => {
   const router = useRouter();
@@ -90,7 +91,7 @@ const CallDetailsPage = () => {
   const updateBody = useCallback(async () => {
     try {
       console.debug(">> ", callDetails.id, noteBody);
-      const updatedData = await contactLogApi.updateContactLogById(callDetails.id, noteBody);
+      const updatedData = await contactLogApi.updateContactLogById(callDetails.id, noteBody, callDetails.status, callDetails.sentiment);
       mutateCallDetail((prev) => ({ ...prev, body: noteBody }), false);
       return updatedData;
     } catch (error) {
@@ -326,6 +327,14 @@ const CallDetailsPage = () => {
                 </EuiFlexGroup>
               </EuiPanel>
             </EuiSplitPanel.Outer>
+            
+            <EuiSpacer size="m" />
+            
+            <SentimentAnalysisPanel 
+              callDetails={callDetails}
+              isLoading={isLoading}
+              mutateCallDetail={mutateCallDetail}
+            />
           </EuiFlexItem>
           <EuiFlexItem>
             <CustomerPanel customerId={callDetails.customer_id ? callDetails.customer_id : null} phone={callDetails.phone} />
