@@ -262,18 +262,18 @@ const CreateTemplateFlyout = () => {
   );
 };
 
-const CRM = () => {
+const TicketTemplatesIndex = () => {
   return (
     <>
       <NestedLayout
         pageHeader={{
-          pageTitle: "Тикетийн категори",
-          rightSideItems: [<CreateTemplateFlyout key="dfgaiogvao" />],
+          pageTitle: "Тикетийн категори"
         }}
+        rightSideItem={
+          <CreateTemplateFlyout key="dfgaiogvao" />
+        }
       >
-        <div>
-          <TemplateTable />
-        </div>
+        <TemplateTable />
       </NestedLayout>
     </>
   );
@@ -294,4 +294,4 @@ export const getStaticProps: GetStaticProps = async (context) => {
   };
 };
 
-export default CRM;
+export default TicketTemplatesIndex;

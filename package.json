@@ -66,6 +66,7 @@
     "regenerator-runtime": "^0.14.1",
     "rrule": "^2.8.1",
     "sharp": "^0.33.5",
+    "socket.io-client": "^4.8.1",
     "swr": "^2.2.5",
     "webpack": "^5.96.1",
     "yup": "^1.4.0"

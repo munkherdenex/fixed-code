@@ -6,12 +6,12 @@ import { EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSideNav } from "@elastic/eui";
 import { css } from "@emotion/react";
 import { useRouter } from "next/router";
 
-const  NestedLayout = ({ children, pageHeader }: { children: React.ReactNode; pageHeader?: any }) => {
+const  NestedLayout = ({ children, pageHeader, rightSideItem }: { children: React.ReactNode; pageHeader?: any, rightSideItem? : any }) => {
   const router = useRouter();
   const currentPath = router.pathname;
 
   return (
-    <DashboardCRMLayout pageHeader={pageHeader}>
+    <DashboardCRMLayout pageHeader={pageHeader} rightSideItem={rightSideItem}>
       <EuiFlexGroup>
         <EuiFlexItem grow={0}>
           <EuiPanel color="subdued" hasBorder>
