@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Criteria,
@@ -36,11 +36,15 @@ import CustomerPanel from "@/components/customer/customer_panel";
 import TicketCreatePanel from "@/components/ticket/ticket_create_panel";
 import ticketApi from "@/api/ticket";
 import SentimentAnalysisPanel from "@/components/call/sentiment_analysis_panel";
+import useGetTeamsMyprofile, { TeamsMyProfileResponse } from '@/hooks/useGetTeamsMyprofile';
+import { teamsContext } from '@/store/teams_store';
 
 const CallDetailsPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams(); // Use Next.js useSearchParams hook
   const { id } = useParams(); // Get the `call_id` parameter from the URL
+  const { currentTeam } = useContext(teamsContext);
+  const { data: userProfile } = useGetTeamsMyprofile<TeamsMyProfileResponse | null>(`${currentTeam?.id}`);
 
   const {
     data: callDetails,
@@ -147,17 +151,19 @@ const CallDetailsPage = () => {
     { title: "Дуудлага авсан ажилтан", description: callDetails.call_agent || "-" },
     { title: "Залгасан огноо", description: callDetails.call_date },
     { title: "Үргэлжлэх хугацаа", description: `${callDetails.call_duration || 0} секунд` },
-    {
-      title: "Дуудлагын бичлэг",
-      description: callDetails.call_record_url ? (
-        <audio controls>
-          <source src={callDetails.call_record_url} type="audio/mpeg" />
-          Таны хөтөч аудио тоглуулахыг дэмжихгүй байна.
-        </audio>
-      ) : (
-        "Бичлэг байхгүй"
-      ),
-    },
+    ...(userProfile?.role == 'admin' || userProfile?.role == 'manager' ? [
+      {
+        title: "Дуудлагын бичлэг",
+        description: callDetails.call_record_url ? (
+          <audio controls>
+            <source src={callDetails.call_record_url} type="audio/mpeg" />
+            Таны хөтөч аудио тоглуулахыг дэмжихгүй байна.
+          </audio>
+        ) : (
+          "Бичлэг байхгүй"
+        ),
+      }
+    ] : []),
   ];
 
   const columns: Array<EuiBasicTableColumn<any>> = [
