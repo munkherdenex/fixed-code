@@ -69,7 +69,7 @@ const TicketCreatePanel: React.FC<TicketCreatePanelProps> = ({ ticketId, contact
   const handleCreateTicket = async () => {
     const errors: { type?: string; title?: string; details?: string } = {};
 
-    if (!type) errors.type = "Төрөл сонгох шаардлагатай.";
+    if (!type) errors.type = "Категори сонгох шаардлагатай.";
     if (!title.trim()) errors.title = "Гарчиг оруулах шаардлагатай.";
     if (!details.trim()) errors.details = "Дэлгэрэнгүй мэдээлэл оруулах шаардлагатай.";
 
@@ -101,7 +101,7 @@ const TicketCreatePanel: React.FC<TicketCreatePanelProps> = ({ ticketId, contact
           <div>
             <h3>Тикетийн мэдээлэл</h3>
             <p>
-              <strong>Төрөл:</strong>{" "}
+              <strong>Категори:</strong>{" "}
               {typeOptions.find((option) => option.value === type)?.label || "Сонгогдоогүй"}
             </p>
             <p>
@@ -116,13 +116,13 @@ const TicketCreatePanel: React.FC<TicketCreatePanelProps> = ({ ticketId, contact
             <EuiFlexGroup direction="column" gutterSize="s">
               <EuiFlexItem>
                 <EuiFormRow
-                  label="Төрөл"
+                  label="Категори"
                   isInvalid={!!formErrors.type}
                   error={formErrors.type}
                 >
                   <EuiComboBox
                     fullWidth
-                    placeholder="Төрөл сонгоно уу"
+                    placeholder="Категори сонгоно уу"
                     singleSelection={{ asPlainText: true }}
                     options={typeOptions}
                     selectedOptions={

@@ -78,6 +78,9 @@ const CustomerPanel: React.FC<{
                 },
                 { title: "Имэйл", description: customerDetail.email || "Имэйл байхгүй" },
                 { title: "RID", description: customerDetail.rid || "RID байхгүй" },
+                { title: "RID", description: customerDetail.rid || "RID байхгүй" },
+                { title: "Овог", description: customerDetail.surname || "-" },
+                { title: "Нэр", description: customerDetail.name || "-" },
               ]}
               type="column"
               columnGutterSize="m"
@@ -94,7 +97,7 @@ const CustomerPanel: React.FC<{
       </EuiSkeletonRectangle>
       {customerDetail && (
         <EuiSplitPanel.Inner color="subdued" paddingSize="m">
-          <EuiButtonEmpty href={`/dashboards/cdp/audience/info/${customerDetail.id}`} target="_blank" size="s" color="text">
+          <EuiButtonEmpty href={`/dashboards/crm/customer/info/${customerDetail.id}`} target="_blank" size="s" color="text">
             Дэлгэрэнгүй {' '}
             <EuiIcon type="popout" />
           </EuiButtonEmpty>

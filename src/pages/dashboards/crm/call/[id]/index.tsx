@@ -366,7 +366,7 @@ const CallDetailsPage = () => {
                     <EuiDescriptionList
                       listItems={[
                         {
-                          title: "Төрөл",
+                          title: "Категори",
                           description: contactLogTickets.results[0]?.category || "-",
                         },
                         {
