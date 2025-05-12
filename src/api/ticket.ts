@@ -25,8 +25,18 @@ const ticketApi = {
     const response = await client.get(`/crm/ticket/${id}?limit=100`);
     return response.data;
   },
+  getFileById: async (id: string) => {
+    const response = await client.get(`/files/download/${id}/`);
+    return response.data;
+  },
   getFilesByTicketId: async (id: string) => {
     const response = await client.get(`/files/get/ticket/${id}`);
+    return response.data;
+  },
+  postFileOnTicket: async (id: string, payload: any) => {
+    const response = await client.post(`/files/upload/ticket/${id}/`, payload, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
   },
   postCommentOnTicket: async (id, payload) => {

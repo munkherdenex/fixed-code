@@ -580,6 +580,7 @@ const getFieldComponentEdit = (item, register, value, onChange, onBlur) => {
           onBlur={onBlur}
         />
       );
+
     case "file":
       return (
         <EuiFilePicker

@@ -59,6 +59,7 @@ import {
   EuiListGroup,
   EuiListGroupItem,
   EuiEmptyPrompt,
+  EuiFilePicker,
 } from "@elastic/eui";
 import DashboardCRMLayout from "../../../../../layouts/dashboard_crm";
 import { Controller, useForm } from "react-hook-form";
@@ -74,6 +75,7 @@ import useGetCurrentTeamMembers from "@/hooks/useCurrentTeamMembers";
 import { MembersType, TeamMembersType } from "@/constants/members.types";
 import CustomersSelect from "@/components/ticket_template/customers_select";
 import { addToast } from "@/components/toast";
+import ImagePreview from "@/components/image_preview";
 
 // interface Ticket {
 //   id: string;
@@ -241,12 +243,16 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedPriority, setSelectedPriority] = useState(null);
   const [selectedPriorityDuration, setSelectedPriorityDuration] = useState(null);
+  const [files, setFiles] = useState({});
+  const [link, setLink] = useState(null);
+  const [showFilePopup, setShowFilePopup] = useState(false);
   //
   const errorElementId = useRef(htmlIdGenerator()());
   const modalFormId = useGeneratedHtmlId({ prefix: "modalForm" });
   const modalTitleId = useGeneratedHtmlId();
   const editConfirmModalTitleId = useGeneratedHtmlId();
   const tagSelect = useGeneratedHtmlId();
+  const filePickerId = useGeneratedHtmlId({ prefix: "filePicker" });
 
   const {
     register,
@@ -570,6 +576,38 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     let team = teamsList.find((el) => el.id == e.target.value);
     setSelectedTeam(team || null);
     // mutateTeamMembers();
+  };
+
+  const onFileChange = (files) => {
+    setFiles(files.length > 0 ? Array.from(files) : []);
+  };
+
+  const onPostFile = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("file", files[0], files[0].name);
+      console.log(formData);
+      let res = await ticketApi.postFileOnTicket(id, formData);
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const downloadFile = async (el) => {
+    try {
+      console.log(el);
+      let res = await ticketApi.getFileById(el.id);
+      const link = document.createElement("a");
+      setLink(res.file_url);
+      setShowFilePopup(true);
+      // link.href = res.file_url;
+      // document.body.appendChild(link);
+      // link.click();
+      // link.parentNode?.removeChild(link);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const onTeamMemberChange = (value) => {
@@ -1340,13 +1378,55 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
               ) : (
                 // Files
                 <>
+                  <EuiSpacer size="s" />
+                  <EuiFlexGroup justifyContent="center" responsive={false}>
+                    <EuiFlexItem grow={true}>
+                      <EuiFilePicker
+                        id={filePickerId}
+                        multiple
+                        initialPromptText="Select or drag and drop multiple files"
+                        onChange={onFileChange}
+                        fullWidth={true}
+                        aria-label="Use aria labels when no actual label is in use"
+                      />
+                    </EuiFlexItem>
+                  </EuiFlexGroup>
+                  <EuiSpacer size="s" />
+                  <EuiFlexGroup justifyContent="flexStart" responsive={false}>
+                    <EuiFlexItem grow={true}>
+                      <EuiButton
+                        onClick={onPostFile}
+                        isLoading={isLoading}
+                        aria-label="comment Add"
+                        isDisabled={!files || files.length == 0}
+                      >
+                        Хадгалах
+                      </EuiButton>
+                    </EuiFlexItem>
+                  </EuiFlexGroup>
+                  <EuiSpacer size="m" />
+                  <EuiHorizontalRule size="full" margin="none" />
+                  {showFilePopup ? (
+                    <ImagePreview
+                      fileUrl={link}
+                      altText="Preview image"
+                      closePopup={() => {
+                        console.log("damn");
+                        setShowFilePopup(false);
+                      }}
+                    />
+                  ) : null}
                   {ticketFiles?.results.length > 0 ? (
-                    <EuiListGroup flush={flushWidth} bordered={showBorder}>
-                      {ticketFiles?.results.map((e) => (
+                    <EuiListGroup>
+                      <EuiSpacer size="xs" />
+                      <EuiText grow={false}>
+                        <p>Файлын жагсаалт: </p>
+                      </EuiText>
+                      {ticketFiles?.results.map((e, idx) => (
                         <EuiListGroupItem
                           key={e.id}
-                          onClick={() => {}}
-                          label={"File name: " + e.file_name}
+                          onClick={() => downloadFile(e)}
+                          label={`#${idx + 1}: ` + e.file_name}
                         />
                       ))}
                     </EuiListGroup>
