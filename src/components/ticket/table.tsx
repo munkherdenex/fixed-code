@@ -11,7 +11,9 @@ import {
   EuiFlexItem,
   EuiFormControlLayout,
   EuiHorizontalRule,
+  EuiInputPopover,
   EuiSelect,
+  EuiSelectable,
   EuiSpacer,
   EuiSuperSelect,
   EuiTab,
@@ -59,6 +61,7 @@ const Table = () => {
   const queryStatusFilter = query?.status?.toString() || null;
   const queryTypeFilter = query?.tag?.toString() || null;
   const queryPriorityFilter = query?.priority?.toString() || null;
+  const queryCreatedByFilter = query?.created?.toString() || null;
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : 5;
 
@@ -70,12 +73,14 @@ const Table = () => {
   const [typeFilter, setTypeFilter] = useState(queryTypeFilter);
   const [statusFilter, setStatusFilter] = useState(queryStatusFilter);
   const [priorityFilter, setPriorityFilter] = useState(queryPriorityFilter);
+  const [createdByFilter, setCreatedByFilter] = useState(queryCreatedByFilter);
   const [pageIndex, setPageIndex] = useState(queryPageIndex);
   const [pageSize, setPageSize] = useState(queryPageSize);
   const [filter, setFilter] = useState(queryFilter);
 
   const [selectedTabId, setSelectedTabId] = useState(query?.tab || "all-tab--id");
   const [tabs, setTabs] = useState(null);
+  const [priorityOptions, setPriorityOptions] = useState([]);
 
   const [value, setValue] = useState(options[1].value);
   const byTypeSelectId = useGeneratedHtmlId({ prefix: "byTypeSelectId" });
@@ -95,7 +100,16 @@ const Table = () => {
         setSelectedTabId("tab--0");
       }
     }
+    async function fetchPriorityList() {
+      let { results } = await ticketApi.getPriorityList();
+      const transformedData = results.map((item) => ({
+        value: item.name,
+        inputDisplay: item.name,
+      }));
+      setPriorityOptions(transformedData);
+    }
     fetchData();
+    fetchPriorityList();
   }, []);
 
   const renderTabs = () => {
@@ -130,6 +144,7 @@ const Table = () => {
       statusFilter,
       typeFilter,
       priorityFilter,
+      createdByFilter,
       filter,
       pageIndex,
       pageSize,
@@ -142,6 +157,7 @@ const Table = () => {
         status: statusFilter,
         tag: typeFilter,
         priority: priorityFilter,
+        created_by: createdByFilter,
         filter,
         offset: pageIndex,
         limit: pageSize,
@@ -165,6 +181,53 @@ const Table = () => {
   }, [systemTags]);
 
   const columns: Array<EuiBasicTableColumn<any>> = [
+    {
+      field: "id",
+      name: "Тикет ID",
+      render: (id) => <>{"#" + id}</>,
+    },
+    {
+      field: "tags",
+      name: "Төрөл",
+      render: (tags) =>
+        tags.length > 0 ? <EuiBadge color="hollow">{tags[0]?.name}</EuiBadge> : null,
+    },
+    {
+      field: "status",
+      name: "Төлөв",
+      render: (status) => (
+        <EuiBadge color={status == "open" ? "success" : "danger"} iconType="dot">
+          {status == "open" ? "Нээлттэй" : "Хаалттай"}
+        </EuiBadge>
+      ),
+    },
+    {
+      field: "assigned_to",
+      name: "Хариуцах нэгж болон ажилтан",
+    },
+    {
+      field: "priority",
+      name: "Чухлын зэрэг",
+      render: (prio) =>
+        prio ? (
+          <EuiBadge color={prio.id == 1 ? "danger" : prio.id == 4 ? "warning" : "primary"}>
+            {prio.name}
+          </EuiBadge>
+        ) : null,
+    },
+    {
+      field: "created_at",
+      name: "Үүсгэсэн огноо",
+      render: (date) => <>{moment(date).format("YYYY-MM-DD HH:MM")}</>,
+    },
+    {
+      field: "created_by",
+      name: "Үүсгэсэн ажилтан",
+      render: (val) => <>{val?.email}</>,
+    },
+  ];
+
+  const columnsAll: Array<EuiBasicTableColumn<any>> = [
     {
       field: "id",
       name: "Тикет ID",
@@ -199,8 +262,8 @@ const Table = () => {
       name: "Чухлын зэрэг",
       render: (prio) =>
         prio ? (
-          <EuiBadge color={prio == "open" ? "success" : "danger"}>
-            {prio == "open" ? "Нээлттэй" : "Хаалттай"}
+          <EuiBadge color={prio.id == 1 ? "danger" : prio.id == 4 ? "warning" : "primary"}>
+            {prio.name}
           </EuiBadge>
         ) : null,
     },
@@ -215,6 +278,8 @@ const Table = () => {
       render: (val) => <>{val?.email}</>,
     },
   ];
+
+  const tabColumns = selectedTabId == "tab--0" ? columnsAll : columns;
 
   const onSelectedTabChanged = (tab: any) => {
     setSelectedTabId(tab.id);
@@ -233,6 +298,7 @@ const Table = () => {
           ...(typeFilter && { tag: typeFilter }),
           ...(priorityFilter && { priority: priorityFilter }),
           ...(pageSize && { pageSize: 10 }),
+          ...(createdByFilter && { createdBy: createdByFilter }),
         },
       });
     }
@@ -250,6 +316,7 @@ const Table = () => {
         ...(statusFilter && { status: statusFilter }),
         ...(typeFilter && { tag: typeFilter }),
         ...(priorityFilter && { priority: priorityFilter }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
       },
     });
   };
@@ -264,6 +331,7 @@ const Table = () => {
         ...(statusFilter && { status: statusFilter }),
         ...(typeFilter && { tag: typeFilter }),
         ...(priorityFilter && { priority: priorityFilter }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
       },
     });
   };
@@ -279,6 +347,7 @@ const Table = () => {
         ...(typeFilter && { tag: typeFilter }),
         ...(priorityFilter && { priority: priorityFilter }),
         ...(pageSize && { pageSize: 10 }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
       },
     });
   };
@@ -293,6 +362,7 @@ const Table = () => {
         ...(typeFilter && { tag: typeFilter }),
         ...(priorityFilter && { priority: priorityFilter }),
         ...(pageSize && { pageSize: 10 }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
       },
     });
   };
@@ -308,6 +378,7 @@ const Table = () => {
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(statusFilter && { status: statusFilter }),
         ...(priorityFilter && { priority: priorityFilter }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
       },
     });
   };
@@ -322,6 +393,7 @@ const Table = () => {
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(statusFilter && { status: statusFilter }),
         ...(priorityFilter && { priority: priorityFilter }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
       },
     });
   };
@@ -337,6 +409,7 @@ const Table = () => {
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(priorityFilter && { priority: priorityFilter }),
         ...(typeFilter && { tag: typeFilter }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
       },
     });
   };
@@ -351,6 +424,7 @@ const Table = () => {
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(priorityFilter && { priority: priorityFilter }),
         ...(typeFilter && { tag: typeFilter }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
       },
     });
   };
@@ -366,6 +440,7 @@ const Table = () => {
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(typeFilter && { tag: typeFilter }),
         ...(statusFilter && { status: statusFilter }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
       },
     });
   };
@@ -380,6 +455,38 @@ const Table = () => {
         ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
         ...(typeFilter && { tag: typeFilter }),
         ...(statusFilter && { status: statusFilter }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
+      },
+    });
+  };
+  const onCreatedByChange = (createdBy) => {
+    setCreatedByFilter(createdBy);
+    router.push({
+      query: {
+        createdBy,
+        pageIndex: 1,
+        ...(ticketCategory && { category: ticketCategory }),
+        ...(pageSize && { pageSize: 10 }),
+        ...(searchValue && { description: searchValue }),
+        ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
+        ...(typeFilter && { tag: typeFilter }),
+        ...(statusFilter && { status: statusFilter }),
+        ...(priorityFilter && { priority: priorityFilter }),
+      },
+    });
+  };
+  const clearCreatedByFilter = () => {
+    setCreatedByFilter(null);
+    router.push({
+      query: {
+        pageIndex: 1,
+        ...(ticketCategory && { category: ticketCategory }),
+        ...(pageSize && { pageSize: 10 }),
+        ...(searchValue && { description: searchValue }),
+        ...(searchDateValue && { date: moment(searchDateValue).format("YYYY-MM-DD") }),
+        ...(typeFilter && { tag: typeFilter }),
+        ...(statusFilter && { status: statusFilter }),
+        ...(priorityFilter && { priority: priorityFilter }),
       },
     });
   };
@@ -390,6 +497,7 @@ const Table = () => {
     setTypeFilter(null);
     setStatusFilter(null);
     setPriorityFilter(null);
+    setCreatedByFilter(null);
     setPageIndex(1);
     setPageSize(10);
     router.push({ query: { pageIndex: 1, ...(pageSize && { pageSize }) } });
@@ -483,6 +591,72 @@ const Table = () => {
     queryFilter,
   ]);
 
+  const SelectableInputPopover = ({ emitTagChange, systemTags }) => {
+    const queryTypeFilter = query?.tag?.toString() || null;
+    const [isOpen, setIsOpen] = useState(false);
+    const [inputValue, setInputValue] = useState(queryTypeFilter);
+    const [isSearching, setIsSearching] = useState(true);
+
+    const tagsSelectOptions = useMemo(() => {
+      if (!systemTags?.results) {
+        return [];
+      }
+      return systemTags.results.map((tag: Tag) => ({
+        value: tag.name,
+        label: tag.name,
+      }));
+    }, [systemTags]);
+
+    return (
+      <EuiSelectable
+        aria-label="Selectable + input popover example"
+        options={tagsSelectOptions}
+        onChange={(newOptions, event, changedOption) => {
+          setIsOpen(false);
+          if (changedOption.checked === "on") {
+            setInputValue(changedOption.label);
+            setIsSearching(false);
+          } else {
+            setInputValue("");
+          }
+          emitTagChange(changedOption.value);
+        }}
+        singleSelection
+        searchable
+        searchProps={{
+          value: inputValue,
+          onChange: (value) => {
+            setInputValue(value);
+            setIsSearching(true);
+          },
+          onKeyDown: (event) => {
+            if (event.key === "Tab") return setIsOpen(false);
+            if (event.key !== "Escape") return setIsOpen(true);
+          },
+          onClick: () => setIsOpen(true),
+          onFocus: () => setIsOpen(true),
+        }}
+        isPreFiltered={isSearching ? false : { highlightSearch: false }} // Shows the full list when not actively typing to search
+        listProps={{
+          css: { ".euiSelectableList__list": { maxBlockSize: 200 } },
+        }}
+      >
+        {(list, search) => (
+          <EuiInputPopover
+            closePopover={() => setIsOpen(false)}
+            disableFocusTrap
+            closeOnScroll
+            isOpen={isOpen}
+            input={search!}
+            panelPaddingSize="none"
+          >
+            {list}
+          </EuiInputPopover>
+        )}
+      </EuiSelectable>
+    );
+  };
+
   if (isLoading) {
     return <div>{translate("loading")}</div>;
   }
@@ -547,13 +721,14 @@ const Table = () => {
                       }
                     : null)}
                 >
-                  <EuiSuperSelect
+                  <SelectableInputPopover emitTagChange={onTypeChange} systemTags={systemTags} />
+                  {/* <EuiSuperSelect
                     id={byTypeSelectId}
                     options={tagsSelectOptions}
                     valueOfSelected={typeFilter}
                     onChange={onTypeChange}
                     placeholder={translate("searchByType")}
-                  />
+                  /> */}
                 </EuiFormControlLayout>
               </EuiFlexItem>
               <EuiFlexItem>
@@ -606,23 +781,41 @@ const Table = () => {
                 >
                   <EuiSuperSelect
                     id={byPrioritySelectId}
-                    options={[
-                      {
-                        value: "Хэвийн",
-                        inputDisplay: "Хэвийн",
-                      },
-                      {
-                        value: "Яаралтай",
-                        inputDisplay: "Яаралтай",
-                      },
-                      {
-                        value: "Маш яаралтай",
-                        inputDisplay: "Маш яаралтай",
-                      },
-                    ]}
+                    options={priorityOptions}
                     valueOfSelected={priorityFilter}
                     onChange={onPriorityChange}
                     placeholder={translate("searchByPriority")}
+                  />
+                </EuiFormControlLayout>
+              </EuiFlexItem>
+              <EuiFlexItem>
+                <EuiFormControlLayout
+                  {...(createdByFilter
+                    ? {
+                        clear: {
+                          onClick: () => {
+                            clearCreatedByFilter();
+                          },
+                          "aria-label": "Clear createdBy filter",
+                        },
+                      }
+                    : null)}
+                >
+                  <EuiSuperSelect
+                    id={byPrioritySelectId}
+                    options={[
+                      {
+                        value: "me",
+                        inputDisplay: "Миний",
+                      },
+                      {
+                        value: "others",
+                        inputDisplay: "Бусад",
+                      },
+                    ]}
+                    valueOfSelected={createdByFilter}
+                    onChange={onCreatedByChange}
+                    placeholder={translate("searchByCreated")}
                   />
                 </EuiFormControlLayout>
               </EuiFlexItem>
@@ -655,7 +848,7 @@ const Table = () => {
             <EuiBasicTable
               tableCaption="Campaign table"
               items={data?.results || []}
-              columns={columns}
+              columns={tabColumns}
               rowProps={getRowProps}
               cellProps={getCellProps}
               pagination={

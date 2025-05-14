@@ -87,8 +87,8 @@ export interface CustomerTicketsResponse {
 export default function useGetCustomerTickets<Type>(
   id?: string | string[] | undefined,
   queryParam?: {
-    limit?: string;
-    offset?: string;
+    pageIndex?: string;
+    pageSize?: string;
   },
 ): {
   data: Type;
@@ -97,7 +97,7 @@ export default function useGetCustomerTickets<Type>(
   mutate: () => Promise<Type>;
 } {
   const preparedQueryParam = createParam(queryParam);
-  const path = id ? `/api/v1/dj//crm/customer/${id}/tickets/?${preparedQueryParam}` : null;
+  const path = id ? `/api/v1/dj/crm/customer/${id}/tickets/?${preparedQueryParam}` : null;
 
   const { data, error, isLoading, mutate } = useSWR(
     //INFO: slash needs to be added to the end of the path

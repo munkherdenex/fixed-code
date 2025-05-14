@@ -25,16 +25,9 @@ const schema = yup
 type AudienceFormData = yup.InferType<typeof schema>;
 
 const CustomersSelect = ({ isLoading, isDisabled, onSelect, initValue }) => {
-  const [selectedOptions, setSelectedOptions] = useState([]);
-
   const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
     limit: `${PAGINATION_CHOOSES[3]}`,
   });
-
-  useEffect(() => {
-    const customer = segmentCustomers?.results.find((e) => e.id == initValue);
-    setSelectedOptions([customer]);
-  }, [initValue, segmentCustomers?.results]);
 
   const audienceForm = useForm<AudienceFormData>({
     resolver: yupResolver(schema),
@@ -52,6 +45,24 @@ const CustomersSelect = ({ isLoading, isDisabled, onSelect, initValue }) => {
         append: <EuiBadge>{customer?.phone || customer?.email || customer?.rid}</EuiBadge>,
       };
     }) || [];
+
+  useEffect(() => {
+    if (segmentCustomers?.results && initValue) {
+      const matchingCustomer = segmentCustomers.results.find(
+        (customer) => customer.id == initValue,
+      );
+
+      if (matchingCustomer) {
+        const selectedOption = {
+          label: matchingCustomer.email || matchingCustomer.phone || matchingCustomer.rid,
+          value: String(matchingCustomer.id),
+        };
+
+        // Update the form control value
+        audienceForm.setValue("customer", [selectedOption]);
+      }
+    }
+  }, [initValue, segmentCustomers?.results, audienceForm.setValue]);
 
   return (
     <>
@@ -75,7 +86,6 @@ const CustomersSelect = ({ isLoading, isDisabled, onSelect, initValue }) => {
                 singleSelection={{ asPlainText: true }}
                 options={dataTypeOptions}
                 onChange={(selected) => {
-                  setSelectedOptions(selected);
                   onChange(selected);
                   if (selected.length > 0) {
                     onSelect(selected[0].value);

@@ -88,5 +88,6 @@
   "date": "Огноо",
   "searchByType": "Төрлөөр хайх",
   "searchByStatus": "Төлвөөр хайх",
-  "searchByPriority": "Чухлын зэргээр хайх"
+  "searchByPriority": "Чухлын зэргээр хайх",
+  "searchByCreated": "Ажилтнаар хайх"
 }

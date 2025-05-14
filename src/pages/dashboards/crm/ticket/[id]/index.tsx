@@ -326,6 +326,8 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     return tabs.find((obj) => obj.id === selectedTabId)?.content;
   }, [selectedTabId]);
 
+  const ticketStateOptions = [];
+
   useEffect(() => {
     if (data && data.title && data.title != "") {
       setTicketTitle(data.title);
@@ -345,6 +347,14 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
       setSelectedChannel(data.source);
     }
 
+    if (data && data.priority) {
+      setSelectedPriority(data.priority.id);
+      let obj = priorityList.find((val) => val.id == data.priority.id);
+      if (obj) {
+        setSelectedPriorityDuration(obj.duration + " минут");
+      }
+    }
+
     if (data && data.needs_callback) {
       setNeedsCallbackValue(data.needs_callback);
     }
@@ -361,6 +371,12 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     }
     // TODO: SET ALL OTHER VALUE HERE
   }, [data, teamsList, teamMembers, selectedTeamId, selectedMember]);
+
+  useEffect(() => {
+    if (data && data.priority) {
+      addPriority();
+    }
+  }, [data]);
 
   if (isLoading) return <div>Loading ticket details...</div>;
 
@@ -631,7 +647,6 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const editTicket = async () => {
     try {
       let payload = {
-        ...(ticketTitle != "" && { title: "Ticket gomdol test" }),
         ...(ticketDescription != "" && { body: ticketDescription }),
         ...(addedTags.length > 0 && { tags: addedTags }),
         ...(selectedCustomerId && { customer_id: parseInt(selectedCustomerId) }),
@@ -703,7 +718,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     return (
       <>
         <EuiBadge color="hollow">{"Тикет: #" + data?.id}</EuiBadge>
-        <EuiBadge color="success" iconType="dot">
+        <EuiBadge color={data?.status == "open" ? "success" : "danger"} iconType="dot">
           {data?.status == "open" ? "Нээлттэй" : "Хаалттай"}
         </EuiBadge>
       </>
@@ -842,17 +857,24 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         },
       ]}
       rightSideItem={
-        <EuiButton
-          fill
-          key="test value"
-          iconType="crossInCircle"
-          color="text"
-          onClick={() => {
-            setIsTicketCloseModalVisible(true);
-          }}
-        >
-          Тикет хаах
-        </EuiButton>
+        // <EuiButton
+        //   fill
+        //   key="test value"
+        //   iconType="crossInCircle"
+        //   color="text"
+        //   onClick={() => {
+        //     setIsTicketCloseModalVisible(true);
+        //   }}
+        // >
+        //   Тикет хаах
+        // </EuiButton>
+        <EuiSuperSelect
+          options={ticketStateOptions}
+          placeholder="Төлөв өөрчлөх"
+          onChange={(value) => onChange(value)}
+          itemLayoutAlign="top"
+          hasDividers
+        />
       }
     >
       <>
@@ -1147,19 +1169,13 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     </>
                   ) : null}
                   {/* Чухлын зэрэг */}
-                  {data?.category == "Санал хүсэлт" || data?.category == "Гомдол" ? (
+                  {data?.has_priority || data?.priority ? (
                     <>
-                      {!isPriorityAdded ? (
+                      {!isPriorityAdded && !data?.priority ? (
                         <>
                           <EuiSpacer size="m" />
                           <EuiFlexGroup justifyContent="flexEnd">
-                            <EuiButtonEmpty
-                              size="s"
-                              onClick={() => {
-                                addPriority();
-                              }}
-                              iconType="plusInCircle"
-                            >
+                            <EuiButtonEmpty size="s" onClick={addPriority} iconType="plusInCircle">
                               Чухлын зэрэг нэмэх
                             </EuiButtonEmpty>
                           </EuiFlexGroup>

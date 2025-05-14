@@ -4,6 +4,8 @@ import {
   EuiButtonGroup,
   EuiButtonIcon,
   EuiCard,
+  EuiDatePicker,
+  EuiDatePickerRange,
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
@@ -21,8 +23,13 @@ import { useAudienceContext } from "../../store/audience_store";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import useGetAnalytics from "@/hooks/useGetAnalytics";
+import moment from "moment";
 
 const Total = () => {
+  const [startDate, setStartDate] = useState(moment());
+  const [endDate, setEndDate] = useState(moment().add(10, "d"));
+  const [startDateForm, setStartDateForm] = useState(moment().toISOString());
+  const [endDateForm, setEndDateForm] = useState(moment().add(10, "d").toISOString());
   const compressedToggleButtonGroupPrefix = useGeneratedHtmlId({
     prefix: "compressedToggleButtonGroup",
   });
@@ -98,6 +105,17 @@ const Total = () => {
     setToggleCompressedIdSelected(optionId);
   };
 
+  const onDateChange = (type, date) => {
+    const formattedDate = moment(date).toISOString();
+    if (type == "start") {
+      setStartDate(date);
+      setStartDateForm(formattedDate);
+    } else {
+      setEndDate(date);
+      setEndDateForm(formattedDate);
+    }
+  };
+
   const renderCards = () => {
     if (isAnalyticsLoading) {
       return emptyArr.map((item, index) => (
@@ -166,15 +184,42 @@ const Total = () => {
       <EuiPanel>
         <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
           <EuiFlexItem grow={false}>
-            <EuiButtonGroup
-              legend="This is a basic group"
-              options={toggleButtonsCompressed}
-              idSelected={toggleCompressedIdSelected}
-              onChange={(id) => onChangeCompressed(id)}
-              buttonSize="m"
-              color="text"
-            />
+            <EuiFlexGroup justifyContent="flexStart">
+              <EuiFlexItem grow={false}>
+                <EuiButtonGroup
+                  legend="This is a basic group"
+                  options={toggleButtonsCompressed}
+                  idSelected={toggleCompressedIdSelected}
+                  onChange={(id) => onChangeCompressed(id)}
+                  buttonSize="m"
+                  color="text"
+                />
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiDatePickerRange
+                  startDateControl={
+                    <EuiDatePicker
+                      selected={startDate}
+                      onChange={(date) => onDateChange("start", date)}
+                      startDate={startDate}
+                      endDate={endDate}
+                      aria-label="Start date"
+                    />
+                  }
+                  endDateControl={
+                    <EuiDatePicker
+                      selected={endDate}
+                      onChange={(date) => onDateChange("end", date)}
+                      startDate={startDate}
+                      endDate={endDate}
+                      aria-label="End date"
+                    />
+                  }
+                />
+              </EuiFlexItem>
+            </EuiFlexGroup>
           </EuiFlexItem>
+
           <EuiFlexItem grow={false}>
             <EuiButtonIcon
               display="base"

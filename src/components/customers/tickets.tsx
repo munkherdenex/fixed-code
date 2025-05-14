@@ -25,8 +25,8 @@ const Tickets: React.FC = () => {
   const router = useRouter();
   const [activePage, setActivePage] = useState(1);
   const { data, isLoading } = useGetCustomerTickets<CustomerTicketsResponse>(router.query.id, {
-    offset: `${activePage}`,
-    limit: `${LIMIT}`,
+    pageIndex: `${activePage}`,
+    pageSize: `${LIMIT}`,
   });
 
   const handleTicketClick = (ticketId: number) => {
