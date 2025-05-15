@@ -40,6 +40,11 @@ const CrmSideMenu = () => {
         name: "Тикетийн тохиргоо",
         roles: ["admin"],
       },
+      {
+        path: "/dashboards/crm/settings_chat",
+        name: "Чатны тохиргоо",
+        roles: ["admin"],
+      },
     ],
     [],
   );
