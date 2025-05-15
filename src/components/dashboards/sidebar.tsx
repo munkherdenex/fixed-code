@@ -1,4 +1,11 @@
-import { EuiFlexGroup, EuiFlexItem, EuiIcon, EuiSideNav, EuiSideNavItemType, htmlIdGenerator } from "@elastic/eui";
+import {
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiIcon,
+  EuiSideNav,
+  EuiSideNavItemType,
+  htmlIdGenerator,
+} from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import SideMenu from "./sidebar_menu";
@@ -19,7 +26,7 @@ const Sidebar = () => {
         icon: <EuiIcon type="home" />,
       },
       {
-        path: "/dashboards/cdp/audience",
+        path: "/dashboards/cdp/audience?phone=",
         name: translate("audience"),
         icon: <EuiIcon type="userAvatar" />,
       },
@@ -45,21 +52,23 @@ const Sidebar = () => {
     setisSideNavOpenOnMobile(!isSideNavOpenOnMobile);
   };
 
-  const sideNav: EuiSideNavItemType<Object>[] = [{
-    id: htmlIdGenerator('root')(),
-    name: '',
-    items: audienceSegmentPaths.map((path) => {
-      return {
-        name: path.name,
-        id: htmlIdGenerator(path.name)(),
-        icon: path.icon,
-        isSelected: router.pathname === path.path,
-        onClick: () => {
-          router.push(path.path);
-        },
-      };
-    })
-  }];
+  const sideNav: EuiSideNavItemType<Object>[] = [
+    {
+      id: htmlIdGenerator("root")(),
+      name: "",
+      items: audienceSegmentPaths.map((path) => {
+        return {
+          name: path.name,
+          id: htmlIdGenerator(path.name)(),
+          icon: path.icon,
+          isSelected: router.pathname === path.path,
+          onClick: () => {
+            router.push(path.path);
+          },
+        };
+      }),
+    },
+  ];
 
   return (
     <EuiFlexGroup direction="column" justifyContent="spaceBetween" style={{ height: "100%" }}>
