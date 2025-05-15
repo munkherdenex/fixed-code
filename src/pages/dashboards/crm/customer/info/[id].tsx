@@ -43,7 +43,7 @@ const Info = () => {
             },
             {
               text: "Хэрэглэгчийн түүх",
-              onClick: () => router.push("/dashboards/crm/customer"),
+              onClick: () => router.push("/dashboards/crm/customer?phone="),
             },
             {
               text: "Хэрэглэгчийн түүх дэлгэрэнгүй",

@@ -46,7 +46,7 @@ const CRMSidebar = () => {
         items: [
           {
             name: "Хэрэглэгчийн түүх",
-            path: "/dashboards/crm/customer",
+            path: "/dashboards/crm/customer?phone=",
           },
         ].map((path) => {
           return {

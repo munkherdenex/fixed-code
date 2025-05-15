@@ -40,7 +40,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   allowFullScreen = true,
   caption,
   thumbnailSize = 100,
-  modalTitle = "Image Preview",
+  modalTitle = "Файл",
   onError,
   closePopup,
 }) => {
@@ -69,6 +69,15 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
+  };
+
+  const downloadFile = () => {
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    closePopup();
   };
 
   const closeModal = () => {
@@ -112,10 +121,8 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
                   style={{ minHeight: "200px" }}
                 >
                   <EuiFlexItem grow={false}>
-                    <EuiIcon type="warning" color="danger" size="l" />
-                    <EuiSpacer size="s" />
                     <EuiText color="danger" size="s">
-                      Failed to load image
+                      Алдаа гарлаа. Файл татна уу.
                     </EuiText>
                   </EuiFlexItem>
                 </EuiFlexGroup>
@@ -157,7 +164,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
 
         <EuiModalFooter>
           <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
-            <EuiFlexItem grow={false}>
+            {/* <EuiFlexItem grow={false}>
               {allowFullScreen && !isLoading && !hasError && (
                 <EuiToolTip content={isFullScreen ? "Exit full screen" : "Full screen"}>
                   <EuiButtonEmpty
@@ -168,6 +175,11 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
                   </EuiButtonEmpty>
                 </EuiToolTip>
               )}
+            </EuiFlexItem> */}
+            <EuiFlexItem grow={false}>
+              <EuiButtonEmpty iconType="download" onClick={downloadFile}>
+                Татах
+              </EuiButtonEmpty>
             </EuiFlexItem>
 
             <EuiFlexItem grow={false}>

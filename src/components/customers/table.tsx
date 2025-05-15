@@ -39,15 +39,20 @@ const CustomersTable = () => {
   const [selectValue, setSelectValue] = useState(options[0].value);
   const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(isNumber(query?.pageIndex) ? +query?.pageIndex : 1);
-  const [pageSize, setPageSize] = useState(isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1]);
+  const [pageSize, setPageSize] = useState(
+    isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1],
+  );
 
   const basicSelectId = useGeneratedHtmlId({ prefix: "basicSelect" });
 
-  const apiParams = useMemo(() => ({
-    ...query,
-    limit: `${isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1]}`,
-    offset: `${isNumber(query?.pageIndex) ? +query?.pageIndex : 1}`,
-  }), [query]);
+  const apiParams = useMemo(
+    () => ({
+      ...query,
+      limit: `${isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1]}`,
+      offset: `${isNumber(query?.pageIndex) ? +query?.pageIndex : 1}`,
+    }),
+    [query],
+  );
 
   const { data, isLoading, mutate } = useGetCustomers<CustomersResponse>(null, apiParams);
 
@@ -133,10 +138,76 @@ const CustomersTable = () => {
         mobileOptions: { enlarge: true },
       },
     ];
+
+    const cdpColumns: Array<EuiBasicTableColumn<CustomersType>> = [
+      {
+        field: "rid",
+        name: translate("rid"),
+        render: (rid: CustomersType["rid"]) => (
+          <>{rid ? rid : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
+        field: "last_name",
+        name: translate("last_name"),
+        render: (lastName: CustomersType["last_name"]) => (
+          <>{lastName ? lastName : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
+        field: "name",
+        name: translate("name"),
+        render: (name: CustomersType["name"]) => (
+          <>{name ? name : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
+        field: "phone",
+        name: translate("phone"),
+        render: (phone: CustomersType["phone"]) => (
+          <>{phone ? phone : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
+        field: "email",
+        name: translate("email"),
+        render: (email: CustomersType["email"]) => (
+          <>{email ? email : <EuiTextColor color="subdued">None</EuiTextColor>}</>
+        ),
+      },
+      {
+        field: "created_at",
+        name: translate("created-at"),
+        align: "right",
+        render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
+        footer: () => (
+          <strong>
+            {translate("total-audience")}: {data?.total_count || 0}
+          </strong>
+        ),
+        mobileOptions: { enlarge: true },
+      },
+      {
+        field: "source",
+        name: translate("source"),
+        render: (source: CustomersType["source"]) => (
+          <EuiBadge
+            iconType={
+              source === "web" ? "logoWebhook" : source === "import" ? "importAction" : "apps"
+            }
+            color={source === "web" ? "hollow" : ""}
+          >
+            {source}
+          </EuiBadge>
+        ),
+      },
+    ];
+
     const showAllColumnsPath = "/dashboards/cdp/audience";
 
     if (router.pathname === showAllColumnsPath) {
-      return [...extraColumns, ...baseColumns];
+      // return [...extraColumns, ...baseColumns];
+      return cdpColumns;
     } else {
       return baseColumns;
     }
@@ -182,7 +253,7 @@ const CustomersTable = () => {
     const querySearch = `${selectValue === "phone" ? query?.phone : query?.email}`;
     const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
     const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1];
-    
+
     if (querySearch && querySearch !== searchValue) {
       setSearchValue(querySearch);
     }

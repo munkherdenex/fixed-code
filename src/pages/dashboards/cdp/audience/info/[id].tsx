@@ -42,7 +42,7 @@ const Info = () => {
             },
             {
               text: "Хэрэглэгчийн түүх",
-              onClick: () => router.push("/dashboards/crm/customer"),
+              onClick: () => router.push("/dashboards/cdp/audience?phone="),
             },
             {
               text: "Хэрэглэгчийн түүх дэлгэрэнгүй",

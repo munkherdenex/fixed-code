@@ -246,6 +246,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const [files, setFiles] = useState({});
   const [link, setLink] = useState(null);
   const [showFilePopup, setShowFilePopup] = useState(false);
+  const [fileUploadLoading, setFileUploadLoading] = useState(false);
   //
   const errorElementId = useRef(htmlIdGenerator()());
   const modalFormId = useGeneratedHtmlId({ prefix: "modalForm" });
@@ -600,22 +601,25 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
 
   const onPostFile = async () => {
     try {
+      setFileUploadLoading(true);
       const formData = new FormData();
       formData.append("file", files[0], files[0].name);
-      console.log(formData);
       let res = await ticketApi.postFileOnTicket(id, formData);
-      console.log(res);
+      setFileUploadLoading(false);
+      setFiles({});
+      mutateFiles();
     } catch (e) {
+      setFileUploadLoading(false);
       console.log(e);
     }
   };
 
   const downloadFile = async (el) => {
     try {
-      console.log(el);
       let res = await ticketApi.getFileById(el.id);
       const link = document.createElement("a");
       setLink(res.file_url);
+      console.log(res.file_url);
       setShowFilePopup(true);
       // link.href = res.file_url;
       // document.body.appendChild(link);
@@ -1412,7 +1416,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     <EuiFlexItem grow={true}>
                       <EuiButton
                         onClick={onPostFile}
-                        isLoading={isLoading}
+                        isLoading={fileUploadLoading}
                         aria-label="comment Add"
                         isDisabled={!files || files.length == 0}
                       >
@@ -1427,7 +1431,6 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                       fileUrl={link}
                       altText="Preview image"
                       closePopup={() => {
-                        console.log("damn");
                         setShowFilePopup(false);
                       }}
                     />
