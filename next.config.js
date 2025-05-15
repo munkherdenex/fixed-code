@@ -48,6 +48,13 @@ const nextConfig = {
 
   images: {
     loader: "default",
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'scontent.xx.fbcdn.net',
+        pathname: '/**',
+      }
+    ]
   },
 
   /**

@@ -8,17 +8,9 @@ import {
   EuiFlexItem,
   EuiForm,
   EuiFormRow,
-  EuiHorizontalRule,
-  EuiListGroup,
-  EuiListGroupItem,
   EuiLoadingSpinner,
   EuiPage,
-  EuiPageBody,
   EuiPageSidebar,
-  EuiSpacer,
-  EuiText,
-  EuiTitle,
-  useGeneratedHtmlId,
 } from "@elastic/eui";
 import DashboardCRMLayout from "@/layouts/dashboard_crm";
 import ChatMessage from "@/components/chat/chat_message";
@@ -33,16 +25,20 @@ import { Controller, useForm } from "react-hook-form";
 import useGetCustomers, { CustomersResponse } from "@/hooks/useGetCustomers";
 import { PAGINATION_CHOOSES } from "@/constants";
 import moment from "moment";
-import { GetStaticProps } from 'next/types';
+import { GetStaticProps } from "next/types";
+import { extractMessage, getImgUrl } from "@/components/chat/utils";
 
 const chatCss = `
   .chat-container {
+    background-color: #f9f9f9;
     border: 1px solid #ccc;
     border-radius: 5px;
-    overflow: hidden;
-    display: flex;
+    display: block;
     flex-direction: column;
-    height: 400px;
+    height: 600px;
+    padding: 0 10px;
+    max-height: 600px;
+    overflow-y: auto;
   }
 
   .message-list {
@@ -101,9 +97,14 @@ const chatCss = `
   }
 
   .input-area {
-    border-top: 1px solid #ccc;
-    padding: 10px;
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-top: 1px solid #ccc;
+    height: 60px;
+    max-height: 60px;
   }
 
   .input-field {
@@ -129,6 +130,7 @@ const chatCss = `
     border: 1px solid #ccc;
     border-radius: 5px;
     display: flex;
+    flex-direction: row;
     padding: 10px 5px;
     margin: 0px 10px 0px 0px;
     cursor: pointer;
@@ -208,6 +210,7 @@ const Chat = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
     limit: `${PAGINATION_CHOOSES[3]}`,
@@ -245,6 +248,13 @@ const Chat = () => {
   const messages = data?.flatMap((page) => page?.results || []) || [];
   const hasMoreMessages = data?.[data.length - 1]?.next !== null;
 
+  // Effect to scroll to bottom when messages change or a new chat is selected
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
+  }, [messages.length, selectedChatId]);
+
   //For chat infinite scrolling
   const observer = useRef<IntersectionObserver | null>(null);
   const lastChat = useCallback(
@@ -260,6 +270,13 @@ const Chat = () => {
     },
     [isValidating, hasMoreMessages, size, setSize],
   );
+
+  // Function to scroll chat container to bottom
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
 
   //For initial chat log fetching
   const handleClickChat = (rootId: string, fbUserId: number, fbProfile: FbProfile) => {
@@ -298,6 +315,8 @@ const Chat = () => {
 
       // await mutate();
       setMessage("");
+      // Scroll to bottom after sending a message
+      setTimeout(scrollToBottom, 100);
     } catch (error) {
       console.error("Error sending message:", error);
       mutate();
@@ -325,21 +344,6 @@ const Chat = () => {
     });
   };
 
-  const getImgUrl = (str: string | null | undefined): string | null => {
-    if (!str) {
-      return null;
-    }
-
-    try {
-      const fixedStr = str.replace(/'/g, '"').replace(/False/g, "false");
-      const obj = JSON.parse(fixedStr);
-      return obj?.data?.url || null;
-    } catch (error) {
-      console.error("Failed to parse JSON:", error);
-      return null;
-    }
-  };
-
   const dataTypeOptions: EuiComboBoxOptionOption[] =
     segmentCustomers?.results?.map((customer) => {
       return {
@@ -356,51 +360,130 @@ const Chat = () => {
     <>
       <style>{chatCss}</style>
       <DashboardCRMLayout>
-        <EuiPage paddingSize="none" grow={true}>
+        <EuiPage style={{ minHeight: "70vh" }}>
           {sideBar && (
             <EuiPageSidebar
               paddingSize="none"
               // style={{ borderRight: "1px solid black", marginRight: "15px" }}
             >
-              <EuiSpacer size="xxl" />
-              <div style={{ display: "flex", flexDirection: "column", marginTop: "8px" }}>
-                {rootChatLogs?.results.map((log: any) => (
-                  <div
-                    className="root-chat-wrapper"
-                    key={log.id}
-                    style={{
-                      backgroundColor: selectedChatId === log.id ? "#e6e6e6" : "",
-                    }}
-                    onClick={() => handleClickChat(log.id, log.chat_from, log.fb_profile)}
-                  >
-                    <EuiAvatar
-                      size="m"
-                      name={log.fb_profile.first_name}
-                      imageUrl={getImgUrl(log.fb_profile.picture)}
-                    />
-                    <div
+              <EuiFlexGroup direction="column" gutterSize="s">
+                {rootChatLogs?.results
+                  .slice()
+                  .sort(
+                    (a, b) =>
+                      new Date(b.last_active_at).getTime() - new Date(a.last_active_at).getTime(),
+                  )
+                  .map((log: any) => (
+                    <EuiFlexItem
+                      className="root-chat-wrapper"
+                      key={log.id}
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                        justifyContent: "center",
-                        marginLeft: "5px",
+                        backgroundColor: selectedChatId === log.id ? "#e6e6e6" : "",
                       }}
+                      onClick={() => handleClickChat(log.id, log.chat_from, log.fb_profile)}
                     >
-                      <span>{log.fb_profile.name}</span>
-                      <span style={{ marginTop: "5px", fontSize: "10px", opacity: 0.8 }}>
-                        {(log.chat_from ? log.body : "You: " + log.body) +
-                          " · " +
-                          moment(log.last_active_at).format("MMMM D, YYYY")}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                      <EuiAvatar
+                        size="m"
+                        name={log.fb_profile.first_name || "NoName"}
+                        imageUrl={getImgUrl(log.fb_profile.picture)}
+                      />
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "flex-start",
+                          justifyContent: "center",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        <div>{log.fb_profile.name || "NoName"}</div>
+                        <div style={{fontSize: "10px", opacity: 0.8 }}>
+                          {log.chat_from
+                            ? extractMessage(log.body, true)
+                            : "You: " + extractMessage(log.body, true)}
+                        </div>
+                        <div style={{'fontSize': '10px'}}>{moment(log.last_active_at).format("YYYY-MM-DD HH:mm")}</div>
+                      </div>
+                    </EuiFlexItem>
+                  ))}
+              </EuiFlexGroup>
             </EuiPageSidebar>
           )}
-          <EuiFlexGroup direction="column">
+          <EuiFlexGroup direction="row">
             <EuiFlexItem>
+              {/* Chat message part */}
+              <EuiFlexItem className="chat-container" ref={chatContainerRef}>
+                <EuiFlexGroup direction="columnReverse" gutterSize="s">
+                  {messages
+                    .sort(
+                      (a, b) =>
+                        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                    )
+                    .map((message, idx) => {
+                      if (messages.length === idx + 1) {
+                        return (
+                          <div ref={lastChat} key={message.id}>
+                            <ChatMessage
+                              fbProfile={null}
+                              id={message.id}
+                              isToMe={message.chat_from && !message.chat_to}
+                              name={"You"} // харилцсан ажилтны мэдээллийг өгөх
+                              message={message.body}
+                              timestamp={message.created_at}
+                            />
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <ChatMessage
+                            key={message.id}
+                            id={message.id}
+                            isToMe={message.chat_from && !message.chat_to}
+                            name={selectedChatFbProfile.name}
+                            fbProfile={selectedChatFbProfile}
+                            message={message.body}
+                            timestamp={message.created_at}
+                          />
+                        );
+                      }
+                    })}
+                  {isValidating && (
+                    <EuiFlexItem>
+                      <EuiLoadingSpinner size="l" />
+                    </EuiFlexItem>
+                  )}
+                  {/* {!hasMoreMessages && (
+                    <EuiFlexItem>
+                      <EuiText textAlign="center">No more messages</EuiText>
+                    </EuiFlexItem>
+                  )} */}
+                </EuiFlexGroup>
+              </EuiFlexItem>
+              {/* Reply part */}
+              <EuiFlexItem className="input-area">
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="Type a message..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  disabled={isLoading || !selectedChatId}
+                />
+
+                <button
+                  className="send-button"
+                  onClick={handleSendMessage}
+                  style={{ opacity: !selectedChatId ? "0.6" : 1, cursor: "auto" }}
+                  disabled={isLoading || !message.trim() || !selectedChatId}
+                >
+                  {!selectedChatId ? "Чат сонгоно уу" : isLoading ? "Sending..." : "Send"}
+                </button>
+                {/* {errorMessage && <div className="error-message">{errorMessage}</div>} */}
+              </EuiFlexItem>
+            </EuiFlexItem>
+            {/* Customer assigning part */}
+            <EuiFlexItem grow={0}>
               <EuiFlexGroup justifyContent="flexEnd">
                 <EuiFlexItem>
                   <EuiForm component="form" style={{ display: "flex", justifyContent: "end" }}>
@@ -448,88 +531,6 @@ const Chat = () => {
                   </EuiButton>
                 </EuiFlexItem>
               </EuiFlexGroup>
-
-              <EuiSpacer size="s" />
-              <EuiPageBody paddingSize="m" panelled={true}>
-                <div className="chat-container">
-                  <div
-                    className="message-list"
-                    style={{
-                      overflowY: "auto",
-                      height: "70vh",
-                      padding: "16px",
-                      display: "flex",
-                      flexDirection: "column-reverse",
-                    }}
-                  >
-                    <EuiFlexGroup direction="columnReverse" gutterSize="s">
-                      {messages
-                        .sort(
-                          (a, b) =>
-                            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-                        )
-                        .map((message, idx) => {
-                          if (messages.length === idx + 1) {
-                            return (
-                              <div ref={lastChat} key={message.id}>
-                                <ChatMessage
-                                  id={message.id}
-                                  isToMe={message.chat_from && !message.chat_to}
-                                  name={"You"}
-                                  message={message.body}
-                                  timestamp={message.created_at}
-                                />
-                              </div>
-                            );
-                          } else {
-                            return (
-                              <ChatMessage
-                                key={message.id}
-                                id={message.id}
-                                isToMe={message.chat_from && !message.chat_to}
-                                name={"User One"}
-                                message={message.body}
-                                timestamp={message.created_at}
-                              />
-                            );
-                          }
-                        })}
-                      {isValidating && (
-                        <EuiFlexItem>
-                          <EuiLoadingSpinner size="l" />
-                        </EuiFlexItem>
-                      )}
-                      {/* {!hasMoreMessages && (
-                        <EuiFlexItem>
-                          <EuiText textAlign="center">No more messages</EuiText>
-                        </EuiFlexItem>
-                      )} */}
-                    </EuiFlexGroup>
-                  </div>
-                  <div className="input-area">
-                    <input
-                      type="text"
-                      className="input-field"
-                      placeholder="Type a message..."
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      disabled={isLoading || !selectedChatId}
-                    />
-
-                    <button
-                      className="send-button"
-                      onClick={handleSendMessage}
-                      style={{ opacity: !selectedChatId ? "0.6" : 1, cursor: "auto" }}
-                      disabled={isLoading || !message.trim() || !selectedChatId}
-                    >
-                      {!selectedChatId ? "Чат сонгоно уу" : isLoading ? "Sending..." : "Send"}
-                    </button>
-
-                    {/* {errorMessage && <div className="error-message">{errorMessage}</div>} */}
-                  </div>
-                </div>
-              </EuiPageBody>
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiPage>

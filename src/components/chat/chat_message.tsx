@@ -7,11 +7,14 @@ import {
   EuiContextMenuPanel,
   EuiPopover,
   useGeneratedHtmlId,
+  EuiButton,
 } from "@elastic/eui";
 import moment from "moment";
 import * as yup from "yup";
 import * as styles from "./chat.styles";
 import { useState } from "react";
+import Image from "next/image";
+import { extractMessage, getImgUrl } from "./utils";
 
 const messageBuble: React.CSSProperties = {
   display: "flex",
@@ -83,9 +86,9 @@ const Popeye = () => {
   );
 };
 
-const ChatMessage = ({ id, name, isToMe = false, message, timestamp = "now" }) => {
+const ChatMessage = ({ id, name, fbProfile, isToMe = false, message, timestamp = "now" }) => {
   const date = moment(timestamp);
-  const formattedDate = date.format("MMMM D, HH:mm");
+  const formattedDate = date.format("YYYY-MM-DD HH:mm");
 
   return (
     <div
@@ -103,9 +106,13 @@ const ChatMessage = ({ id, name, isToMe = false, message, timestamp = "now" }) =
         }
       }}
     >
-      <EuiAvatar name={name} />
+      <EuiAvatar
+        size="m"
+        name={fbProfile?.first_name ? fbProfile.first_name : "Noname"}
+        imageUrl={fbProfile ? getImgUrl(fbProfile.picture) : undefined}
+      />
       <div style={messageBuble}>
-        <p>{message}</p>
+        <p>{extractMessage(message)}</p>
         <span css={styles.messageTimestamp}>{formattedDate}</span>
       </div>
       {/* <Popeye /> */}
