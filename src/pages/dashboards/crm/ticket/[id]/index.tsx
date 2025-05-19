@@ -64,7 +64,7 @@ import {
 import DashboardCRMLayout from "../../../../../layouts/dashboard_crm";
 import { Controller, useForm } from "react-hook-form";
 import getFieldComponentEdit from "../../../../../components/ticket_template/edit_utils";
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, useContext } from "react";
 import ticketTemplateApi from "../../../../../api/ticket_template";
 import moment from "moment";
 import WorkersSelect from "../../../../../components/ticket_template/worker_select";
@@ -76,6 +76,7 @@ import { MembersType, TeamMembersType } from "@/constants/members.types";
 import CustomersSelect from "@/components/ticket_template/customers_select";
 import { addToast } from "@/components/toast";
 import ImagePreview from "@/components/image_preview";
+import { authContext } from "@/store/auth_store";
 
 // interface Ticket {
 //   id: string;
@@ -159,6 +160,10 @@ const transformDataToComments = (results, ticketTemplate: any): EuiCommentProps[
       event = `Comment`;
       eventColor = "warning";
       message = body || "";
+    } else if (type === "close") {
+      event = `Тикет хаасан`;
+      eventColor = "danger";
+      message = data?.reason || "";
     } else {
       message = body || "";
       eventColor = "subdued";
@@ -221,16 +226,19 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isTagAddPopoverOpen, setIsTagAddPopoverOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
+  const [ticketReOpenDescription, setTicketReOpenDescription] = useState("");
   const [ticketCloseDescription, setTicketCloseDescription] = useState("");
   const [value, setValue] = useState("");
   const [selectedOptions, setSelected] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isTicketReOpenModalVisible, setIsTicketReOpenModalVisible] = useState(false);
   const [isTicketCloseModalVisible, setIsTicketCloseModalVisible] = useState(false);
   const [isEditConfirmModalVisible, setIsEditConfirmModalVisible] = useState(false);
   const [isPriorityAdded, setIsPriorityAdded] = useState(false);
   const [priorityOptions, setPriorityOptions] = useState([]);
   const [priorityList, setPriorityList] = useState([]);
   const [selectedTag, setSelectedTag] = useState(null);
+  const [selectedTicketStateType, setSelectedTicketStateType] = useState(null);
   // Form
   const [ticketTitle, setTicketTitle] = useState("");
   const [ticketDescription, setTicketDescription] = useState("");
@@ -250,10 +258,14 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   //
   const errorElementId = useRef(htmlIdGenerator()());
   const modalFormId = useGeneratedHtmlId({ prefix: "modalForm" });
+  const reOpenModalFormId = useGeneratedHtmlId({ prefix: "modalForm" });
+  const reOpenModalTitleId = useGeneratedHtmlId();
   const modalTitleId = useGeneratedHtmlId();
   const editConfirmModalTitleId = useGeneratedHtmlId();
   const tagSelect = useGeneratedHtmlId();
   const filePickerId = useGeneratedHtmlId({ prefix: "filePicker" });
+
+  const { user } = useContext(authContext);
 
   const {
     register,
@@ -327,7 +339,27 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     return tabs.find((obj) => obj.id === selectedTabId)?.content;
   }, [selectedTabId]);
 
-  const ticketStateOptions = [];
+  const ticketStateOptions = [
+    {
+      value: "openTicket",
+      inputDisplay: "Тикет нээх",
+      disabled:
+        (data && (data.status == "open" || data.status == "processing")) ||
+        (user && user.email != data?.created_by.email)
+          ? true
+          : false,
+    },
+    {
+      value: "ticketProcess",
+      inputDisplay: "Тикет шалгаж байгаа",
+      disabled: data && (data.status == "processing" || data.status == "close") ? true : false,
+    },
+    {
+      value: "closeTicket",
+      inputDisplay: "Тикет хаах",
+      disabled: data && data.status == "close" ? true : false,
+    },
+  ];
 
   useEffect(() => {
     if (data && data.title && data.title != "") {
@@ -453,6 +485,10 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     setIsModalVisible(false);
     const status = statusOptions.find((el) => el.value == data.status);
     setSelected(status ? [status] : []);
+  };
+
+  const closeTicketReOpenModal = () => {
+    setIsTicketReOpenModalVisible(false);
   };
 
   const closeTicketCloseModal = () => {
@@ -634,20 +670,21 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     setSelectedMember(value);
   };
 
-  const closeTicket = async () => {
+  const changeTicketStatus = async (status) => {
     try {
       let payload = {
-        reason: ticketCloseDescription,
+        status: status === "close" ? "close" : status === "processing" ? "processing" : "open",
+        ...(status === "close" || status === "open"
+          ? { reason: status === "close" ? ticketCloseDescription : ticketReOpenDescription }
+          : {}),
       };
-      await ticketApi.close(id, payload);
+      await ticketApi.changeStatus(id, payload);
       router.push("/dashboards/crm/ticket?pageIndex=1&pageSize=10");
-      router.push();
     } catch (error) {
       console.error("Failed to update ticket:", error);
     }
   };
 
-  // TODO:
   const editTicket = async () => {
     try {
       let payload = {
@@ -677,6 +714,20 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         color: "danger",
       });
       console.error("Failed to update ticket:", error);
+    }
+  };
+
+  const onTicketStateChange = (value) => {
+    console.log(value);
+    setSelectedTicketStateType(value);
+    if (value == "closeTicket") {
+      setIsTicketCloseModalVisible(true);
+    }
+    if (value == "openTicket") {
+      setIsTicketReOpenModalVisible(true);
+    }
+    if (value == "ticketProcess") {
+      changeTicketStatus("processing");
     }
   };
 
@@ -722,8 +773,17 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     return (
       <>
         <EuiBadge color="hollow">{"Тикет: #" + data?.id}</EuiBadge>
-        <EuiBadge color={data?.status == "open" ? "success" : "danger"} iconType="dot">
-          {data?.status == "open" ? "Нээлттэй" : "Хаалттай"}
+        <EuiBadge
+          color={
+            data?.status == "open" ? "success" : data?.status == "processing" ? "warning" : "danger"
+          }
+          iconType="dot"
+        >
+          {data?.status == "open"
+            ? "Нээлттэй"
+            : data?.status == "processing"
+              ? "Шалгагдаж байгаа"
+              : "Хаалттай"}
         </EuiBadge>
       </>
     );
@@ -875,13 +935,42 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         <EuiSuperSelect
           options={ticketStateOptions}
           placeholder="Төлөв өөрчлөх"
-          onChange={(value) => onChange(value)}
+          onChange={(value) => onTicketStateChange(value)}
           itemLayoutAlign="top"
           hasDividers
         />
       }
     >
       <>
+        {isTicketReOpenModalVisible && (
+          <EuiModal aria-labelledby={reOpenModalTitleId} onClose={closeTicketReOpenModal}>
+            <EuiModalHeader>
+              <EuiModalHeaderTitle>Тикет нээх</EuiModalHeaderTitle>
+            </EuiModalHeader>
+
+            <EuiModalBody>
+              <strong>Тайлбар</strong>
+              <EuiTextArea
+                placeholder="Тикет нээх болсон шалтгаанаа бичнэ үү."
+                aria-label="Ticket reopen description area"
+                value={ticketReOpenDescription}
+                onChange={(e) => setTicketReOpenDescription(e.target.value)}
+              />
+            </EuiModalBody>
+
+            <EuiModalFooter>
+              <EuiButtonEmpty onClick={closeTicketReOpenModal}>Болих</EuiButtonEmpty>
+              <EuiButton
+                type="submit"
+                form={reOpenModalFormId}
+                onClick={() => changeTicketStatus("open")}
+                fill
+              >
+                Нээх
+              </EuiButton>
+            </EuiModalFooter>
+          </EuiModal>
+        )}
         {isTicketCloseModalVisible && (
           <EuiModal aria-labelledby={modalTitleId} onClose={closeTicketCloseModal}>
             <EuiModalHeader>
@@ -900,7 +989,12 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
 
             <EuiModalFooter>
               <EuiButtonEmpty onClick={closeTicketCloseModal}>Болих</EuiButtonEmpty>
-              <EuiButton type="submit" form={modalFormId} onClick={closeTicket} fill>
+              <EuiButton
+                type="submit"
+                form={modalFormId}
+                onClick={() => changeTicketStatus("close")}
+                fill
+              >
                 Хаах
               </EuiButton>
             </EuiModalFooter>

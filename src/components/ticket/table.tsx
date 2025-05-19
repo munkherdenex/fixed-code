@@ -197,7 +197,7 @@ const Table = () => {
       name: "Төлөв",
       render: (status) => (
         <EuiBadge color={status == "open" ? "success" : "danger"} iconType="dot">
-          {status == "open" ? "Нээлттэй" : "Хаалттай"}
+          {status == "open" ? "Нээлттэй" : status == "processing" ? "Шалгагдаж байгаа" : "Хаалттай"}
         </EuiBadge>
       ),
     },
@@ -248,8 +248,11 @@ const Table = () => {
       field: "status",
       name: "Төлөв",
       render: (status) => (
-        <EuiBadge color={status == "open" ? "success" : "danger"} iconType="dot">
-          {status == "open" ? "Нээлттэй" : "Хаалттай"}
+        <EuiBadge
+          color={status == "open" ? "success" : status == "processing" ? "warning" : "danger"}
+          iconType="dot"
+        >
+          {status == "open" ? "Нээлттэй" : status == "processing" ? "Шалгагдаж байгаа" : "Хаалттай"}
         </EuiBadge>
       ),
     },
