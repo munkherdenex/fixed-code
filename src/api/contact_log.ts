@@ -6,6 +6,7 @@ export interface TicketPayload {
   at_email?: string;
 }
 export interface ChatSendPayload {
+  page_id: string;
   psid: number;
   text: string;
 }
@@ -66,6 +67,11 @@ const contactLogApi = {
 
   createTicket: async (payload: TicketPayload) => {
     const response = await client.post("/crm/ticket/", payload);
+    return response.data;
+  },
+
+  getChatGroups: async () => {
+    const response = await client.get("/crm/fbchat/groups/");
     return response.data;
   },
 };

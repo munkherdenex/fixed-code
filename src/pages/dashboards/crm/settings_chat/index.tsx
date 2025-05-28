@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import DashboardCRMLayout from "@/layouts/dashboard_crm";
 import { GetStaticProps } from "next/types";
 import { useState, useEffect } from "react";
@@ -179,7 +181,7 @@ const ChatFacebook = () => {
               />
             </EuiFormRow>
 
-            <EuiFormRow label={translate("facebook_page_id")} isRequired>
+            <EuiFormRow label={translate("facebook_page_id")}>
               <EuiFieldText
                 name="page_id"
                 value={currentPage.page_id}
@@ -187,7 +189,7 @@ const ChatFacebook = () => {
               />
             </EuiFormRow>
 
-            <EuiFormRow label={translate("page_access_token")} isRequired>
+            <EuiFormRow label={translate("page_access_token")}>
               <EuiFieldPassword
                 name="page_access_token"
                 value={currentPage.page_access_token}
@@ -205,6 +207,7 @@ const ChatFacebook = () => {
 
             <EuiFormRow label={translate("app_secret")} isRequired>
               <EuiFieldPassword
+                type="dual"
                 name="app_secret"
                 value={currentPage.app_secret}
                 onChange={(e) => handleInputChange("app_secret", e.target.value)}

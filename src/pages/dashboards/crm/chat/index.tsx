@@ -4,6 +4,8 @@ import {
   EuiButton,
   EuiComboBox,
   EuiComboBoxOptionOption,
+  EuiContextMenu,
+  EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
   EuiForm,
@@ -11,14 +13,18 @@ import {
   EuiLoadingSpinner,
   EuiPage,
   EuiPageSidebar,
+  EuiPopover,
+  EuiTab,
+  EuiTabs,
 } from "@elastic/eui";
-import DashboardCRMLayout from "@/layouts/dashboard_crm";
+import DashboardCRMChatLayout from "@/layouts/dashboard_crm_chat";
 import ChatMessage from "@/components/chat/chat_message";
 import useGetRootChatLogs from "@/hooks/useGetRootChatLogs";
 import useSWRInfinite from "swr/infinite";
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import contactLogApi from "@/api/contact_log";
+import fbPageConfigApi, { FBPageConfig, FBPageConfigResponse } from "@/api/fb_page_config";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
@@ -27,6 +33,7 @@ import { PAGINATION_CHOOSES } from "@/constants";
 import moment from "moment";
 import { GetStaticProps } from "next/types";
 import { extractMessage, getImgUrl } from "@/components/chat/utils";
+import { css } from '@emotion/react';
 
 const chatCss = `
   .chat-container {
@@ -132,7 +139,6 @@ const chatCss = `
     display: flex;
     flex-direction: row;
     padding: 10px 5px;
-    margin: 0px 10px 0px 0px;
     cursor: pointer;
     transition: all 0.1s ease-out;
   }
@@ -199,9 +205,27 @@ const Chat = () => {
     previous: string | null;
     results: ChatMessage[];
   }
+
+  // Interface for chat groups (Facebook pages, embedded chat)
+  interface ChatGroup {
+    id: string;
+    name: string;
+    type: 'facebook' | 'embedded' | 'other';
+    icon?: string;
+    active: boolean;
+  }
+
+  interface ChatGroupsResponse {
+    results: ChatGroup[];
+  }
+
+  // Define possible tab types
+  type RootChatTabType = 'all' | 'unread' | 'flagged' | 'closed';
+  
   //Chat list, log states
   const [sideBar, setSideBar] = useState(true);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const [selectedChatFbProfile, setSelectedChatFbProfile] = useState(null);
   // const [fbUserId, setFbUserId] = useState<number | null>(null);
   // Chat input States
@@ -212,10 +236,74 @@ const Chat = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // Chat groups states
+  const [chatGroups, setChatGroups] = useState<ChatGroup[]>([]);
+  const [isSelectPagePopoverOpen, setIsSelectPagePopoverOpen] = useState(false);
+  const [isLoadingChatGroups, setIsLoadingChatGroups] = useState(false);
+  const [selectedChatGroup, setSelectedChatGroup] = useState<ChatGroup | null>(null);
+  const [currentRootChatTab, setCurrentRootChatTab] = useState<string>('open-chats-tab');
+  const contextMenuPopoverId = 'contextMenuPopover';
+
   const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
     limit: `${PAGINATION_CHOOSES[3]}`,
   });
   const { rootChatLogs, isLoadingRootChat, isErrorRootChat } = useGetRootChatLogs(10, null);
+
+  // Function to fetch chat groups
+  const fetchChatGroups = async () => {
+    try {
+      setIsLoadingChatGroups(true);
+      const response: FBPageConfigResponse = await fbPageConfigApi.getList();
+      
+      // Create a default "All Pages" option
+      const allPagesOption: ChatGroup = {
+        id: "all",
+        name: "Бүх хуудас",
+        type: 'other' as const,
+        active: !selectedChatGroup, // Make it active by default if no chat group is selected
+      };
+      
+      // Convert FB page configs to ChatGroup format
+      const chatGroupsFromPages = response.results.map(page => ({
+        id: page.page_id,
+        name: page.page_name || 'Unnamed Page',
+        type: 'facebook' as const,
+        active: page.is_enabled,
+      }));
+      
+      // Add the "All Pages" option at the top
+      setChatGroups([allPagesOption, ...chatGroupsFromPages]);
+      
+      // Set initial selected chat group if available
+      if (!selectedChatGroup) {
+        setSelectedChatGroup(allPagesOption);
+      }
+    } catch (error) {
+      console.error("Error fetching chat groups:", error);
+    } finally {
+      setIsLoadingChatGroups(false);
+    }
+  };
+
+  // Load chat groups when component mounts
+  useEffect(() => {
+    fetchChatGroups();
+  }, []);
+
+  // Popover control functions
+  const toggleSelectPagePopover = () => {
+    setIsSelectPagePopoverOpen(!isSelectPagePopoverOpen);
+  };
+
+  const closeSelectPagePopover = () => {
+    setIsSelectPagePopoverOpen(false);
+  };
+
+  const handleSelectChatGroup = (chatGroup: ChatGroup) => {
+    setSelectedChatGroup(chatGroup);
+    closeSelectPagePopover();
+    // You may want to filter the chat logs based on the selected group here
+  };
 
   const audienceForm = useForm<AudienceFormData>({
     resolver: yupResolver(schema),
@@ -248,11 +336,16 @@ const Chat = () => {
   const messages = data?.flatMap((page) => page?.results || []) || [];
   const hasMoreMessages = data?.[data.length - 1]?.next !== null;
 
+  // Add a ref to track if we're loading more messages from scrolling up
+  const isLoadingOlderMessages = useRef(false);
+
   // Effect to scroll to bottom when messages change or a new chat is selected
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && !isLoadingOlderMessages.current) {
       scrollToBottom();
     }
+    // Reset the flag after the effect runs
+    isLoadingOlderMessages.current = false;
   }, [messages.length, selectedChatId]);
 
   //For chat infinite scrolling
@@ -263,6 +356,8 @@ const Chat = () => {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMoreMessages) {
+          // Set flag to indicate we're loading older messages
+          isLoadingOlderMessages.current = true;
           setSize(size + 1);
         }
       });
@@ -279,8 +374,9 @@ const Chat = () => {
   };
 
   //For initial chat log fetching
-  const handleClickChat = (rootId: string, fbUserId: number, fbProfile: FbProfile) => {
+  const handleClickChat = (rootChat, rootId: string, fbUserId: number, fbProfile: FbProfile) => {
     setSelectedChatId(rootId);
+    setSelectedPageId(rootChat.source_id);
     // setFbUserId(fbUserId);
     setSelectedChatFbProfile(fbProfile);
   };
@@ -309,6 +405,7 @@ const Chat = () => {
       }, false);
 
       await contactLogApi.sendChat({
+        page_id: selectedPageId,
         psid: selectedChatFbProfile.psid,
         text: message.trim(),
       });
@@ -344,6 +441,14 @@ const Chat = () => {
     });
   };
 
+  // Function to handle tab selection
+  const onSelectRootChatTab = (tabId: string) => {
+    setCurrentRootChatTab(tabId);
+    // Additional logic to filter chats based on the selected tab
+    // You might want to make an API call with the selected tab as a parameter
+    // For example, to show only open or closed chats
+  };
+  
   const dataTypeOptions: EuiComboBoxOptionOption[] =
     segmentCustomers?.results?.map((customer) => {
       return {
@@ -353,188 +458,164 @@ const Chat = () => {
         append: <EuiBadge>{customer?.phone || customer?.email || customer?.rid}</EuiBadge>,
       };
     }) || [];
+  
+  // Create button for chat groups popover
+  const selectPageButton = (
+    <div style={{
+      backgroundColor: "#F5F7FA", 
+      borderRadius: "8px", 
+      padding: "10px", 
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      cursor: "pointer",
+      width: "100%",
+    }}
+    onClick={toggleSelectPagePopover}
+    >
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ 
+          width: "40px", 
+          height: "40px", 
+          borderRadius: "50%", 
+          backgroundColor: "#F05252", 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center",
+          marginRight: "15px",
+          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+        }}>
+          <span style={{ color: "white", fontWeight: "bold", fontSize: "18px" }}>P</span>
+        </div>
+        <div>
+          <div style={{ fontWeight: "bold", fontSize: "16px" }}>
+            {selectedChatGroup ? selectedChatGroup.name : 'Select Chat Group'}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", color: "#69707D", fontSize: "14px" }}>
+            <span style={{ marginRight: "5px" }}>Бүгд</span>
+            <span style={{ 
+              backgroundColor: "#D3DAE6", 
+              borderRadius: "4px", 
+              padding: "1px 6px",
+              fontSize: "12px"
+            }}>
+              12
+            </span>
+          </div>
+        </div>
+      </div>
+      <div>
+        {isLoadingChatGroups ? (
+          <EuiLoadingSpinner size="m" />
+        ) : (
+          <span style={{ fontSize: "20px" }}>▼</span>
+        )}
+      </div>
+    </div>
+  );
+
+  // Create panels for context menu
+  const panels = [
+    {
+      id: 0,
+      title: 'Chat Groups',
+      items: chatGroups.map((group) => ({
+        name: group.name,
+        icon: group.type === 'facebook' ? 'logoFacebook' : 'message',
+        onClick: () => handleSelectChatGroup(group),
+      })),
+    },
+  ];
 
   if (!data) return <div>Loading chat messages...</div>;
 
   return (
     <>
       <style>{chatCss}</style>
-      <DashboardCRMLayout>
-        <EuiPage style={{ minHeight: "70vh" }}>
-          {sideBar && (
-            <EuiPageSidebar
-              paddingSize="none"
-              // style={{ borderRight: "1px solid black", marginRight: "15px" }}
-            >
-              <EuiFlexGroup direction="column" gutterSize="s">
-                {rootChatLogs?.results
-                  .slice()
-                  .sort(
-                    (a, b) =>
-                      new Date(b.last_active_at).getTime() - new Date(a.last_active_at).getTime(),
-                  )
-                  .map((log: any) => (
-                    <EuiFlexItem
-                      className="root-chat-wrapper"
-                      key={log.id}
-                      style={{
-                        backgroundColor: selectedChatId === log.id ? "#e6e6e6" : "",
-                      }}
-                      onClick={() => handleClickChat(log.id, log.chat_from, log.fb_profile)}
-                    >
-                      <EuiAvatar
-                        size="m"
-                        name={log.fb_profile.first_name || "NoName"}
-                        imageUrl={getImgUrl(log.fb_profile.picture)}
-                      />
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "flex-start",
-                          justifyContent: "center",
-                          marginLeft: "5px",
-                        }}
-                      >
-                        <div>{log.fb_profile.name || "NoName"}</div>
-                        <div style={{fontSize: "10px", opacity: 0.8 }}>
-                          {log.chat_from
-                            ? extractMessage(log.body, true)
-                            : "You: " + extractMessage(log.body, true)}
-                        </div>
-                        <div style={{'fontSize': '10px'}}>{moment(log.last_active_at).format("YYYY-MM-DD HH:mm")}</div>
-                      </div>
-                    </EuiFlexItem>
-                  ))}
-              </EuiFlexGroup>
-            </EuiPageSidebar>
-          )}
-          <EuiFlexGroup direction="row">
-            <EuiFlexItem>
-              {/* Chat message part */}
-              <EuiFlexItem className="chat-container" ref={chatContainerRef}>
-                <EuiFlexGroup direction="columnReverse" gutterSize="s">
-                  {messages
-                    .sort(
-                      (a, b) =>
-                        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-                    )
-                    .map((message, idx) => {
-                      if (messages.length === idx + 1) {
-                        return (
-                          <div ref={lastChat} key={message.id}>
-                            <ChatMessage
-                              fbProfile={null}
-                              id={message.id}
-                              isToMe={message.chat_from && !message.chat_to}
-                              name={"You"} // харилцсан ажилтны мэдээллийг өгөх
-                              message={message.body}
-                              timestamp={message.created_at}
-                            />
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <ChatMessage
-                            key={message.id}
-                            id={message.id}
-                            isToMe={message.chat_from && !message.chat_to}
-                            name={selectedChatFbProfile.name}
-                            fbProfile={selectedChatFbProfile}
-                            message={message.body}
-                            timestamp={message.created_at}
-                          />
-                        );
-                      }
-                    })}
-                  {isValidating && (
-                    <EuiFlexItem>
-                      <EuiLoadingSpinner size="l" />
-                    </EuiFlexItem>
-                  )}
-                  {/* {!hasMoreMessages && (
-                    <EuiFlexItem>
-                      <EuiText textAlign="center">No more messages</EuiText>
-                    </EuiFlexItem>
-                  )} */}
-                </EuiFlexGroup>
-              </EuiFlexItem>
-              {/* Reply part */}
-              <EuiFlexItem className="input-area">
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="Type a message..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  disabled={isLoading || !selectedChatId}
-                />
-
-                <button
-                  className="send-button"
-                  onClick={handleSendMessage}
-                  style={{ opacity: !selectedChatId ? "0.6" : 1, cursor: "auto" }}
-                  disabled={isLoading || !message.trim() || !selectedChatId}
-                >
-                  {!selectedChatId ? "Чат сонгоно уу" : isLoading ? "Sending..." : "Send"}
-                </button>
-                {/* {errorMessage && <div className="error-message">{errorMessage}</div>} */}
-              </EuiFlexItem>
-            </EuiFlexItem>
-            {/* Customer assigning part */}
-            <EuiFlexItem grow={0}>
-              <EuiFlexGroup justifyContent="flexEnd">
+      <DashboardCRMChatLayout>
+        <EuiFlexGroup>
+          <EuiFlexItem grow={1} css={css`
+              margin: 12px;
+            `}>
+            <EuiFlexGrid columns={1} gutterSize="s">
+              {isLoadingRootChat && (
                 <EuiFlexItem>
-                  <EuiForm component="form" style={{ display: "flex", justifyContent: "end" }}>
-                    <EuiFormRow
-                      isInvalid={
-                        !!audienceForm.formState.errors.customer?.message ||
-                        !!audienceForm.formState.errors.customer?.[0]?.value?.message
-                      }
-                      error={[
-                        audienceForm.formState.errors.customer?.message ||
-                          audienceForm.formState.errors.customer?.[0]?.value?.message,
-                      ]}
-                    >
-                      <Controller
-                        control={audienceForm.control}
-                        name="customer"
-                        render={({ field: { value, onBlur, onChange } }) => (
-                          <EuiComboBox
-                            placeholder="Search"
-                            singleSelection={{ asPlainText: true }}
-                            options={dataTypeOptions}
-                            onChange={(selected) => {
-                              setSelectedOptions(selected);
-                              onChange(selected);
-                            }}
-                            selectedOptions={[{ label: (value && value[0]?.label) || "" }]}
-                            onBlur={onBlur}
-                            isClearable={false}
-                            isLoading={isLoading}
-                            isDisabled={!selectedChatId}
-                          />
-                        )}
-                      />
-                    </EuiFormRow>
-                  </EuiForm>
+                  <EuiLoadingSpinner size="xl" />
                 </EuiFlexItem>
-                <EuiFlexItem grow={false}>
-                  <EuiButton
-                    disabled={!selectedChatId || selectedOptions?.length == 0}
-                    onClick={() => {
-                      handleAssignButton();
-                    }}
+              )}
+              {isErrorRootChat && <EuiFlexItem>Error loading chat logs</EuiFlexItem>}
+              <EuiPopover
+                id={contextMenuPopoverId}
+                button={selectPageButton}
+                isOpen={isSelectPagePopoverOpen}
+                closePopover={closeSelectPagePopover}
+                panelPaddingSize="none"
+                anchorPosition="downLeft"
+              >
+                <EuiContextMenu initialPanelId={0} panels={panels} />
+              </EuiPopover>
+
+              <EuiTabs>
+                <EuiTab
+                  key={'open-chats-tab'}
+                  onClick={() => onSelectRootChatTab('open-chats-tab')}
+                  isSelected={currentRootChatTab === 'open-chats-tab'}
+                  append={3}
+                >
+                  Нээлттэй
+                </EuiTab>
+                <EuiTab
+                  key={'closed-chats-tab'}
+                  onClick={() => onSelectRootChatTab('closed-chats-tab')}
+                  isSelected={currentRootChatTab === 'closed-chats-tab'}
+                  append={2}
+                >
+                  Хаалттай
+                </EuiTab>
+              </EuiTabs>
+
+              {!isLoadingRootChat &&
+                rootChatLogs?.results
+                .slice()
+                .sort(
+                  (a, b) =>
+                    new Date(b.last_active_at).getTime() - new Date(a.last_active_at).getTime(),
+                ).map((rootChat) => (
+                  <EuiFlexItem
+                    key={rootChat.id}
+                    className="root-chat-wrapper"
+                    onClick={() =>
+                      handleClickChat(
+                        rootChat,
+                        rootChat.id,
+                        rootChat.fb_profile.psid,
+                        rootChat.fb_profile,
+                      )
+                    }
                   >
-                    Assign
-                  </EuiButton>
-                </EuiFlexItem>
-              </EuiFlexGroup>
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </EuiPage>
-      </DashboardCRMLayout>
+                    <EuiAvatar
+                      name={rootChat.fb_profile.name}
+                      imageUrl={getImgUrl(rootChat.fb_profile.picture)}
+                      size="m"
+                      className="avatar"
+                    />
+                    <div>
+                      <strong>{rootChat.fb_profile.name}</strong>
+                      <p>{extractMessage(rootChat.body)}</p>
+                      <span>{moment(rootChat.created_at).fromNow()}</span>
+                    </div>
+                  </EuiFlexItem>
+                ))}
+            </EuiFlexGrid>
+          </EuiFlexItem>
+          <EuiFlexItem  grow={3} style={{ background: "#F7F8FC" }}>
+A
+          </EuiFlexItem>
+          <EuiFlexItem grow={1}>
+BV
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </DashboardCRMChatLayout>
     </>
   );
 };
