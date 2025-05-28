@@ -622,7 +622,8 @@ const Table = () => {
           } else {
             setInputValue("");
           }
-          emitTagChange(changedOption.value);
+          // Fix: use label property instead of value
+          emitTagChange(changedOption.label);
         }}
         singleSelection
         searchable

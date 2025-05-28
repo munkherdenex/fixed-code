@@ -12,11 +12,12 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiIcon,
+  EuiLink,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import moment, { Moment } from "moment";
-import { PAGINATION_CHOOSES } from "../../constants";
+import { PAGINATION_CHOOSES, SOCKET_URL } from "../../constants";
 import { isNumber } from "../../utils/helper";
 import { useTranslations } from "next-intl";
 import { io, Socket } from "socket.io-client";
@@ -52,7 +53,7 @@ const Table = () => {
     call_type: query?.call_type?.toString() || "",
     date: query?.date ? moment(query?.date) : null,
     offset: isNumber(query?.offset) ? +query?.offset : 1,
-    limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[0],
+    limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[1],
   };
 
   const [queryState, setQueryState] = useState(initialQueryState);
@@ -66,30 +67,57 @@ const Table = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const socketServerUrl =
-        process.env.NEXT_PUBLIC_SOCKET_URL || "http://10.0.20.101:9999/socket.io";
-      const socket: Socket = io(socketServerUrl, {});
+      const socketServerUrl = SOCKET_URL;
+      let socket: Socket | null = null;
+      let retryCount = 0;
+      const MAX_RETRY_ATTEMPTS = 3; // Maximum number of retry attempts
+      
+      const connectSocket = () => {
+        // Don't try to reconnect if we've reached max attempts
+        if (retryCount >= MAX_RETRY_ATTEMPTS) {
+          console.log(`Socket.IO connection failed after ${MAX_RETRY_ATTEMPTS} attempts. Giving up.`);
+          return;
+        }
+        
+        retryCount++;
+        console.log(`Socket.IO connection attempt ${retryCount}/${MAX_RETRY_ATTEMPTS}`);
+        
+        socket = io(socketServerUrl, {
+          reconnection: false // Disable auto reconnection so we can handle it manually
+        });
 
-      socket.on("connect", () => {
-        console.log("Socket.IO connected:", socket.id);
-      });
+        socket.on("connect", () => {
+          // Reset retry count on successful connection
+          retryCount = 0;
+        });
 
-      socket.on("call_updated", () => {
-        console.log("New call received, mutating SWR data.");
-        mutate(); // Trigger SWR revalidation
-      });
+        socket.on("call_updated", () => {
+          mutate(); // Trigger SWR revalidation
+        });
 
-      socket.on("disconnect", (reason) => {
-        console.log("Socket.IO disconnected:", reason);
-      });
+        socket.on("disconnect", (reason) => {
+          console.log("Socket.IO disconnected:", reason);
+        });
 
-      socket.on("connect_error", (error) => {
-        console.error("Socket.IO connection error:", error);
-      });
+        socket.on("connect_error", (error) => {
+          console.error("Socket.IO connection error:", error);
+          // We'll handle reconnection manually based on our retry policy
+          socket.disconnect();
+          
+          if (retryCount < MAX_RETRY_ATTEMPTS) {
+            console.log(`Retrying connection in 2 seconds... (Attempt ${retryCount}/${MAX_RETRY_ATTEMPTS})`);
+            setTimeout(connectSocket, 2000); // Try to reconnect after 2 seconds
+          }
+        });
+      };
+      
+      // Initial connection attempt
+      connectSocket();
 
       return () => {
-        console.log("Disconnecting Socket.IO");
-        socket.disconnect();
+        if (socket) {
+          socket.disconnect();
+        }
       };
     }
   }, [mutate]);
@@ -128,6 +156,14 @@ const Table = () => {
       field: "call_agent",
       name: "Дуудлага авсан ажилтан",
     },
+    {
+      field: "actions",
+      render: (action: string, call: any) => (
+        <EuiLink href={`/dashboards/crm/call/${call.call_id}`}>
+          Үзэх
+        </EuiLink>
+      ),
+    }
   ];
 
   const onSearch = (value: string) => {
@@ -149,14 +185,14 @@ const Table = () => {
     }
   };
 
-  const handleRowClick = (call: any) => {
-    router.push(`/dashboards/crm/call/${call.call_id}`);
-  };
+  // const handleRowClick = (call: any) => {
+  //   router.push(`/dashboards/crm/call/${call.call_id}`);
+  // };
 
   const getRowProps = (call: any) => ({
     "data-test-subj": `row-${call.id}`,
     className: "customRowClass",
-    onClick: () => handleRowClick(call),
+    // onClick: () => handleRowClick(call),
   });
 
   const getCellProps = (call: any, column: EuiBasicTableColumn<any>) => ({
@@ -199,7 +235,7 @@ const Table = () => {
       call_type: query?.call_type?.toString() || "",
       date: query?.date ? moment(query?.date) : null,
       offset: isNumber(query?.offset) ? +query?.offset : 1,
-      limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[0],
+      limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[1],
     };
     setQueryState(updatedQueryState);
     // eslint-disable-next-line react-hooks/exhaustive-deps

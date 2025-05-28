@@ -29,6 +29,7 @@ declare global {
   interface Window {
     env: {
       BACKEND_URL: string;
+      SOCKET_URL: string;
       IS_POCKET: string;
       IS_REGISTER_ENABLED: string;
       CRM: string;

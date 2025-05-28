@@ -3,6 +3,7 @@ import { FrontProduct } from "../store/products_store";
 import { validator } from "../utils/helper";
 
 export const BASE_URL = `${(global?.window && window?.env?.BACKEND_URL) || ""}`;
+export const SOCKET_URL = `${(global?.window && window?.env?.SOCKET_URL) || ""}`;
 export const IS_POCKET = (global?.window && window?.env?.IS_POCKET) || false;
 export const IS_REGISTER_ENABLED = (global?.window && window?.env?.IS_REGISTER_ENABLED) || false;
 export const CRM = (global?.window && window?.env?.CRM) || false;
