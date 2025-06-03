@@ -2,11 +2,15 @@ import {
   EuiBadge,
   EuiButton,
   EuiComboBox,
+  EuiFlexGroup,
+  EuiFlexItem,
   EuiFlyout,
   EuiFlyoutBody,
   EuiFlyoutHeader,
   EuiForm,
   EuiFormRow,
+  EuiSelect,
+  EuiSpacer,
   EuiTitle,
   useGeneratedHtmlId,
 } from "@elastic/eui";
@@ -59,11 +63,24 @@ const AddAudienceFlyout = ({
 
   const [searchValue, setSearchValue] = useState<string>("");
 
+  const searchTypeOptions = [
+    { value: "phone", text: "Утсаар хайх" },
+    { value: "email", text: "И-мейлээр хайх" },
+  ];
+
+  const [searchType, setSearchType] = useState(searchTypeOptions[0].value);
+
+  const basicSelectId = useGeneratedHtmlId({ prefix: "basicSelect" });
+
+  const onSearchTypeChange = (e) => {
+    setSearchType(e.target.value);
+  };
+
   const { data: customerData, isLoading: isGetCustomersLoading } =
     useGetCustomers<CustomersResponse>(
       undefined,
       {
-        query: searchValue,
+        [searchType === "phone" ? "phone" : "email"]: searchValue,
         limit: LIMIT,
       },
       {
@@ -145,32 +162,52 @@ const AddAudienceFlyout = ({
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-          <EuiFormRow
-            label={translate("rid")}
-            isInvalid={!!errors.id?.message}
-            error={[errors.id?.message]}
-          >
-            <Controller
-              control={control}
-              name="id"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <EuiComboBox
-                  onChange={onChange}
-                  options={preparedData || []}
-                  selectedOptions={value?.[0]?.label ? [{ label: value?.[0]?.label }] : []}
-                  onBlur={onBlur}
-                  isInvalid={!!errors.type?.message}
-                  onSearchChange={onSearch}
-                  isLoading={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
-                  optionMatcher={({ option, searchValue }) => {
-                    return option?.["aria-label"].includes(searchValue);
-                  }}
-                  aria-label={translate("data_type")}
-                  singleSelection
+          <EuiFlexGroup>
+            <EuiFlexItem>
+              <EuiFormRow
+                label={translate("rid")}
+                isInvalid={!!errors.id?.message}
+                error={[errors.id?.message]}
+              >
+                <Controller
+                  control={control}
+                  name="id"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <EuiComboBox
+                      onChange={onChange}
+                      options={preparedData || []}
+                      selectedOptions={value?.[0]?.label ? [{ label: value?.[0]?.label }] : []}
+                      onBlur={onBlur}
+                      isInvalid={!!errors.type?.message}
+                      onSearchChange={onSearch}
+                      isLoading={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
+                      optionMatcher={({ option, searchValue }) => {
+                        return option?.["aria-label"].includes(searchValue);
+                      }}
+                      aria-label={translate("data_type")}
+                      singleSelection
+                    />
+                  )}
                 />
-              )}
-            />
-          </EuiFormRow>
+              </EuiFormRow>
+            </EuiFlexItem>
+            <EuiFlexItem grow={false}>
+              <EuiFormRow
+                label="Хайх төрөл"
+                isInvalid={!!errors.id?.message}
+                error={[errors.id?.message]}
+              >
+                <EuiSelect
+                  id={basicSelectId}
+                  options={searchTypeOptions}
+                  value={searchType}
+                  onChange={(e) => onSearchTypeChange(e)}
+                  aria-label="Use aria labels when no actual label is in use"
+                />
+              </EuiFormRow>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+          <EuiSpacer size="s" />
           <EuiButton
             disabled={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
             isLoading={isMutating || isGetCustomersLoading || isGetSegmentsLoading}
