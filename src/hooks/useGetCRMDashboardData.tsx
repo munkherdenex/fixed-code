@@ -21,8 +21,9 @@ export interface AnalyticsData {
 }
 
 export default function useGetCRMDashboardData(queryParams) {
+  console.log(queryParams);
   const preparedQueryParam = createParam({ ...queryParams });
-  const path = `/api/v1/dj/crm/summary/tickets/`;
+  const path = `/api/v1/dj/crm/ticket/summary/?${preparedQueryParam}`;
 
   const { data, error, isLoading, mutate } = useSWR(path, async (path) => {
     const res = await fetch(`${BASE_URL}${path}`, {
