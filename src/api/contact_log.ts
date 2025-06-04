@@ -33,7 +33,7 @@ const contactLogApi = {
   },
 
   updateContactLogById: async (id, body = null, status = null, sentiment = null) => {
-    const response = await client.put(`/crm/contact_log/${id}/`, { 
+    const response = await client.put(`/crm/contact_log/${id}/`, {
       ...(body !== undefined ? { body } : {}),
       ...(status !== undefined ? { status } : {}),
       ...(sentiment !== null ? { sentiment } : {})
@@ -41,8 +41,14 @@ const contactLogApi = {
     return response.data;
   },
 
-  getRootChatLogs: async (limit: number, offset: number) => {
-    const response = await client.get("/crm/fbchat/chat/", { params: { limit, offset } });
+  getRootChatLogs: async (cursor: string, status?: string, source_id?: string) => {
+    const response = await client.get("/crm/fbchat/chat/", 
+      { params: {
+        cursor, 
+        status, 
+        source_id 
+      } 
+    });
     return response.data;
   },
 
@@ -67,11 +73,6 @@ const contactLogApi = {
 
   createTicket: async (payload: TicketPayload) => {
     const response = await client.post("/crm/ticket/", payload);
-    return response.data;
-  },
-
-  getChatGroups: async () => {
-    const response = await client.get("/crm/fbchat/groups/");
     return response.data;
   },
 };

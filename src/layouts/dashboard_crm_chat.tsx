@@ -71,7 +71,7 @@ const Content = ({
           )}
           <EuiPageBody panelled>
             <DashboardHeadersCRM />
-            <EuiPageSection paddingSize="none" css={{'outline':'1px solid red', 'background':'#fff'}}>{children}</EuiPageSection>
+            <EuiPageSection paddingSize="none">{children}</EuiPageSection>
           </EuiPageBody>
         </EuiPage>
       </div>

@@ -87,8 +87,7 @@ const Popeye = () => {
 };
 
 const ChatMessage = ({ id, name, fbProfile, isToMe = false, message, timestamp = "now" }) => {
-  const date = moment(timestamp);
-  const formattedDate = date.format("YYYY-MM-DD HH:mm");
+  const formattedDate = moment(timestamp).format("YYYY-MM-DD HH:mm");
 
   return (
     <div
