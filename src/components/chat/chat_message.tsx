@@ -107,7 +107,7 @@ const ChatMessage = ({ id, name, fbProfile, isToMe = false, message, timestamp =
     >
       <EuiAvatar
         size="m"
-        name={fbProfile?.first_name ? fbProfile.first_name : "Noname"}
+        name={fbProfile?.first_name ? fbProfile?.first_name : "Noname"}
         imageUrl={fbProfile ? getImgUrl(fbProfile.picture) : undefined}
       />
       <div style={messageBuble}>

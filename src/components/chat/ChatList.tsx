@@ -288,7 +288,7 @@ const ChatList: React.FC<ChatListProps> = ({ className }) => {
               >
                 <div className="avatar-container">
                   <EuiAvatar
-                    name={rootChat.fb_profile.name}
+                    name={rootChat?.fb_profile?.name || ""}
                     imageUrl={getImgUrl(rootChat.fb_profile.picture)}
                     size="l"
                     className="avatar"

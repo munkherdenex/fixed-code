@@ -11,6 +11,7 @@ import ChatGroupSelection from "@/components/chat/ChatGroupSelection";
 import ChatList from "@/components/chat/ChatList";
 import ChatMessages from "@/components/chat/ChatMessages";
 import ChatDetail from "@/components/chat/ChatDetail";
+import SocketExample from "@/components/socket_example";
 
 const chatCss = css`
   .root-chat-wrapper {

@@ -1,9 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import fbPageConfigApi, { FBPageConfig, FBPageConfigResponse } from "@/api/fb_page_config";
 import useGetRootChatLogs from "@/hooks/useGetRootChatLogs";
 import contactLogApi from "@/api/contact_log";
 import axios from "axios";
 import useSWRInfinite from "swr/infinite";
+import { io, Socket } from "socket.io-client";
+import { SOCKET_URL } from "../constants";
 
 // Define interfaces
 export interface FbProfile {
@@ -127,6 +129,9 @@ interface ChatContextType {
   
   // Utilities
   scrollToBottom: () => void;
+
+  // Socket connection status
+  socketConnected: boolean;
 }
 
 // Create context with a default value
@@ -162,6 +167,8 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   // Refs
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
   const isLoadingOlderMessagesRef = React.useRef<boolean>(false);
+  const socketRef = useRef<Socket | null>(null);
+  const [socketConnected, setSocketConnected] = useState(false);
   
   // Fetch chat logs with status based on the selected tab and source_id based on selected chat group
   const { 
@@ -340,6 +347,154 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
     fetchChatGroups();
   }, []);
 
+  // Socket.IO connection setup
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const socketServerUrl = SOCKET_URL;
+      let retryCount = 0;
+      const MAX_RETRY_ATTEMPTS = 3; // Maximum retry attempts
+      
+      // Check if SOCKET_URL is empty
+      if (!socketServerUrl) {
+        console.error("Socket.IO URL is empty. Please check environment variables.");
+        return;
+      }
+      
+      const connectSocket = () => {
+        // Don't try to reconnect if we've reached max attempts
+        if (retryCount >= MAX_RETRY_ATTEMPTS) {
+          console.log(`Socket.IO connection failed after ${MAX_RETRY_ATTEMPTS} attempts. Giving up.`);
+          return;
+        }
+        
+        retryCount++;
+        console.log(`Socket.IO connection attempt ${retryCount}/${MAX_RETRY_ATTEMPTS}`);
+        
+        // Clean up any existing socket connection
+        if (socketRef.current) {
+          socketRef.current.removeAllListeners();
+          socketRef.current.disconnect();
+        }
+        
+        // Create new socket connection
+        socketRef.current = io(socketServerUrl, {
+          reconnection: false, // Disable auto reconnection to handle it manually
+          transports: ['websocket', 'polling'] // Try websocket first, then fallback to polling
+        });
+
+        socketRef.current.on("connect", () => {
+          console.log("Socket.IO connected");
+          // Reset retry count on successful connection
+          retryCount = 0;
+          setSocketConnected(true);
+        });
+
+        // Listen for new chat messages
+        socketRef.current.on("new_message", (socket_data) => {
+          console.log("New message received:", socket_data);
+          const data = socket_data.data;
+          
+          // Only handle the message if it belongs to the currently selected chat
+          if (data.chat_parent === selectedChatId) {
+            mutate(async (pages: any) => {
+              // Format the incoming message to match our ChatMessage structure
+              const newMessage: ChatMessage = {
+                id: data.id || Date.now(),
+                customer_id: data.customer_id || null,
+                type: data.type || 'text',
+                body: data.body || data.message,
+                source: data.source || 'facebook',
+                email: data.email || null,
+                phone: data.phone || null,
+                team_id: data.team_id || null,
+                chat_is_root: false,
+                chat_id: data.chat_id,
+                chat_state: data.chat_state || null,
+                status: data.status || 'active',
+                created_at: data.created_at || new Date().toISOString(),
+                updated_at: data.updated_at || new Date().toISOString(),
+                chat_parent: data.chat_parent || 0,
+                chat_from: data.chat_from || 0, // If 0, it's from the user (us)
+                chat_to: data.chat_to || null,
+                created_by: data.created_by || null,
+                updated_by: data.updated_by || null
+              };
+              
+              // Add the new message to the first page of messages
+              return pages?.map((page: any, index: number) =>
+                index === 0 ? { ...page, results: [...(page.results || []), newMessage] } : page
+              ) || [];
+            }, false);
+            
+            // Scroll to bottom after receiving a new message
+            setTimeout(scrollToBottom, 100);
+          } else {
+            // If message is for another chat, we could update unread counts or provide a notification
+            console.log("Message received for a different chat:", data.chat_id);
+            // TODO: Implement notification or unread count update
+          }
+        });
+
+        // Listen for chat status changes (like marking as read, etc.)
+        socketRef.current.on("chat_status_update", (data) => {
+          console.log("Chat status updated:", data);
+          // Handle chat status updates if needed
+        });
+
+        socketRef.current.on("disconnect", (reason) => {
+          console.log("Socket.IO disconnected:", reason);
+          setSocketConnected(false);
+          
+          // Only attempt to reconnect for certain disconnect reasons
+          if (reason !== "io client disconnect" && reason !== "io server disconnect") {
+            setTimeout(() => {
+              connectSocket();
+            }, 2000);
+          }
+        });
+
+        socketRef.current.on("connect_error", (error) => {
+          console.error("Socket.IO connection error:", error);
+          
+          // We'll handle reconnection manually based on our retry policy
+          if (socketRef.current) {
+            socketRef.current.disconnect();
+          }
+          
+          if (retryCount < MAX_RETRY_ATTEMPTS) {
+            console.log(`Retrying connection in 2 seconds... (Attempt ${retryCount}/${MAX_RETRY_ATTEMPTS})`);
+            setTimeout(connectSocket, 2000); // Try to reconnect after 2 seconds
+          }
+        });
+      };
+      
+      // Initial connection attempt
+      connectSocket();
+
+      return () => {
+        if (socketRef.current) {
+          socketRef.current.removeAllListeners();
+          socketRef.current.disconnect();
+        }
+      };
+    }
+  }, []); // Empty dependency array to ensure socket connection is only established once
+
+  // Effect to subscribe to specific chat room when a chat is selected
+  useEffect(() => {
+    if (socketRef.current && socketRef.current.connected && selectedChatId) {
+      // Join the chat room for real-time updates
+      socketRef.current.emit('join_chat', { chat_id: selectedChatId });
+      
+      // When leaving this chat, we can clean up
+      return () => {
+        if (socketRef.current && socketRef.current.connected) {
+          socketRef.current.emit('leave_chat', { chat_id: selectedChatId });
+        }
+      };
+    }
+  }, [selectedChatId, socketConnected]);
+
   // Effect to scroll to bottom when messages change or a new chat is selected
   useEffect(() => {
     if (messages.length > 0 && !isLoadingOlderMessagesRef.current) {
@@ -407,6 +562,9 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
     
     // Utilities
     scrollToBottom,
+    
+    // Socket connection status
+    socketConnected,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

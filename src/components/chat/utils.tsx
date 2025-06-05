@@ -89,7 +89,6 @@ export const extractMessage = (messageStr: string | null | undefined, isShort: B
       );
     }
   } catch (error) {
-    console.error("Failed to parse JSON:", error);
     return isShort ? messageStr.substring(0, 20) + "..." : messageStr;
   }
 };
@@ -104,7 +103,6 @@ export const getImgUrl = (str: string | null | undefined): string | null => {
     const obj = JSON.parse(fixedStr);
     return obj?.data?.url;
   } catch (error) {
-    console.error("Failed to parse JSON:", error);
     return null;
   }
 };

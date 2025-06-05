@@ -2,7 +2,7 @@
 
 import DashboardCRMLayout from "@/layouts/dashboard_crm";
 import { GetStaticProps } from "next/types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   EuiFlexGrid,
   EuiFlexGroup,
@@ -28,10 +28,31 @@ import {
   EuiBadge,
   EuiFieldPassword,
   EuiCallOut,
+  EuiCode,
+  EuiEmptyPrompt,
+  EuiTitle,
+  EuiHorizontalRule,
 } from "@elastic/eui";
 import { useTranslations } from "next-intl";
 import fbPageConfigApi, { FBPageConfig } from "@/api/fb_page_config";
 import { useRouter } from "next/router";
+import FacebookSDK from '@/components/facebook_script';
+
+interface FacebookPage {
+  id: string;
+  name: string;
+  category: string;
+  access_token?: string;
+  tasks?: string[];
+  picture?: {
+    data: {
+      height: number;
+      is_silhouette: boolean;
+      url: string;
+      width: number;
+    };
+  };
+}
 
 const ChatFacebook = () => {
   const translate = useTranslations();
@@ -42,11 +63,170 @@ const ChatFacebook = () => {
   const [currentPage, setCurrentPage] = useState<FBPageConfig | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [facebookPages, setFacebookPages] = useState<FBPageConfig[]>([]);
+  const [fbSDKReady, setFbSDKReady] = useState(false);
+  const [fbLoginStatus, setFbLoginStatus] = useState<any>(null);
+  const fbButtonContainerRef = useRef(null);
+  // Add state for user's Facebook pages
+  const [userFacebookPages, setUserFacebookPages] = useState<FacebookPage[]>([]);
+  const [loadingUserPages, setLoadingUserPages] = useState(false);
+  const [selectedUserPage, setSelectedUserPage] = useState<FacebookPage | null>(null);
+
+  // Setup Facebook SDK ready listener
+  useEffect(() => {
+    const handleFBSDKReady = () => {
+      console.log('FB SDK Ready event received');
+      setFbSDKReady(true);
+      
+      // Try to parse XFBML again once SDK is ready
+      if (typeof window !== 'undefined' && window.FB) {
+        window.FB.XFBML.parse();
+        
+        // Check login status
+        window.FB.getLoginStatus(function(response) {
+          console.log('FB Login Status:', response);
+          setFbLoginStatus(response);
+          
+          // If user is already connected, fetch their Facebook pages
+          if (response.status === 'connected') {
+            fetchUserFacebookPages(response.authResponse.accessToken);
+          }
+        });
+      }
+    };
+
+    // Listen for custom event from FacebookSDK component
+    document.addEventListener('fb-sdk-ready', handleFBSDKReady);
+
+    // Also check if FB SDK is already loaded
+    if (typeof window !== 'undefined' && window.FB) {
+      setFbSDKReady(true);
+      window.FB.getLoginStatus(function(response) {
+        console.log('FB Login Status (direct):', response);
+        setFbLoginStatus(response);
+        
+        // If user is already connected, fetch their Facebook pages
+        if (response.status === 'connected') {
+          fetchUserFacebookPages(response.authResponse.accessToken);
+        }
+      });
+    }
+    
+    return () => {
+      document.removeEventListener('fb-sdk-ready', handleFBSDKReady);
+    };
+  }, []);
+
+  // Handle login status change
+  const statusChangeCallback = (response) => {
+    console.log('Facebook login status changed:', response);
+    setFbLoginStatus(response);
+    
+    // If we're now logged in, fetch user's Facebook pages
+    if (response.status === 'connected') {
+      fetchUserFacebookPages(response.authResponse.accessToken);
+      fetchFacebookPages();
+    } else {
+      // Clear user Facebook pages if logged out
+      setUserFacebookPages([]);
+    }
+  };
+
+  // This function is called when the FB Login button completes its process
+  const checkLoginState = () => {
+    if (typeof window !== 'undefined' && window.FB) {
+      window.FB.getLoginStatus(function(response) {
+        statusChangeCallback(response);
+      });
+    }
+  };
+
+  // Function to fetch the user's Facebook Pages
+  const fetchUserFacebookPages = async (accessToken) => {
+    setLoadingUserPages(true);
+    try {
+      if (typeof window !== 'undefined' && window.FB) {
+        // Get pages the user manages with page access tokens
+        window.FB.api(
+          '/me/accounts',
+          { fields: 'id,name,access_token,category,picture,tasks', access_token: accessToken },
+          function(response) {
+            if (response && !response.error) {
+              console.log('User Facebook Pages:', response);
+              setUserFacebookPages(response.data || []);
+            } else {
+              console.error('Error fetching user Facebook pages:', response?.error);
+              setErrorMessage('Failed to fetch your Facebook pages. Please check permissions and try again.');
+            }
+            setLoadingUserPages(false);
+          }
+        );
+      }
+    } catch (error) {
+      console.error('Error in fetchUserFacebookPages:', error);
+      setErrorMessage('An error occurred while fetching your Facebook pages.');
+      setLoadingUserPages(false);
+    }
+  };
+
+  // Handle selecting a user Facebook page for import
+  const handleSelectUserPage = (page: FacebookPage) => {
+    setSelectedUserPage(page);
+    
+    // Pre-populate the form with the selected page data
+    setCurrentPage({
+      page_id: page.id,
+      page_name: page.name,
+      page_access_token: page.access_token || "",
+      app_id: "", // This will need to be filled by the user
+      app_secret: "", // This will need to be filled by the user
+      verify_token: "", // This might need to be generated
+      status: "active",
+      is_enabled: true,
+    });
+    
+    setErrorMessage(null);
+    setIsModalVisible(true);
+  };
+
+  // Make sure FB button is rerendered when SDK is ready
+  useEffect(() => {
+    if (fbSDKReady && typeof window !== 'undefined' && window.FB && fbButtonContainerRef.current) {
+      console.log('Parsing XFBML for FB button container');
+      window.FB.XFBML.parse(fbButtonContainerRef.current);
+    }
+  }, [fbSDKReady]);
+  
+  // Make checkLoginState available globally for the FB Login Button
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.checkLoginState = checkLoginState;
+    }
+    
+    return () => {
+      // Clean up when component unmounts
+      if (typeof window !== 'undefined') {
+        // @ts-ignore
+        delete window.checkLoginState;
+      }
+    };
+  }, []);
 
   // Fetch Facebook pages on component mount
   useEffect(() => {
     fetchFacebookPages();
   }, []);
+
+  // Create a manual login function for a fallback button
+  const handleManualLogin = () => {
+    if (typeof window !== 'undefined' && window.FB) {
+      window.FB.login(function(response) {
+        statusChangeCallback(response);
+      }, {scope: 'public_profile,email,pages_show_list,pages_read_engagement,pages_messaging'});
+    } else {
+      console.error('Facebook SDK not loaded');
+      setErrorMessage('Facebook SDK is not loaded. Please refresh the page and try again.');
+    }
+  };
 
   const fetchFacebookPages = async () => {
     setIsLoading(true);
@@ -258,6 +438,7 @@ const ChatFacebook = () => {
         }
       >
         <>
+          <FacebookSDK />
           {errorMessage && (
             <>
               <EuiCallOut title="Error" color="danger">
@@ -267,62 +448,216 @@ const ChatFacebook = () => {
             </>
           )}
 
-          {isLoading ? (
-            <EuiFlexGroup justifyContent="center" alignItems="center" style={{ height: "200px" }}>
-              <EuiLoadingSpinner size="xl" />
-            </EuiFlexGroup>
-          ) : facebookPages.length === 0 ? (
-            <EuiText textAlign="center" color="subdued">
-              <p>{translate("no_facebook_pages")}</p>
-            </EuiText>
-          ) : (
-            <EuiFlexGrid columns={3}>
-              {facebookPages.map((page) => (
-                <EuiFlexItem key={page.id}>
-                  <EuiCard
-                    title={page.page_name || "Unnamed Page"}
-                    description={
-                      <>
-                        <p>ID: {page.page_id}</p>
-                        <p>
-                          Status:{" "}
-                          <EuiBadge color={page.is_enabled ? "success" : "danger"}>
-                            {page.is_enabled ? translate("active") : translate("inactive")}
-                          </EuiBadge>
-                        </p>
-                      </>
-                    }
-                    footer={
-                      <EuiFlexGroup justifyContent="flexEnd">
-                        <EuiFlexItem grow={false}>
-                          <EuiSwitch
-                            label={translate("active")}
-                            checked={page.is_enabled}
-                            onChange={() => page.id && togglePageStatus(page.id, !page.is_enabled)}
-                          />
-                        </EuiFlexItem>
-                        <EuiFlexItem grow={false}>
-                          <EuiButtonIcon
-                            aria-label={translate("edit")}
-                            iconType="pencil"
-                            onClick={() => editPage(page)}
-                          />
-                        </EuiFlexItem>
-                        <EuiFlexItem grow={false}>
-                          <EuiButtonIcon
-                            aria-label={translate("delete")}
-                            iconType="trash"
-                            color="danger"
-                            onClick={() => page.id && handleDeletePage(page.id)}
-                          />
-                        </EuiFlexItem>
-                      </EuiFlexGroup>
+          {/* Facebook Login Section */}
+          {(!fbLoginStatus || fbLoginStatus.status !== 'connected') && (
+            <>
+              <EuiCallOut 
+                title="Facebook Login Required" 
+                color="primary"
+                iconType="iInCircle"
+              >
+                <p>Please log in with Facebook to access and manage your Facebook pages:</p>
+                <EuiSpacer size="m" />
+                
+                {/* Facebook Login Button Container */}
+                <div ref={fbButtonContainerRef} style={{ minHeight: '40px' }}>
+                  <div className="fb-login-button"
+                    data-width=""
+                    data-size="large"
+                    data-button-type="login_with"
+                    data-layout="default"
+                    data-auto-logout-link="false"
+                    data-use-continue-as="false"
+                    data-scope="public_profile,email,pages_show_list,pages_read_engagement,pages_manage_metadata"
+                    data-onlogin="checkLoginState">
+                  </div>
+                </div>
+                
+                {/* Fallback button in case the Facebook button doesn't render */}
+                <EuiSpacer size="s" />
+                <p>If the Facebook login button is not visible, please use this button instead:</p>
+                <EuiButton 
+                  onClick={handleManualLogin}
+                  iconType="logoFacebook"
+                  color="primary"
+                >
+                  Login with Facebook
+                </EuiButton>
+              </EuiCallOut>
+              <EuiSpacer />
+            </>
+          )}
+          
+          {fbLoginStatus && fbLoginStatus.status === 'connected' && (
+            <>
+              <EuiCallOut 
+                title="Connected to Facebook" 
+                color="success"
+                iconType="checkInCircleFilled"
+              >
+                <p>You are logged in to Facebook. You can now manage your Facebook pages.</p>
+              </EuiCallOut>
+              <EuiSpacer />
+            </>
+          )}
+
+          {/* Display User's Facebook Pages section */}
+          {fbLoginStatus && fbLoginStatus.status === 'connected' && (
+            <>
+              <EuiPanel>
+                <EuiTitle size="s">
+                  <h3>Your Facebook Pages</h3>
+                </EuiTitle>
+                <EuiHorizontalRule margin="s" />
+                
+                {loadingUserPages ? (
+                  <EuiFlexGroup justifyContent="center" alignItems="center" style={{ height: "100px" }}>
+                    <EuiLoadingSpinner size="m" />
+                  </EuiFlexGroup>
+                ) : userFacebookPages.length === 0 ? (
+                  <EuiEmptyPrompt
+                    iconType="facebookSquare"
+                    title={<h3>No Facebook Pages Found</h3>}
+                    body={
+                      <p>
+                        We couldn't find any Facebook pages that you manage. 
+                        Please make sure you've granted the necessary permissions.
+                      </p>
                     }
                   />
-                </EuiFlexItem>
-              ))}
-            </EuiFlexGrid>
+                ) : (
+                  <EuiFlexGrid columns={3}>
+                    {userFacebookPages.map((page) => (
+                      <EuiFlexItem key={page.id}>
+                        <EuiCard
+                          textAlign="left"
+                          title={page.name}
+                          description={
+                            <>
+                              <p>Category: {page.category || 'Unknown'}</p>
+                              <p>ID: {page.id}</p>
+                              {page.tasks && (
+                                <p>Roles: {page.tasks.join(', ')}</p>
+                              )}
+                            </>
+                          }
+                          image={
+                            page.picture ? 
+                              <div style={{ 
+                                backgroundImage: `url(${page.picture.data.url})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                height: '60px',
+                                width: '60px',
+                                borderRadius: '5px',
+                                margin: '10px'
+                              }} /> : 
+                              <EuiIcon type="facebookSquare" size="xl" />
+                          }
+                          footer={
+                            <EuiButton 
+                              fullWidth 
+                              size="s" 
+                              onClick={() => handleSelectUserPage(page)}
+                            >
+                              Add to System
+                            </EuiButton>
+                          }
+                        />
+                      </EuiFlexItem>
+                    ))}
+                  </EuiFlexGrid>
+                )}
+              </EuiPanel>
+              <EuiSpacer />
+            </>
           )}
+          
+          {/* Existing System Pages Section */}
+          <EuiPanel>
+            <EuiTitle size="s">
+              <h3>Configured Facebook Pages</h3>
+            </EuiTitle>
+            <EuiHorizontalRule margin="s" />
+            
+            {isLoading ? (
+              <EuiFlexGroup justifyContent="center" alignItems="center" style={{ height: "200px" }}>
+                <EuiLoadingSpinner size="xl" />
+              </EuiFlexGroup>
+            ) : facebookPages.length === 0 ? (
+              <EuiEmptyPrompt
+                iconType="facebookSquare"
+                title={<h3>{translate("no_facebook_pages")}</h3>}
+                body={
+                  <p>
+                    You haven't added any Facebook pages to your system yet. 
+                    Connect with Facebook and add the pages you want to manage.
+                  </p>
+                }
+                actions={
+                  fbLoginStatus && fbLoginStatus.status === 'connected' && userFacebookPages.length > 0 ? (
+                    <p>Select a page from "Your Facebook Pages" section above to add it to your system.</p>
+                  ) : (
+                    <EuiButton 
+                      color="primary" 
+                      fill 
+                      onClick={fbLoginStatus?.status === 'connected' ? addNewPage : handleManualLogin}
+                      iconType={fbLoginStatus?.status === 'connected' ? "plusInCircle" : "facebookSquare"}
+                    >
+                      {fbLoginStatus?.status === 'connected' ? translate("add_page") : "Login with Facebook"}
+                    </EuiButton>
+                  )
+                }
+              />
+            ) : (
+              <EuiFlexGrid columns={3}>
+                {facebookPages.map((page) => (
+                  <EuiFlexItem key={page.id}>
+                    <EuiCard
+                      title={page.page_name || "Unnamed Page"}
+                      description={
+                        <>
+                          <p>ID: {page.page_id}</p>
+                          <p>
+                            Status:{" "}
+                            <EuiBadge color={page.is_enabled ? "success" : "danger"}>
+                              {page.is_enabled ? translate("active") : translate("inactive")}
+                            </EuiBadge>
+                          </p>
+                        </>
+                      }
+                      footer={
+                        <EuiFlexGroup justifyContent="flexEnd">
+                          <EuiFlexItem grow={false}>
+                            <EuiSwitch
+                              label={translate("active")}
+                              checked={page.is_enabled}
+                              onChange={() => page.id && togglePageStatus(page.id, !page.is_enabled)}
+                            />
+                          </EuiFlexItem>
+                          <EuiFlexItem grow={false}>
+                            <EuiButtonIcon
+                              aria-label={translate("edit")}
+                              iconType="pencil"
+                              onClick={() => editPage(page)}
+                            />
+                          </EuiFlexItem>
+                          <EuiFlexItem grow={false}>
+                            <EuiButtonIcon
+                              aria-label={translate("delete")}
+                              iconType="trash"
+                              color="danger"
+                              onClick={() => page.id && handleDeletePage(page.id)}
+                            />
+                          </EuiFlexItem>
+                        </EuiFlexGroup>
+                      }
+                    />
+                  </EuiFlexItem>
+                ))}
+              </EuiFlexGrid>
+            )}
+          </EuiPanel>
         </>
       </DashboardCRMLayout>
 

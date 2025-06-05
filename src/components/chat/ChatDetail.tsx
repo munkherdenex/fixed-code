@@ -87,13 +87,13 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
           <EuiFlexItem grow={false}>
             <EuiAvatar
               size="xl"
-              name={selectedChatFbProfile.name}
-              imageUrl={getImgUrl(selectedChatFbProfile.picture)}
+              name={selectedChatFbProfile?.name || "-"}
+              imageUrl={getImgUrl(selectedChatFbProfile?.picture)}
             />
           </EuiFlexItem>
           <EuiFlexItem>
-            <h4>{selectedChatFbProfile.name}</h4>
-            <p>PSID: {selectedChatFbProfile.psid}</p>
+            <h4>{selectedChatFbProfile?.name}</h4>
+            <p>PSID: {selectedChatFbProfile?.psid}</p>
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiPanel>
