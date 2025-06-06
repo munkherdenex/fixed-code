@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   EuiButton,
   EuiLoadingSpinner,
@@ -29,6 +29,7 @@ const chatStyles = css`
     flex: 1;
     padding: 16px;
     min-height: 600px;
+    max-height: 600px;
   }
 
   .message-bubble {
@@ -129,6 +130,12 @@ const chatStyles = css`
     margin: 0 10px;
     text-align: center;
   }
+
+  .loading-older {
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+  }
 `;
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ className }) => {
@@ -140,12 +147,58 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ className }) => {
     setMessage,
     isLoading,
     isValidating,
+    isLoadingOlderMessages,
     errorMessage,
     handleSendMessage,
     handleKeyPress,
     chatContainerRef,
-    lastChatRef
+    lastChatRef,
+    fetchMoreMessages,
+    hasMoreMessages
   } = useChatContext();
+  
+  // Store scroll position information
+  const scrollHeightBeforeLoad = useRef(0);
+  const scrollTopBeforeLoad = useRef(0);
+  
+  // Handle scrolling to load more messages
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (!container) return;
+    
+    const handleScroll = () => {
+      // If we're near the top (within 50px) and have more messages to fetch and not already loading
+      if (container.scrollTop < 50 && hasMoreMessages && !isLoadingOlderMessages && !isValidating) {
+        // Store current scroll position before loading
+        scrollHeightBeforeLoad.current = container.scrollHeight;
+        scrollTopBeforeLoad.current = container.scrollTop;
+        
+        // Fetch older messages
+        fetchMoreMessages();
+      }
+    };
+    
+    container.addEventListener('scroll', handleScroll);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [chatContainerRef, hasMoreMessages, isLoadingOlderMessages, isValidating, fetchMoreMessages]);
+  
+  // Preserve scroll position after loading more messages
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (container && scrollHeightBeforeLoad.current > 0) {
+      // Calculate how much new content was added
+      const newContentHeight = container.scrollHeight - scrollHeightBeforeLoad.current;
+      // Adjust scroll position to show the same content as before
+      if (newContentHeight > 0) {
+        container.scrollTop = scrollTopBeforeLoad.current + newContentHeight;
+      }
+      // Reset stored values
+      scrollHeightBeforeLoad.current = 0;
+      scrollTopBeforeLoad.current = 0;
+    }
+  }, [messages.length, chatContainerRef]);
 
   if (!selectedChatId) {
     return (
@@ -202,15 +255,33 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ className }) => {
   return (
     <div className={`${className} chat-container`} css={chatStyles}>
       <div className="message-list" ref={chatContainerRef}>
+        {/* Loading indicator for older messages */}
+        {(isLoadingOlderMessages || (isValidating && messages.length > 0)) && hasMoreMessages && (
+          <div className="loading-older">
+            <EuiLoadingSpinner size="m" />
+          </div>
+        )}
         {sortedMessages.map((chatMessage, index) => {
           const isSentByUser = !chatMessage.chat_from;
-          const isFirstMessage = index === 0; // First message is now the newest one
+          const isFirstMessage = index === 0; 
           
           // Check if date has changed from previous message
           const prevMessage = index > 0 ? sortedMessages[index - 1] : null;
           const dateChanged = hasDateChanged(
             chatMessage.created_at,
             prevMessage?.created_at || null
+          );
+          
+          // Create a reference element for the first message when we have more to load
+          const messageElement = (
+            <ChatMessage
+              id={chatMessage.id}
+              name={isSentByUser ? null : selectedChatFbProfile?.name}
+              fbProfile={isSentByUser ? null : selectedChatFbProfile}
+              isToMe={!isSentByUser}
+              message={chatMessage.body}
+              timestamp={chatMessage.created_at}
+            />
           );
           
           return (
@@ -222,14 +293,15 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ className }) => {
                   </div>
                 </div>
               )}
-              <ChatMessage
-                id={chatMessage.id}
-                name={isSentByUser ? null : selectedChatFbProfile?.name}
-                fbProfile={isSentByUser ? null : selectedChatFbProfile}
-                isToMe={!isSentByUser}
-                message={chatMessage.body}
-                timestamp={chatMessage.created_at}
-              />
+              
+              {/* If this is the first message and we have more messages, apply the ref */}
+              {isFirstMessage && hasMoreMessages ? (
+                <div ref={lastChatRef}>
+                  {messageElement}
+                </div>
+              ) : (
+                messageElement
+              )}
             </React.Fragment>
           );
         })}

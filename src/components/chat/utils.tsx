@@ -88,6 +88,8 @@ export const extractMessage = (messageStr: string | null | undefined, isShort: B
         </>
       );
     }
+
+    return isShort ? messageStr.substring(0, 20) + "..." : messageStr;
   } catch (error) {
     return isShort ? messageStr.substring(0, 20) + "..." : messageStr;
   }

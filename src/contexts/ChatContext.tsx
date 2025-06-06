@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useRef, useMemo } from 'react';
 import fbPageConfigApi, { FBPageConfig, FBPageConfigResponse } from "@/api/fb_page_config";
 import useGetRootChatLogs from "@/hooks/useGetRootChatLogs";
 import contactLogApi from "@/api/contact_log";
@@ -430,7 +430,7 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
             setTimeout(scrollToBottom, 100);
           } else {
             // If message is for another chat, we could update unread counts or provide a notification
-            console.log("Message received for a different chat:", data.chat_id);
+            console.log("Message received for a different chat:", data.chat_parent);
             // TODO: Implement notification or unread count update
           }
         });
@@ -504,6 +504,16 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
     isLoadingOlderMessagesRef.current = false;
   }, [messages.length, selectedChatId]);
 
+  // Root chat logs
+  const sortedRootChatLogs = useMemo(() => {
+    if (!rootChatLogs) return undefined;
+    
+    // Create a copy before sorting to avoid mutation
+    return [...rootChatLogs].sort((a, b) => 
+      new Date(b.last_active_at).getTime() - new Date(a.last_active_at).getTime()
+    );
+  }, [rootChatLogs]);
+
   const value = {
     // Chat groups
     chatGroups,
@@ -547,7 +557,7 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
     handleKeyPress,
     
     // Root chat logs
-    rootChatLogs,
+    rootChatLogs: sortedRootChatLogs,
     isLoadingRootChat,
     isErrorRootChat,
     hasMoreRootChats,

@@ -262,12 +262,7 @@ const ChatList: React.FC<ChatListProps> = ({ className }) => {
       
       <div className="list-container" ref={rootChatContainerRef}>
         {!isLoadingRootChat && rootChatLogs && rootChatLogs?.length > 0 ? (
-          rootChatLogs
-          .slice()
-          .sort(
-            (a, b) =>
-              new Date(b.last_active_at).getTime() - new Date(a.last_active_at).getTime(),
-          ).map((rootChat, index) => {
+          rootChatLogs.map((rootChat, index) => {
             const isActive = selectedChatId === rootChat.id;
             // Check if this is the last item to attach the ref for infinite scrolling
             const isLastItem = index === rootChatLogs.length - 1;
