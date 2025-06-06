@@ -172,7 +172,7 @@ const CRM = () => {
     <>
       <DashboardCRMLayout
         pageHeader={{
-          pageTitle: "CRM dashboard",
+          pageTitle: "Сайн байна уу?",
         }}
       >
         <>

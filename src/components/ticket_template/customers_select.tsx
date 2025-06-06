@@ -25,8 +25,11 @@ const schema = yup
 type AudienceFormData = yup.InferType<typeof schema>;
 
 const CustomersSelect = ({ isLoading, isDisabled, onSelect, initValue }) => {
+  let searchTimeout: NodeJS.Timeout;
+  const [searchValue, setSearchValue] = useState("");
   const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
-    limit: `${PAGINATION_CHOOSES[3]}`,
+    phone: searchValue,
+    limit: `${PAGINATION_CHOOSES[1]}`,
   });
 
   const audienceForm = useForm<AudienceFormData>({
@@ -64,6 +67,13 @@ const CustomersSelect = ({ isLoading, isDisabled, onSelect, initValue }) => {
     }
   }, [initValue, segmentCustomers?.results, audienceForm.setValue]);
 
+  const onSearchChange = (value: string) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      setSearchValue(value);
+    }, 500);
+  };
+
   return (
     <>
       <EuiForm component="form">
@@ -91,11 +101,15 @@ const CustomersSelect = ({ isLoading, isDisabled, onSelect, initValue }) => {
                     onSelect(selected[0].value);
                   }
                 }}
+                optionMatcher={({ option, searchValue }) => {
+                  return option?.["aria-label"].includes(searchValue);
+                }}
                 selectedOptions={[{ label: (value && value[0]?.label) || "" }]}
                 onBlur={onBlur}
                 isClearable={false}
                 isLoading={isLoading}
                 isDisabled={isDisabled}
+                onSearchChange={onSearchChange}
               />
             )}
           />

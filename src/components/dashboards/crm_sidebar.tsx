@@ -100,17 +100,23 @@ const CRMSidebar = () => {
     ];
   }, [audienceSegmentPaths, router]);
 
+  const handleLogoClick = () => {
+    router.push("/dashboards/crm");
+  };
+
   return (
     <EuiFlexGroup direction="column" justifyContent="spaceBetween" style={{ height: "100%" }}>
       <EuiFlexItem>
         <EuiSideNav
           heading={
-            <Image
-              src="/images/pocket-logo.png"
-              alt="Pocket logo"
-              width={200 * 0.5}
-              height={57 * 0.5}
-            />
+            <div onClick={handleLogoClick} style={{ cursor: "pointer" }}>
+              <Image
+                src="/images/pocket-logo.png"
+                alt="Pocket logo"
+                width={200 * 0.5}
+                height={57 * 0.5}
+              />
+            </div>
           }
           aria-label="Menu"
           mobileTitle="Menu"
