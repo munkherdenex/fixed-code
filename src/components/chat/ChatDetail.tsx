@@ -12,6 +12,7 @@ import {
   EuiSpacer,
   EuiPanel,
   EuiTitle,
+  EuiButtonEmpty,
 } from "@elastic/eui";
 import { useChatContext } from "@/contexts/ChatContext";
 import { getImgUrl } from "./utils";
@@ -24,9 +25,19 @@ interface ChatDetailProps {
 }
 
 const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
-  const { selectedChatFbProfile, selectedPageId } = useChatContext();
+  const { 
+    selectedChatFbProfile, 
+    selectedPageId, 
+    selectedChatId, 
+    setSelectedChatId,
+    setSelectedPageId,
+    currentRootChatTab,
+    setCurrentRootChatTab,
+    loadMoreRootChats,
+  } = useChatContext();
   const [selectedOptions, setSelectedOptions] = useState<EuiComboBoxOptionOption[]>([]);
   const [isAssigning, setIsAssigning] = useState(false);
+  const [isClosingChat, setIsClosingChat] = useState(false);
 
   const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
     limit: `${PAGINATION_CHOOSES[3]}`,
@@ -38,10 +49,10 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
       <div className={className} style={{ padding: "20px" }}>
         <EuiPanel>
           <EuiTitle size="s">
-            <h3>Chat Details</h3>
+            <h3>Харилцагчийн мэдээлэл</h3>
           </EuiTitle>
           <EuiSpacer size="m" />
-          <p>Select a chat to view details</p>
+          <p>Сонгосон чатын харилцагчийн тухай мэдээлэл</p>
         </EuiPanel>
       </div>
     );
@@ -76,6 +87,35 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
     }
   };
 
+  const handleCloseChat = async () => {
+    if (!selectedChatId) return;
+    
+    try {
+      setIsClosingChat(true);
+      
+      // First update the server
+      await contactLogApi.updateContactLogById(selectedChatId, undefined, "archive");
+      
+      // Force an immediate update to the chat list - we need to move to archive tab
+      setCurrentRootChatTab('closed-chats-tab');
+      
+      // Clear selected chat after closing it
+      setSelectedChatId(null);
+      setSelectedPageId(null);
+      setSelectedChatFbProfile(null);
+      
+      // Short timeout to ensure the tab switch completes
+      setTimeout(() => {
+        // Force a refresh of the chat list
+        loadMoreRootChats();
+      }, 100);
+    } catch (error) {
+      console.error("Error closing chat:", error);
+    } finally {
+      setIsClosingChat(false);
+    }
+  };
+
   const onChange = (selectedOptions: EuiComboBoxOptionOption[]) => {
     setSelectedOptions(selectedOptions);
   };
@@ -86,7 +126,7 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
         <EuiFlexGroup alignItems="center" gutterSize="m">
           <EuiFlexItem grow={false}>
             <EuiAvatar
-              size="xl"
+              size="l"
               name={selectedChatFbProfile?.name || "-"}
               imageUrl={getImgUrl(selectedChatFbProfile?.picture)}
             />
@@ -96,15 +136,26 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
             <p>PSID: {selectedChatFbProfile?.psid}</p>
           </EuiFlexItem>
         </EuiFlexGroup>
+        
+        <EuiSpacer size="m" />
+        
+        <EuiButton 
+          color="danger"
+          onClick={handleCloseChat}
+          isLoading={isClosingChat}
+          iconType="cross"
+        >
+          Чатыг хаах
+        </EuiButton>
       </EuiPanel>
 
       <EuiSpacer size="l" />
 
       <EuiPanel>
         <EuiForm>
-          <EuiFormRow label="Assign customer" fullWidth>
+          <EuiFormRow label="Харилцагч холбох" fullWidth>
             <EuiComboBox
-              placeholder="Select a customer"
+              placeholder="Харилцагч хайх"
               options={dataTypeOptions}
               selectedOptions={selectedOptions}
               onChange={onChange}
@@ -119,7 +170,7 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
             isLoading={isAssigning}
             isDisabled={!selectedOptions.length}
           >
-            Assign
+            Холбох
           </EuiButton>
         </EuiForm>
       </EuiPanel>

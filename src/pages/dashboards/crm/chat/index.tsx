@@ -36,18 +36,24 @@ const chatCss = css`
   }
 `;
 
+const chatContainer = css`
+  height: calc(100vh - 48px);
+  max-height: calc(100vh - 48px);
+  overflow-y: hidden;
+`;
+
 const Chat = () => {
   return (
     <>
       <style jsx global>{`${chatCss}`}</style>
       <ChatProvider>
         <DashboardCRMChatLayout>
-          <EuiFlexGroup gutterSize='none'>
+          <EuiFlexGroup css={chatContainer} gutterSize='none'>
             {/* Left sidebar with chat groups and chat list */}
             <EuiFlexItem grow={1}>
               <ChatGroupSelection />
               <EuiHorizontalRule margin='xs' />
-              <ChatList />
+              <ChatList className='chat-list-container' />
             </EuiFlexItem>
             
             {/* Main chat area */}

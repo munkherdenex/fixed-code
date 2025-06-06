@@ -13,13 +13,14 @@ interface ChatMessagesProps {
 }
 
 const chatStyles = css`
+  height: 100%;
+
   .chat-container {
     background-color: #f9f9f9;
     border: 1px solid #ccc;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
-    min-height: 600px;
     height: 100%;
     width: 100%;
     }
@@ -28,8 +29,7 @@ const chatStyles = css`
     overflow-y: auto;
     flex: 1;
     padding: 16px;
-    min-height: 600px;
-    max-height: 600px;
+    height: calc(100% - 60px);
   }
 
   .message-bubble {

@@ -63,6 +63,7 @@ export interface RootChat {
   source_id: string;
   created_at: string;
   last_active_at: string;
+  status: string;
   customer?: {
     id: number;
     email?: string;
@@ -169,6 +170,9 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   const isLoadingOlderMessagesRef = React.useRef<boolean>(false);
   const socketRef = useRef<Socket | null>(null);
   const [socketConnected, setSocketConnected] = useState(false);
+  
+  // Add a ref to store the timeout ID for marking chat as read
+  const markAsReadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Fetch chat logs with status based on the selected tab and source_id based on selected chat group
   const { 
@@ -283,10 +287,24 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   };
 
   const handleClickChat = (rootChat: RootChat, rootId: string, fbUserId: number, fbProfile: FbProfile) => {
+    // Clear any existing timeout to cancel pending markAsRead calls
+    if (markAsReadTimeoutRef.current) {
+      clearTimeout(markAsReadTimeoutRef.current);
+      markAsReadTimeoutRef.current = null;
+    }
+
     setSelectedChatId(rootId);
     setSelectedPageId(rootChat.source_id);
     setSelectedChatFbProfile(fbProfile);
     setMessage(""); // Reset message input field when a new chat is selected
+    
+    // Mark chat as read after it's been clicked, but defer by 3 seconds
+    if (rootChat.status === "new") {
+      markAsReadTimeoutRef.current = setTimeout(() => {
+        rootChat.status = "active";
+        contactLogApi.updateContactLogById(rootId, undefined, "active");
+      }, 3000); // 3 seconds delay
+    }
   };
 
   const scrollToBottom = () => {

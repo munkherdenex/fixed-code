@@ -18,9 +18,15 @@ interface ChatListProps {
 }
 
 const chatListStyles = css`
+  height: 100%;
+
   .list-container {
-    height: calc(100vh - 180px);
+    height: calc(100% - 50px);
     overflow-y: auto;
+  }
+
+  .list-container::-webkit-scrollbar {
+    width: 8px;
   }
 
   .chat-item {
@@ -133,7 +139,7 @@ const chatListStyles = css`
   }
 `;
 
-const ChatList: React.FC<ChatListProps> = ({ className }) => {
+const ChatList: React.FC<ChatListProps> = () => {
   const {
     rootChatLogs,
     isLoadingRootChat,
@@ -228,7 +234,7 @@ const ChatList: React.FC<ChatListProps> = ({ className }) => {
   };
 
   return (
-    <div className={className} css={chatListStyles}>
+    <div className='chat-list-container' css={chatListStyles}>
       <div className="tabs-container">
         <EuiTabs>
           <EuiTab
@@ -304,6 +310,7 @@ const ChatList: React.FC<ChatListProps> = ({ className }) => {
                     <div className="chat-message">
                       {extractMessage(rootChat.body, true)}
                     </div>
+                    {rootChat.status == "new" && <EuiIcon type="dot" color="success" />}
                   </div>
                 </div>
               </div>

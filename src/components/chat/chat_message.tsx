@@ -19,7 +19,6 @@ import { extractMessage, getImgUrl } from "./utils";
 const messageBuble: React.CSSProperties = {
   display: "flex",
   flexDirection: "column",
-  minWidth: "fit-content",
   paddingLeft: "10px",
 };
 
@@ -78,7 +77,7 @@ const Popeye = () => {
       >
         <EuiContextMenuPanel>
           <EuiContextMenuItem key="item-1" icon="indexOpen" size="s" onClick={closePopover}>
-            Create ticket from chat
+            Чатаас тикет үүсгэх
           </EuiContextMenuItem>
         </EuiContextMenuPanel>
       </EuiPopover>
