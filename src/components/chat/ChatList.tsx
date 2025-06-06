@@ -6,7 +6,8 @@ import {
   EuiTab,
   EuiTabs,
   EuiBadge,
-  EuiIcon
+  EuiIcon,
+  EuiNotificationBadge
 } from '@elastic/eui';
 import { useChatContext } from '@/contexts/ChatContext';
 import moment from 'moment';
@@ -157,7 +158,8 @@ const ChatList: React.FC<ChatListProps> = () => {
     setMessage,
     mutateMessages,
     lastRootChatRef,
-    rootChatContainerRef
+    rootChatContainerRef,
+    unreadMessages // Add unreadMessages from context
   } = useChatContext();
 
   // Function to handle tab selection
@@ -272,6 +274,8 @@ const ChatList: React.FC<ChatListProps> = () => {
             const isActive = selectedChatId === rootChat.id;
             // Check if this is the last item to attach the ref for infinite scrolling
             const isLastItem = index === rootChatLogs.length - 1;
+            // Get unread count for this chat
+            const unreadCount = unreadMessages[rootChat.id] || 0;
             
             return (
               <div 
@@ -313,6 +317,18 @@ const ChatList: React.FC<ChatListProps> = () => {
                     {rootChat.status == "new" && <EuiIcon type="dot" color="success" />}
                   </div>
                 </div>
+
+                {/* Unread messages badge */}
+                {unreadCount > 0 && (
+                  <EuiNotificationBadge
+                    className="notification-badge"
+                    size="m"
+                    color="accent"
+                    data-test-subj={`unread-messages-badge-${rootChat.id}`}
+                  >
+                    {unreadCount}
+                  </EuiNotificationBadge>
+                )}
               </div>
             );
           })

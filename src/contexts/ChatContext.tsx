@@ -6,6 +6,7 @@ import axios from "axios";
 import useSWRInfinite from "swr/infinite";
 import { io, Socket } from "socket.io-client";
 import { SOCKET_URL } from "../constants";
+import { addToast } from "@/components/toast";
 
 // Define interfaces
 export interface FbProfile {
@@ -133,6 +134,10 @@ interface ChatContextType {
 
   // Socket connection status
   socketConnected: boolean;
+
+  // Unread messages
+  unreadMessages: Record<string, number>;
+  clearUnreadMessages: (chatId: string) => void;
 }
 
 // Create context with a default value
@@ -173,6 +178,9 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   
   // Add a ref to store the timeout ID for marking chat as read
   const markAsReadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Unread messages tracking
+  const [unreadMessages, setUnreadMessages] = useState<Record<string, number>>({});
   
   // Fetch chat logs with status based on the selected tab and source_id based on selected chat group
   const { 
@@ -298,6 +306,9 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
     setSelectedChatFbProfile(fbProfile);
     setMessage(""); // Reset message input field when a new chat is selected
     
+    // Clear unread messages for this chat
+    clearUnreadMessages(rootId);
+    
     // Mark chat as read after it's been clicked, but defer by 3 seconds
     if (rootChat.status === "new") {
       markAsReadTimeoutRef.current = setTimeout(() => {
@@ -305,6 +316,15 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
         contactLogApi.updateContactLogById(rootId, undefined, "active");
       }, 3000); // 3 seconds delay
     }
+  };
+  
+  // Function to clear unread messages for a specific chat
+  const clearUnreadMessages = (chatId: string) => {
+    setUnreadMessages(prev => {
+      const updated = { ...prev };
+      delete updated[chatId];
+      return updated;
+    });
   };
 
   const scrollToBottom = () => {
@@ -447,9 +467,33 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
             // Scroll to bottom after receiving a new message
             setTimeout(scrollToBottom, 100);
           } else {
-            // If message is for another chat, we could update unread counts or provide a notification
-            console.log("Message received for a different chat:", data.chat_parent);
-            // TODO: Implement notification or unread count update
+            // If message is for another chat, update unread count and show notification
+            const chatId = data.chat_parent;
+            const messageContent = data.body || data.message;
+            const senderName = data.sender_name || 'Customer';
+            
+            // Increment unread count for this chat
+            setUnreadMessages(prev => {
+              const currentCount = prev[chatId] || 0;
+              return {
+                ...prev,
+                [chatId]: currentCount + 1
+              };
+            });
+            
+            // Find root chat information if available
+            const rootChat = rootChatLogs?.find(chat => chat.id === chatId);
+            const chatName = rootChat?.fb_profile?.name || senderName;
+            
+            // Show notification toast
+            addToast({
+              color: 'primary',
+              title: `New message from ${chatName}`,
+              text: messageContent.length > 50 ? messageContent.substring(0, 50) + '...' : messageContent
+            });
+            
+            // Update the UI to reflect the new message in the chat list
+            // This will happen automatically if the rootChatLogs is updated via SWR
           }
         });
 
@@ -593,6 +637,10 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
     
     // Socket connection status
     socketConnected,
+
+    // Unread messages
+    unreadMessages,
+    clearUnreadMessages,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
