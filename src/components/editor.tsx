@@ -5,7 +5,7 @@ import React, { useEffect, useRef, memo } from "react";
 import EditorJS, { OutputData } from "@editorjs/editorjs";
 import { EDITOR_TOOLS } from "@/lib/editorjs-tools";
 import { editorjsI18nMn } from "@/lib/editorjs-i18n-mn"; // <--- Import the translations
-import { EuiInlineEditTitle, EuiText } from "@elastic/eui";
+import { EuiText } from "@elastic/eui";
 
 interface EditorProps {
   initialTitle?: string;
@@ -128,14 +128,6 @@ const Editor: React.FC<EditorProps> = ({ initialTitle, data, onChange, holder })
       padding: "10px",
       minHeight: "200px",
     }}>
-      <EuiInlineEditTitle
-        heading="h2"
-        size="m"
-        defaultValue={title}
-        onSave={(newTitle) => setTitle(newTitle)}
-        inputAriaLabel="Гарчиг бичих"
-        placeholder="Гарчиг"
-      />
       <div id={holder}></div>
     </div>
   );

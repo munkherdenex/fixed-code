@@ -9,6 +9,10 @@ const knowledgeApi = {
     const response = await client.get(`/crm/tag/${id}/`);
     return response.data;
   },
+  create: async (data: object) => {
+    const response = await client.post("/crm/knowledge/", data);
+    return response.data;
+  },
   update: async (id: number, data: object) => {
     const response = await client.put(`/crm/knowledge/${id}/`, data);
     return response.data;
