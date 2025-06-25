@@ -280,6 +280,7 @@ const KnowledgeManager = () => {
                 hasUnsavedChanges={hasUnsavedChanges}
                 isSaving={isSaving}
                 saveError={saveError}
+                documentData={documentData}
                 onChange={handleEditorChange}
                 onEdit={handleEdit}
                 onSave={handleSave}

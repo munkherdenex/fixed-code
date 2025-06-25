@@ -13,6 +13,8 @@ import {
   EuiFlexItem,
   EuiFieldText,
   EuiCallOut,
+  EuiBadge,
+  EuiSpacer,
 } from "@elastic/eui";
 
 interface DocumentEditorProps {
@@ -22,6 +24,7 @@ interface DocumentEditorProps {
   isSaving?: boolean;
   hasUnsavedChanges?: boolean;
   saveError?: string | null;
+  documentData?: any; // Full document object with metadata
   onEdit: () => void;
   onSave: () => void;
   onCancel: () => void;
@@ -36,6 +39,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   isSaving = false,
   hasUnsavedChanges = false,
   saveError = null,
+  documentData,
   onEdit,
   onSave,
   onCancel,
@@ -47,6 +51,51 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   const isReadyRef = useRef(false);
   const internalChangeRef = useRef(false);
   const [title, setTitle] = useState(initialTitle || "Untitled Document");
+
+  // Helper function to format date
+  const formatDate = (date: string | Date | undefined): string => {
+    if (!date) return "";
+    
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) return "";
+    
+    return dateObj.toLocaleDateString('mn-MN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Helper function to get status color
+  const getStatusColor = (status: string | undefined): "default" | "primary" | "success" | "warning" | "danger" => {
+    if (!status) return "default";
+    
+    switch (status.toLowerCase()) {
+      case 'draft':
+      case 'ноорог':
+        return "warning";
+      case 'published':
+      case 'нийтлэгдсэн':
+        return "success";
+      case 'archived':
+      case 'архивлагдсан':
+        return "default";
+      case 'review':
+      case 'хянуулахад':
+        return "primary";
+      default:
+        return "default";
+    }
+  };
+
+  // Extract metadata from documentData
+  const createdDate = documentData?.created_at || documentData?.createdAt;
+  const updatedDate = documentData?.updated_at || documentData?.updatedAt;
+  const status = documentData?.status || (documentData?.id ? "Нийтлэгдсэн" : "Ноорог");
+  const createdBy = documentData?.created_by?.email || documentData?.created_by?.name || documentData?.createdBy;
+  const updatedBy = documentData?.updated_by?.email || documentData?.updated_by?.name || documentData?.updatedBy;
 
   // Handle title change
   const handleTitleChange = useCallback((newTitle: string) => {
@@ -259,7 +308,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       {/* Document Header with Title and Buttons */}
       <EuiFlexGroup 
         justifyContent="spaceBetween" 
-        alignItems="center" 
+        alignItems="flexStart" 
         style={{ 
           padding: "8px 16px", 
           flexShrink: 0,
@@ -271,35 +320,88 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
         }}
       >
         <EuiFlexItem>
-          <EuiFlexGroup alignItems="center" gutterSize="s">
-            <EuiFlexItem grow={false}>
-              {isEditing ? (
-                <EuiFieldText
-                  value={title}
-                  onChange={(e) => handleTitleChange(e.target.value)}
-                  placeholder="Document title..."
-                  style={{
-                    fontSize: "24px",
-                    fontWeight: "600",
-                    border: "1px solid #d3dce0",
-                    borderRadius: "4px",
-                    padding: "4px 8px",
-                    minWidth: "200px",
-                  }}
-                />
-              ) : (
-                <EuiTitle size="s">
-                  <h3 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>
-                    {title}
-                  </h3>
-                </EuiTitle>
-              )}
+          <EuiFlexGroup direction="column" gutterSize="xs">
+            <EuiFlexItem>
+              <EuiFlexGroup alignItems="center" gutterSize="s">
+                <EuiFlexItem grow={false}>
+                  {isEditing ? (
+                    <EuiFieldText
+                      value={title}
+                      onChange={(e) => handleTitleChange(e.target.value)}
+                      placeholder="Document title..."
+                      style={{
+                        fontSize: "24px",
+                        fontWeight: "600",
+                        border: "1px solid #d3dce0",
+                        borderRadius: "4px",
+                        padding: "4px 8px",
+                        minWidth: "200px",
+                      }}
+                    />
+                  ) : (
+                    <EuiTitle size="s">
+                      <h3 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>
+                        {title}
+                      </h3>
+                    </EuiTitle>
+                  )}
+                </EuiFlexItem>
+                {hasUnsavedChanges && (
+                  <EuiFlexItem grow={false}>
+                    <EuiText size="xs" color="warning" style={{ fontSize: "12px" }}>
+                      • Хадгалагдаагүй өөрчлөлт
+                    </EuiText>
+                  </EuiFlexItem>
+                )}
+              </EuiFlexGroup>
             </EuiFlexItem>
-            {hasUnsavedChanges && (
-              <EuiFlexItem grow={false}>
-                <EuiText size="xs" color="warning" style={{ fontSize: "12px" }}>
-                  • Хадгалагдаагүй өөрчлөлт
-                </EuiText>
+            
+            {/* Created Date and Status */}
+            {(createdDate || updatedDate || status || createdBy || updatedBy) && (
+              <EuiFlexItem>
+                <EuiFlexGroup direction="column" gutterSize="xs">
+                  {/* First row: Created info and Status */}
+                  <EuiFlexItem>
+                    <EuiFlexGroup alignItems="center" gutterSize="m">
+                      {(createdDate || createdBy) && (
+                        <EuiFlexItem grow={false}>
+                          <EuiText size="s" color="subdued" style={{ fontSize: "13px" }}>
+                            <span style={{ fontWeight: "500" }}>Үүсгэсэн:</span>{" "}
+                            {createdBy && <span>{createdBy}</span>}
+                            {createdBy && createdDate && <span>, </span>}
+                            {createdDate && <span>{formatDate(createdDate)}</span>}
+                          </EuiText>
+                        </EuiFlexItem>
+                      )}
+                      {status && (
+                        <EuiFlexItem grow={false}>
+                          <EuiBadge 
+                            color={getStatusColor(status)}
+                            style={{ fontSize: "12px" }}
+                          >
+                            {status}
+                          </EuiBadge>
+                        </EuiFlexItem>
+                      )}
+                    </EuiFlexGroup>
+                  </EuiFlexItem>
+                  
+                  {/* Second row: Updated info */}
+                  {(updatedDate || updatedBy) && (updatedDate !== createdDate || updatedBy !== createdBy) && (
+                    <EuiFlexItem>
+                      <EuiFlexGroup alignItems="center" gutterSize="m">
+                        <EuiFlexItem grow={false}>
+                          <EuiText size="s" color="subdued" style={{ fontSize: "13px" }}>
+                            <span style={{ fontWeight: "500" }}>Засварласан:</span>{" "}
+                            {updatedBy && <span>{updatedBy}</span>}
+                            {updatedBy && updatedDate && <span>, </span>}
+                            {updatedDate && <span>{formatDate(updatedDate)}</span>}
+                          </EuiText>
+                        </EuiFlexItem>
+                      </EuiFlexGroup>
+                    </EuiFlexItem>
+                  )}
+                </EuiFlexGroup>
               </EuiFlexItem>
             )}
           </EuiFlexGroup>
