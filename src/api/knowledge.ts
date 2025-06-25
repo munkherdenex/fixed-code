@@ -16,6 +16,10 @@ const knowledgeApi = {
   update: async (id: number, data: object) => {
     const response = await client.put(`/crm/knowledge/${id}/`, data);
     return response.data;
+  },
+  delete: async (id: number | string) => {
+    const response = await client.delete(`/crm/knowledge/${id}/`);
+    return response.data;
   }
 };
 

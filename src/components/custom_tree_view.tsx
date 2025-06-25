@@ -39,9 +39,10 @@ interface TreeNode {
 
 interface CustomTreeViewProps {
   selectedItemId: string | null;
-  onSelectItem: (node: TreeNode) => void;
+  onSelectItem: (node: TreeNode | null) => void;
   refreshTrigger: number;
   onCreateNew: () => void;
+  onRefresh?: () => void;
 }
 
 interface TreeNodeComponentProps {
@@ -49,7 +50,7 @@ interface TreeNodeComponentProps {
   level: number;
   selectedItemId: string | null;
   expandedIds: Set<string>;
-  onSelect: (node: TreeNode) => void;
+  onSelect: (node: TreeNode | null) => void;
   onToggleExpand: (nodeId: string) => void;
   onRename: (nodeId: string) => void;
   onDelete: (nodeId: string) => void;
@@ -224,8 +225,8 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
             {/* Add Subpage Button */}
             <EuiButtonIcon
               iconType="plus"
-              aria-label={`Add subpage to ${node.title}`}
-              title={`Add subpage to ${node.title}`}
+              aria-label={`${node.title}-д дэд хуудас нэмэх`}
+              title={`${node.title}-д дэд хуудас нэмэх`}
               onClick={(e) => {
                 e.stopPropagation();
                 onAddSubpage(node.id);
@@ -246,7 +247,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
               button={
                 <EuiButtonIcon
                   iconType="boxesHorizontal"
-                  aria-label={`Actions for ${node.title}`}
+                  aria-label={`${node.title}-ны үйлдлүүд`}
                   onClick={openPopover}
                   display="empty"
                   isSelected={isPopoverOpen}
@@ -273,7 +274,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
                     icon="pencil"
                     onClick={() => handleAction(() => onRename(node.id))}
                   >
-                    Rename
+                    Нэр өөрчлөх
                   </EuiContextMenuItem>,
                   <EuiContextMenuItem
                     key="delete"
@@ -281,7 +282,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
                     onClick={() => handleAction(() => onDelete(node.id))}
                     color="danger"
                   >
-                    Delete Page
+                    Устгах
                   </EuiContextMenuItem>,
                 ]}
               />
@@ -318,12 +319,15 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
   onSelectItem,
   refreshTrigger,
   onCreateNew,
+  onRefresh,
 }) => {
   const [treeItems, setTreeItems] = useState<TreeNode[]>([]);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
+      setIsLoading(true);
       const res = await knowledgeApi.getList({});
       const parsedResults = res.results.map((item) => {
         let parsedBody = {};
@@ -341,7 +345,9 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
         };
       });
       setTreeItems(parsedResults);
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.error("Error loading knowledge base data:", error);
     }
   }, []);
@@ -362,35 +368,122 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
     });
   }, []);
 
-  const handleRename = useCallback((nodeId: string) => {
+  const handleRename = useCallback(async (nodeId: string) => {
     const node = findNodeById(treeItems, nodeId);
     if (!node) return;
 
-    const newName = prompt(`Enter new name for "${node.title}":`, node.title);
+    const newName = prompt(`"${node.title}" баримтын шинэ нэр:`, node.title);
     if (newName && newName !== node.title) {
-      // Update the node in the tree
-      // This is a simplified update - in a real app, you'd call an API
-      console.log(`Renaming ${nodeId} to ${newName}`);
+      try {
+        // Prepare the document data with proper JSON stringification
+        const updateData = {
+          ...node,
+          title: newName,
+          body: node.body ? JSON.stringify(node.body) : null
+        };
+        
+        // Update the document via API
+        await knowledgeApi.update(nodeId, updateData);
+        
+        // Update the local tree state
+        setTreeItems(prevItems => {
+          const updateNodeTitle = (nodes: TreeNode[]): TreeNode[] => {
+            return nodes.map(n => {
+              if (n.id === nodeId) {
+                return { ...n, title: newName };
+              }
+              if (n.children) {
+                return { ...n, children: updateNodeTitle(n.children) };
+              }
+              return n;
+            });
+          };
+          return updateNodeTitle(prevItems);
+        });
+        
+        // Trigger refresh in parent component if callback provided
+        onRefresh?.();
+        
+        console.log(`Successfully renamed ${nodeId} to ${newName}`);
+      } catch (error) {
+        console.error("Error renaming document:", error);
+        alert("Баримтын нэр өөрчлөхөд алдаа гарлаа. Дахин оролдоно уу.");
+      }
     }
-  }, [treeItems]);
+  }, [treeItems, onRefresh]);
 
-  const handleDelete = useCallback((nodeId: string) => {
+  const handleDelete = useCallback(async (nodeId: string) => {
     const node = findNodeById(treeItems, nodeId);
     if (!node) return;
 
-    if (window.confirm(`Are you sure you want to delete "${node.title}"?`)) {
-      console.log(`Deleting ${nodeId}`);
-      // Implement actual deletion logic here
+    if (window.confirm(`"${node.title}" баримтыг устгахдаа итгэлтэй байна уу?`)) {
+      try {
+        // Delete the document via API
+        await knowledgeApi.delete(nodeId);
+        
+        // Remove the node from local tree state
+        setTreeItems(prevItems => {
+          const removeNode = (nodes: TreeNode[]): TreeNode[] => {
+            return nodes.filter(n => {
+              if (n.id === nodeId) {
+                return false;
+              }
+              if (n.children) {
+                n.children = removeNode(n.children);
+              }
+              return true;
+            });
+          };
+          return removeNode(prevItems);
+        });
+        
+        // If the deleted item was selected, clear selection
+        if (selectedItemId === nodeId) {
+          onSelectItem(null);
+        }
+        
+        // Trigger refresh in parent component if callback provided
+        onRefresh?.();
+        
+        console.log(`Successfully deleted ${nodeId}`);
+      } catch (error) {
+        console.error("Error deleting document:", error);
+        alert("Баримт устгахад алдаа гарлаа. Дахин оролдоно уу.");
+      }
     }
-  }, [treeItems]);
+  }, [treeItems, selectedItemId, onSelectItem, onRefresh]);
 
-  const handleAddSubpage = useCallback((parentNodeId: string) => {
-    const subpageName = prompt("Шинэ хуудасны нэр:");
-    if (subpageName) {
-      console.log(`Adding subpage "${subpageName}" to ${parentNodeId}`);
-      // Implement actual subpage creation logic here
+  const handleAddSubpage = useCallback(async (parentNodeId: string) => {
+    const subpageName = prompt("Шинэ дэд хуудасны нэр:");
+    if (subpageName && subpageName.trim()) {
+      try {
+        // Create a new document as a subpage
+        const newDocument = {
+          title: subpageName.trim(),
+          body: JSON.stringify({ blocks: [] }), // Initialize with empty EditorJS structure and proper JSON stringification
+          type: "public",
+          parent_id: parentNodeId // If your API supports parent-child relationships
+        };
+        
+        const response = await knowledgeApi.create(newDocument);
+        
+        // For now, we'll just reload the data since the tree structure might be complex
+        // In a more sophisticated implementation, you'd update the tree state directly
+        await loadData();
+        
+        // Expand the parent node to show the new subpage
+        setExpandedIds(prev => new Set([...prev, parentNodeId]));
+        
+        // Trigger refresh in parent component if callback provided
+        onRefresh?.();
+        
+        console.log(`Successfully created subpage "${subpageName}" under ${parentNodeId}`);
+      } catch (error) {
+        console.error("Error creating subpage:", error);
+        alert("Дэд хуудас үүсгэхэд алдаа гарлаа. Дахин оролдоно уу.");
+      }
     }
-  }, []);
+  }, [loadData, onRefresh]);
 
   const renderNode = (node: TreeNode, level: number = 0): React.ReactNode => {
     return (
@@ -453,7 +546,16 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
         overflow: "auto",
         scrollBehavior: "smooth"
       }}>
-        {treeItems.length > 0 ? (
+        {isLoading ? (
+          <div style={{ 
+            padding: "20px", 
+            textAlign: "center",
+            color: "#69707D",
+            fontSize: "14px"
+          }}>
+            Ачааллаж байна...
+          </div>
+        ) : treeItems.length > 0 ? (
           treeItems.map((node) => renderNode(node, 0))
         ) : (
           <div style={{ 
@@ -462,7 +564,7 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
             color: "#69707D",
             fontSize: "14px"
           }}>
-            No documents found
+            Баримт олдсонгүй
           </div>
         )}
       </div>

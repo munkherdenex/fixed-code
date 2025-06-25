@@ -69,6 +69,11 @@ const KnowledgeManager = () => {
     checkForData();
   }, []);
 
+  // Handle refresh from tree view
+  const handleRefresh = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
   // Handle creating a new document
   const handleCreateNewDocument = useCallback(() => {
     const newDocument = {
@@ -93,6 +98,19 @@ const KnowledgeManager = () => {
     if (hasUnsavedChanges && isEditing) {
       // Show warning about unsaved changes
       setShowCancelModal(true);
+      return;
+    }
+
+    if (document === null) {
+      // Clear selection
+      setDocumentData(null);
+      setOriginalDocumentData(null);
+      setDocumentBody(null);
+      setOriginalDocumentBody(null);
+      setSelectedItemId(null);
+      setIsEditing(false);
+      setHasUnsavedChanges(false);
+      setSaveError(null);
       return;
     }
 
@@ -210,6 +228,7 @@ const KnowledgeManager = () => {
                 selectedItemId={selectedItemId}
                 refreshTrigger={refreshTrigger}
                 onCreateNew={handleCreateNewDocument}
+                onRefresh={handleRefresh}
               />
             </div>
           </EuiPanel>

@@ -138,9 +138,9 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
           case 'paragraph':
             const p = document.createElement('p');
             p.innerHTML = block.data.text || '';
-            p.style.fontSize = '16px';
-            p.style.lineHeight = '1.6';
-            p.style.margin = '0 0 16px 0';
+            p.style.fontSize = '14px';
+            p.style.lineHeight = '22.4px';
+            p.style.padding = '.4em 0';
             blockElement.appendChild(p);
             break;
 
@@ -191,7 +191,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
             pre.style.padding = '12px';
             pre.style.borderRadius = '4px';
             pre.style.overflow = 'auto';
-            pre.style.fontSize = '14px';
+            pre.style.fontSize = '14PX';
             pre.style.margin = '0 0 16px 0';
             blockElement.appendChild(pre);
             break;
@@ -218,7 +218,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
               if (block.data.caption) {
                 const caption = document.createElement('p');
                 caption.innerHTML = block.data.caption;
-                caption.style.fontSize = '14px';
+                caption.style.fontSize = '14PX';
                 caption.style.color = '#666';
                 caption.style.textAlign = 'center';
                 caption.style.margin = '0 0 16px 0';
@@ -234,7 +234,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
             defaultDiv.style.padding = '8px';
             defaultDiv.style.backgroundColor = '#f0f0f0';
             defaultDiv.style.borderRadius = '4px';
-            defaultDiv.style.fontSize = '14px';
+            defaultDiv.style.fontSize = '14PX';
             defaultDiv.style.margin = '0 0 16px 0';
             blockElement.appendChild(defaultDiv);
         }
@@ -381,10 +381,13 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
               borderRadius: "4px",
               padding: "20px",
               minHeight: "400px",
-              backgroundColor: "#fafbfd"
+              backgroundColor: "#fafbfd",
             }}
           >
-            <div ref={viewerContainerRef}>
+            <div style={{
+              maxWidth: "650px",
+              margin: "0 auto",
+            }} ref={viewerContainerRef}>
               {!data && (
                 <EuiText color="subdued">
                   <p>Энэ баримт бичиг хоосон байна.</p>
