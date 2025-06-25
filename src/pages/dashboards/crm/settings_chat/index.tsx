@@ -520,8 +520,8 @@ const ChatFacebook = () => {
                     title={<h3>No Facebook Pages Found</h3>}
                     body={
                       <p>
-                        We couldn't find any Facebook pages that you manage. 
-                        Please make sure you've granted the necessary permissions.
+                        We couldn&apos;t find any Facebook pages that you manage. 
+                        Please make sure you&apos;ve granted the necessary permissions.
                       </p>
                     }
                   />
@@ -590,13 +590,12 @@ const ChatFacebook = () => {
                 title={<h3>{translate("no_facebook_pages")}</h3>}
                 body={
                   <p>
-                    You haven't added any Facebook pages to your system yet. 
+                    You haven&apos;t added any Facebook pages to your system yet. 
                     Connect with Facebook and add the pages you want to manage.
                   </p>
-                }
-                actions={
+                }                  actions={
                   fbLoginStatus && fbLoginStatus.status === 'connected' && userFacebookPages.length > 0 ? (
-                    <p>Select a page from "Your Facebook Pages" section above to add it to your system.</p>
+                    <p>Select a page from &quot;Your Facebook Pages&quot; section above to add it to your system.</p>
                   ) : (
                     <EuiButton 
                       color="primary" 
