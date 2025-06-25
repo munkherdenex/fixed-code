@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 import {
   EuiPanel,
@@ -21,13 +22,16 @@ interface TicketCreatePanelProps {
 }
 
 const TicketCreatePanel: React.FC<TicketCreatePanelProps> = ({ ticketId, contactLog }) => {
+  const router = useRouter();
   const [type, setType] = useState<number | undefined>(undefined);
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
   const [ticketCreated, setTicketCreated] = useState(!!ticketId);
   const [typeOptions, setTypeOptions] = useState<{ label: string; value: number }[]>([]);
   const [isLoadingTypes, setIsLoadingTypes] = useState(true);
-  const [formErrors, setFormErrors] = useState<{ type?: string; title?: string; details?: string }>({});
+  const [formErrors, setFormErrors] = useState<{ type?: string; title?: string; details?: string }>(
+    {},
+  );
 
   // Fetch ticket types from the API
   useEffect(() => {
@@ -53,7 +57,7 @@ const TicketCreatePanel: React.FC<TicketCreatePanelProps> = ({ ticketId, contact
     trigger: createTicket,
     data: createdTicket,
     isMutating,
-    error: createTicketError
+    error: createTicketError,
   } = useSWRMutation(
     "/api/tickets", // API endpoint
     async (url, { arg }: { arg: { type: number; title: string; details: string } }) => {
@@ -79,13 +83,14 @@ const TicketCreatePanel: React.FC<TicketCreatePanelProps> = ({ ticketId, contact
     }
 
     try {
-      await createTicket({
+      let data = await createTicket({
         type: type,
         title,
         details,
       });
       setTicketCreated(true);
       setFormErrors({});
+      router.push(`/dashboards/crm/ticket/${data.id}`);
     } catch (error) {
       console.error("Failed to create ticket:", error);
     }
@@ -115,11 +120,7 @@ const TicketCreatePanel: React.FC<TicketCreatePanelProps> = ({ ticketId, contact
           <EuiForm fullWidth>
             <EuiFlexGroup direction="column" gutterSize="s">
               <EuiFlexItem>
-                <EuiFormRow
-                  label="Категори"
-                  isInvalid={!!formErrors.type}
-                  error={formErrors.type}
-                >
+                <EuiFormRow label="Категори" isInvalid={!!formErrors.type} error={formErrors.type}>
                   <EuiComboBox
                     fullWidth
                     placeholder="Категори сонгоно уу"
@@ -145,11 +146,7 @@ const TicketCreatePanel: React.FC<TicketCreatePanelProps> = ({ ticketId, contact
                 </EuiFormRow>
               </EuiFlexItem>
               <EuiFlexItem>
-                <EuiFormRow
-                  label="Гарчиг"
-                  isInvalid={!!formErrors.title}
-                  error={formErrors.title}
-                >
+                <EuiFormRow label="Гарчиг" isInvalid={!!formErrors.title} error={formErrors.title}>
                   <EuiFieldText
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}

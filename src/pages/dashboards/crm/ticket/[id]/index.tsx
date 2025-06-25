@@ -566,15 +566,20 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         text: item.name,
       }));
       setPriorityOptions(transformedData);
+      onChangePriority(results[0]);
     } catch (error) {
       console.error("Failed to update ticket:", error);
     }
   };
 
   const onChangePriority = (e) => {
-    setSelectedPriority(e.target.value);
-    let obj = priorityList.find((val) => val.id == e.target.value);
-    setSelectedPriorityDuration(obj.duration + " минут");
+    let element = e.target ? e.target : e;
+    setSelectedPriority(element.value ? element.value : element.id);
+    let obj;
+    if (priorityList) {
+      obj = priorityList.find((val) => val.id == element.value);
+    }
+    setSelectedPriorityDuration((obj ? obj.duration : e.duration) + " минут");
   };
 
   const onTagAddButtonClick = () => {
@@ -679,7 +684,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
           : {}),
       };
       await ticketApi.changeStatus(id, payload);
-      router.push("/dashboards/crm/ticket?pageIndex=1&pageSize=10");
+      // router.push("/dashboards/crm/ticket?pageIndex=1&pageSize=10");
     } catch (error) {
       console.error("Failed to update ticket:", error);
     }
@@ -763,7 +768,12 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
 
   const tagAddButton = (
     <>
-      <EuiButtonEmpty iconType="plusInCircle" color="primary" onClick={onTagAddButtonClick}>
+      <EuiButtonEmpty
+        iconType="plusInCircle"
+        color="primary"
+        onClick={onTagAddButtonClick}
+        disabled={data?.status == "close" ? true : false}
+      >
         Төрөл нэмэх
       </EuiButtonEmpty>
     </>
@@ -1014,7 +1024,9 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
           ></EuiConfirmModal>
         )}
         <EuiFlexGroup>
-          <EuiFlexItem>
+          <EuiFlexItem
+            style={data?.status === "close" ? { pointerEvents: "none", opacity: 0.5 } : {}}
+          >
             <EuiSplitPanel.Outer>
               <EuiFlexGroup direction="column" gutterSize="none">
                 <EuiFlexItem>
@@ -1087,6 +1099,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     placeholder="Placeholder text"
                     value={ticketDescription}
                     onChange={ticketDescriptionOnChange}
+                    disabled={data?.status == "close" ? true : false}
                   />
                   <EuiSpacer size="m" />
                   {/* Төрөл */}
@@ -1177,7 +1190,11 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     </div>
                   </EuiFlexItem>
                   <EuiSpacer size="xs" />
-                  <CustomersSelect onSelect={onCustomerSelect} initValue={selectedCustomerId} />
+                  <CustomersSelect
+                    onSelect={onCustomerSelect}
+                    initValue={selectedCustomerId}
+                    isDisabled={data?.status == "close" ? true : false}
+                  />
                   {/* <EuiSelect
                     fullWidth={true}
                     value={value}
@@ -1228,6 +1245,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     onChange={(e) => onNeedsCallbackChange(e)}
                     fullWidth={true}
                     aria-label="Use aria labels when no actual label is in use"
+                    disabled={data?.status == "close" ? true : false}
                   />
                   <EuiSpacer size="m" />
                   {/* Хариуцах нэгж */}
@@ -1244,6 +1262,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     value={selectedTeamId}
                     onChange={(e) => onTeamChange(e)}
                     aria-label="Хариуцах нэгж"
+                    disabled={data?.status == "close" ? true : false}
                   />
                   {/* Хариуцах ажилтан */}
                   {selectedTeamId && selectedTeam ? (
@@ -1263,6 +1282,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                           onTeamMemberChange(e);
                         }}
                         aria-label="Use aria labels when no actual label is in use"
+                        disabled={data?.status == "close" ? true : false}
                       />
                     </>
                   ) : null}
@@ -1273,7 +1293,12 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                         <>
                           <EuiSpacer size="m" />
                           <EuiFlexGroup justifyContent="flexEnd">
-                            <EuiButtonEmpty size="s" onClick={addPriority} iconType="plusInCircle">
+                            <EuiButtonEmpty
+                              size="s"
+                              onClick={addPriority}
+                              iconType="plusInCircle"
+                              disabled={data?.status == "close" ? true : false}
+                            >
                               Чухлын зэрэг нэмэх
                             </EuiButtonEmpty>
                           </EuiFlexGroup>
@@ -1292,6 +1317,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                             value={selectedPriority}
                             onChange={(e) => onChangePriority(e)}
                             aria-label="Use aria labels when no actual label is in use"
+                            disabled={data?.status == "close" ? true : false}
                           />
                           {selectedPriorityDuration && (
                             <>
@@ -1334,6 +1360,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                       fill={true}
                       iconType="save"
                       onClick={() => setIsEditConfirmModalVisible(true)}
+                      disabled={data?.status == "close" ? true : false}
                     >
                       Хадгалах
                     </EuiButton>
@@ -1423,7 +1450,11 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     </EuiSplitPanel.Inner>
                   </EuiFlexItem>
                   <EuiPanel paddingSize="l">
-                    <EuiFlexItem>
+                    <EuiFlexItem
+                      style={
+                        data?.status === "close" ? { pointerEvents: "none", opacity: 0.5 } : {}
+                      }
+                    >
                       {data.fields.map((field: Field) => {
                         return (
                           <Controller
@@ -1457,7 +1488,10 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
               {selectedTabId == "cobalt--id" ? (
                 <>
                   <EuiSpacer size="m" />
-                  <EuiFormRow fullWidth>
+                  <EuiFormRow
+                    fullWidth
+                    style={data?.status === "close" ? { pointerEvents: "none", opacity: 0.5 } : {}}
+                  >
                     <EuiCommentList comments={ticketComments} aria-label="Comment system">
                       <EuiComment username="You" timelineAvatar={<EuiAvatar name="You" />}>
                         <EuiMarkdownEditor

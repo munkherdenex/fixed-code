@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   EuiAvatar,
   EuiBadge,
@@ -13,22 +13,29 @@ import {
   EuiPanel,
   EuiTitle,
   EuiButtonEmpty,
+  EuiHorizontalRule,
+  EuiText,
 } from "@elastic/eui";
 import { useChatContext } from "@/contexts/ChatContext";
 import { getImgUrl } from "./utils";
 import useGetCustomers, { CustomersResponse } from "@/hooks/useGetCustomers";
 import { PAGINATION_CHOOSES } from "@/constants";
 import contactLogApi from "@/api/contact_log";
+import CustomersSelect from "../ticket_template/customers_select";
+import useSWR from "swr";
+import audienceApi from "@/api/audience";
+import { useRouter } from "next/router";
 
 interface ChatDetailProps {
   className?: string;
 }
 
 const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
-  const { 
-    selectedChatFbProfile, 
-    selectedPageId, 
-    selectedChatId, 
+  const router = useRouter();
+  const {
+    selectedChatFbProfile,
+    selectedPageId,
+    selectedChatId,
     setSelectedChatId,
     setSelectedPageId,
     currentRootChatTab,
@@ -38,10 +45,29 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
   const [selectedOptions, setSelectedOptions] = useState<EuiComboBoxOptionOption[]>([]);
   const [isAssigning, setIsAssigning] = useState(false);
   const [isClosingChat, setIsClosingChat] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
 
   const { data: segmentCustomers } = useGetCustomers<CustomersResponse>(null, {
     limit: `${PAGINATION_CHOOSES[3]}`,
   });
+
+  // Use SWR for fetching customer data
+  const {
+    data: customerData,
+    error,
+    isLoading,
+  } = useSWR(
+    selectedChatFbProfile && selectedChatFbProfile?.customer_id
+      ? [`/customer/${selectedChatFbProfile?.customer_id}`, selectedChatFbProfile?.customer_id]
+      : null,
+    async () => {
+      const response = await audienceApi.getAudience([
+        null,
+        { id: selectedChatFbProfile?.customer_id },
+      ]);
+      return response;
+    },
+  );
 
   // If no chat is selected, show placeholder
   if (!selectedChatFbProfile) {
@@ -69,9 +95,9 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
     }) || [];
 
   const handleAssignButton = async () => {
-    if (!selectedOptions.length || !selectedChatFbProfile) return;
+    if (!selectedCustomerId || !selectedChatFbProfile) return;
 
-    const customerId = selectedOptions[0].value;
+    const customerId = selectedCustomerId;
     try {
       setIsAssigning(true);
       await contactLogApi.assignPsidToCustomer({
@@ -89,21 +115,21 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
 
   const handleCloseChat = async () => {
     if (!selectedChatId) return;
-    
+
     try {
       setIsClosingChat(true);
-      
+
       // First update the server
       await contactLogApi.updateContactLogById(selectedChatId, undefined, "archive");
-      
+
       // Force an immediate update to the chat list - we need to move to archive tab
-      setCurrentRootChatTab('closed-chats-tab');
-      
+      setCurrentRootChatTab("closed-chats-tab");
+
       // Clear selected chat after closing it
       setSelectedChatId(null);
       setSelectedPageId(null);
       setSelectedChatFbProfile(null);
-      
+
       // Short timeout to ensure the tab switch completes
       setTimeout(() => {
         // Force a refresh of the chat list
@@ -118,6 +144,10 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
 
   const onChange = (selectedOptions: EuiComboBoxOptionOption[]) => {
     setSelectedOptions(selectedOptions);
+  };
+
+  const onCustomerSelect = (value) => {
+    setSelectedCustomerId(value);
   };
 
   return (
@@ -136,10 +166,10 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
             <p>PSID: {selectedChatFbProfile?.psid}</p>
           </EuiFlexItem>
         </EuiFlexGroup>
-        
+
         <EuiSpacer size="m" />
-        
-        <EuiButton 
+
+        <EuiButton
           color="danger"
           onClick={handleCloseChat}
           isLoading={isClosingChat}
@@ -152,27 +182,87 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
       <EuiSpacer size="l" />
 
       <EuiPanel>
-        <EuiForm>
-          <EuiFormRow label="Харилцагч холбох" fullWidth>
-            <EuiComboBox
+        {customerData ? (
+          <>
+            <EuiFlexGroup direction="column" justifyContent="flexStart" alignItems="center">
+              <EuiFlexItem grow={true}>
+                <EuiText grow={false}>
+                  <h3>{customerData.name + " " + customerData.surname}</h3>
+                </EuiText>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+            <EuiSpacer size="l"></EuiSpacer>
+            <EuiFlexGroup direction="column" justifyContent="flexStart" alignItems="flexStart">
+              <EuiFlexItem grow={false}>И-мэйл хаяг: {customerData.email}</EuiFlexItem>
+              <EuiFlexItem grow={false}>Утасны дугаар: {customerData.phone}</EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiFlexGroup>
+                  <EuiText grow={false}>Subscription: </EuiText>
+                  <EuiBadge color={customerData.is_subscribed ? "success" : "danger"}>
+                    {customerData.is_subscribed ? "Тийм" : "Үгүй"}
+                  </EuiBadge>
+                </EuiFlexGroup>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>
+                <EuiFlexGroup>
+                  <EuiText grow={false}>Төлөв: </EuiText>
+                  <EuiBadge color={customerData.status == "active" ? "success" : "danger"}>
+                    {customerData.status == "active" ? "Идэвхтэй" : "Идэвхгүй"}
+                  </EuiBadge>
+                </EuiFlexGroup>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false}>Үүсгэсэн: {customerData.created_by.email}</EuiFlexItem>
+              <EuiFlexItem grow={false}>Шинэчилсэн: {customerData.updated_by.email}</EuiFlexItem>
+            </EuiFlexGroup>
+            <EuiSpacer size="l"></EuiSpacer>
+            <EuiFlexGroup direction="column" justifyContent="flexStart" alignItems="center">
+              <EuiFlexItem grow={true}>
+                <EuiButton
+                  color="danger"
+                  fill
+                  iconType="arrowRight"
+                  iconSide="right"
+                  onClick={() =>
+                    router.push({
+                      pathname: `/dashboards/crm/customer/info/${customerData.id}`,
+                    })
+                  }
+                >
+                  Дэлгэрэнгүй
+                </EuiButton>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </>
+        ) : (
+          <EuiForm>
+            <EuiFormRow label="Харилцагч холбох" fullWidth>
+              {/* <EuiComboBox
               placeholder="Харилцагч хайх"
               options={dataTypeOptions}
               selectedOptions={selectedOptions}
               onChange={onChange}
               singleSelection={{ asPlainText: true }}
               fullWidth
-            />
-          </EuiFormRow>
-          <EuiSpacer size="m" />
-          <EuiButton
-            onClick={handleAssignButton}
-            fill
-            isLoading={isAssigning}
-            isDisabled={!selectedOptions.length}
-          >
-            Холбох
-          </EuiButton>
-        </EuiForm>
+            /> */}
+
+              <CustomersSelect
+                onSelect={onCustomerSelect}
+                isLoading={undefined}
+                isDisabled={undefined}
+                initValue={undefined}
+              />
+            </EuiFormRow>
+            <EuiSpacer size="m" />
+            <EuiButton
+              onClick={handleAssignButton}
+              fill
+              isLoading={isAssigning}
+              isDisabled={selectedCustomerId == null}
+            >
+              Холбох
+            </EuiButton>
+          </EuiForm>
+        )}
       </EuiPanel>
     </div>
   );

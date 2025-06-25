@@ -6,6 +6,7 @@ import { useContext, useMemo, useState } from "react";
 import CrmSideMenu from "./crm_sidebar_menu";
 import Image from "next/image";
 import { teamsContext } from "@/store/teams_store";
+import Link from "next/link";
 
 const CRMSidebar = () => {
   const router = useRouter();
@@ -54,8 +55,10 @@ const CRMSidebar = () => {
             id: htmlIdGenerator(path.name)(),
             isSelected: router.pathname === path.path,
             onClick: () => {
+              // console.log(path.path);
               router.push(path.path);
             },
+            href: path.path,
           };
         }),
       },
@@ -75,6 +78,7 @@ const CRMSidebar = () => {
             onClick: () => {
               router.push(path.path);
             },
+            href: path.path,
           };
         }),
       },
@@ -94,6 +98,7 @@ const CRMSidebar = () => {
             onClick: () => {
               router.push(path.path);
             },
+            href: path.path,
           };
         }),
       },
@@ -109,14 +114,14 @@ const CRMSidebar = () => {
       <EuiFlexItem>
         <EuiSideNav
           heading={
-            <div onClick={handleLogoClick} style={{ cursor: "pointer" }}>
+            <Link href="/dashboards/crm" onClick={handleLogoClick} style={{ cursor: "pointer" }}>
               <Image
                 src="/images/pocket-logo.png"
                 alt="Pocket logo"
                 width={200 * 0.5}
                 height={57 * 0.5}
               />
-            </div>
+            </Link>
           }
           aria-label="Menu"
           mobileTitle="Menu"
