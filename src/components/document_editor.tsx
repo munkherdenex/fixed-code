@@ -62,6 +62,11 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   // Initialize editor when in edit mode
   useEffect(() => {
     if (isEditing && typeof window !== "undefined" && !editorInstanceRef.current) {
+      // Clear the viewer container immediately when switching to edit mode
+      if (viewerContainerRef.current) {
+        viewerContainerRef.current.innerHTML = '';
+      }
+      
       const editor = new EditorJS({
         holder: holder,
         tools: EDITOR_TOOLS,
@@ -87,18 +92,16 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
     }
 
     // Cleanup editor when switching to view mode
-    return () => {
-      if (!isEditing && editorInstanceRef.current?.destroy) {
-        try {
-          editorInstanceRef.current.destroy();
-          editorInstanceRef.current = null;
-          isReadyRef.current = false;
-          console.log("Editor.js instance destroyed");
-        } catch (error) {
-          console.error("Error destroying Editor.js instance:", error);
-        }
+    if (!isEditing && editorInstanceRef.current) {
+      try {
+        editorInstanceRef.current.destroy();
+        editorInstanceRef.current = null;
+        isReadyRef.current = false;
+        console.log("Editor.js instance destroyed");
+      } catch (error) {
+        console.error("Error destroying Editor.js instance:", error);
       }
-    };
+    }
   }, [isEditing, data, title, onChange, holder]);
 
   // Update title when initialTitle changes

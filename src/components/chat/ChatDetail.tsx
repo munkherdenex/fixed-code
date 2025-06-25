@@ -34,6 +34,7 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
   const router = useRouter();
   const {
     selectedChatFbProfile,
+    setSelectedChatFbProfile,
     selectedPageId,
     selectedChatId,
     setSelectedChatId,

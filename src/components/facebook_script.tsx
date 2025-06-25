@@ -3,6 +3,17 @@
 import Script from 'next/script';
 import { useEffect } from 'react';
 
+// Type declaration for Facebook SDK
+declare global {
+  interface Window {
+    FB?: {
+      XFBML: {
+        parse: () => void;
+      };
+    };
+  }
+}
+
 export default function FacebookSDK() {
   // Add useEffect to ensure FB.XFBML.parse() is called when the component mounts
   useEffect(() => {

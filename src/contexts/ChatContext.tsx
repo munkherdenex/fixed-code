@@ -507,6 +507,7 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
 
             // Show notification toast
             addToast({
+              id: `new-message-${chatId}-${Date.now()}`,
               color: "primary",
               title: `New message from ${chatName}`,
               text:

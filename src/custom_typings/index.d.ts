@@ -18,3 +18,14 @@
 //   const content: { [className: string]: string };
 //   export default content;
 // }
+
+// Facebook SDK type declaration
+declare global {
+  interface Window {
+    FB?: {
+      XFBML: {
+        parse: () => void;
+      };
+    };
+  }
+}

@@ -101,7 +101,13 @@ const CRM = () => {
       if (dashBoardData && dashBoardData.daily_counts) {
         const dailyCounts = dashBoardData.daily_counts;
 
-        const sum = Object.values(dailyCounts).reduce((acc, currentCount) => acc + currentCount, 0);
+        const values = Object.values(dailyCounts);
+        let sum = 0;
+        for (const value of values) {
+          if (typeof value === 'number') {
+            sum += value;
+          }
+        }
 
         setTotalDailyCount(sum);
       }

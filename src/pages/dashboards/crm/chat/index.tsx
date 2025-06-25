@@ -45,7 +45,7 @@ const chatContainer = css`
 const Chat = () => {
   return (
     <>
-      <style jsx global>{`${chatCss}`}</style>
+      <style dangerouslySetInnerHTML={{ __html: chatCss }} />
       <ChatProvider>
         <DashboardCRMChatLayout>
           <EuiFlexGroup css={chatContainer} gutterSize='none'>
