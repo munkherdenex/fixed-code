@@ -25,6 +25,7 @@ import CustomersSelect from "../ticket_template/customers_select";
 import useSWR from "swr";
 import audienceApi from "@/api/audience";
 import { useRouter } from "next/router";
+import { addToast } from "../toast";
 
 interface ChatDetailProps {
   className?: string;
@@ -42,6 +43,7 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
     currentRootChatTab,
     setCurrentRootChatTab,
     loadMoreRootChats,
+    mutateMessages,
   } = useChatContext();
   const [selectedOptions, setSelectedOptions] = useState<EuiComboBoxOptionOption[]>([]);
   const [isAssigning, setIsAssigning] = useState(false);
@@ -106,9 +108,22 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
         customer_id: customerId,
       });
       // Could add success notification here
+      mutateMessages();
+      addToast({
+        id: "assign-success",
+        color: "success",
+        title: "Success",
+        text: "Амжилттай холболоо",
+      });
     } catch (error) {
       console.error("Error assigning customer:", error);
       // Could add error notification here
+      addToast({
+        id: "segment-audience-error",
+        color: "danger",
+        title: "Error",
+        text: "Алдаа гарлаа",
+      });
     } finally {
       setIsAssigning(false);
     }
@@ -212,8 +227,14 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ className }) => {
                   </EuiBadge>
                 </EuiFlexGroup>
               </EuiFlexItem>
-              <EuiFlexItem grow={false}>Үүсгэсэн: {customerData.created_by.email}</EuiFlexItem>
-              <EuiFlexItem grow={false}>Шинэчилсэн: {customerData.updated_by.email}</EuiFlexItem>
+              {customerData.created_by && (
+                <EuiFlexItem grow={false}>Үүсгэсэн: {customerData?.created_by?.email}</EuiFlexItem>
+              )}
+              {customerData.updated_by && (
+                <EuiFlexItem grow={false}>
+                  Шинэчилсэн: {customerData?.updated_by?.email}
+                </EuiFlexItem>
+              )}
             </EuiFlexGroup>
             <EuiSpacer size="l"></EuiSpacer>
             <EuiFlexGroup direction="column" justifyContent="flexStart" alignItems="center">
