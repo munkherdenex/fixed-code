@@ -34,7 +34,7 @@ export default function FacebookSDK() {
 
           window.fbAsyncInit = function() {
             FB.init({
-              appId      : '1302645107676952',
+              appId      : '636208599311670',
               cookie     : true,
               xfbml      : true,
               version    : 'v18.0'
