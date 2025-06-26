@@ -78,14 +78,14 @@ const KnowledgeManager = () => {
   const handleCreateNewDocument = useCallback(() => {
     const newDocument = {
       id: null,
-      title: "Untitled Document",
-      body: null,
+      title: "Гарчиггүй",
+      body: {},
       type: "public"
     };
     setDocumentData(newDocument);
     setOriginalDocumentData(newDocument);
-    setDocumentBody(null);
-    setOriginalDocumentBody(null);
+    setDocumentBody({});
+    setOriginalDocumentBody({});
     setSelectedItemId(null);
     setIsEditing(true);
     setHasData(true);
