@@ -381,11 +381,14 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     }
 
     if (data && data.priority) {
+      console.log("test priority");
+      console.log(data.priority);
       setSelectedPriority(data.priority.id);
-      let obj = priorityList.find((val) => val.id == data.priority.id);
-      if (obj) {
-        setSelectedPriorityDuration(obj.duration + " минут");
-      }
+      setSelectedPriorityDuration(data.priority.duration + " минут");
+      // let obj = priorityList.find((val) => val.id == data.priority.id);
+      // if (obj) {
+      //   setSelectedPriorityDuration(obj.duration + " минут");
+      // }
     }
 
     if (data && data.needs_callback) {
@@ -566,13 +569,16 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         text: item.name,
       }));
       setPriorityOptions(transformedData);
-      onChangePriority(results[0]);
+      if (data.priority == null) {
+        onChangePriority(results[0]);
+      }
     } catch (error) {
       console.error("Failed to update ticket:", error);
     }
   };
 
   const onChangePriority = (e) => {
+    console.log("on change priority");
     let element = e.target ? e.target : e;
     setSelectedPriority(element.value ? element.value : element.id);
     let obj;
@@ -684,6 +690,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
           : {}),
       };
       await ticketApi.changeStatus(id, payload);
+      mutatePage();
       // router.push("/dashboards/crm/ticket?pageIndex=1&pageSize=10");
     } catch (error) {
       console.error("Failed to update ticket:", error);
@@ -723,7 +730,6 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   };
 
   const onTicketStateChange = (value) => {
-    console.log(value);
     setSelectedTicketStateType(value);
     if (value == "closeTicket") {
       setIsTicketCloseModalVisible(true);
