@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { EuiFlexGroup, EuiFlexItem, EuiIcon, EuiSideNav, htmlIdGenerator } from "@elastic/eui";
+import { EuiFlexGroup, EuiFlexItem, EuiIcon, EuiSideNav, EuiButton, htmlIdGenerator } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useContext, useMemo, useState } from "react";
 import CrmSideMenu from "./crm_sidebar_menu";
@@ -12,6 +12,8 @@ const CRMSidebar = () => {
   const router = useRouter();
   const [isSideNavOpenOnMobile, setisSideNavOpenOnMobile] = useState(false);
   const { isCRMCallEnabled, isCRMChatEnabled, isCRMTicketEnabled } = useContext(teamsContext);
+  
+  const isPocket = typeof window !== 'undefined' ? window.env?.IS_POCKET : false;
   const audienceSegmentPaths = useMemo(() => {
     return [
       {
@@ -131,7 +133,26 @@ const CRMSidebar = () => {
         />
       </EuiFlexItem>
       <EuiFlexItem grow={false}>
-        <CrmSideMenu />
+        <EuiFlexGroup direction="column" gutterSize="s">
+          {!isPocket && (
+            <EuiFlexItem grow={false}>
+              <Link href="/privacy_policy">
+                <EuiButton
+                  fullWidth
+                  size="s"
+                  iconType="document"
+                  color="text"
+                  style={{ justifyContent: "flex-start" }}
+                >
+                  Нууцлалын бодлого
+                </EuiButton>
+              </Link>
+            </EuiFlexItem>
+          )}
+          <EuiFlexItem grow={false}>
+            <CrmSideMenu />
+          </EuiFlexItem>
+        </EuiFlexGroup>
       </EuiFlexItem>
     </EuiFlexGroup>
   );

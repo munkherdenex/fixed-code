@@ -4,14 +4,34 @@ import { EuiHeader, EuiTitle, useEuiTheme, EuiButton } from "@elastic/eui";
 import { imageLoader } from "../../lib/loader";
 import ThemeSwitcher from "./theme_switcher";
 import { headerStyles } from "./header.styles";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { authContext } from "../../store/auth_store";
 import { IS_REGISTER_ENABLED } from "../../constants";
+import { useRouter } from "next/router";
 
 const Header = () => {
   const { user } = useContext(authContext);
   const { euiTheme } = useEuiTheme();
   const styles = headerStyles(euiTheme);
+  const router = useRouter();
+  const [dashboardLink, setDashboardLink] = useState("/dashboards");
+
+  useEffect(() => {
+    // Check if we came from CRM or CDP and set the appropriate dashboard link
+    if (typeof window !== 'undefined') {
+      const referrer = document.referrer;
+      const lastDashboard = localStorage.getItem('lastDashboard');
+      
+      if (referrer.includes('/crm') || lastDashboard === 'crm') {
+        setDashboardLink("/dashboards/crm");
+      } else if (referrer.includes('/cdp') || lastDashboard === 'cdp') {
+        setDashboardLink("/dashboards/cdp");
+      } else {
+        // Default to CDP if no specific preference
+        setDashboardLink("/dashboards/cdp");
+      }
+    }
+  }, []);
 
   return (
     <EuiHeader
@@ -38,7 +58,7 @@ const Header = () => {
         {
           items: user
             ? [
-                <Link key="dashboards" href="/dashboards" passHref>
+                <Link key="dashboards" href={dashboardLink} passHref>
                   <EuiButton style={{ minWidth: 80, margin: 10 }} color="primary" fill size="s">
                     Dashboard
                   </EuiButton>

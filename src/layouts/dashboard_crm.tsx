@@ -11,7 +11,7 @@ import {
   useIsWithinMaxBreakpoint,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { ReactElement, useContext } from "react";
+import { ReactElement, useContext, useEffect } from "react";
 import { SWRConfig } from "swr";
 import CRMSidebar from "../components/dashboards/crm_sidebar";
 import NoProduct from "../components/no_product";
@@ -112,6 +112,13 @@ const DashboardCRMLayout = ({
   const styles = dashboardsLayoutStyles();
   const { removeUserTokenData } = useContext(authContext);
   const { clearCurrentTeam } = useContext(teamsContext);
+
+  // Track that user is on CRM dashboard
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lastDashboard', 'crm');
+    }
+  }, []);
 
   return (
     <SWRConfig

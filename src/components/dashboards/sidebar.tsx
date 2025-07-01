@@ -4,6 +4,7 @@ import {
   EuiIcon,
   EuiSideNav,
   EuiSideNavItemType,
+  EuiButton,
   htmlIdGenerator,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
@@ -11,12 +12,15 @@ import { useMemo, useState } from "react";
 import SideMenu from "./sidebar_menu";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import Link from "next/link";
 
 const Sidebar = () => {
   const router = useRouter();
   const translate = useTranslations();
 
   const [isSideNavOpenOnMobile, setisSideNavOpenOnMobile] = useState(false);
+  
+  const isPocket = typeof window !== 'undefined' ? window.env?.IS_POCKET : false;
 
   const audienceSegmentPaths = useMemo(() => {
     return [
@@ -90,7 +94,26 @@ const Sidebar = () => {
         />
       </EuiFlexItem>
       <EuiFlexItem grow={false}>
-        <SideMenu />
+        <EuiFlexGroup direction="column" gutterSize="s">
+          {!isPocket && (
+            <EuiFlexItem grow={false}>
+              <Link href="/privacy_policy">
+                <EuiButton
+                  fullWidth
+                  size="s"
+                  iconType="document"
+                  color="text"
+                  style={{ justifyContent: "flex-start" }}
+                >
+                  Нууцлалын бодлого
+                </EuiButton>
+              </Link>
+            </EuiFlexItem>
+          )}
+          <EuiFlexItem grow={false}>
+            <SideMenu />
+          </EuiFlexItem>
+        </EuiFlexGroup>
       </EuiFlexItem>
     </EuiFlexGroup>
   );

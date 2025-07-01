@@ -8,7 +8,7 @@ import {
   useIsWithinMaxBreakpoint,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
-import { ReactElement, useContext } from "react";
+import { ReactElement, useContext, useEffect } from "react";
 import { SWRConfig } from "swr";
 import Sidebar from "../components/dashboards/sidebar";
 import NoProduct from "../components/no_product";
@@ -86,6 +86,13 @@ const DashboardLayout = ({
   const styles = dashboardsLayoutStyles();
   const { removeUserTokenData } = useContext(authContext);
   const { clearCurrentTeam } = useContext(teamsContext);
+
+  // Track that user is on CDP dashboard  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lastDashboard', 'cdp');
+    }
+  }, []);
 
   return (
     <SWRConfig
