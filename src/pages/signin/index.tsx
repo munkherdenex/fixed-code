@@ -1,13 +1,14 @@
 import { useContext, useEffect } from "react";
 import Head from "next/head";
 import Wrapper from "../../components/starter/wrapper";
-import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiTitle } from "@elastic/eui";
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiTitle, EuiText, EuiLink } from "@elastic/eui";
 import SigninForm from "../../components/signin_form";
 import { authContext } from "../../store/auth_store";
 import { useRouter } from "next/router";
 import { IS_POCKET } from "../../constants";
 import { useTranslations } from "next-intl";
 import { GetStaticProps } from "next/types";
+import Link from "next/link";
 
 const Index = () => {
   const router = useRouter();
@@ -52,6 +53,24 @@ const Index = () => {
                 <EuiButton size="s" href="/api/v1/login">
                   {t("login-with-pocket")}
                 </EuiButton>
+              </EuiFlexItem>
+            )}
+            
+            <EuiSpacer size="xl" />
+            
+            {!IS_POCKET && (
+              <EuiFlexItem grow={false}>
+                <EuiText size="s" textAlign="center" color="subdued">
+                  <p>
+                    <Link href="/privacy_policy" passHref>
+                      <EuiLink>Нууцлалын бодлого</EuiLink>
+                    </Link>
+                    {" • "}
+                    <Link href="/terms_of_service" passHref>
+                      <EuiLink>Үйлчилгээний нөхцөл</EuiLink>
+                    </Link>
+                  </p>
+                </EuiText>
               </EuiFlexItem>
             )}
           </EuiFlexGroup>
