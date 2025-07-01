@@ -222,7 +222,7 @@ const KnowledgeManager = () => {
             }}
           >
             {/* Tree View */}
-            <div style={{ overflow: "auto", height: "calc(100% - 80px)" }}>
+            <div style={{ overflow: "hidden", height: "100%" }}>
               <PageTreeView
                 onSelectItem={handleSelectDocument}
                 selectedItemId={selectedItemId}

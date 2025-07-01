@@ -10,6 +10,8 @@ import {
   EuiFlexItem,
   EuiText,
   EuiBadge,
+  EuiPagination,
+  EuiSpacer,
 } from "@elastic/eui";
 import knowledgeApi from "@/api/knowledge";
 
@@ -311,11 +313,20 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
   const [treeItems, setTreeItems] = useState<TreeNode[]>([]);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const pageSize = 5; // Number of items per page
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (page = 0) => {
     try {
       setIsLoading(true);
-      const res = await knowledgeApi.getList({});
+      const params = {
+        offset: page + 1, // API might use 1-based indexing
+        limit: pageSize,
+      };
+      const res = await knowledgeApi.getList(params);
+      
       const parsedResults = res.results.map((item) => {
         let parsedBody = {};
         try {
@@ -331,17 +342,25 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
           body: parsedBody,
         };
       });
+      
       setTreeItems(parsedResults);
+      setTotalCount(res.total_count || 0);
+      setTotalPages(res.total_pages);
+      setCurrentPageIndex(page);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       console.error("Error loading knowledge base data:", error);
     }
-  }, []);
+  }, [pageSize]);
 
   useEffect(() => {
-    loadData();
+    loadData(0); // Start from first page
   }, [loadData, refreshTrigger]);
+
+  const handlePageChange = useCallback((pageIndex: number) => {
+    loadData(pageIndex);
+  }, [loadData]);
 
   const handleToggleExpand = useCallback((nodeId: string) => {
     setExpandedIds((prev) => {
@@ -456,7 +475,7 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
         
         // For now, we'll just reload the data since the tree structure might be complex
         // In a more sophisticated implementation, you'd update the tree state directly
-        await loadData();
+        await loadData(currentPageIndex); // Reload current page
         
         // Expand the parent node to show the new subpage
         setExpandedIds(prev => new Set([...prev, parentNodeId]));
@@ -470,7 +489,7 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
         alert("Дэд хуудас үүсгэхэд алдаа гарлаа. Дахин оролдоно уу.");
       }
     }
-  }, [loadData, onRefresh]);
+  }, [loadData, onRefresh, currentPageIndex]);
 
   const renderNode = (node: TreeNode, level: number = 0): React.ReactNode => {
     return (
@@ -490,7 +509,7 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
   };
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Header with New Document Button */}
       <EuiFlexGroup
         alignItems="center"
@@ -501,6 +520,7 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
           borderBottom: "1px solid #d3dae6",
           marginBottom: "4px",
           backgroundColor: "#fafbfd",
+          flexGrow: 0,
         }}
       >
         <EuiFlexItem grow={true}>
@@ -529,9 +549,10 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
       {/* Tree Content */}
       <div style={{ 
         padding: "8px 4px",
-        height: "calc(100% - 60px)",
+        height: "calc(100% - 120px)", // Adjusted height to accommodate pagination
         overflow: "auto",
-        scrollBehavior: "smooth"
+        scrollBehavior: "smooth",
+        flexGrow: 1,
       }}>
         {isLoading ? (
           <div style={{ 
@@ -543,7 +564,9 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
             Ачааллаж байна...
           </div>
         ) : treeItems.length > 0 ? (
-          treeItems.map((node) => renderNode(node, 0))
+          <>
+            {treeItems.map((node) => renderNode(node, 0))}
+          </>
         ) : (
           <div style={{ 
             padding: "20px", 
@@ -555,6 +578,33 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div style={{
+          padding: "8px 16px",
+          borderTop: "1px solid #d3dae6",
+          backgroundColor: "#fafbfd",
+          flexGrow: 0,
+        }}>
+          <EuiFlexGroup alignItems="center" justifyContent="spaceBetween" gutterSize="s">
+            <EuiFlexItem grow={false}>
+              <EuiText size="xs" color="subdued">
+                Нийт: {totalCount} баримт
+              </EuiText>
+            </EuiFlexItem>
+            <EuiFlexItem grow={false}>
+              <EuiPagination
+                aria-label="Knowledge base pagination"
+                pageCount={totalPages}
+                activePage={currentPageIndex}
+                onPageClick={handlePageChange}
+                compressed
+              />
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </div>
+      )}
     </div>
   );
 };
