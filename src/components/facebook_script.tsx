@@ -1,7 +1,7 @@
 'use client';
 
 import Script from 'next/script';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // Type declaration for Facebook SDK
 declare global {
@@ -11,10 +11,65 @@ declare global {
         parse: () => void;
       };
     };
+    facebookConfig?: {
+      appId: string;
+      cookie: boolean;
+      xfbml: boolean;
+      version: string;
+    };
   }
 }
 
+interface FacebookConfig {
+  appId: string;
+  cookie: boolean;
+  xfbml: boolean;
+  version: string;
+}
+
 export default function FacebookSDK() {
+  const [fbConfig, setFbConfig] = useState<FacebookConfig | null>(null);
+  const [configLoaded, setConfigLoaded] = useState(false);
+
+  // Load Facebook configuration from public folder
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '/config/facebook.js';
+    script.onload = () => {
+      if (window.facebookConfig) {
+        setFbConfig(window.facebookConfig);
+      } else {
+        // Fallback configuration
+        setFbConfig({
+          appId: '1302645107676952',
+          cookie: true,
+          xfbml: true,
+          version: 'v18.0'
+        });
+      }
+      setConfigLoaded(true);
+    };
+    script.onerror = () => {
+      // Fallback configuration if config file fails to load
+      setFbConfig({
+        appId: '1302645107676952',
+        cookie: true,
+        xfbml: true,
+        version: 'v18.0'
+      });
+      setConfigLoaded(true);
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup
+      const existingScript = document.querySelector('script[src="/config/facebook.js"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
+  }, []);
+
   // Add useEffect to ensure FB.XFBML.parse() is called when the component mounts
   useEffect(() => {
     // If the SDK is already loaded, parse XFBML
@@ -22,6 +77,11 @@ export default function FacebookSDK() {
       window.FB.XFBML.parse();
     }
   }, []);
+
+  // Don't render the Facebook SDK script until config is loaded
+  if (!configLoaded || !fbConfig) {
+    return null;
+  }
 
   return (
     <Script
@@ -34,10 +94,10 @@ export default function FacebookSDK() {
 
           window.fbAsyncInit = function() {
             FB.init({
-              appId      : '636208599311670',
-              cookie     : true,
-              xfbml      : true,
-              version    : 'v18.0'
+              appId      : '${fbConfig.appId}',
+              cookie     : ${fbConfig.cookie},
+              xfbml      : ${fbConfig.xfbml},
+              version    : '${fbConfig.version}'
             });
               
             FB.AppEvents.logPageView();

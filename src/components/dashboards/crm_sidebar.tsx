@@ -85,6 +85,26 @@ const CRMSidebar = () => {
         }),
       },
       {
+        name: "Мэдлэгийн сан",
+        id: htmlIdGenerator("reports")(),
+        items: [
+          {
+            name: "Мэдлэгийн сан",
+            path: "/dashboards/crm/knowledge_base",
+          },
+        ].map((path) => {
+          return {
+            name: path.name,
+            id: htmlIdGenerator(path.name)(),
+            isSelected: router.pathname === path.path,
+            onClick: () => {
+              router.push(path.path);
+            },
+            href: path.path,
+          };
+        }),
+      },
+      {
         name: "Тайлан",
         id: htmlIdGenerator("reports")(),
         items: [

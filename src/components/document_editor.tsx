@@ -13,7 +13,6 @@ import {
   EuiFlexItem,
   EuiFieldText,
   EuiCallOut,
-  EuiBadge,
   EuiSpacer,
 } from "@elastic/eui";
 
@@ -50,7 +49,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   const viewerContainerRef = useRef<HTMLDivElement>(null);
   const isReadyRef = useRef(false);
   const internalChangeRef = useRef(false);
-  const [title, setTitle] = useState(initialTitle || "Untitled Document");
+  const [title, setTitle] = useState(initialTitle || "Нэргүй баримт бичиг");
 
   // Helper function to format date
   const formatDate = (date: string | Date | undefined): string => {
@@ -68,32 +67,9 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
     });
   };
 
-  // Helper function to get status color
-  const getStatusColor = (status: string | undefined): "default" | "primary" | "success" | "warning" | "danger" => {
-    if (!status) return "default";
-    
-    switch (status.toLowerCase()) {
-      case 'draft':
-      case 'ноорог':
-        return "warning";
-      case 'published':
-      case 'нийтлэгдсэн':
-        return "success";
-      case 'archived':
-      case 'архивлагдсан':
-        return "default";
-      case 'review':
-      case 'хянуулахад':
-        return "primary";
-      default:
-        return "default";
-    }
-  };
-
   // Extract metadata from documentData
   const createdDate = documentData?.created_at || documentData?.createdAt;
   const updatedDate = documentData?.updated_at || documentData?.updatedAt;
-  const status = documentData?.status || (documentData?.id ? "Нийтлэгдсэн" : "Ноорог");
   const createdBy = documentData?.created_by?.email || documentData?.created_by?.name || documentData?.createdBy;
   const updatedBy = documentData?.updated_by?.email || documentData?.updated_by?.name || documentData?.updatedBy;
 
@@ -111,11 +87,9 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   // Initialize editor when in edit mode
   useEffect(() => {
     if (isEditing && typeof window !== "undefined" && !editorInstanceRef.current) {
-      // Clear the viewer container immediately when switching to edit mode
       if (viewerContainerRef.current) {
         viewerContainerRef.current.innerHTML = '';
       }
-      
       const editor = new EditorJS({
         holder: holder,
         tools: EDITOR_TOOLS,
@@ -132,7 +106,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
           onChange(title, savedData);
         },
         onReady: () => {
-          console.log("Editor.js is ready to work!");
+          console.log("Editor.js бэлэн боллоо!");
           isReadyRef.current = true;
           editorInstanceRef.current = editor;
           internalChangeRef.current = false;
@@ -146,162 +120,274 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
         editorInstanceRef.current.destroy();
         editorInstanceRef.current = null;
         isReadyRef.current = false;
-        console.log("Editor.js instance destroyed");
+        console.log("Editor.js устгагдлаа");
       } catch (error) {
-        console.error("Error destroying Editor.js instance:", error);
+        console.error("Editor.js-ийг устгахад алдаа гарлаа:", error);
       }
     }
   }, [isEditing, data, title, onChange, holder]);
 
   // Update title when initialTitle changes
   useEffect(() => {
-    setTitle(initialTitle || "Untitled Document");
+    setTitle(initialTitle || "Нэргүй баримт бичиг");
   }, [initialTitle]);
-
-  // Render read-only view
-  const renderReadOnlyView = useCallback(() => {
-    if (!viewerContainerRef.current || !data) return;
-
-    // Clear previous content
-    viewerContainerRef.current.innerHTML = '';
-
-    let parsedData: OutputData;
-    
-    // Parse data if it's a string
-    if (typeof data === 'string') {
-      try {
-        parsedData = JSON.parse(data);
-      } catch (error) {
-        console.error('Error parsing document data:', error);
-        viewerContainerRef.current.innerHTML = '<p>Error loading document content.</p>';
-        return;
-      }
-    } else {
-      parsedData = data;
-    }
-
-    // Render blocks manually for read-only view
-    if (parsedData?.blocks) {
-      parsedData.blocks.forEach((block) => {
-        const blockElement = document.createElement('div');
-        blockElement.style.marginBottom = '16px';
-
-        switch (block.type) {
-          case 'paragraph':
-            const p = document.createElement('p');
-            p.innerHTML = block.data.text || '';
-            p.style.fontSize = '14px';
-            p.style.lineHeight = '22.4px';
-            p.style.padding = '.4em 0';
-            blockElement.appendChild(p);
-            break;
-
-          case 'header':
-            const headerLevel = block.data.level || 2;
-            const header = document.createElement(`h${headerLevel}`);
-            header.innerHTML = block.data.text || '';
-            header.style.fontWeight = 'bold';
-            header.style.marginTop = headerLevel === 1 ? '24px' : '20px';
-            header.style.marginBottom = '12px';
-            header.style.color = '#343741';
-            blockElement.appendChild(header);
-            break;
-
-          case 'list':
-            const listTag = block.data.style === 'ordered' ? 'ol' : 'ul';
-            const list = document.createElement(listTag);
-            block.data.items?.forEach((item: string) => {
-              const li = document.createElement('li');
-              li.innerHTML = item;
-              li.style.marginBottom = '4px';
-              list.appendChild(li);
-            });
-            list.style.paddingLeft = '20px';
-            list.style.margin = '0 0 16px 0';
-            blockElement.appendChild(list);
-            break;
-
-          case 'quote':
-            const quote = document.createElement('blockquote');
-            quote.innerHTML = block.data.text || '';
-            quote.style.borderLeft = '4px solid #0077CC';
-            quote.style.paddingLeft = '16px';
-            quote.style.margin = '16px 0';
-            quote.style.fontStyle = 'italic';
-            quote.style.backgroundColor = '#f9fbff';
-            quote.style.padding = '12px 16px';
-            quote.style.borderRadius = '4px';
-            blockElement.appendChild(quote);
-            break;
-
-          case 'code':
-            const pre = document.createElement('pre');
-            const code = document.createElement('code');
-            code.textContent = block.data.code || '';
-            pre.appendChild(code);
-            pre.style.backgroundColor = '#f4f4f4';
-            pre.style.padding = '12px';
-            pre.style.borderRadius = '4px';
-            pre.style.overflow = 'auto';
-            pre.style.fontSize = '14PX';
-            pre.style.margin = '0 0 16px 0';
-            blockElement.appendChild(pre);
-            break;
-
-          case 'delimiter':
-            const hr = document.createElement('hr');
-            hr.style.border = 'none';
-            hr.style.borderTop = '2px solid #ddd';
-            hr.style.margin = '24px 0';
-            blockElement.appendChild(hr);
-            break;
-
-          case 'image':
-            if (block.data.file?.url) {
-              const img = document.createElement('img');
-              img.src = block.data.file.url;
-              img.alt = block.data.caption || '';
-              img.style.maxWidth = '100%';
-              img.style.height = 'auto';
-              img.style.borderRadius = '4px';
-              img.style.margin = '0 0 8px 0';
-              blockElement.appendChild(img);
-              
-              if (block.data.caption) {
-                const caption = document.createElement('p');
-                caption.innerHTML = block.data.caption;
-                caption.style.fontSize = '14PX';
-                caption.style.color = '#666';
-                caption.style.textAlign = 'center';
-                caption.style.margin = '0 0 16px 0';
-                blockElement.appendChild(caption);
-              }
-            }
-            break;
-
-          default:
-            // For any unhandled block types, try to display as text
-            const defaultDiv = document.createElement('div');
-            defaultDiv.innerHTML = block.data.text || JSON.stringify(block.data);
-            defaultDiv.style.padding = '8px';
-            defaultDiv.style.backgroundColor = '#f0f0f0';
-            defaultDiv.style.borderRadius = '4px';
-            defaultDiv.style.fontSize = '14PX';
-            defaultDiv.style.margin = '0 0 16px 0';
-            blockElement.appendChild(defaultDiv);
-        }
-
-        viewerContainerRef.current?.appendChild(blockElement);
-      });
-    }
-  }, [data]);
 
   // Update read-only view when data changes and not editing
   useEffect(() => {
+    console.log('renderReadOnlyView useEffect - засаж байна уу:', isEditing, 'өгөгдөл:', !!data);
+    
+    const renderReadOnlyView = () => {
+      console.log('renderReadOnlyView дуудагдлаа, viewerContainerRef.current:', viewerContainerRef.current);
+      console.log('өгөгдөл:', data);
+      
+      if (!viewerContainerRef.current || !data) {
+        console.log('Эрт буцах: containerRef хоосон эсвэл өгөгдөл байхгүй');
+        return;
+      }
+      if (viewerContainerRef.current) {
+        viewerContainerRef.current.innerHTML = '';
+      }
+
+      let parsedData: OutputData;
+      
+      // Parse data if it's a string
+      if (typeof data === 'string') {
+        try {
+          parsedData = JSON.parse(data);
+        } catch (error) {
+          console.error('Баримт бичгийн өгөгдлийг задлахад алдаа гарлаа:', error);
+          viewerContainerRef.current.innerHTML = '<p>Баримт бичгийн агуулгыг ачаалахад алдаа гарлаа.</p>';
+          return;
+        }
+      } else {
+        parsedData = data;
+      }
+
+      // Render blocks manually for read-only view
+      if (parsedData?.blocks) {
+        parsedData.blocks.forEach((block) => {
+          const blockElement = document.createElement('div');
+          blockElement.style.margin = '6px 0';
+
+          switch (block.type) {
+            case 'paragraph':
+              const p = document.createElement('p');
+              p.innerHTML = block.data.text || '';
+              p.style.fontSize = '14px';
+              p.style.lineHeight = '22.4px';
+              p.style.padding = '.4em 0';
+              blockElement.appendChild(p);
+              break;
+
+            case 'header':
+              const headerLevel = block.data.level || 2;
+              const header = document.createElement(`h${headerLevel}`);
+              header.innerHTML = block.data.text || '';
+              header.style.fontWeight = 'bold';
+              header.style.marginTop = headerLevel === 1 ? '24px' : '20px';
+              header.style.marginBottom = '12px';
+              header.style.color = '#343741';
+              blockElement.appendChild(header);
+              break;
+
+            case 'list':
+              const renderList = (items: any[], style: string, meta?: any, level = 0, parentNumbers: number[] = []) => {
+                let listElement: HTMLElement;
+                
+                switch (style) {
+                  case 'ordered':
+                    listElement = document.createElement('ol');
+                    // For nested ordered lists, we'll use manual numbering
+                    if (level > 0) {
+                      listElement.style.listStyleType = 'none';
+                    } else {
+                      // Handle start number for top-level ordered lists
+                      if (meta?.start && meta.start !== 1) {
+                        (listElement as HTMLOListElement).start = meta.start;
+                      }
+                      // Handle counter type styling for top-level only
+                      if (meta?.counterType) {
+                        switch (meta.counterType) {
+                          case 'lower-roman':
+                            listElement.style.listStyleType = 'lower-roman';
+                            break;
+                          case 'upper-roman':
+                            listElement.style.listStyleType = 'upper-roman';
+                            break;
+                          case 'lower-alpha':
+                            listElement.style.listStyleType = 'lower-alpha';
+                            break;
+                          case 'upper-alpha':
+                            listElement.style.listStyleType = 'upper-alpha';
+                            break;
+                          case 'numeric':
+                          default:
+                            listElement.style.listStyleType = 'decimal';
+                            break;
+                        }
+                      }
+                    }
+                    break;
+                  case 'checklist':
+                    listElement = document.createElement('ul');
+                    listElement.style.listStyleType = 'none';
+                    break;
+                  case 'unordered':
+                  default:
+                    listElement = document.createElement('ul');
+                    break;
+                }
+                
+                // Set common list styles
+                listElement.style.paddingLeft = level === 0 ? '20px' : '24px';
+                listElement.style.margin = level === 0 ? '0 0 16px 0' : '4px 0';
+                
+                items.forEach((item: any, index: number) => {
+                  const li = document.createElement('li');
+                  li.style.marginBottom = '4px';
+                  
+                  // Calculate current number for nested ordered lists
+                  const currentNumbers = [...parentNumbers];
+                  if (style === 'ordered') {
+                    const startNumber = (level === 0 && meta?.start) ? meta.start : 1;
+                    currentNumbers.push(startNumber + index);
+                  }
+                  
+                  if (style === 'checklist') {
+                    // Create checkbox for checklist items
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.checked = item.meta?.checked || false;
+                    checkbox.disabled = true; // Read-only mode
+                    checkbox.style.marginRight = '8px';
+                    checkbox.style.verticalAlign = 'middle';
+                    li.appendChild(checkbox);
+                    
+                    const span = document.createElement('span');
+                    span.innerHTML = item.content || '';
+                    span.style.verticalAlign = 'middle';
+                    if (item.meta?.checked) {
+                      span.style.textDecoration = 'line-through';
+                      span.style.color = '#666';
+                    }
+                    li.appendChild(span);
+                  } else if (style === 'ordered' && level > 0) {
+                    // Manual numbering for nested ordered lists
+                    const numberSpan = document.createElement('span');
+                    numberSpan.textContent = currentNumbers.join('.') + '. ';
+                    numberSpan.style.fontWeight = '500';
+                    numberSpan.style.marginRight = '4px';
+                    numberSpan.style.color = '#666';
+                    li.appendChild(numberSpan);
+                    
+                    const contentSpan = document.createElement('span');
+                    contentSpan.innerHTML = item.content || '';
+                    li.appendChild(contentSpan);
+                  } else {
+                    li.innerHTML = item.content || '';
+                  }
+                  
+                  // Handle nested items recursively
+                  if (item.items && item.items.length > 0) {
+                    const nestedList = renderList(item.items, style, meta, level + 1, currentNumbers);
+                    li.appendChild(nestedList);
+                  }
+                  
+                  listElement.appendChild(li);
+                });
+                
+                return listElement;
+              };
+              
+              if (block.data.items && block.data.items.length > 0) {
+                const list = renderList(block.data.items, block.data.style || 'unordered', block.data.meta);
+                blockElement.appendChild(list);
+              }
+              break;
+
+            case 'quote':
+              const quote = document.createElement('blockquote');
+              quote.innerHTML = block.data.text || '';
+              quote.style.borderLeft = '4px solid #0077CC';
+              quote.style.paddingLeft = '16px';
+              quote.style.margin = '16px 0';
+              quote.style.fontStyle = 'italic';
+              quote.style.backgroundColor = '#f9fbff';
+              quote.style.padding = '12px 16px';
+              quote.style.borderRadius = '4px';
+              blockElement.appendChild(quote);
+              break;
+
+            case 'code':
+              const pre = document.createElement('pre');
+              const code = document.createElement('code');
+              code.textContent = block.data.code || '';
+              pre.appendChild(code);
+              pre.style.backgroundColor = '#f4f4f4';
+              pre.style.padding = '12px';
+              pre.style.borderRadius = '4px';
+              pre.style.overflow = 'auto';
+              pre.style.fontSize = '14PX';
+              pre.style.margin = '0 0 16px 0';
+              blockElement.appendChild(pre);
+              break;
+
+            case 'delimiter':
+              const hr = document.createElement('hr');
+              hr.style.border = 'none';
+              hr.style.borderTop = '2px solid #ddd';
+              hr.style.margin = '24px 0';
+              blockElement.appendChild(hr);
+              break;
+
+            case 'image':
+              if (block.data.file?.url) {
+                const img = document.createElement('img');
+                img.src = block.data.file.url;
+                img.alt = block.data.caption || '';
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                img.style.borderRadius = '4px';
+                img.style.margin = '0 0 8px 0';
+                blockElement.appendChild(img);
+                
+                if (block.data.caption) {
+                  const caption = document.createElement('p');
+                  caption.innerHTML = block.data.caption;
+                  caption.style.fontSize = '14PX';
+                  caption.style.color = '#666';
+                  caption.style.textAlign = 'center';
+                  caption.style.margin = '0 0 16px 0';
+                  blockElement.appendChild(caption);
+                }
+              }
+              break;
+
+            default:
+              // Танихгүй блок төрлүүдийг текст болгож харуулах
+              const defaultDiv = document.createElement('div');
+              defaultDiv.innerHTML = block.data.text || JSON.stringify(block.data);
+              defaultDiv.style.padding = '8px';
+              defaultDiv.style.backgroundColor = '#f0f0f0';
+              defaultDiv.style.borderRadius = '4px';
+              defaultDiv.style.fontSize = '14px';
+              defaultDiv.style.margin = '0 0 16px 0';
+              blockElement.appendChild(defaultDiv);
+              break;
+          }
+
+          viewerContainerRef.current?.appendChild(blockElement);
+        });
+      }
+    };
+    
     if (!isEditing) {
-      renderReadOnlyView();
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        renderReadOnlyView();
+      }, 0);
     }
-  }, [isEditing, data, renderReadOnlyView]);
+  }, [isEditing, data]);
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -328,7 +414,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
                     <EuiFieldText
                       value={title}
                       onChange={(e) => handleTitleChange(e.target.value)}
-                      placeholder="Document title..."
+                      placeholder="Баримт бичгийн гарчиг..."
                       style={{
                         fontSize: "24px",
                         fontWeight: "600",
@@ -356,14 +442,14 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
               </EuiFlexGroup>
             </EuiFlexItem>
             
-            {/* Created Date and Status */}
-            {(createdDate || updatedDate || status || createdBy || updatedBy) && (
+            {/* Created Date and Updated Date */}
+            {(createdDate || updatedDate || createdBy || updatedBy) && (
               <EuiFlexItem>
                 <EuiFlexGroup direction="column" gutterSize="xs">
-                  {/* First row: Created info and Status */}
-                  <EuiFlexItem>
-                    <EuiFlexGroup alignItems="center" gutterSize="m">
-                      {(createdDate || createdBy) && (
+                  {/* First row: Created info */}
+                  {(createdDate || createdBy) && (
+                    <EuiFlexItem>
+                      <EuiFlexGroup alignItems="center" gutterSize="m">
                         <EuiFlexItem grow={false}>
                           <EuiText size="s" color="subdued" style={{ fontSize: "13px" }}>
                             <span style={{ fontWeight: "500" }}>Үүсгэсэн:</span>{" "}
@@ -372,19 +458,9 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
                             {createdDate && <span>{formatDate(createdDate)}</span>}
                           </EuiText>
                         </EuiFlexItem>
-                      )}
-                      {status && (
-                        <EuiFlexItem grow={false}>
-                          <EuiBadge 
-                            color={getStatusColor(status)}
-                            style={{ fontSize: "12px" }}
-                          >
-                            {status}
-                          </EuiBadge>
-                        </EuiFlexItem>
-                      )}
-                    </EuiFlexGroup>
-                  </EuiFlexItem>
+                      </EuiFlexGroup>
+                    </EuiFlexItem>
+                  )}
                   
                   {/* Second row: Updated info */}
                   {(updatedDate || updatedBy) && (updatedDate !== createdDate || updatedBy !== createdBy) && (
@@ -468,39 +544,25 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
           transition: "opacity 0.2s ease"
         }}
       >
-        {isEditing ? (
-          <div 
-            style={{
-              border: "1px solid #d3dff8",
-              borderRadius: "4px",
-              padding: "10px",
-              minHeight: "200px",
-            }}
-          >
-            <div id={holder}></div>
+        <div 
+          style={{
+            border: "1px solid #d3dff8",
+            borderRadius: "4px",
+            padding: "10px",
+            minHeight: "200px",
+          }}
+        >
+          <div style={{
+            maxWidth: "650px",
+            margin: "0 auto",
+          }} ref={viewerContainerRef}>          {!data && (
+            <EuiText color="subdued">
+              <p>Энэ баримт бичиг хоосон байна.</p>
+            </EuiText>
+          )}
           </div>
-        ) : (
-          <div 
-            style={{
-              border: "1px solid #d3dff8",
-              borderRadius: "4px",
-              padding: "20px",
-              minHeight: "400px",
-              backgroundColor: "#fafbfd",
-            }}
-          >
-            <div style={{
-              maxWidth: "650px",
-              margin: "0 auto",
-            }} ref={viewerContainerRef}>
-              {!data && (
-                <EuiText color="subdued">
-                  <p>Энэ баримт бичиг хоосон байна.</p>
-                </EuiText>
-              )}
-            </div>
-          </div>
-        )}
+          {isEditing && <div id={holder}></div>}
+        </div>
       </div>
     </div>
   );

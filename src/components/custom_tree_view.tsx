@@ -196,21 +196,6 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
           </EuiText>
         </div>
 
-        {/* Status Badge */}
-        <div style={{ marginRight: "8px", flexShrink: 0 }}>
-          <EuiBadge
-            color={node.status === "published" ? "success" : "hollow"}
-            style={{ 
-              fontSize: "11px",
-              padding: "2px 6px",
-              height: "20px",
-              lineHeight: "16px"
-            }}
-          >
-            {node.status === "published" ? "Published" : "Draft"}
-          </EuiBadge>
-        </div>
-
         {/* Action Buttons */}
         {(isHovered || isSelected || isPopoverOpen) && (
           <div style={{ 
