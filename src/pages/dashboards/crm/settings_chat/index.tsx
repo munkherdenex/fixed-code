@@ -495,7 +495,20 @@ const ChatFacebook = () => {
                 color="success"
                 iconType="checkInCircleFilled"
               >
-                <p>You are logged in to Facebook. You can now manage your Facebook pages.</p>
+                <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
+                  <EuiFlexItem>
+                    <p>You are logged in to Facebook. You can now manage your Facebook pages.</p>
+                  </EuiFlexItem>
+                  <EuiFlexItem grow={false}>
+                    <EuiButton 
+                      size="s"
+                      iconType="refresh"
+                      onClick={handleManualLogin}
+                    >
+                      Reconnect
+                    </EuiButton>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
               </EuiCallOut>
               <EuiSpacer />
             </>
