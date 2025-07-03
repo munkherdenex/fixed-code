@@ -221,7 +221,7 @@ const ChatFacebook = () => {
     if (typeof window !== 'undefined' && window.FB) {
       window.FB.login(function(response) {
         statusChangeCallback(response);
-      }, {scope: 'public_profile,email,pages_show_list,pages_read_engagement,pages_messaging'});
+      }, {scope: 'public_profile,email,pages_show_list,pages_read_engagement,pages_manage_metadata,pages_messaging,business_management'});
     } else {
       console.error('Facebook SDK not loaded');
       setErrorMessage('Facebook SDK is not loaded. Please refresh the page and try again.');
