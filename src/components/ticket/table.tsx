@@ -5,6 +5,7 @@ import {
   EuiBasicTableColumn,
   EuiButtonIcon,
   EuiDatePicker,
+  EuiDatePickerRange,
   EuiFieldSearch,
   EuiFlexGrid,
   EuiFlexGroup,
@@ -57,6 +58,8 @@ const Table = () => {
   const queryCategory = query?.category?.toString() || null;
   const querySearch = query?.search?.toString() || null;
   const queryDateSearch = query?.date?.toString() || null;
+  const queryStartDateSearch = query?.start_date?.toString() || null;
+  const queryEndDateSearch = query?.end_date?.toString() || null;
   const queryFilter = query?.filter?.toString() || null;
   const queryStatusFilter = query?.status?.toString() || null;
   const queryTypeFilter = query?.tag?.toString() || null;
@@ -69,6 +72,12 @@ const Table = () => {
   const [searchValue, setSearchValue] = useState(querySearch);
   const [searchDateValue, setSearchDateValue] = useState(
     queryDateSearch ? moment(queryDateSearch) : null,
+  );
+  const [searchStartDateValue, setSearchStartDateValue] = useState(
+    queryStartDateSearch ? moment(queryStartDateSearch) : null,
+  );
+  const [searchEndDateValue, setSearchEndDateValue] = useState(
+    queryEndDateSearch ? moment(queryEndDateSearch) : null,
   );
   const [typeFilter, setTypeFilter] = useState(queryTypeFilter);
   const [statusFilter, setStatusFilter] = useState(queryStatusFilter);
@@ -141,6 +150,8 @@ const Table = () => {
       ticketCategory,
       searchValue,
       searchDateValue,
+      searchStartDateValue,
+      searchEndDateValue,
       statusFilter,
       typeFilter,
       priorityFilter,
@@ -154,6 +165,8 @@ const Table = () => {
         ...(ticketCategory && { category: ticketCategory }),
         description: searchValue,
         date: searchDateValue ? searchDateValue.format("YYYY-MM-DD") : null,
+        start_date: searchStartDateValue ? searchStartDateValue.format("YYYY-MM-DD") : null,
+        end_date: searchEndDateValue ? searchEndDateValue.format("YYYY-MM-DD") : null,
         status: statusFilter,
         tag: typeFilter,
         priority: priorityFilter,
@@ -190,7 +203,17 @@ const Table = () => {
       field: "tags",
       name: "Төрөл",
       render: (tags) =>
-        tags.length > 0 ? <EuiBadge color="hollow">{tags[0]?.name}</EuiBadge> : null,
+        tags.length > 0 ? (
+          <EuiFlexGroup direction="column" gutterSize="none">
+            {tags.map((tag) => (
+              <EuiFlexItem key={tag.id}>
+                <EuiBadge color="hollow" style={{ marginRight: "4px", marginBottom: "4px" }}>
+                  {tag.name}
+                </EuiBadge>
+              </EuiFlexItem>
+            ))}
+          </EuiFlexGroup>
+        ) : null,
     },
     {
       field: "status",
@@ -242,7 +265,17 @@ const Table = () => {
       field: "tags",
       name: "Төрөл",
       render: (tags) =>
-        tags.length > 0 ? <EuiBadge color="hollow">{tags[0]?.name}</EuiBadge> : null,
+        tags.length > 0 ? (
+          <EuiFlexGroup direction="column" gutterSize="none">
+            {tags.map((tag) => (
+              <EuiFlexItem key={tag.id}>
+                <EuiBadge color="hollow" style={{ marginRight: "4px", marginBottom: "4px" }}>
+                  {tag.name}
+                </EuiBadge>
+              </EuiFlexItem>
+            ))}
+          </EuiFlexGroup>
+        ) : null,
     },
     {
       field: "status",
@@ -338,6 +371,40 @@ const Table = () => {
       },
     });
   };
+  const onStartDateSearch = (date: any) => {
+    setSearchStartDateValue(date);
+    router.push({
+      query: {
+        pageIndex: 1,
+        start_date: moment(date).format("YYYY-MM-DD"),
+        ...(searchEndDateValue && { end_date: searchEndDateValue.format("YYYY-MM-DD") }),
+        ...(ticketCategory && { category: ticketCategory }),
+        ...(searchValue && { description: searchValue }),
+        ...(statusFilter && { status: statusFilter }),
+        ...(typeFilter && { tag: typeFilter }),
+        ...(priorityFilter && { priority: priorityFilter }),
+        ...(pageSize && { pageSize: 10 }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
+      },
+    });
+  };
+  const onEndDateSearch = (date: any) => {
+    setSearchEndDateValue(date);
+    router.push({
+      query: {
+        pageIndex: 1,
+        end_date: moment(date).format("YYYY-MM-DD"),
+        ...(searchStartDateValue && { start_date: searchStartDateValue.format("YYYY-MM-DD") }),
+        ...(ticketCategory && { category: ticketCategory }),
+        ...(searchValue && { description: searchValue }),
+        ...(statusFilter && { status: statusFilter }),
+        ...(typeFilter && { tag: typeFilter }),
+        ...(priorityFilter && { priority: priorityFilter }),
+        ...(pageSize && { pageSize: 10 }),
+        ...(createdByFilter && { createdBy: createdByFilter }),
+      },
+    });
+  };
   const onDateSearch = (date: any) => {
     setSearchDateValue(date);
     router.push({
@@ -356,6 +423,8 @@ const Table = () => {
   };
   const clearDateFilter = () => {
     setSearchDateValue(null);
+    setSearchStartDateValue(null);
+    setSearchEndDateValue(null);
     router.push({
       query: {
         pageIndex: 1,
@@ -694,7 +763,7 @@ const Table = () => {
 
               <EuiFlexItem grow={1}>
                 <EuiFormControlLayout
-                  {...(searchDateValue
+                  {...(searchStartDateValue || searchEndDateValue
                     ? {
                         clear: {
                           onClick: () => {
@@ -705,11 +774,32 @@ const Table = () => {
                       }
                     : null)}
                 >
-                  <EuiDatePicker
+                  <EuiDatePickerRange
+                    startDateControl={
+                      <EuiDatePicker
+                        selected={searchStartDateValue}
+                        onChange={onStartDateSearch}
+                        startDate={searchStartDateValue}
+                        endDate={searchEndDateValue}
+                        aria-label="Start date"
+                      />
+                    }
+                    endDateControl={
+                      <EuiDatePicker
+                        selected={searchEndDateValue}
+                        onChange={onEndDateSearch}
+                        startDate={searchStartDateValue}
+                        endDate={searchEndDateValue}
+                        minDate={searchStartDateValue}
+                        aria-label="End date"
+                      />
+                    }
+                  />
+                  {/* <EuiDatePicker
                     selected={searchDateValue}
                     onChange={onDateSearch}
                     placeholder={translate("date")}
-                  />
+                  /> */}
                 </EuiFormControlLayout>
               </EuiFlexItem>
               <EuiFlexItem>

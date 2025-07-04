@@ -1,19 +1,29 @@
 import {
+  EuiBadge,
+  EuiBasicTable,
+  EuiBasicTableColumn,
   EuiEmptyPrompt,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiHorizontalRule,
   EuiListGroup,
   EuiListGroupItem,
   EuiPagination,
   EuiSkeletonRectangle,
+  EuiSpacer,
+  EuiTableFieldDataColumnType,
   EuiText,
   EuiTimeline,
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import useGetCustomerTickets, { CustomerTicketsResponse } from "@/hooks/useGetCustomerTickets";
+import useGetCustomerTickets, {
+  CustomerTickets,
+  CustomerTicketsResponse,
+} from "@/hooks/useGetCustomerTickets";
 import { logIcon } from "../../utils/log_icon";
+import { Template } from "@/hooks/useGetTemplates";
 
 const LIMIT = 10;
 
@@ -33,6 +43,86 @@ const Tickets: React.FC = () => {
     router.push(`/dashboards/crm/ticket/${ticketId}`);
   };
 
+  const columns: Array<EuiBasicTableColumn<any>> = [
+    {
+      field: "id",
+      name: "Тикет ID",
+      render: (id) => <>{"#" + id}</>,
+    },
+    {
+      field: "tags",
+      name: "Төрөл",
+      render: (tags) =>
+        tags.length > 0 ? (
+          <EuiFlexGroup direction="column" gutterSize="none">
+            {tags.map((tag) => (
+              <EuiFlexItem key={tag.id}>
+                <EuiBadge color="hollow" style={{ marginRight: "4px", marginBottom: "4px" }}>
+                  {tag.name}
+                </EuiBadge>
+              </EuiFlexItem>
+            ))}
+          </EuiFlexGroup>
+        ) : null,
+    },
+    {
+      field: "status",
+      name: "Төлөв",
+      render: (status) => (
+        <EuiBadge color={status == "open" ? "success" : "danger"} iconType="dot">
+          {status == "open" ? "Нээлттэй" : status == "processing" ? "Шалгагдаж байгаа" : "Хаалттай"}
+        </EuiBadge>
+      ),
+    },
+    {
+      field: "assigned_to",
+      name: "Хариуцах нэгж болон ажилтан",
+    },
+    {
+      field: "priority",
+      name: "Чухлын зэрэг",
+      render: (prio) =>
+        prio ? (
+          <EuiBadge color={prio.id == 1 ? "danger" : prio.id == 4 ? "warning" : "primary"}>
+            {prio.name}
+          </EuiBadge>
+        ) : null,
+    },
+    {
+      field: "created_at",
+      name: "Үүсгэсэн огноо",
+      render: (date) => <>{moment(date).format("YYYY-MM-DD HH:MM")}</>,
+    },
+    {
+      field: "created_by",
+      name: "Үүсгэсэн ажилтан",
+      render: (val) => <>{val?.email}</>,
+    },
+  ];
+
+  const getRowProps = (template: CustomerTickets) => {
+    const { id } = template;
+    return {
+      "data-test-subj": `row-${id}`,
+      className: "customRowClass",
+      onClick: () => router.push(`/dashboards/crm/ticket/${id}`),
+    };
+  };
+
+  const getCellProps = (
+    template: CustomerTickets,
+    column: EuiTableFieldDataColumnType<CustomerTickets>,
+  ) => {
+    const { id } = template;
+    const { field } = column;
+
+    return {
+      className: "customCellClass",
+      "data-test-subj": `cell-${id}-${String(field)}`,
+      textOnly: true,
+    };
+  };
+
   if (data?.results?.length === 0)
     return (
       <EuiFlexGroup>
@@ -50,7 +140,7 @@ const Tickets: React.FC = () => {
     <EuiSkeletonRectangle isLoading={isLoading} width="100%" height={655} borderRadius="m">
       <EuiFlexGroup direction="column">
         <EuiFlexItem>
-          <EuiListGroup flush={true} bordered={false} maxWidth>
+          {/* <EuiListGroup flush={true} bordered={false} maxWidth>
             {data?.results?.map((ticket) => (
               <EuiListGroupItem
                 key={ticket.id}
@@ -58,7 +148,14 @@ const Tickets: React.FC = () => {
                 label={"#" + ticket.id + ": " + ticket.title}
               />
             ))}
-          </EuiListGroup>
+          </EuiListGroup> */}
+          <EuiBasicTable
+            tableCaption="Campaign table"
+            items={data?.results || []}
+            columns={columns}
+            rowProps={getRowProps}
+            cellProps={getCellProps}
+          />
         </EuiFlexItem>
         {data?.total_count > LIMIT && (
           <EuiFlexItem>

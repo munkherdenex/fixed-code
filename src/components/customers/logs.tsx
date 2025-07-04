@@ -27,6 +27,10 @@ const Logs: React.FC = () => {
     limit: `${LIMIT}`,
   });
 
+  const onPageClick = (activePage) => {
+    setActivePage(activePage + 1);
+  };
+
   const preparedData = data?.results.map((log) => ({
     icon: logIcon(log.type),
     iconAriaLabel: log.title,
@@ -67,8 +71,8 @@ const Logs: React.FC = () => {
                 <EuiPagination
                   aria-label="Customer logs"
                   pageCount={Math.ceil(data?.total_count / LIMIT) || 0}
-                  activePage={activePage}
-                  onPageClick={(activePage) => setActivePage(activePage)}
+                  activePage={activePage - 1}
+                  onPageClick={onPageClick}
                   compressed
                 />
               </EuiFlexItem>

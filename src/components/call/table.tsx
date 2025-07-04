@@ -13,6 +13,8 @@ import {
   EuiFlexItem,
   EuiIcon,
   EuiLink,
+  EuiDatePickerRange,
+  EuiFormControlLayout,
 } from "@elastic/eui";
 import { useRouter } from "next/router";
 import { useEffect, useLayoutEffect, useState } from "react";
@@ -52,6 +54,8 @@ const Table = () => {
     call_state: query?.call_state?.toString() || "",
     call_type: query?.call_type?.toString() || "",
     date: query?.date ? moment(query?.date) : null,
+    start_date: query?.start_date ? moment(query?.start_date).format("YYYY-MM-DD") : null,
+    end_date: query?.end_date ? moment(query?.end_date).format("YYYY-MM-DD") : null,
     offset: isNumber(query?.offset) ? +query?.offset : 1,
     limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[1],
   };
@@ -60,10 +64,16 @@ const Table = () => {
   const [isFlyoutVisible, setIsFlyoutVisible] = useState(false);
   const [selectedCall, setSelectedCall] = useState(null);
 
+  const [searchStartDateValue, setSearchStartDateValue] = useState(
+    initialQueryState && initialQueryState.start_date ? moment(initialQueryState.start_date) : null,
+  );
+  const [searchEndDateValue, setSearchEndDateValue] = useState(
+    initialQueryState && initialQueryState.end_date ? moment(initialQueryState.end_date) : null,
+  );
+
   const { data, isLoading, mutate } = useSWR(["/crm/calls/", queryState], () => {
     return contactLogApi.getCalls(queryState);
   });
-
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -71,19 +81,21 @@ const Table = () => {
       let socket: Socket | null = null;
       let retryCount = 0;
       const MAX_RETRY_ATTEMPTS = 3; // Maximum number of retry attempts
-      
+
       const connectSocket = () => {
         // Don't try to reconnect if we've reached max attempts
         if (retryCount >= MAX_RETRY_ATTEMPTS) {
-          console.log(`Socket.IO connection failed after ${MAX_RETRY_ATTEMPTS} attempts. Giving up.`);
+          console.log(
+            `Socket.IO connection failed after ${MAX_RETRY_ATTEMPTS} attempts. Giving up.`,
+          );
           return;
         }
-        
+
         retryCount++;
         console.log(`Socket.IO connection attempt ${retryCount}/${MAX_RETRY_ATTEMPTS}`);
-        
+
         socket = io(socketServerUrl, {
-          reconnection: false // Disable auto reconnection so we can handle it manually
+          reconnection: false, // Disable auto reconnection so we can handle it manually
         });
 
         socket.on("connect", () => {
@@ -103,14 +115,16 @@ const Table = () => {
           console.error("Socket.IO connection error:", error);
           // We'll handle reconnection manually based on our retry policy
           socket.disconnect();
-          
+
           if (retryCount < MAX_RETRY_ATTEMPTS) {
-            console.log(`Retrying connection in 2 seconds... (Attempt ${retryCount}/${MAX_RETRY_ATTEMPTS})`);
+            console.log(
+              `Retrying connection in 2 seconds... (Attempt ${retryCount}/${MAX_RETRY_ATTEMPTS})`,
+            );
             setTimeout(connectSocket, 2000); // Try to reconnect after 2 seconds
           }
         });
       };
-      
+
       // Initial connection attempt
       connectSocket();
 
@@ -159,11 +173,9 @@ const Table = () => {
     {
       field: "actions",
       render: (action: string, call: any) => (
-        <EuiLink href={`/dashboards/crm/call/${call.call_id}`}>
-          Үзэх
-        </EuiLink>
+        <EuiLink href={`/dashboards/crm/call/${call.call_id}`}>Үзэх</EuiLink>
       ),
-    }
+    },
   ];
 
   const onSearch = (value: string) => {
@@ -173,11 +185,11 @@ const Table = () => {
   };
 
   const onTableChange = ({ page }: Criteria<any>) => {
-    console.log("tabl page", page)
+    console.log("tabl page", page);
     if (page) {
       const updatedQueryState = {
         ...queryState,
-        offset: page.index+1,
+        offset: page.index + 1,
         limit: page.size,
       };
       // setQueryState(updatedQueryState);
@@ -227,6 +239,53 @@ const Table = () => {
     router.push({ query: { ...queryState, date: date?.toISOString() || "" } });
   };
 
+  const onStartDateSearch = (date: any) => {
+    setSearchStartDateValue(date);
+    router.push({
+      query: {
+        offset: 1,
+        start_date: moment(date).format("YYYY-MM-DD"),
+        ...(queryState.search && { search: queryState.search }),
+        ...(queryState.filter && { filter: queryState.filter }),
+        ...(queryState.call_state && { call_state: queryState.call_state }),
+        ...(queryState.call_type && { call_type: queryState.call_type }),
+        ...(queryState.end_date && { end_date: queryState.end_date }),
+        ...(queryState.limit && { limit: queryState.limit }),
+      },
+    });
+  };
+
+  const onEndDateSearch = (date: any) => {
+    setSearchEndDateValue(date);
+    router.push({
+      query: {
+        offset: 1,
+        end_date: moment(date).format("YYYY-MM-DD"),
+        ...(queryState.search && { search: queryState.search }),
+        ...(queryState.filter && { filter: queryState.filter }),
+        ...(queryState.call_state && { call_state: queryState.call_state }),
+        ...(queryState.call_type && { call_type: queryState.call_type }),
+        ...(queryState.start_date && { start_date: queryState.start_date }),
+        ...(queryState.limit && { limit: queryState.limit }),
+      },
+    });
+  };
+
+  const clearDateFilter = () => {
+    setSearchStartDateValue(null);
+    setSearchEndDateValue(null);
+    router.push({
+      query: {
+        offset: 1,
+        ...(queryState.search && { search: queryState.search }),
+        ...(queryState.filter && { filter: queryState.filter }),
+        ...(queryState.call_state && { call_state: queryState.call_state }),
+        ...(queryState.call_type && { call_type: queryState.call_type }),
+        ...(queryState.limit && { limit: queryState.limit }),
+      },
+    });
+  };
+
   useLayoutEffect(() => {
     const updatedQueryState = {
       search: query?.search?.toString() || "",
@@ -234,6 +293,8 @@ const Table = () => {
       call_state: query?.call_state?.toString() || "",
       call_type: query?.call_type?.toString() || "",
       date: query?.date ? moment(query?.date) : null,
+      start_date: searchStartDateValue ? searchStartDateValue.format("YYYY-MM-DD") : null,
+      end_date: searchEndDateValue ? searchEndDateValue.format("YYYY-MM-DD") : null,
       offset: isNumber(query?.offset) ? +query?.offset : 1,
       limit: isNumber(query?.limit) ? +query?.limit : PAGINATION_CHOOSES[1],
     };
@@ -292,11 +353,40 @@ const Table = () => {
               />
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
-              <EuiDatePicker
-                selected={queryState.date}
-                onChange={onDateChange}
-                placeholder="Огноо сонгох"
-              />
+              <EuiFormControlLayout
+                {...(searchStartDateValue || searchEndDateValue
+                  ? {
+                      clear: {
+                        onClick: () => {
+                          clearDateFilter();
+                        },
+                        "aria-label": "Clear date filter",
+                      },
+                    }
+                  : null)}
+              >
+                <EuiDatePickerRange
+                  startDateControl={
+                    <EuiDatePicker
+                      selected={searchStartDateValue}
+                      onChange={onStartDateSearch}
+                      startDate={searchStartDateValue}
+                      endDate={searchEndDateValue}
+                      aria-label="Start date"
+                    />
+                  }
+                  endDateControl={
+                    <EuiDatePicker
+                      selected={searchEndDateValue}
+                      onChange={onEndDateSearch}
+                      startDate={searchStartDateValue}
+                      endDate={searchEndDateValue}
+                      minDate={searchStartDateValue}
+                      aria-label="End date"
+                    />
+                  }
+                />
+              </EuiFormControlLayout>
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
               <EuiButtonIcon
@@ -320,7 +410,7 @@ const Table = () => {
               rowProps={getRowProps}
               cellProps={getCellProps}
               pagination={{
-                pageIndex: queryState.offset-1,
+                pageIndex: queryState.offset - 1,
                 pageSize: queryState.limit,
                 pageSizeOptions: PAGINATION_CHOOSES,
                 totalItemCount: data?.total_count || 0,
