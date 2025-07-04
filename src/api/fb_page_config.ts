@@ -1,5 +1,10 @@
 import client from "./client";
 
+interface FacebookLoginToken {
+  user_access_token: string;
+  app_scoped_user_id: string;
+}
+
 interface FBPageConfig {
   id?: number;
   created_by?: object;
@@ -53,6 +58,11 @@ const fbPageConfigApi = {
     const response = await client.put(`/crm/facebook/config/${id}/`, {
       is_enabled: isEnabled
     });
+    return response.data;
+  },
+
+  saveConfig: async (payload: FacebookLoginToken) => {
+    const response = await client.post("/crm/facebook/config/token/", payload);
     return response.data;
   }
 };

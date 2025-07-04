@@ -2,7 +2,7 @@
 
 import DashboardCRMLayout from "@/layouts/dashboard_crm";
 import { GetStaticProps } from "next/types";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   EuiFlexGrid,
   EuiFlexGroup,
@@ -66,29 +66,21 @@ const ChatFacebook = () => {
   const [fbSDKReady, setFbSDKReady] = useState(false);
   const [fbLoginStatus, setFbLoginStatus] = useState<any>(null);
   const fbButtonContainerRef = useRef(null);
-  // Add state for user's Facebook pages
-  const [userFacebookPages, setUserFacebookPages] = useState<FacebookPage[]>([]);
   const [loadingUserPages, setLoadingUserPages] = useState(false);
-  const [selectedUserPage, setSelectedUserPage] = useState<FacebookPage | null>(null);
 
   // Setup Facebook SDK ready listener
   useEffect(() => {
     const handleFBSDKReady = () => {
       console.log('FB SDK Ready event received');
       setFbSDKReady(true);
-      
       // Try to parse XFBML again once SDK is ready
       if (typeof window !== 'undefined' && window.FB) {
         window.FB.XFBML.parse();
-        
         // Check login status
         window.FB.getLoginStatus(function(response) {
-          console.log('FB Login Status:', response);
-          setFbLoginStatus(response);
-          
-          // If user is already connected, fetch their Facebook pages
+          console.log('FB Login Status:', response);          
           if (response.status === 'connected') {
-            fetchUserFacebookPages(response.authResponse.accessToken);
+            setFbLoginStatus(response);
           }
         });
       }
@@ -102,11 +94,9 @@ const ChatFacebook = () => {
       setFbSDKReady(true);
       window.FB.getLoginStatus(function(response) {
         console.log('FB Login Status (direct):', response);
-        setFbLoginStatus(response);
-        
-        // If user is already connected, fetch their Facebook pages
+        // If user is already connected, fetch their Facebook pages from backend
         if (response.status === 'connected') {
-          fetchUserFacebookPages(response.authResponse.accessToken);
+          setFbLoginStatus(response);
         }
       });
     }
@@ -117,61 +107,48 @@ const ChatFacebook = () => {
   }, []);
 
   // Handle login status change
-  const statusChangeCallback = (response) => {
+  const statusChangeCallback = useCallback((response) => {
     console.log('Facebook login status changed:', response);
     setFbLoginStatus(response);
     
-    // If we're now logged in, fetch user's Facebook pages
+    // If we're now logged in, fetch user's Facebook pages from backend
     if (response.status === 'connected') {
-      fetchUserFacebookPages(response.authResponse.accessToken);
+      fetchUserFacebookPagesFromBackend(response.authResponse.accessToken, response.authResponse.userID);
       fetchFacebookPages();
     } else {
       // Clear user Facebook pages if logged out
-      setUserFacebookPages([]);
+      setFacebookPages([]);
     }
-  };
+  }, []);
 
   // This function is called when the FB Login button completes its process
-  const checkLoginState = () => {
+  const checkLoginState = useCallback(() => {
     if (typeof window !== 'undefined' && window.FB) {
       window.FB.getLoginStatus(function(response) {
         statusChangeCallback(response);
       });
     }
-  };
+  }, [statusChangeCallback]);
 
-  // Function to fetch the user's Facebook Pages
-  const fetchUserFacebookPages = async (accessToken) => {
+  // Function to fetch the user's Facebook Pages from backend
+  const fetchUserFacebookPagesFromBackend = async (accessToken: string, userID: string) => {
     setLoadingUserPages(true);
     try {
-      if (typeof window !== 'undefined' && window.FB) {
-        // Get pages the user manages with page access tokens
-        window.FB.api(
-          '/me/accounts',
-          { fields: 'id,name,access_token,category,picture,tasks', access_token: accessToken },
-          function(response) {
-            if (response && !response.error) {
-              console.log('User Facebook Pages:', response);
-              setUserFacebookPages(response.data || []);
-            } else {
-              console.error('Error fetching user Facebook pages:', response?.error);
-              setErrorMessage('Failed to fetch your Facebook pages. Please check permissions and try again.');
-            }
-            setLoadingUserPages(false);
-          }
-        );
-      }
+      const response = await fbPageConfigApi.saveConfig({
+        user_access_token: accessToken,
+        app_scoped_user_id: userID
+      });
+      setFacebookPages(response.data || []);
     } catch (error) {
-      console.error('Error in fetchUserFacebookPages:', error);
-      setErrorMessage('An error occurred while fetching your Facebook pages.');
+      console.error('Error fetching user Facebook pages from backend:', error);
+      setErrorMessage('Failed to fetch your Facebook pages from server. Please try again.');
+    } finally {
       setLoadingUserPages(false);
     }
   };
 
   // Handle selecting a user Facebook page for import
   const handleSelectUserPage = (page: FacebookPage) => {
-    setSelectedUserPage(page);
-    
     // Pre-populate the form with the selected page data
     setCurrentPage({
       page_id: page.id,
@@ -209,7 +186,7 @@ const ChatFacebook = () => {
         delete window.checkLoginState;
       }
     };
-  }, []);
+  }, [checkLoginState]);
 
   // Fetch Facebook pages on component mount
   useEffect(() => {
@@ -221,7 +198,7 @@ const ChatFacebook = () => {
     if (typeof window !== 'undefined' && window.FB) {
       window.FB.login(function(response) {
         statusChangeCallback(response);
-      }, {scope: 'public_profile,email,pages_show_list,pages_read_engagement,pages_manage_metadata,pages_messaging,business_management'});
+      }, {scope: 'public_profile,pages_show_list,pages_read_engagement,pages_manage_metadata,pages_messaging,business_management'});
     } else {
       console.error('Facebook SDK not loaded');
       setErrorMessage('Facebook SDK is not loaded. Please refresh the page and try again.');
@@ -377,31 +354,6 @@ const ChatFacebook = () => {
               />
             </EuiFormRow>
 
-            <EuiFormRow label={translate("app_id")}>
-              <EuiFieldText
-                name="app_id"
-                value={currentPage.app_id || ""}
-                onChange={(e) => handleInputChange("app_id", e.target.value)}
-              />
-            </EuiFormRow>
-
-            <EuiFormRow label={translate("app_secret")} isRequired>
-              <EuiFieldPassword
-                type="dual"
-                name="app_secret"
-                value={currentPage.app_secret}
-                onChange={(e) => handleInputChange("app_secret", e.target.value)}
-              />
-            </EuiFormRow>
-
-            <EuiFormRow label={translate("verify_token")}>
-              <EuiFieldText
-                name="verify_token"
-                value={currentPage.verify_token || ""}
-                onChange={(e) => handleInputChange("verify_token", e.target.value)}
-              />
-            </EuiFormRow>
-
             <EuiFormRow hasChildLabel={false}>
               <EuiSwitch
                 label={translate("active")}
@@ -497,7 +449,7 @@ const ChatFacebook = () => {
               >
                 <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
                   <EuiFlexItem>
-                    <p>You are logged in to Facebook. You can now manage your Facebook pages.</p>
+                    <p>Та Facebook-ээ холбож удирдах Page-уудын эрхээ олгосон байна.</p>
                   </EuiFlexItem>
                   <EuiFlexItem grow={false}>
                     <EuiButton 
@@ -505,83 +457,11 @@ const ChatFacebook = () => {
                       iconType="refresh"
                       onClick={handleManualLogin}
                     >
-                      Reconnect
+                      Шинээр холбох
                     </EuiButton>
                   </EuiFlexItem>
                 </EuiFlexGroup>
               </EuiCallOut>
-              <EuiSpacer />
-            </>
-          )}
-
-          {/* Display User's Facebook Pages section */}
-          {fbLoginStatus && fbLoginStatus.status === 'connected' && (
-            <>
-              <EuiPanel>
-                <EuiTitle size="s">
-                  <h3>Your Facebook Pages</h3>
-                </EuiTitle>
-                <EuiHorizontalRule margin="s" />
-                
-                {loadingUserPages ? (
-                  <EuiFlexGroup justifyContent="center" alignItems="center" style={{ height: "100px" }}>
-                    <EuiLoadingSpinner size="m" />
-                  </EuiFlexGroup>
-                ) : userFacebookPages.length === 0 ? (
-                  <EuiEmptyPrompt
-                    iconType="facebookSquare"
-                    title={<h3>No Facebook Pages Found</h3>}
-                    body={
-                      <p>
-                        We couldn&apos;t find any Facebook pages that you manage. 
-                        Please make sure you&apos;ve granted the necessary permissions.
-                      </p>
-                    }
-                  />
-                ) : (
-                  <EuiFlexGrid columns={3}>
-                    {userFacebookPages.map((page) => (
-                      <EuiFlexItem key={page.id}>
-                        <EuiCard
-                          textAlign="left"
-                          title={page.name}
-                          description={
-                            <>
-                              <p>Category: {page.category || 'Unknown'}</p>
-                              <p>ID: {page.id}</p>
-                              {page.tasks && (
-                                <p>Roles: {page.tasks.join(', ')}</p>
-                              )}
-                            </>
-                          }
-                          image={
-                            page.picture ? 
-                              <div style={{ 
-                                backgroundImage: `url(${page.picture.data.url})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                                height: '60px',
-                                width: '60px',
-                                borderRadius: '5px',
-                                margin: '10px'
-                              }} /> : 
-                              <EuiIcon type="facebookSquare" size="xl" />
-                          }
-                          footer={
-                            <EuiButton 
-                              fullWidth 
-                              size="s" 
-                              onClick={() => handleSelectUserPage(page)}
-                            >
-                              Add to System
-                            </EuiButton>
-                          }
-                        />
-                      </EuiFlexItem>
-                    ))}
-                  </EuiFlexGrid>
-                )}
-              </EuiPanel>
               <EuiSpacer />
             </>
           )}
@@ -606,19 +486,16 @@ const ChatFacebook = () => {
                     You haven&apos;t added any Facebook pages to your system yet. 
                     Connect with Facebook and add the pages you want to manage.
                   </p>
-                }                  actions={
-                  fbLoginStatus && fbLoginStatus.status === 'connected' && userFacebookPages.length > 0 ? (
-                    <p>Select a page from &quot;Your Facebook Pages&quot; section above to add it to your system.</p>
-                  ) : (
-                    <EuiButton 
-                      color="primary" 
-                      fill 
-                      onClick={fbLoginStatus?.status === 'connected' ? addNewPage : handleManualLogin}
-                      iconType={fbLoginStatus?.status === 'connected' ? "plusInCircle" : "facebookSquare"}
-                    >
-                      {fbLoginStatus?.status === 'connected' ? translate("add_page") : "Login with Facebook"}
-                    </EuiButton>
-                  )
+                }
+                actions={(
+                  <EuiButton 
+                    color="primary" 
+                    fill 
+                    onClick={fbLoginStatus?.status === 'connected' ? addNewPage : handleManualLogin}
+                    iconType={fbLoginStatus?.status === 'connected' ? "plusInCircle" : "facebookSquare"}
+                  >
+                    {fbLoginStatus?.status === 'connected' ? translate("add_page") : "Login with Facebook"}
+                  </EuiButton>)
                 }
               />
             ) : (
