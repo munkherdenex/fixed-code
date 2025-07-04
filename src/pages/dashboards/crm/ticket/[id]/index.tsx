@@ -164,6 +164,10 @@ const transformDataToComments = (results, ticketTemplate: any): EuiCommentProps[
       event = `Тикет хаасан`;
       eventColor = "danger";
       message = data?.reason || "";
+    } else if (type === "update") {
+      event = `Тикет update`;
+      eventColor = "danger";
+      message = data?.reason || "";
     } else {
       message = body || "";
       eventColor = "subdued";
@@ -381,8 +385,6 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     }
 
     if (data && data.priority) {
-      console.log("test priority");
-      console.log(data.priority);
       setSelectedPriority(data.priority.id);
       setSelectedPriorityDuration(data.priority.duration + " минут");
       // let obj = priorityList.find((val) => val.id == data.priority.id);
@@ -691,6 +693,9 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
       };
       await ticketApi.changeStatus(id, payload);
       mutatePage();
+      mutateLogs();
+      setIsTicketCloseModalVisible(false);
+      setIsTicketReOpenModalVisible(false);
       // router.push("/dashboards/crm/ticket?pageIndex=1&pageSize=10");
     } catch (error) {
       console.error("Failed to update ticket:", error);
