@@ -49,7 +49,8 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   const viewerContainerRef = useRef<HTMLDivElement>(null);
   const isReadyRef = useRef(false);
   const internalChangeRef = useRef(false);
-  const [title, setTitle] = useState(initialTitle || "Нэргүй баримт бичиг");
+  const currentTitleRef = useRef(initialTitle || "Гарчиггүй");
+  const [title, setTitle] = useState(initialTitle || "Гарчиггүй");
 
   // Helper function to format date
   const formatDate = (date: string | Date | undefined): string => {
@@ -76,9 +77,11 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   // Handle title change
   const handleTitleChange = useCallback((newTitle: string) => {
     setTitle(newTitle);
+    currentTitleRef.current = newTitle;
     if (isEditing && editorInstanceRef.current && isReadyRef.current) {
       // Trigger onChange with current editor data
       editorInstanceRef.current.save().then((outputData) => {
+        console.log("Editor data saved from Title change:", newTitle, outputData);
         onChange(newTitle, outputData);
       });
     }
@@ -103,7 +106,8 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
 
           const savedData = await api.saver.save();
           internalChangeRef.current = true;
-          onChange(title, savedData);
+          // Use the current title from ref to avoid stale closure
+          onChange(currentTitleRef.current, savedData);
         },
         onReady: () => {
           console.log("Editor.js бэлэн боллоо!");
@@ -129,8 +133,12 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
 
   // Update title when initialTitle changes
   useEffect(() => {
-    setTitle(initialTitle || "Нэргүй баримт бичиг");
-  }, [initialTitle]);
+    if (!isEditing) {
+      const newTitle = initialTitle || "Гарчиггүй";
+      setTitle(newTitle);
+      currentTitleRef.current = newTitle;
+    }
+  }, [initialTitle, isEditing]);
 
   // Update read-only view when data changes and not editing
   useEffect(() => {
