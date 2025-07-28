@@ -73,10 +73,12 @@ import tagApi from "@/api/tags";
 import useTeams from "@/hooks/useTeams";
 import useGetCurrentTeamMembers from "@/hooks/useCurrentTeamMembers";
 import { MembersType, TeamMembersType } from "@/constants/members.types";
+import useGetAllWorkers from "@/hooks/useAllWorkers";
 import CustomersSelect from "@/components/ticket_template/customers_select";
 import { addToast } from "@/components/toast";
 import ImagePreview from "@/components/image_preview";
 import { authContext } from "@/store/auth_store";
+import { all } from "axios";
 
 // interface Ticket {
 //   id: string;
@@ -253,6 +255,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
+  const [selectedWorker, setSelectedWorker] = useState(null);
   const [selectedPriority, setSelectedPriority] = useState(null);
   const [selectedPriorityDuration, setSelectedPriorityDuration] = useState(null);
   const [files, setFiles] = useState({});
@@ -339,6 +342,16 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     }));
   }, [teamMembers]);
 
+  const AllWorkersSelectionOptions = useMemo(() => {
+    if (!AllWorkers) {
+      return [];
+    }
+    return AllWorkers?.workers.map((worker) => ({
+      value: worker?.user?.email,
+      inputDisplay: worker?.user?.email,
+    }));
+  }, [AllWorkers]);
+
   const selectedTabContent = useMemo(() => {
     return tabs.find((obj) => obj.id === selectedTabId)?.content;
   }, [selectedTabId]);
@@ -349,7 +362,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
       inputDisplay: "Тикет нээх",
       disabled:
         (data && (data.status == "open" || data.status == "processing")) ||
-        (user && user.email != data?.created_by.email)
+          (user && user.email != data?.created_by.email)
           ? true
           : false,
     },
@@ -407,6 +420,10 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
       let member = teamMembers?.members.find((el) => el.id == data.assigned_to);
       setSelectedMember(member?.user?.email);
     }
+
+    if (data && data.at_email) {
+      setSelectedWorkerId(data.at_email);
+    }
     // TODO: SET ALL OTHER VALUE HERE
   }, [data, teamsList, teamMembers, selectedTeamId, selectedMember]);
 
@@ -437,8 +454,8 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const ticketComments = transformDataToComments(
     ticketLogs
       ? ticketLogs?.results.sort((a, b) => {
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        })
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      })
       : [],
     ticketTemplate,
   );
@@ -681,6 +698,20 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
 
   const onTeamMemberChange = (value) => {
     setSelectedMember(value);
+  };
+
+  const onAllWorkersChange = (value) => {
+    setSelectedWorker(value);
+    let payload = {
+      at_email: value,
+    };
+    ticketApi.update(id, payload)
+      .then(() => {
+        mutatePage();
+      })
+      .catch((error) => {
+        console.error("Failed to update ticket:", error);
+      });
   };
 
   const changeTicketStatus = async (status) => {
@@ -1297,6 +1328,24 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                       />
                     </>
                   ) : null}
+                  {/* Ажилтан */}
+
+                  <EuiSpacer size="m" />
+                  <EuiFlexItem grow={false}>
+                    <div>
+                          <strong>Ажилтан</strong>
+                        </div>
+                    <EuiSpacer size="xs" />
+                    <EuiSelect
+                      hasNoInitialSelection
+                      fullWidth={true}
+                      options={AllWorkersSelectionOptions}
+                      value={selectedWorkerId}
+                      onChange={(e) => onAllWorkersChange(e)}
+                      aria-label="Ажилтан"
+                      disabled={data?.status == "close" ? true : false}
+                    />
+                  </EuiFlexItem>
                   {/* Чухлын зэрэг */}
                   {data?.has_priority || data?.priority ? (
                     <>
@@ -1486,7 +1535,19 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                         );
                       })}
                     </EuiFlexItem>
+                    <EuiSpacer size="m" />
+                    <EuiFlexGroup direction="row" justifyContent="flexStart" alignItems="center">
+                      <EuiFlexItem grow={false}>
+                        <WorkersSelect
+                          isLoading={false}
+                          isDisabled={false}
+                          onSelect={handleWorkerSelect}
+                          initialValue={data?.assigned_to}
+                        />
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
                   </EuiPanel>
+
                 </EuiFlexGroup>
               </EuiSplitPanel.Outer>
             </EuiFlexItem>
@@ -1602,7 +1663,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                 </>
               )}
             </EuiForm>
-            {/* <EuiPanel paddingSize="l">
+            {/*  <EuiPanel paddingSize="l">
               <EuiFlexGroup direction="row" justifyContent="flexStart" alignItems="center">
                 <EuiFlexItem grow={false}>
                   <WorkersSelect
@@ -1657,7 +1718,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                     />
                   );
                 })}
-              </EuiFlexItem>
+              </EuiFlexItem> 
             </EuiPanel> */}
           </EuiFlexItem>
         </EuiFlexGroup>
