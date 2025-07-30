@@ -18,6 +18,7 @@ import {
 } from "@elastic/eui";
 import { css } from "@emotion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import SelectWorkerButton from "../SelectWorkerButton";
 import useGetCustomers, { CustomersResponse } from "../../hooks/useGetCustomers";
 import useSWR, { mutate } from "swr";
 import ticketApi from "../../api/ticket";
@@ -48,7 +49,7 @@ const TextInput = ({ item, register, onBlur, onChange, value, ...props }) => {
   const saveEdit = async () => {
     try {
       let payload = {
-        [item.attr_name]: value1,
+        [item.attr_name]: value1, 
       };
       await ticketApi.update(item.ticket, payload);
       mutate("/crm/ticket/");
@@ -57,7 +58,7 @@ const TextInput = ({ item, register, onBlur, onChange, value, ...props }) => {
       console.error("Failed to update ticket:", error);
       mutate("/crm/ticket/");
     }
-  };
+  };    
   return (
     <EuiFlexGroup justifyContent="flexStart" alignItems="center">
       <EuiFlexItem grow={false}>
@@ -408,6 +409,23 @@ const DateInput = ({ item, register, onBlur, onChange, value, ...props }) => {
   );
 };
 
+const WorkerSelector = ({ item, value }) => {
+  console.log(" WorkerSelector receives team:", value);
+  return (
+    <EuiFlexGroup alignItems="center" gutterSize="s">
+      <EuiFlexItem grow={false}>
+        <SelectWorkerButton
+          ticketId={item.ticket}
+          fieldName={item.attr_name}
+          currentValue={item.value}
+          currentTeam={value}
+        />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  );
+};
+
+
 const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props }) => {
   let searchTimeout: NodeJS.Timeout;
   const [value1, setValue] = useState(value);
@@ -601,12 +619,14 @@ const getFieldComponentEdit = (item, register, value, onChange, onBlur) => {
         />
       );
     case "worker":
+      console.log(" DEBUG: item =", item);
       return (
-        <>
-          <EuiButton {...register(item.attr_name)} size="s">
-            Select worker
-          </EuiButton>
-        </>
+        <WorkerSelector
+          item={item}
+          {...register(item.attr_name)}
+          value={item.id}
+          onChange={onChange}
+        />
       );
     case "customer":
       return (
