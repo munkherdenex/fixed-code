@@ -69,6 +69,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState, useContext
 import ticketTemplateApi from "../../../../../api/ticket_template";
 import moment from "moment";
 import WorkersSelect from "../../../../../components/ticket_template/worker_select";
+import SelectWorkerButton from "@/components/SelectWorkerButton";
 import TagsManager from "../../../../../components/ticket_template/tags";
 import tagApi from "@/api/tags";
 import useTeams from "@/hooks/useTeams";
@@ -249,6 +250,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
   const [ticketDescription, setTicketDescription] = useState("");
   const [addedTags, setAddedTags] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [selectedWorkerId, setSelectedWorkerId] = useState(null);
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [needsCallbackValue, setNeedsCallbackValue] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -279,7 +281,6 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     formState: { errors },
   } = useForm();
   const [editorValue, setEditorValue] = useState("");
-  const [selectedWorkerId, setSelectedWorkerId] = useState("");
 
   const {
     data,
@@ -377,6 +378,10 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
       setTicketDescription(data.body);
     }
 
+    if (data && data.worker && data.worker.id) {
+      setSelectedWorkerId(data.worker.id);
+    }
+
     if (data && data.customer && data.customer.id) {
       setSelectedCustomerId(data.customer.id);
     }
@@ -462,9 +467,15 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
     setSelectedCustomerId(value);
   };
 
+  const onWorkerSelect = (value) => {
+    setSelectedWorkerId(value);
+  };
+
   const handleWorkerSelect = async (selectedValue: string) => {
     try {
       console.log("Selected Value:", selectedValue);
+      if (!selectedValue) return;
+      console.log("Updating worker with ID:", selectedValue);
       setSelectedWorkerId(selectedValue);
       let payload = {
         at_email: selectedValue,
@@ -709,6 +720,7 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
         ...(ticketDescription != "" && { body: ticketDescription }),
         ...(addedTags.length > 0 && { tags: addedTags }),
         ...(selectedCustomerId && { customer_id: parseInt(selectedCustomerId) }),
+        ...(selectedWorkerId && { assigned_to: selectedWorkerId }),
         // ...(selectedChannel && { channel: selectedChannel }),
         ...(needsCallbackValue && { needs_callback: needsCallbackValue == "true" ? true : false }),
         ...(selectedTeamId && { assigned_team_id: parseInt(selectedTeamId) }),
@@ -1488,16 +1500,17 @@ const TicketDetailPage = ({ params }: { params: { id: string } }) => {
                       })}
                     </EuiFlexItem>
                     <EuiSpacer size="m" />
-                    <EuiFlexGroup direction="row" justifyContent="flexStart" alignItems="center">
+                    {/* <EuiFlexGroup direction="row" justifyContent="flexStart" alignItems="center">
                       <EuiFlexItem grow={false}>
                         <WorkersSelect
                           isLoading={false}
                           isDisabled={false}
-                          onSelect={handleWorkerSelect}
-                          initialValue={data?.assigned_to}
+                          onSelect={onWorkerSelect}
+                          initValue={selectedWorkerId}
+                          isDisabled={data?.status == "close" ? true : false}
                         />
                       </EuiFlexItem>
-                    </EuiFlexGroup>
+                    </EuiFlexGroup> */}
                   </EuiPanel>
 
                 </EuiFlexGroup>

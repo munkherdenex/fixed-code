@@ -59,6 +59,7 @@ const TextInput = ({ item, register, onBlur, onChange, value, ...props }) => {
       mutate("/crm/ticket/");
     }
   };    
+
   return (
     <EuiFlexGroup justifyContent="flexStart" alignItems="center">
       <EuiFlexItem grow={false}>
@@ -69,7 +70,7 @@ const TextInput = ({ item, register, onBlur, onChange, value, ...props }) => {
             <EuiFieldText value={item.value} onChange={onTextChange} onBlur={onBlur} />
           )
         ) : (
-          <div>{value1 ? value1 : "Null"}</div>
+          <div>{value1 ? value1 : "Өгөгдөөгүй"}</div>
         )}
       </EuiFlexItem>
       <EuiFlexItem grow={false}>
@@ -134,7 +135,7 @@ const NumberInput = ({ item, register, onBlur, onChange, value, ...props }) => {
             onBlur={onBlur}
           />
         ) : (
-          <div>{value1 ? value1 : "Null"}</div>
+          <div>{value1 ? value1 : "Өгөгдөөгүй"}</div>
         )}
       </EuiFlexItem>
       <EuiFlexItem grow={false}>
@@ -409,8 +410,9 @@ const DateInput = ({ item, register, onBlur, onChange, value, ...props }) => {
   );
 };
 
-const WorkerSelector = ({ item, value }) => {
-  console.log(" WorkerSelector receives team:", value);
+const WorkerSelector = ({ item, onChange, currentTeam }) => {
+  const currentTeamId = localStorage.getItem("currentTeamId") || item.currentTeam;
+  console.log(" WorkerSelector receives team:", currentTeamId);
   return (
     <EuiFlexGroup alignItems="center" gutterSize="s">
       <EuiFlexItem grow={false}>
@@ -418,13 +420,16 @@ const WorkerSelector = ({ item, value }) => {
           ticketId={item.ticket}
           fieldName={item.attr_name}
           currentValue={item.value}
-          currentTeam={value}
+          currentTeam={currentTeamId}
+          onChange={(workerId) => {
+            console.log(" onChange from WorkerSelector:", workerId);
+            onChange(workerId);
+          }} 
         />
       </EuiFlexItem>
     </EuiFlexGroup>
   );
 };
-
 
 const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props }) => {
   let searchTimeout: NodeJS.Timeout;
@@ -485,6 +490,11 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
     }
   };
 
+    const cancelEdit = () => {
+    setValue(prevValue);
+    setIsEditing(false);
+  };
+
   return (
     <EuiFlexGroup justifyContent="flexStart" alignItems="center">
       <EuiFlexItem grow={false}>
@@ -518,7 +528,7 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
             {/* {value1 && `Selected : ${value1[0]?.label} - ${value1[0]?.value}`} */}
           </>
         ) : (
-          <EuiText>{value1?.map((opt) => opt.label).join(", ")}</EuiText>
+          <EuiText>{value1?.length > 0 ? value1.map((opt) => opt.label).join(", ") : "Сонгох"}</EuiText>
         )}
       </EuiFlexItem>
 
@@ -534,7 +544,7 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
           {isEditing && (
             <EuiFlexItem grow={false}>
               <EuiButtonIcon
-                onClick={toggleEdit}
+                onClick={cancelEdit}
                 iconType="error"
                 color="danger"
                 aria-label="cancel"
@@ -547,7 +557,7 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
   );
 };
 
-const getFieldComponentEdit = (item, register, value, onChange, onBlur) => {
+const getFieldComponentEdit = (item, register, value, onChange, onBlur, currentTeamId) => {
   switch (item.type) {
     case "text":
       return (
@@ -618,16 +628,18 @@ const getFieldComponentEdit = (item, register, value, onChange, onBlur) => {
           onBlur={onBlur}
         />
       );
+
     case "worker":
       console.log(" DEBUG: item =", item);
+      console.log(" WorkerSelector props", { value, onChange });
       return (
         <WorkerSelector
           item={item}
-          {...register(item.attr_name)}
-          value={item.id}
+          currentTeam={currentTeamId}
           onChange={onChange}
         />
       );
+
     case "customer":
       return (
         <CustomerSelector

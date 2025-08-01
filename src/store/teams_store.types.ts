@@ -14,6 +14,19 @@ export interface Member {
   joined_date: null | Date;
 }
 
+export interface Worker {
+  id: number;
+  user: {
+    email: string;
+    fname: string;
+    lname: string;
+    registered_date: Date | null;
+  };
+  role: string;
+  status: string;
+  joined_date: null | Date;
+}
+
 export interface Teams {
   id: number;
   name: string;
@@ -23,6 +36,7 @@ export interface Teams {
   created_at: string;
   updated_at: string;
   members: Member[];
+  workers: Worker[];
   parent_team: Teams | null;
 }
 

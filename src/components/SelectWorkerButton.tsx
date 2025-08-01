@@ -1,18 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
-  EuiButton,
-  EuiPopover,
-  EuiContextMenuPanel,
-  EuiContextMenuItem,
+  EuiFormRow,
+  EuiComboBox,
+  EuiComboBoxOptionOption,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiText,
+  EuiButtonIcon,
+  EuiSpacer,
 } from "@elastic/eui";
 import useAllWorkers from "@/hooks/useAllWorkers";
 import { Teams } from "@/store/teams_store.types";
+import ticketApi from "../api/ticket";
+import { mutate } from "swr";
 
 interface Worker {
-  id: number;
+  id: string;
   user: {
-    fname: string;
-    lname: string;
+    email: string;
   };
 }
 
@@ -21,6 +26,7 @@ interface SelectWorkerButtonProps {
   fieldName: any;
   currentValue: any;
   currentTeam: Teams;
+  onChange: (workerId: string) => void;
 }
 
 export default function SelectWorkerButton({
@@ -28,76 +34,112 @@ export default function SelectWorkerButton({
   fieldName,
   currentValue,
   currentTeam,
-}: SelectWorkerButtonProps)
- {
-  console.log(" RENDER SelectWorkerButton", { currentTeam });
+  onChange,
+}: SelectWorkerButtonProps) {
   const currentTeamId = localStorage.getItem("currentTeamId");
-  console.log(" SelectWorkerButton currentTeam =", currentTeamId);
-
   const { data: teamData, isLoading, error } = useAllWorkers<{ workers: Worker[] }>(currentTeamId);
   const workers = teamData?.workers || [];
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  const workerOptions: EuiComboBoxOptionOption<string>[] = useMemo(() => {
+    return workers.map((worker) => ({
+      label: worker.user.email,
+      value: worker.id,
+    }));
+  }, [workers]);
+
+  const [selectedOptions, setSelectedOptions] = useState<EuiComboBoxOptionOption<string>[]>([]);
+  const [prevValue, setPrevValue] = useState<EuiComboBoxOptionOption<string>[]>([]);
 
   useEffect(() => {
-    console.log(" SelectWorkerButton mounted");
-  }, []);
-
-  useEffect(() => {
-    if (workers.length) {
-      console.log(" Workers loaded:", workers);
-    } else if (!isLoading) {
-      console.warn(" No workers loaded");
+    const matchedWorker = workerOptions.find((opt) => opt.value === currentValue);
+    if (matchedWorker) {
+      setSelectedOptions([matchedWorker]);
+      setPrevValue([matchedWorker]);
     }
-  }, [workers, isLoading]);
+  }, [currentValue, workerOptions]);
 
-  useEffect(() => {
-    if (error) {
-      console.error(" Failed to load workers", error);
-    }
-  }, [error]);
 
-  const togglePopover = () => setIsPopoverOpen(!isPopoverOpen);
-  const closePopover = () => setIsPopoverOpen(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const handleWorkerSelect = (workerId: string) => {
-    console.log(" Selected worker ID:", workerId);
-    closePopover();
+  const toggleEdit = () => {
+    setPrevValue(selectedOptions);
+    setIsEditing(true);
   };
 
-const selectedWorkerLabel = workers.find((w) => w.id === Number(currentValue));
-  const displayName = selectedWorkerLabel
-    ? `${selectedWorkerLabel.user.fname} ${selectedWorkerLabel.user.lname}`
-    : "Ажилчин сонгох";
+  const cancelEdit = () => {
+    setSelectedOptions(prevValue);
+    setIsEditing(false);
+  };
 
-  const button = (
-    <EuiButton
-      style={{ border: "2px solid black" }}
-      iconType="arrowDown"
-      iconSide="right"
-      onClick={togglePopover}
-      isLoading={isLoading}
-    >
-      {displayName}
-    </EuiButton>
-  );
+  const saveEdit = async () => {
+    try {
+      const selectedId = selectedOptions[0]?.value;
+      if (!selectedId) return;
+
+      const payload = {
+        [fieldName]: selectedId,
+      };
+
+      console.log("Saving with payload:", payload);
+
+      await ticketApi.update(ticketId, payload);
+      mutate("/crm/ticket/");
+      onChange(selectedId);
+      console.log("onChange triggered with:", selectedId);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+      mutate("/crm/ticket/");
+    }
+  };
+
+  const handleChange = (selected: EuiComboBoxOptionOption<string>[]) => {
+    setSelectedOptions(selected);
+  };
 
   return (
-    <EuiPopover
-      button={button}
-      isOpen={isPopoverOpen}
-      closePopover={closePopover}
-      anchorPosition="downCenter"
-    >
-      <EuiContextMenuPanel
-        items={workers.map((worker) => (
-          <EuiContextMenuItem
-            key={worker.id}
-            onClick={() => handleWorkerSelect(String(worker.id))}
-          >
-            {worker.user.fname} {worker.user.lname}
-          </EuiContextMenuItem>
-        ))}
-      />
-    </EuiPopover>
+    <EuiFlexGroup alignItems="center" gutterSize="s">
+      <EuiFlexItem grow>
+        <EuiFormRow>
+          {isEditing ? (
+            <EuiComboBox
+              placeholder="Имэйл"
+              singleSelection={{ asPlainText: true }}
+              options={workerOptions}
+              selectedOptions={selectedOptions}
+              onChange={handleChange}
+              isClearable
+              isLoading={isLoading}
+              fullWidth
+            />
+          ) : (
+            <EuiText>{selectedOptions[0]?.label || "Сонгох"}</EuiText>
+          )}
+        </EuiFormRow>
+      </EuiFlexItem>
+
+      <EuiFlexItem grow={false}>
+        <EuiFlexGroup justifyContent="flexEnd">
+          <EuiSpacer size="s" />
+          <EuiFlexItem grow={false}>
+            {!isEditing ? (
+              <EuiButtonIcon onClick={toggleEdit} iconType="pencil" aria-label="Edit" />
+            ) : (
+              <EuiButtonIcon onClick={saveEdit} iconType="check" aria-label="Save" />
+            )}
+          </EuiFlexItem>
+          {isEditing && (
+            <EuiFlexItem grow={false}>
+              <EuiButtonIcon
+                onClick={cancelEdit}
+                iconType="error"
+                color="danger"
+                aria-label="cancel"
+              />
+            </EuiFlexItem>
+          )}
+        </EuiFlexGroup>
+      </EuiFlexItem>
+    </EuiFlexGroup>
   );
 }
