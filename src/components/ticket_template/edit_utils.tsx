@@ -49,7 +49,7 @@ const TextInput = ({ item, register, onBlur, onChange, value, ...props }) => {
   const saveEdit = async () => {
     try {
       let payload = {
-        [item.attr_name]: value1, 
+        [item.attr_name]: value1,
       };
       await ticketApi.update(item.ticket, payload);
       mutate("/crm/ticket/");
@@ -58,7 +58,7 @@ const TextInput = ({ item, register, onBlur, onChange, value, ...props }) => {
       console.error("Failed to update ticket:", error);
       mutate("/crm/ticket/");
     }
-  };    
+  };
 
   return (
     <EuiFlexGroup justifyContent="flexStart" alignItems="center">
@@ -424,7 +424,7 @@ const WorkerSelector = ({ item, onChange, currentTeam }) => {
           onChange={(workerId) => {
             console.log(" onChange from WorkerSelector:", workerId);
             onChange(workerId);
-          }} 
+          }}
         />
       </EuiFlexItem>
     </EuiFlexGroup>
@@ -460,8 +460,13 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
     const matchingOption = dataTypeOptions.find((option) => option.value === item.value);
     if (matchingOption) {
       setValue([matchingOption]);
+      setPrevValue([matchingOption]);
+    } else {
+      setValue([]);
+      setPrevValue([]);
     }
   }, [dataTypeOptions, item.value]);
+
 
   const toggleEdit = () => {
     setIsEditing(!isEditing);
@@ -474,23 +479,26 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
     }, 500);
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const saveEdit = async () => {
+    setIsSaving(true);
     try {
       let payload = {
-        [item.attr_name]: value1[0]?.value,
+        [item.attr_name]: value1[0]?.value || null,
       };
-      // console.log(item.ticket);
-      // console.log(payload);
       await ticketApi.update(item.ticket, payload);
-      mutate("/crm/ticket/");
-      setIsEditing(!isEditing);
+      await mutate("/crm/ticket/");
+      setIsEditing(false);
     } catch (error) {
       console.error("Failed to update ticket:", error);
-      mutate("/crm/ticket/");
+    } finally {
+      setIsSaving(false);
     }
   };
 
-    const cancelEdit = () => {
+
+  const cancelEdit = () => {
     setValue(prevValue);
     setIsEditing(false);
   };
@@ -515,16 +523,18 @@ const CustomerSelector = ({ item, register, onBlur, onChange, value, ...props })
               selectedOptions={value1}
               onSearchChange={onSearchChange}
               onBlur={onBlur}
-              isClearable={false}
+              isClearable
               isLoading={isLoading}
             />
 
-            <input
-              type="hidden"
-              value={value1 && value1[0]?.value}
-              name={item.attr_name}
-              {...props}
-            />
+            {value1.length > 0 && (
+              <input
+                type="hidden"
+                value={value1[0]?.value}
+                name={item.attr_name}
+                {...props}
+              />
+            )}
             {/* {value1 && `Selected : ${value1[0]?.label} - ${value1[0]?.value}`} */}
           </>
         ) : (

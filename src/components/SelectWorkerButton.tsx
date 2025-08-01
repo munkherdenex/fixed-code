@@ -73,9 +73,8 @@ export default function SelectWorkerButton({
 
   const saveEdit = async () => {
     try {
-      const selectedId = selectedOptions[0]?.value;
-      if (!selectedId) return;
-
+      const selectedId = selectedOptions.length > 0 ? selectedOptions[0].value : null;
+      
       const payload = {
         [fieldName]: selectedId,
       };
