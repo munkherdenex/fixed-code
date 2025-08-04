@@ -40,15 +40,29 @@ export default function SelectWorkerButton({
   const { data: teamData, isLoading, error } = useAllWorkers<{ workers: Worker[] }>(currentTeamId);
   const workers = teamData?.workers || [];
 
-  const workerOptions: EuiComboBoxOptionOption<string>[] = useMemo(() => {
-    return workers.map((worker) => ({
-      label: worker.user.email,
-      value: worker.id,
-    }));
-  }, [workers]);
-
   const [selectedOptions, setSelectedOptions] = useState<EuiComboBoxOptionOption<string>[]>([]);
   const [prevValue, setPrevValue] = useState<EuiComboBoxOptionOption<string>[]>([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  let searchTimeout: NodeJS.Timeout;
+
+  const onSearchChange = (value: string) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      setSearchValue(value.toLowerCase());
+    }, 500);
+  };
+
+  const workerOptions: EuiComboBoxOptionOption<string>[] = useMemo(() => {
+    return workers
+      .filter((worker) =>
+        worker.user.email.toLowerCase().includes(searchValue)
+      )
+      .map((worker) => ({
+        label: worker.user.email,
+        value: worker.id,
+      }));
+  }, [workers, searchValue]);
 
   useEffect(() => {
     const matchedWorker = workerOptions.find((opt) => opt.value === currentValue);
@@ -57,9 +71,6 @@ export default function SelectWorkerButton({
       setPrevValue([matchedWorker]);
     }
   }, [currentValue, workerOptions]);
-
-
-  const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => {
     setPrevValue(selectedOptions);
@@ -74,7 +85,7 @@ export default function SelectWorkerButton({
   const saveEdit = async () => {
     try {
       const selectedId = selectedOptions.length > 0 ? selectedOptions[0].value : null;
-      
+
       const payload = {
         [fieldName]: selectedId,
       };
@@ -110,6 +121,7 @@ export default function SelectWorkerButton({
               isClearable
               isLoading={isLoading}
               fullWidth
+              onSearchChange={onSearchChange}
             />
           ) : (
             <EuiText>{selectedOptions[0]?.label || "Сонгох"}</EuiText>
