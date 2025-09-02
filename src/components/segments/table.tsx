@@ -7,6 +7,8 @@ import {
   EuiFieldSearch,
   EuiButtonIcon,
   Criteria,
+  EuiProvider,
+  EuiContext,
   EuiEmptyPrompt,
   EuiButton,
   EuiImage,
@@ -19,6 +21,18 @@ import { PAGINATION_CHOOSES } from "../../constants";
 import moment from "moment";
 import { isNumber } from "../../utils/helper";
 import { useTranslations } from "next-intl";
+import { css } from "@emotion/react";
+
+const titleStyle = css`
+  .euiTablePagination__PerPage {
+    font-size: 0; 
+  }
+
+  .euiTablePagination__PerPage::before {
+    content: "Хуудсанд харуулж буй мөрний тоо";
+    font-size: 14px; 
+  }
+`;
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -104,7 +118,7 @@ const SegmentsTable = () => {
       footer: () => {
         return (
           <strong>
-            {translate("total-segments")}: {data?.total_count || 0}
+            {translate("total-segments")}: {data?.total_count.toLocaleString() || 0}
           </strong>
         );
       },
@@ -218,23 +232,41 @@ const SegmentsTable = () => {
         </EuiFlexGroup>
       </EuiFlexItem>
       <EuiFlexItem>
-        {isLoading ? (
-          <div>{translate("loading")}</div>
-        ) : (
-          <EuiBasicTable
-            tableCaption="Segments table"
-            items={data?.results || []}
-            columns={columns}
-            rowProps={getRowProps}
-            cellProps={getCellProps}
-            pagination={
-              data?.total_count > pageSize
-                ? { ...pagination, totalItemCount: data?.total_count || 0, showPerPageOptions: true }
-                : null
-            }
-            onChange={onTableChange}
-          />
-        )}
+        <EuiContext
+          i18n={{
+            mapping: {
+              'euiTablePagination.rowsPerPage': 'Хуудсанд харуулж буй мөрний тоо',
+              'euiTablePagination.rowsPerPageOption': '{rowsPerPage} Мөр',
+            },
+          }}
+        >
+          <EuiProvider colorMode="light">
+            <div css={titleStyle}>
+              {isLoading ? (
+                <div>{translate("loading")}</div>
+              ) : (
+                <EuiBasicTable
+                  tableCaption="Segments table"
+                  items={data?.results || []}
+                  columns={columns}
+                  rowProps={getRowProps}
+                  cellProps={getCellProps}
+                  pagination={
+                    data?.total_count > pageSize
+                      ? {
+                        ...pagination,
+                        totalItemCount: data?.total_count || 0,
+                        showPerPageOptions: true,
+                      }
+                      : null
+                  }
+                  onChange={onTableChange}
+                />
+              )}
+            </div>
+          </EuiProvider>
+        </EuiContext>
+
       </EuiFlexItem>
     </EuiFlexGroup>
   );

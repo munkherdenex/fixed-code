@@ -344,7 +344,7 @@ const CustomTreeView: React.FC<CustomTreeViewProps> = ({
       });
       
       setTreeItems(parsedResults);
-      setTotalCount(res.total_count || 0);
+      setTotalCount(res.total_count.toLocaleString() || 0);
       setTotalPages(res.total_pages);
       setCurrentPageIndex(page);
       setIsLoading(false);

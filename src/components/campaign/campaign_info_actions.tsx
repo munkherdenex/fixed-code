@@ -432,12 +432,11 @@ const CampaignInfoActions = () => {
           onConfirm={handleApproveTrigger}
           isLoading={isMutating}
           cancelButtonText="Болих"
-          confirmButtonText="Илгээх"
+          confirmButtonText="Зөвшөөрөх"
           defaultFocusedButton="confirm"
         >
           <p>
-            Бүх харилцагчдад мэдэгдэл илгээх гэж байна. Та тухайн үйлдлийг хийхдээ итгэлтэй байна
-            уу?
+            Зөвшөөрөх үйлдэл хийснээр мэдэгдэл илгээгдэх болно. Та тухайн үйлдлийг хийхдээ итгэлтэй байна уу? 
           </p>
         </EuiConfirmModal>
       )}
@@ -445,12 +444,12 @@ const CampaignInfoActions = () => {
         <EuiConfirmModal
           aria-labelledby={modalTitleId}
           style={{ width: 600 }}
-          title="Stop campaign"
+          title="Мэдэгдлийг зогсоох"
           onCancel={closeModal}
           onConfirm={handleStopTrigger}
           isLoading={isMutating}
-          cancelButtonText="Cancel"
-          confirmButtonText="Confirm"
+          cancelButtonText="Болих"
+          confirmButtonText="Зогсоох"
           defaultFocusedButton="confirm"
         />
       )}

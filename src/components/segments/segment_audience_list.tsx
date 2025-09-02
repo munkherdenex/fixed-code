@@ -7,6 +7,9 @@ import {
   EuiButton,
   EuiFieldSearch,
   EuiFlexGroup,
+    EuiI18n,
+  EuiProvider,
+  EuiContext,
   EuiFlexItem,
   EuiFormRow,
   EuiLink,
@@ -31,6 +34,19 @@ import { isNumber } from "../../utils/helper";
 import { addToast } from "../toast";
 import CreateAudienceSegment from "./add_segments_audience";
 import DeleteSegmentAudience from "./delete_segment_audience";
+import { css } from "@emotion/react";
+
+
+const titleStyle = css`
+  .euiTablePagination__PerPage {
+    font-size: 0; 
+  }
+
+  .euiTablePagination__PerPage::before {
+    content: "Хуудсанд харуулж буй мөрний тоо";
+    font-size: 14px; 
+  }
+`;
 
 const schema = yup.object({
   search: yup.string().notRequired(),
@@ -156,7 +172,7 @@ const SegmentAudienceList = () => {
       footer: () => {
         return (
           <strong>
-            {translate("total")}: {data?.total_count || 0}
+            {translate("total")}: {data?.total_count.toLocaleString() || 0}
           </strong>
         );
       },
@@ -175,8 +191,8 @@ const SegmentAudienceList = () => {
 
   const onSearchEmailAddress = (value: string) => {
     setSearchValue(value);
-    router.push({ 
-      query: { ...router.query, search: value, pageIndex: 1 } 
+    router.push({
+      query: { ...router.query, search: value, pageIndex: 1 }
     });
   };
 
@@ -269,17 +285,31 @@ const SegmentAudienceList = () => {
         </EuiFlexItem>
         <EuiFlexItem>
           <EuiSkeletonRectangle isLoading={isLoading || segmentIsLoading} width="100%" height={300}>
-            <EuiBasicTable
-              tableLayout="auto"
-              items={data?.results || []}
-              columns={columns}
-              pagination={
-                data?.total_count > pageSize
-                  ? { ...pagination, totalItemCount: data?.total_count || 0, showPerPageOptions: true }
-                  : null
-              }
-              onChange={onTableChange}
-            />
+            <EuiContext
+              i18n={{
+                mapping: {
+                  'euiTablePagination.rowsPerPage': 'Хуудсанд харуулж буй мөрний тоо',
+                  'euiTablePagination.rowsPerPageOption': '{rowsPerPage} Мөр',
+                },
+              }}
+            >
+
+              <EuiProvider colorMode="light">
+                <div css={titleStyle}>
+                  <EuiBasicTable
+                    tableLayout="auto"
+                    items={data?.results || []}
+                    columns={columns}
+                    pagination={
+                      data?.total_count > pageSize
+                        ? { ...pagination, totalItemCount: data?.total_count || 0, showPerPageOptions: true }
+                        : null
+                    }
+                    onChange={onTableChange}
+                  />
+                </div>
+              </EuiProvider>
+            </EuiContext>
           </EuiSkeletonRectangle>
         </EuiFlexItem>
       </EuiFlexGroup>

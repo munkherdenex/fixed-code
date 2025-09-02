@@ -1,15 +1,39 @@
-import { EuiFlexGrid, EuiFlexItem, EuiPanel, EuiSpacer, useGeneratedHtmlId } from "@elastic/eui";
+import { useState, useEffect } from "react";
+import moment from "moment";
+import {
+  EuiDatePickerRange,
+  EuiDatePicker,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiSpacer,
+  EuiButtonGroup,
+} from "@elastic/eui";
 import Head from "next/head";
 import DashboardLayout from "../../../../layouts/dashboard";
 import Customer from "../../../../components/analytics/customer";
 import Campaign from "../../../../components/analytics/campaign";
-import CampaignStatus from "../../../../components/analytics/campaign_status";
 import CampaignStatusTable from "../../../../components/analytics/campaign_status_table";
-import { useTranslations } from "next-intl";
 import CampaignActions from "@/components/analytics/campaign_actions";
+import { useTranslations } from "next-intl";
 
 const Analytics = () => {
   const translate = useTranslations();
+
+  const [interval, setInterval] = useState<"1d" | "7d" | "1m">("7d");
+  const [pickerRange, setPickerRange] = useState({
+    start: moment().subtract(7, "days"),
+    end: moment(),
+  });
+
+  useEffect(() => {
+    if (interval === "1d") {
+      setPickerRange({ start: moment().subtract(1, "days"), end: moment() });
+    } else if (interval === "7d") {
+      setPickerRange({ start: moment().subtract(7, "days"), end: moment() });
+    } else if (interval === "1m") {
+      setPickerRange({ start: moment().subtract(1, "month"), end: moment() });
+    }
+  }, [interval]);
 
   return (
     <>
@@ -22,15 +46,53 @@ const Analytics = () => {
           iconType: "reportingApp",
         }}
       >
-        <div>
-          <Campaign />
+        <>
+          <EuiFlexGroup gutterSize="m" alignItems="center">
+            <EuiFlexItem grow={false}>
+              <EuiDatePickerRange
+                startDateControl={
+                  <EuiDatePicker
+                    selected={pickerRange.start}
+                    onChange={(date) =>
+                      setPickerRange({ ...pickerRange, start: date })
+                    }
+                  />
+                }
+                endDateControl={
+                  <EuiDatePicker
+                    selected={pickerRange.end}
+                    onChange={(date) =>
+                      setPickerRange({ ...pickerRange, end: date })
+                    }
+                  />
+                }
+              />
+            </EuiFlexItem>
+
+            <EuiFlexItem grow={false}>
+              <EuiButtonGroup
+                legend="Select interval"
+                idSelected={interval}
+                onChange={(id) => setInterval(id as any)}
+                options={[
+                  { id: "1d", label: "1 өдөр" },
+                  { id: "7d", label: "7 хоног" },
+                  { id: "1m", label: "1 сар" },
+                ]}
+              />
+            </EuiFlexItem>
+          </EuiFlexGroup>
+
           <EuiSpacer size="l" />
-          <CampaignActions />
+
+          <Campaign interval={interval} pickerRange={pickerRange} />
+          <EuiSpacer size="l" />
+          <CampaignActions interval={interval} pickerRange={pickerRange} />
           <EuiSpacer size="l" />
           <CampaignStatusTable />
           <EuiSpacer size="l" />
-          <Customer />
-        </div>
+          <Customer interval={interval} pickerRange={pickerRange} />
+        </>
       </DashboardLayout>
     </>
   );

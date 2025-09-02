@@ -10,6 +10,7 @@ type yieldNameType = "count" | "sum" | "mean" | "min" | "max" | "median";
 export interface AnalyticsData {
   interval: intervalType;
   start?: string;
+  end?: string;
   template_id?: string;
   customer_id?: string;
   kind?: string;
@@ -21,18 +22,28 @@ export interface AnalyticsData {
 }
 
 export default function useGetAnalytics(
-  timePeriod: string,
+  timePeriod: string | null,
   queryParams?: { [key: string]: string },
+  customerId?: string
 ) {
-  const preparedQueryParam = createParam({ interval: timePeriod, ...queryParams });
-  const path = `/api/v1/dj/analytics-v2/?${preparedQueryParam}`;
+  const preparedQueryParam = createParam(
+    timePeriod ? { interval: timePeriod, ...queryParams } : { ...queryParams }
+  );
+
+  const path = `/api/v1/dj/analytics-v2/?${preparedQueryParam}${customerId ? `&customer_id=${customerId}` : ""}`;
 
   const { data, error, isLoading, mutate } = useSWR(path, async (path) => {
+    console.log("Fetching Analytics:", `${BASE_URL}${path}`); 
     const res = await fetch(`${BASE_URL}${path}`, {
       method: "GET",
       headers: { "content-type": "application/json" },
       credentials: "include",
     });
+
+    if (!res.ok) {
+      const errorBody = await res.text();
+      console.error("Analytics API Error:", res.status, errorBody);
+    }
 
     return handleResponseNotOk(res);
   });
@@ -44,3 +55,4 @@ export default function useGetAnalytics(
     refreshAnalytics: mutate,
   };
 }
+

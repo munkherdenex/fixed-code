@@ -57,7 +57,7 @@ const Info = () => {
               <EuiFlexItem grow={7}>
                 <EuiFlexGroup direction="column">
                   <EuiFlexItem grow={false}>
-                    <Total />
+                    <Total customerId={router.query.id as string} />
                   </EuiFlexItem>
                   <EuiFlexItem grow={false}>
                     <Overview />

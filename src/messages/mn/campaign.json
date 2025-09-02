@@ -4,6 +4,8 @@
   "updated_by": "Шинэчилсэн",
   "the_campaign_description": "Тайлбар",
   "search_campaign": "Нэрээр хайх",
+  "search_by_worker": "Үүсгэсэн ажилтнаар хайх",
+  "search_by_date": "Үүсгэсэн огноогоор хайх",
   "status": "Төлөв",
   "done": "Баталгаажуулалт хүлээж байгаа",
   "loading": "Ачаалж байна",

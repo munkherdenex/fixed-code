@@ -139,7 +139,7 @@ const FieldsTable = () => {
     {
       name: translate("actions"),
       footer: () => {
-        return <strong>Total: {data?.total_count || 0}</strong>;
+        return <strong>Total: {data?.total_count.toLocaleString() || 0}</strong>;
       },
       actions: [
         {

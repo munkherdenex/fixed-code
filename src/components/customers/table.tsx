@@ -8,12 +8,16 @@ import {
   EuiFieldSearch,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiI18n,
+  EuiProvider,
   EuiFormRow,
   EuiImage,
   EuiSelect,
   EuiTableFieldDataColumnType,
   EuiTextColor,
   useGeneratedHtmlId,
+  EuiTablePagination,
+  EuiContext,
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -23,6 +27,18 @@ import useGetCustomers, { CustomersResponse, CustomersType } from "../../hooks/u
 import { isNumber } from "../../utils/helper";
 import CreateCustomerFlyoutContainer from "./create_customer_flyout_container";
 import { useTranslations } from "next-intl";
+import { css } from "@emotion/react";
+
+const titleStyle = css`
+  .euiTablePagination__PerPage {
+    font-size: 0; 
+  }
+
+  .euiTablePagination__PerPage::before {
+    content: "Хуудсанд харуулж буй мөрний тоо";
+    font-size: 14px; 
+  }
+`;
 
 const pathPrefix = process.env.PATH_PREFIX;
 
@@ -61,8 +77,12 @@ const CustomersTable = () => {
       pageIndex: pageIndex - 1,
       pageSize,
       pageSizeOptions: PAGINATION_CHOOSES,
+      totalItemCount: data?.total_count || 0,
+      labels: {
+        rowsPerPage: 'Хуудсанд харуулах мөрийн тоо',
+      },
     }),
-    [pageIndex, pageSize],
+    [pageIndex, pageSize, data?.total_count],
   );
 
   const columns = useMemo((): Array<EuiBasicTableColumn<CustomersType>> => {
@@ -132,7 +152,7 @@ const CustomersTable = () => {
         render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
         footer: () => (
           <strong>
-            {translate("total-audience")}: {data?.total_count || 0}
+            {translate("total-audience")}: {data?.total_count.toLocaleString() || 0}
           </strong>
         ),
         mobileOptions: { enlarge: true },
@@ -182,7 +202,7 @@ const CustomersTable = () => {
         render: (date: string) => moment(date).format("YYYY-MM-DD LT"),
         footer: () => (
           <strong>
-            {translate("total-audience")}: {data?.total_count || 0}
+            {translate("total-audience")}: {data?.total_count.toLocaleString() || 0}
           </strong>
         ),
         mobileOptions: { enlarge: true },
@@ -327,6 +347,7 @@ const CustomersTable = () => {
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             <EuiButtonIcon
+
               iconType="refresh"
               display="base"
               size="s"
@@ -337,19 +358,33 @@ const CustomersTable = () => {
         </EuiFlexGroup>
       </EuiFlexItem>
       <EuiFlexItem>
-        <EuiBasicTable
-          tableLayout="auto"
-          items={data?.results || []}
-          columns={columns}
-          rowProps={getRowProps}
-          cellProps={getCellProps}
-          pagination={
-            data?.total_count > pageSize
-              ? { ...pagination, totalItemCount: data?.total_count || 0 }
-              : null
-          }
-          onChange={onTableChange}
-        />
+        <EuiContext
+          i18n={{
+            mapping: {
+              'euiTablePagination.rowsPerPage': 'Хуудсанд харуулж буй мөрний тоо',
+              'euiTablePagination.rowsPerPageOption': '{rowsPerPage} Мөр',
+            },
+          }}
+        >
+
+          <EuiProvider colorMode="light">
+            <div css={titleStyle}>
+              <EuiBasicTable
+                tableLayout="auto"
+                items={data?.results || []}
+                columns={columns}
+                rowProps={getRowProps}
+                cellProps={getCellProps}
+                pagination={
+                  data?.total_count > pageSize
+                    ? { ...pagination, totalItemCount: data?.total_count || 0 }
+                    : null
+                }
+                onChange={onTableChange}
+              />
+            </div>
+          </EuiProvider>
+        </EuiContext>
       </EuiFlexItem>
     </EuiFlexGroup>
   );

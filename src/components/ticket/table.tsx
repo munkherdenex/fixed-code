@@ -8,6 +8,8 @@ import {
   EuiDatePickerRange,
   EuiFieldSearch,
   EuiFlexGrid,
+  EuiContext,
+  EuiProvider,
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormControlLayout,
@@ -34,6 +36,18 @@ import ticketApi from "../../api/ticket";
 import tagApi from "@/api/tags";
 import moment from "moment";
 import ticketTemplateApi from "@/api/ticket_template";
+import { css } from "@emotion/react";
+
+const titleStyle = css`
+  .euiTablePagination__PerPage {
+    font-size: 0; 
+  }
+
+  .euiTablePagination__PerPage::before {
+    content: "Хуудсанд харуулж буй мөрний тоо";
+    font-size: 14px; 
+  }
+`;
 
 interface Tag {
   id: number;
@@ -927,6 +941,17 @@ const Table = () => {
         </EuiFlexGroup>
       </EuiFlexItem>
       <EuiFlexItem>
+                <EuiContext
+          i18n={{
+            mapping: {
+              'euiTablePagination.rowsPerPage': 'Хуудсанд харуулж буй мөрний тоо',
+              'euiTablePagination.rowsPerPageOption': '{rowsPerPage} Мөр',
+            },
+          }}
+        >
+
+          <EuiProvider colorMode="light">
+            <div css={titleStyle}>
         <EuiTabs>{renderTabs()}</EuiTabs>
         {isLoading ? (
           <div>{translate("loading")}</div>
@@ -962,6 +987,9 @@ const Table = () => {
             />
           </>
         )}
+                    </div>
+          </EuiProvider>
+        </EuiContext>
       </EuiFlexItem>
     </EuiFlexGroup>
   );

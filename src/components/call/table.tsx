@@ -8,6 +8,8 @@ import {
   EuiButtonIcon,
   EuiComboBox,
   EuiDatePicker,
+  EuiContext,
+  EuiProvider,
   EuiFieldSearch,
   EuiFlexGroup,
   EuiFlexItem,
@@ -28,6 +30,17 @@ import contactLogApi from "../../api/contact_log";
 import CallDetailFlyout from "./call_detail_flyout";
 import { css } from "@emotion/react";
 import { CallStateBadge } from "./call_state_badge";
+
+const titleStyle = css`
+  .euiTablePagination__PerPage {
+    font-size: 0; 
+  }
+
+  .euiTablePagination__PerPage::before {
+    content: "Хуудсанд харуулж буй мөрний тоо";
+    font-size: 14px; 
+  }
+`;
 
 export const callStateOptions = [
   { label: "Дуудаж байна", value: "start" },
@@ -400,6 +413,17 @@ const Table = () => {
           </EuiFlexGroup>
         </EuiFlexItem>
         <EuiFlexItem>
+                  <EuiContext
+          i18n={{
+            mapping: {
+              'euiTablePagination.rowsPerPage': 'Хуудсанд харуулж буй мөрний тоо',
+              'euiTablePagination.rowsPerPageOption': '{rowsPerPage} Мөр',
+            },
+          }}
+        >
+
+          <EuiProvider colorMode="light">
+            <div css={titleStyle}>
           {isLoading ? (
             <div>{translate("loading")}</div>
           ) : (
@@ -419,6 +443,9 @@ const Table = () => {
               onChange={onTableChange}
             />
           )}
+                      </div>
+          </EuiProvider>
+        </EuiContext>
         </EuiFlexItem>
       </EuiFlexGroup>
     </>

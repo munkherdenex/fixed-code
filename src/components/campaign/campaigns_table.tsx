@@ -3,34 +3,49 @@ import {
   EuiBadge,
   EuiBasicTable,
   EuiBasicTableColumn,
-  EuiButton,
   EuiButtonIcon,
   EuiEmptyPrompt,
+  EuiComboBox,
   EuiFieldSearch,
+  EuiDatePickerRange,
   EuiFlexGrid,
   EuiFlexGroup,
+  EuiDatePicker,
   EuiFlexItem,
+  EuiProvider,
+  EuiContext,
   EuiIcon,
   EuiImage,
-  EuiNotificationBadge,
+  EuiComboBoxOptionOption,
   EuiSelect,
-  EuiSpacer,
   EuiTab,
   EuiTableFieldDataColumnType,
   EuiTabs,
-  EuiText,
   EuiTextColor,
 } from "@elastic/eui";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { Fragment, useLayoutEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PAGINATION_CHOOSES } from "../../constants";
 import useGetTemplates, { Template, TemplateResponse } from "../../hooks/useGetTemplates";
 import { badgeColor } from "../../utils/badge_color";
 import { getCampaignIcon, getCampaignStatusIcon, getDataKind, isNumber } from "../../utils/helper";
 import CreateCampaignActionPopover from "./create_campaign_action_popover";
 import { useTranslations } from "next-intl";
+import useAllWorkers from "@/hooks/useAllWorkers";
 import { Worker } from "@/lib/types";
+import { css } from "@emotion/react";
+
+const titleStyle = css`
+  .euiTablePagination__PerPage {
+    font-size: 0; 
+  }
+
+  .euiTablePagination__PerPage::before {
+    content: "Хуудсанд харуулж буй мөрний тоо";
+    font-size: 14px; 
+  }
+`;
 
 const options = [
   { value: "", text: "Бүгд" },
@@ -41,6 +56,15 @@ const options = [
 ];
 
 const CampaignsTable = () => {
+  const currentTeamId = typeof window !== "undefined" ? localStorage.getItem("currentTeamId") : null;
+  const { data: teamData, isLoading: workersLoading } = useAllWorkers<{ workers: Worker[] }>(currentTeamId);
+  const workers = teamData?.workers || [];
+
+  const workerOptions: Array<EuiComboBoxOptionOption<string>> = workers.map((worker) => ({
+    label: worker.user?.email || worker.email || "Unknown",
+    value: String(worker.id),
+  }));
+
   const router = useRouter();
   const { query } = router;
   const translate = useTranslations();
@@ -48,6 +72,8 @@ const CampaignsTable = () => {
   const querySearch = query?.search?.toString() || "";
   const queryFilter = query?.filter?.toString() || "";
   const queryKindFilter = query?.kind?.toString() || "";
+  const queryCreatedBy = query?.created_by?.toString() || "";
+  const queryCreatedAt = query?.created_at?.toString() || "";
   const queryPageIndex = isNumber(query?.pageIndex) ? +query?.pageIndex : 1;
   const queryPageSize = isNumber(query?.pageSize) ? +query?.pageSize : PAGINATION_CHOOSES[1];
 
@@ -56,6 +82,13 @@ const CampaignsTable = () => {
   const [pageSize, setPageSize] = useState(queryPageSize);
   const [filter, setFilter] = useState(queryFilter);
   const [kindFilter, setKindFilter] = useState(queryKindFilter);
+  const [createdBy, setCreatedBy] = useState(queryCreatedBy);
+  const [createdAt, setCreatedAt] = useState<moment.Moment | null>(
+    queryCreatedAt ? moment(queryCreatedAt) : null
+  );
+  const [startDate, setStartDate] = useState<moment.Moment | null>(null);
+  const [endDate, setEndDate] = useState<moment.Moment | null>(null);
+  const isDatePickerChange = useRef(false);
 
   const [selectedTabId, setSelectedTabId] = useState(query?.tab || "all-tab--id");
 
@@ -83,16 +116,22 @@ const CampaignsTable = () => {
     },
   ];
 
-  const pagination = {
-    pageIndex: pageIndex - 1,
-    pageSize,
-    pageSizeOptions: PAGINATION_CHOOSES,
-  };
+  const pagination = useMemo(
+    () => ({
+      pageIndex: pageIndex - 1,
+      pageSize,
+      pageSizeOptions: PAGINATION_CHOOSES,
+    }),
+    [pageIndex, pageSize],
+  );
 
   const { data, isLoading, mutate } = useGetTemplates<TemplateResponse>(undefined, {
     query: searchValue,
     status: filter,
     kind: kindFilter,
+    created_by: createdBy,
+    start_date: startDate ? startDate.format("YYYY-MM-DD") : undefined,
+    end_date: endDate ? endDate.format("YYYY-MM-DD") : undefined,
     offset: `${pageIndex}`,
     limit: `${pageSize}`,
   });
@@ -163,40 +202,92 @@ const CampaignsTable = () => {
       field: "created_by",
       name: translate("created_by"),
       "data-test-subj": "createdByCell",
-      render: (worker: Worker) => {
-        return worker?.email;
-      },
+      render: (worker: Worker) => worker?.email,
       footer: () => {
-        return <strong>Нийт мэдэгдэл: {data?.total_count || 0}</strong>;
+        return <strong>Нийт мэдэгдэл: {data?.total_count.toLocaleString() || 0}</strong>;
       },
     },
   ];
 
   const onSearch = (value: string) => {
     setSearchValue(value);
-    router.push({ query: { search: value, filter } });
+    router.push({
+      query: {
+        search: value,
+        filter,
+        kind: kindFilter,
+        created_by: createdBy,
+      }
+    });
   };
 
   const onKindFilter = (value: string) => {
     setKindFilter(value);
-    router.push({ query: { kind: value, search: searchValue } });
+    router.push({
+      query: {
+        kind: value,
+        search: searchValue,
+        filter,
+        created_by: createdBy,
+      },
+    });
   };
 
-  const onTableChange = ({ page }: Criteria<Template>) => {
-    if (page) {
-      const { index: newPageIndex, size: newPageSize } = page;
-      router.push({
-        query: {
-          pageIndex: newPageIndex + 1,
-          pageSize: newPageSize,
-          filter: filter,
-          search: searchValue,
-        },
-      });
-      // setPageIndex(newPageIndex);
-      // setPageSize(newPageSize);
-    }
+  const onCreatedByFilter = (selected: EuiComboBoxOptionOption<string>[]) => {
+    const value = selected[0]?.value ?? "";
+    setCreatedBy(value);
+
+    router.push({
+      query: {
+        search: searchValue,
+        filter,
+        kind: kindFilter,
+        created_by: value,
+      },
+    });
   };
+
+  const onDateRangeFilter = (start: moment.Moment | null, end: moment.Moment | null) => {
+    console.log("Date range changed:", {
+      start: start?.format("YYYY-MM-DD"),
+      end: end?.format("YYYY-MM-DD"),
+    });
+
+    setStartDate(start);
+    setEndDate(end);
+
+    router.push({
+      query: {
+        ...query,
+        start_date: start ? start.format("YYYY-MM-DD") : "",
+        end_date: end ? end.format("YYYY-MM-DD") : "",
+      },
+    });
+  };
+
+const onTableChange = ({ page }: Criteria<Template>) => {
+  if (page) {
+    const { index, size } = page;
+    const newPageIndex = index + 1; 
+    const newPageSize = size;
+
+    setPageIndex(newPageIndex);
+    setPageSize(newPageSize);
+
+    router.push({
+      query: {
+        pageIndex: newPageIndex,
+        pageSize: newPageSize,
+        filter,
+        search: searchValue,
+        kind: kindFilter,
+        created_by: createdBy,
+        start_date: startDate ? startDate.format("YYYY-MM-DD") : undefined,
+        end_date: endDate ? endDate.format("YYYY-MM-DD") : undefined,
+      },
+    });
+  }
+};
 
   const getRowProps = (template: Template) => {
     const { id } = template;
@@ -218,28 +309,41 @@ const CampaignsTable = () => {
     };
   };
 
-  // Condensed useEffect logic to update states when query parameters change
   useLayoutEffect(() => {
-    if (querySearch !== searchValue) {
-      setSearchValue(querySearch);
+    if (querySearch !== searchValue) setSearchValue(querySearch);
+    if (queryFilter !== filter) setFilter(queryFilter);
+    if (queryKindFilter !== kindFilter) setKindFilter(queryKindFilter);
+    if (queryCreatedBy !== createdBy) setCreatedBy(queryCreatedBy);
+
+    if (isNumber(query?.pageIndex) && pageIndex !== +query.pageIndex) {
+      setPageIndex(+query.pageIndex);
     }
-    if (queryFilter !== filter) {
-      setFilter(queryFilter);
+    if (isNumber(query?.pageSize) && pageSize !== +query.pageSize) {
+      setPageSize(+query.pageSize);
     }
-    if (queryPageIndex !== pageIndex) {
-      setPageIndex(queryPageIndex);
+
+    if (query.start_date && (!startDate || !startDate.isSame(query.start_date, "day"))) {
+      setStartDate(moment(query.start_date));
     }
-    if (queryPageSize !== pageSize) {
-      setPageSize(queryPageSize);
+    if (query.end_date && (!endDate || !endDate.isSame(query.end_date, "day"))) {
+      setEndDate(moment(query.end_date));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryPageIndex, queryPageSize, querySearch, queryFilter]);
+    if (isDatePickerChange.current) {
+      isDatePickerChange.current = false;
+    } else {
+      if (queryCreatedAt && (!createdAt || !createdAt.isSame(queryCreatedAt, "day"))) {
+        setCreatedAt(moment(queryCreatedAt));
+      } else if (!queryCreatedAt && createdAt) {
+        setCreatedAt(null);
+      }
+    }
+  }, [query, querySearch, queryFilter, queryKindFilter, queryCreatedBy, queryCreatedAt]);
 
   if (isLoading) {
     return <div>{translate("loading")}</div>;
   }
 
-  if (data?.results?.length === 0 && !searchValue && !filter) {
+  if (data?.results?.length === 0 && !searchValue && !filter && !createdBy) {
     return (
       <EuiEmptyPrompt
         icon={<EuiImage size="s" src="/images/home/empty.png" alt="" />}
@@ -308,6 +412,44 @@ const CampaignsTable = () => {
                 />
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
+                <EuiComboBox
+                  singleSelection={{ asPlainText: true }}
+                  placeholder={translate("search_by_worker")}
+                  options={workerOptions}
+                  selectedOptions={
+                    createdBy ? workerOptions.filter((opt) => opt.value === createdBy) : []
+                  }
+                  onChange={onCreatedByFilter}
+                  isLoading={workersLoading}
+                />
+              </EuiFlexItem>
+
+              <EuiFlexItem grow={false}>
+                <EuiDatePickerRange
+                  startDateControl={
+                    <EuiDatePicker
+                      selected={startDate}
+                      onChange={(date) => onDateRangeFilter(date, endDate)}
+                      startDate={startDate}
+                      endDate={endDate}
+                      isInvalid={!!startDate && !!endDate && startDate.isAfter(endDate)}
+                      placeholder={translate("start_date")}
+                    />
+                  }
+                  endDateControl={
+                    <EuiDatePicker
+                      selected={endDate}
+                      onChange={(date) => onDateRangeFilter(startDate, date)}
+                      startDate={startDate}
+                      endDate={endDate}
+                      isInvalid={!!startDate && !!endDate && startDate.isAfter(endDate)}
+                      placeholder={translate("end_date")}
+                    />
+                  }
+                />
+              </EuiFlexItem>
+
+              <EuiFlexItem grow={false}>
                 <EuiSelect
                   options={options}
                   value={kindFilter}
@@ -330,32 +472,38 @@ const CampaignsTable = () => {
         </EuiFlexGroup>
       </EuiFlexItem>
       <EuiFlexItem>
-        <EuiTabs>{renderTabs()}</EuiTabs>
-        {isLoading ? (
-          <div>{translate("loading")}</div>
-        ) : (
-          <EuiBasicTable
-            tableCaption="Campaign table"
-            items={data?.results || []}
-            columns={columns}
-            rowProps={getRowProps}
-            cellProps={getCellProps}
-            pagination={
-              data?.total_pages > 1
-                ? {
+        <EuiContext
+          i18n={{
+            mapping: {
+              'euiTablePagination.rowsPerPage': 'Хуудсанд харуулж буй мөрний тоо',
+              'euiTablePagination.rowsPerPageOption': '{rowsPerPage} Мөр',
+            },
+          }}
+        >
+
+          <EuiProvider colorMode="light">
+            <div css={titleStyle}>
+              <EuiTabs>{renderTabs()}</EuiTabs>
+              {isLoading ? (
+                <div>{translate("loading")}</div>
+              ) : (
+                <EuiBasicTable
+                  tableCaption="Campaign table"
+                  items={data?.results || []}
+                  columns={columns}
+                  rowProps={getRowProps}
+                  cellProps={getCellProps}
+                  pagination={{
                     ...pagination,
                     totalItemCount: data?.total_count || 0,
                     showPerPageOptions: true,
-                  }
-                : {
-                    totalItemCount: 0,
-                    pageSize: 0,
-                    pageIndex: 0,
-                  }
-            }
-            onChange={onTableChange}
-          />
-        )}
+                  }}
+                  onChange={onTableChange}
+                />
+              )}
+            </div>
+          </EuiProvider>
+        </EuiContext>
       </EuiFlexItem>
     </EuiFlexGroup>
   );

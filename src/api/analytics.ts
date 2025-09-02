@@ -1,11 +1,12 @@
 import client from "./client"
 
 const analyticsApi = {
-  getForTemplate: async ({templateId = null, start = null, interval = '1d', measurement = null, kind = null, group_by_kind = false}) => {
+  getForTemplate: async ({templateId = null, start = null, end = null, interval = '1d', measurement = null, kind = null, group_by_kind = false}) => {
     const response = await client.get('/analytics-v2/', {
       params: {
         interval: interval,
         start: start,
+        end: end,
         template_id: templateId,
         group_by_kind: group_by_kind,
         measurement: measurement,
@@ -14,18 +15,18 @@ const analyticsApi = {
     })
     return response
   },
-  getForCustomer: async ({customerId = null, start = null, interval = '1d'}) => {
+  getForCustomer: async ({customerId = null, start = null, end = null, interval = '1d'}) => {
     const response = await client.get('/analytics-v2/', {
       params: {
         interval: interval,
-        start: start,
+        start: start, 
+        end: end,
         measurement: ['customer_create', 'customer_update'].join(','),
         customer_id: customerId,
       }
     })
     return response
   },
-} 
-
+}
 
 export default analyticsApi;

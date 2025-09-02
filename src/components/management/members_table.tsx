@@ -179,7 +179,7 @@ const MembersTable = () => {
   ];
 
   const columns =
-    !lastUser && isAdminOrManager ? [...defaultColumn, ...adminColumns] : defaultColumn;
+    !lastUser && isAdmin ? [...defaultColumn, ...adminColumns] : defaultColumn;
 
   if (isMembersLoading) return <div>{translate("loading")}</div>;
 

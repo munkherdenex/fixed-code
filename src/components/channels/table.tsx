@@ -95,7 +95,7 @@ const ChannelsTable = () => {
       footer: () => {
         return (
           <strong>
-            {translate("total")}: {data?.total_count || 0}
+            {translate("total")}: {data?.total_count.toLocaleString() || 0}
           </strong>
         );
       },

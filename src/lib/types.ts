@@ -1,4 +1,7 @@
 export interface Worker {
   id: number,
-  email: string
+    user?: {
+    email?: string
+  }
+  email: string,
 }

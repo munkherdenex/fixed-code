@@ -21,6 +21,7 @@ import {
   useGeneratedHtmlId,
 } from "@elastic/eui";
 import { jsonrepair } from "jsonrepair";
+import React from "react";
 import moment from "moment";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
@@ -51,14 +52,14 @@ const DisplayDataConditionExpression = ({ query }) => {
               <EuiExpression
                 description={index !== 0 && query.combinator}
                 value={rule.field}
-                onClick={() => {}}
+                onClick={() => { }}
               />
-              <EuiExpression description={rule.operator} value={rule.value} onClick={() => {}} />
+              <EuiExpression description={rule.operator} value={rule.value} onClick={() => { }} />
             </>
           )}
           {rule.rules && rule.rules.length > 0 && (
             <>
-              <EuiExpression description={query.combinator} onClick={() => {}} /> ({" "}
+              <EuiExpression description={query.combinator} onClick={() => { }} /> ({" "}
               <DisplayDataConditionExpression query={rule} /> ){" "}
             </>
           )}
@@ -239,9 +240,22 @@ const GeneralDetails = () => {
                         )}
                         {data?.type === "retarget" && (
                           <EuiFlexGroup gutterSize="s">
-                            <EuiFlexItem grow={false}>
-                              <EuiExpression description={''} value={`${Object.keys(data?.condition)[0].toUpperCase()} = TRUE`} />
-                            </EuiFlexItem>
+                            {Object.entries(data?.condition || {}).map(([key, value], index) => (
+                              <React.Fragment key={key}>
+                                <EuiFlexItem grow={false}>
+                                  <EuiExpression
+                                    description={''}
+                                    value={`${key.toUpperCase()} = ${value ? 'TRUE' : 'FALSE'}`}
+                                  />
+                                </EuiFlexItem>
+                                {index < Object.entries(data?.condition || {}).length - 1 && (
+                                  <EuiFlexItem grow={false}>
+                                    <EuiExpression description={'AND'} value={''} />
+                                  </EuiFlexItem>
+                                )}
+                              </React.Fragment>
+                            ))}
+
                             <EuiFlexItem grow={false}>
                               <EuiExpression description={'AND'} value={'CAMPAIGN_ID'} />
                             </EuiFlexItem>

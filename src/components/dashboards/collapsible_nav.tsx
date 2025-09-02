@@ -22,7 +22,8 @@ const CollapsibleNav = () => {
 
   const CustomersLinks: EuiPinnableListGroupItemProps[] = [
     {
-      label: "Audience",
+      label: "Харилцагч",
+      icon: <EuiIcon type="userAvatar" />,
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/cdp/audience`);
       },
@@ -30,7 +31,8 @@ const CollapsibleNav = () => {
       color: router.pathname === "/dashboards/cdp/audience" ? "primary" : "subdued",
     },
     {
-      label: "Segments",
+      label: "Сегмент",
+      icon: <EuiIcon type="users" />,
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/cdp/segments`);
       },
@@ -38,7 +40,8 @@ const CollapsibleNav = () => {
       color: router.pathname === "/dashboards/cdp/segments" ? "primary" : "subdued",
     },
     {
-      label: "Campaign",
+      label: "Мэдэгдэл",
+      icon: <EuiIcon type="inputOutput" />,
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/cdp/campaign`);
       },
@@ -46,7 +49,8 @@ const CollapsibleNav = () => {
       color: router.pathname === "/dashboards/cdp/campaign" ? "primary" : "subdued",
     },
     {
-      label: "Analytics",
+      label: "Тайлан",
+      icon: <EuiIcon type="document" />,
       onClick: () => {
         router.push(`${pathPrefix}/dashboards/cdp/analytics`);
       },
@@ -168,9 +172,10 @@ const CollapsibleNav = () => {
       >
         <EuiCollapsibleNavGroup
           title={
-            <Link href="#" className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
-              Main menu
+            <Link href="/dashboards/cdp" className="eui-textInheritColor" onClick={(e) => e.stopPropagation()}>
+              Нүүр
             </Link>
+            
           }
           buttonElement="div"
           iconType="usersRolesApp"

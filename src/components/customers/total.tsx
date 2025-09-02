@@ -19,17 +19,22 @@ import {
   useGeneratedHtmlId,
   useIsWithinMaxBreakpoint,
 } from "@elastic/eui";
-import { useAudienceContext } from "../../store/audience_store";
 import { useTranslations } from "next-intl";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useGetAnalytics from "@/hooks/useGetAnalytics";
 import moment from "moment";
 
-const Total = () => {
-  const [startDate, setStartDate] = useState(moment());
-  const [endDate, setEndDate] = useState(moment().add(10, "d"));
-  const [startDateForm, setStartDateForm] = useState(moment().toISOString());
-  const [endDateForm, setEndDateForm] = useState(moment().add(10, "d").toISOString());
+interface TotalProps {
+  customerId: string;
+}
+
+const Total = ({ customerId }: TotalProps) => {
+  const [startDate, setStartDate] = useState(moment().startOf("day"));
+  const [endDate, setEndDate] = useState(moment().endOf("day"));
+  const [startDateForm, setStartDateForm] = useState(moment().startOf("day").format("YYYY-MM-DD"));
+  const [endDateForm, setEndDateForm] = useState(moment().endOf("day").format("YYYY-MM-DD"));
+  const [useCustomRange, setUseCustomRange] = useState(false);
+
   const compressedToggleButtonGroupPrefix = useGeneratedHtmlId({
     prefix: "compressedToggleButtonGroup",
   });
@@ -44,26 +49,14 @@ const Total = () => {
   };
 
   const [toggleCompressedIdSelected, setToggleCompressedIdSelected] = useState(
-    `${compressedToggleButtonGroupPrefix}__1`,
+    `${compressedToggleButtonGroupPrefix}__1`
   );
 
   const toggleButtonsCompressed = [
-    {
-      id: `${compressedToggleButtonGroupPrefix}__0`,
-      label: "1 хоног",
-    },
-    {
-      id: `${compressedToggleButtonGroupPrefix}__1`,
-      label: "7 хоног",
-    },
-    {
-      id: `${compressedToggleButtonGroupPrefix}__2`,
-      label: "1 сар",
-    },
-    {
-      id: `${compressedToggleButtonGroupPrefix}__3`,
-      label: "1 жил",
-    },
+    { id: `${compressedToggleButtonGroupPrefix}__0`, label: "1 хоног" },
+    { id: `${compressedToggleButtonGroupPrefix}__1`, label: "7 хоног" },
+    { id: `${compressedToggleButtonGroupPrefix}__2`, label: "1 сар" },
+    { id: `${compressedToggleButtonGroupPrefix}__3`, label: "1 жил" },
   ];
 
   const periodMap = {
@@ -73,41 +66,66 @@ const Total = () => {
     [`${compressedToggleButtonGroupPrefix}__3`]: "1y",
   };
 
-  const selectedPeriod = periodMap[toggleCompressedIdSelected] || "1y";
+  const selectedPeriod = periodMap[toggleCompressedIdSelected];
 
   const { analyticsData, isAnalyticsLoading, analyticsError, refreshAnalytics } =
-    useGetAnalytics(selectedPeriod);
+    useGetAnalytics(
+      useCustomRange ? null : selectedPeriod,
+      useCustomRange ? { start: startDateForm, end: endDateForm } : {},
+      customerId
+    );
 
-  const emptyArr = [
-    {
-      title: "Нийт илгээсэн тоо",
-      value: 0,
-    },
-    {
-      title: "Нээсэн тоо",
-      value: 0,
-    },
-    {
-      title: "Нээсэн үзүүлэлт",
-      value: 0,
-    },
-    {
-      title: "Дарагдсан үзүүлэлт",
-      value: 0,
-    },
-    {
-      title: "Нийт дарсан тоо",
-      value: 0,
-    },
-  ];
-
-  const onChangeCompressed = (optionId) => {
-    setToggleCompressedIdSelected(optionId);
+  const measurementMap: Record<string, string> = {
+    sends: "Нийт илгээсэн тоо",
+    opens: "Нээсэн тоо",
+    open_rate: "Нээсэн үзүүлэлт",
+    click_rate: "Дарагдсан үзүүлэлт",
+    clicks: "Нийт дарсан тоо",
   };
 
-  const onDateChange = (type, date) => {
-    const formattedDate = moment(date).toISOString();
-    if (type == "start") {
+  const emptyArr = [
+    { title: "Нийт илгээсэн тоо", value: 0 },
+    { title: "Нээсэн тоо", value: 0 },
+    { title: "Нээсэн үзүүлэлт", value: 0 },
+    { title: "Дарагдсан үзүүлэлт", value: 0 },
+    { title: "Нийт дарсан тоо", value: 0 },
+  ];
+
+  const onChangeCompressed = (optionId: string) => {
+    setToggleCompressedIdSelected(optionId);
+    setUseCustomRange(false);
+
+    const period = periodMap[optionId];
+    let start = moment().startOf("day");
+    let end = moment().endOf("day");
+
+    switch (period) {
+      case "1d":
+        start = moment().startOf("day");
+        break;
+      case "7d":
+        start = moment().subtract(7, "days").startOf("day");
+        break;
+      case "1m":
+        start = moment().subtract(1, "months").startOf("day");
+        break;
+      case "1y":
+        start = moment().subtract(1, "years").startOf("day");
+        break;
+    }
+
+    setStartDate(start);
+    setEndDate(end);
+    setStartDateForm(start.format("YYYY-MM-DD"));
+    setEndDateForm(end.format("YYYY-MM-DD"));
+  };
+
+  const onDateChange = (type: "start" | "end", date: moment.Moment | null) => {
+    if (!date) return;
+    setUseCustomRange(true);
+    const formattedDate = date.format("YYYY-MM-DD");
+
+    if (type === "start") {
       setStartDate(date);
       setStartDateForm(formattedDate);
     } else {
@@ -132,17 +150,17 @@ const Total = () => {
                 </EuiFlexItem>
               </EuiFlexGroup>
             }
-          ></EuiCard>
+          />
         </EuiFlexItem>
       ));
     }
 
     if (analyticsData?.data && analyticsData.data.length > 0) {
       return analyticsData.data.map((item, index) => (
-        <EuiFlexItem key={`data-${index}-${item._value}`}>
+        <EuiFlexItem key={`data-${index}-${item._measurement}`}>
           <EuiCard
             textAlign="left"
-            title={item._measurement}
+            title={measurementMap[item._measurement] || item._measurement}
             titleSize="xs"
             display="subdued"
             footer={
@@ -152,7 +170,7 @@ const Total = () => {
                 </EuiFlexItem>
               </EuiFlexGroup>
             }
-          ></EuiCard>
+          />
         </EuiFlexItem>
       ));
     }
@@ -171,7 +189,7 @@ const Total = () => {
               </EuiFlexItem>
             </EuiFlexGroup>
           }
-        ></EuiCard>
+        />
       </EuiFlexItem>
     ));
   };

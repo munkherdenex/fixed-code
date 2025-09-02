@@ -14,7 +14,7 @@ const DeleteMemberModal = ({
   setIsModalVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const translate = useTranslations();
-  const { currentTeam } = useManagementTeamsContext();
+  const { currentTeam, isAdmin } = useManagementTeamsContext();
   const { trigger, isMutating } = useDeleteMember(selectMember);
   const [deleteMessage, setDeleteMessage] = useState("");
 
@@ -33,6 +33,10 @@ const DeleteMemberModal = ({
     setIsModalVisible(false);
     globalMutate(`/api/v1/teams/${currentTeam?.id}/?members=true`);
   };
+
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <EuiConfirmModal

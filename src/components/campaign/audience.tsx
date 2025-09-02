@@ -209,12 +209,12 @@ const Audience = () => {
         {isModalVisible && (
           <EuiConfirmModal
             aria-labelledby={modalTitleId}
-            title="Delete templates customer"
+            title="Мэдэгдэл илгээх харилцагчид устгах"
             isLoading={isMutating}
             onCancel={closeModal}
             onConfirm={handleDeleteModalConfirm}
-            cancelButtonText="Cancel"
-            confirmButtonText="Delete"
+            cancelButtonText="Болих"
+            confirmButtonText="Устгах"
             defaultFocusedButton="confirm"
             buttonColor="danger"
           >
