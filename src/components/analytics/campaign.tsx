@@ -5,7 +5,7 @@ import {
   DARK_THEME,
   LIGHT_THEME,
   Position,
-  ScaleType,
+  ScaleType, 
   Settings,
 } from "@elastic/charts";
 import {
